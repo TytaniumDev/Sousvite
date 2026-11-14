@@ -8,18 +8,18 @@ part of 'theme_mode_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The Light / Dark / System setting (DESIGN_SYSTEM.md §3). Follows the
-/// system until the user picks. Saving the choice is a settings task.
+/// The Light / Dark / System setting (DESIGN_SYSTEM.md §3), as the
+/// [ThemeMode] the app root needs. Follows the system until settings load.
 
 @ProviderFor(ThemeModeController)
 final themeModeControllerProvider = ThemeModeControllerProvider._();
 
-/// The Light / Dark / System setting (DESIGN_SYSTEM.md §3). Follows the
-/// system until the user picks. Saving the choice is a settings task.
+/// The Light / Dark / System setting (DESIGN_SYSTEM.md §3), as the
+/// [ThemeMode] the app root needs. Follows the system until settings load.
 final class ThemeModeControllerProvider
     extends $NotifierProvider<ThemeModeController, ThemeMode> {
-  /// The Light / Dark / System setting (DESIGN_SYSTEM.md §3). Follows the
-  /// system until the user picks. Saving the choice is a settings task.
+  /// The Light / Dark / System setting (DESIGN_SYSTEM.md §3), as the
+  /// [ThemeMode] the app root needs. Follows the system until settings load.
   ThemeModeControllerProvider._()
     : super(
         from: null,
@@ -48,10 +48,10 @@ final class ThemeModeControllerProvider
 }
 
 String _$themeModeControllerHash() =>
-    r'f9b8eb99767b71aca78c7bf9540764b27a139bde';
+    r'07872fb16216f114d1768266ce8d48b0d13e6d07';
 
-/// The Light / Dark / System setting (DESIGN_SYSTEM.md §3). Follows the
-/// system until the user picks. Saving the choice is a settings task.
+/// The Light / Dark / System setting (DESIGN_SYSTEM.md §3), as the
+/// [ThemeMode] the app root needs. Follows the system until settings load.
 
 abstract class _$ThemeModeController extends $Notifier<ThemeMode> {
   ThemeMode build();

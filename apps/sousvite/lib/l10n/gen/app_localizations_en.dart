@@ -61,5 +61,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_title => 'Settings';
 
   @override
+  String get settings_appearance => 'Appearance';
+
+  @override
+  String get settings_themeSystem => 'System';
+
+  @override
+  String get settings_themeLight => 'Light';
+
+  @override
+  String get settings_themeDark => 'Dark';
+
+  @override
+  String get settings_recipes => 'Recipes';
+
+  @override
+  String get settings_units => 'Units';
+
+  @override
+  String get settings_unitsDescription =>
+      'For recipes where you haven\'t picked units';
+
+  @override
+  String get settings_unitsOriginal => 'As written';
+
+  @override
+  String get settings_unitsUs => 'US';
+
+  @override
+  String get settings_unitsMetric => 'Metric';
+
+  @override
+  String get settings_measuringTools => 'My measuring tools';
+
+  @override
+  String get settings_measuringToolsDescription =>
+      'Cooking mode suggests only the cups and spoons you have.';
+
+  @override
+  String get settings_measuringCups => 'Cups';
+
+  @override
+  String get settings_measuringSpoons => 'Spoons';
+
+  @override
+  String get settings_measuringToolsKeepOne => 'Keep at least one';
+
+  @override
+  String settings_toolCup(String amount) {
+    return '$amount cup';
+  }
+
+  @override
+  String settings_toolTablespoon(String amount) {
+    return '$amount Tbsp';
+  }
+
+  @override
+  String settings_toolTeaspoon(String amount) {
+    return '$amount tsp';
+  }
+
+  @override
+  String get settings_account => 'Account';
+
+  @override
+  String get settings_accountTile => 'Sign in or manage your account';
+
+  @override
+  String get settings_about => 'About';
+
+  @override
+  String get settings_dataAttribution =>
+      'Nutrition data comes from USDA FoodData Central and Open Food Facts. Open Food Facts data is available under the Open Database License.';
+
+  @override
+  String get settings_licenses => 'Open source licenses';
+
+  @override
   String get account_title => 'Account';
 }

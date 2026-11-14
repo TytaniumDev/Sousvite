@@ -196,6 +196,144 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings_title;
 
+  /// Settings section heading for the theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settings_appearance;
+
+  /// Theme option that follows the device's light or dark mode.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settings_themeSystem;
+
+  /// Theme option that is always light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settings_themeLight;
+
+  /// Theme option that is always dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settings_themeDark;
+
+  /// Settings section heading for units and measuring tools.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipes'**
+  String get settings_recipes;
+
+  /// Label of the setting that picks US or metric amounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get settings_units;
+
+  /// Explains that the units setting is the default; each recipe can override it.
+  ///
+  /// In en, this message translates to:
+  /// **'For recipes where you haven\'t picked units'**
+  String get settings_unitsDescription;
+
+  /// Units option that shows amounts the way the recipe wrote them.
+  ///
+  /// In en, this message translates to:
+  /// **'As written'**
+  String get settings_unitsOriginal;
+
+  /// Units option for US customary units (cups, ounces).
+  ///
+  /// In en, this message translates to:
+  /// **'US'**
+  String get settings_unitsUs;
+
+  /// Units option for metric units (grams, milliliters).
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get settings_unitsMetric;
+
+  /// Settings row and page title for the cups and spoons the user owns.
+  ///
+  /// In en, this message translates to:
+  /// **'My measuring tools'**
+  String get settings_measuringTools;
+
+  /// Explains what the measuring tools page is for.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooking mode suggests only the cups and spoons you have.'**
+  String get settings_measuringToolsDescription;
+
+  /// Heading for the list of measuring cups.
+  ///
+  /// In en, this message translates to:
+  /// **'Cups'**
+  String get settings_measuringCups;
+
+  /// Heading for the list of measuring spoons.
+  ///
+  /// In en, this message translates to:
+  /// **'Spoons'**
+  String get settings_measuringSpoons;
+
+  /// Shown under the only owned measuring tool, which can't be turned off.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep at least one'**
+  String get settings_measuringToolsKeepOne;
+
+  /// A measuring cup, such as '¾ cup'.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} cup'**
+  String settings_toolCup(String amount);
+
+  /// A tablespoon measure, such as '½ Tbsp'.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} Tbsp'**
+  String settings_toolTablespoon(String amount);
+
+  /// A teaspoon measure, such as '¼ tsp'.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} tsp'**
+  String settings_toolTeaspoon(String amount);
+
+  /// Settings section heading for sign-in and the account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settings_account;
+
+  /// Settings row that opens the account screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or manage your account'**
+  String get settings_accountTile;
+
+  /// Settings section heading for data sources and licenses.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settings_about;
+
+  /// Credits the nutrition data sources, as the Open Database License requires.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition data comes from USDA FoodData Central and Open Food Facts. Open Food Facts data is available under the Open Database License.'**
+  String get settings_dataAttribution;
+
+  /// Settings row that opens the list of open source licenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Open source licenses'**
+  String get settings_licenses;
+
   /// Title of the account and sign-in screen.
   ///
   /// In en, this message translates to:
