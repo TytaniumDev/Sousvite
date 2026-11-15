@@ -203,10 +203,14 @@ The sync engine is transport-agnostic. One interface, two implementations:
 ```dart
 abstract interface class SyncTransport {
   Future<void> push(List<Change> changes);
-  Stream<List<Change>> pull({required SyncCursor since});
+  // Each batch carries the cursor that resumes after it. No cursor starts
+  // from the latest snapshot.
+  Stream<({List<Change> changes, SyncCursor cursor})> pull({SyncCursor? since});
   Future<void> writeSnapshot(Snapshot snapshot);
 }
 ```
+
+The engine (`packages/sync/lib/src/engine/`) talks to the database through a `LocalStore` interface that `packages/data` implements. It pushes only this device's own changes, merges each pulled batch in one local transaction, and saves the cursor in that transaction, so an interrupted sync resumes without loss. The app writes a snapshot now and then (for example daily), and switching transports is `replay()`: a snapshot of the current state into the new transport.
 
 | | Google Drive (free) | Sousvite cloud (Pro) |
 |---|---|---|
