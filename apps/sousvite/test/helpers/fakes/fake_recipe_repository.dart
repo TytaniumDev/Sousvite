@@ -56,7 +56,9 @@ class FakeRecipeRepository() implements RecipeRepository {
           }
         });
       },
-      onCancel: () => changes?.cancel(),
+      // Returning the cancel future would complete `.first` in the root
+      // zone, outside a widget test's fake async.
+      onCancel: () => unawaited(changes?.cancel()),
     );
     return controller.stream;
   }
@@ -81,6 +83,28 @@ class FakeRecipeRepository() implements RecipeRepository {
         .map((r) => r.id)
         .toList(),
   );
+
+  /// Matches titles and ingredient names. Folder names are the real
+  /// repository's job.
+  @override
+  Stream<List<RecipeId>> watchSearch(String query) {
+    final needle = query.toLowerCase();
+    bool matches(Recipe recipe) =>
+        recipe.title.toLowerCase().contains(needle) ||
+        _lines.values.any(
+          (line) =>
+              line.recipeId == recipe.id &&
+              (line.name ?? line.rawText).toLowerCase().contains(needle),
+        );
+    return _watch(
+      () => _recipes.values
+          .where(matches)
+          .sortedBy((r) => r.createdAt)
+          .reversed
+          .map((r) => r.id)
+          .toList(),
+    );
+  }
 
   @override
   Stream<Recipe?> watchRecipe(RecipeId id) => _watch(() => _recipes[id]);

@@ -160,6 +160,156 @@ abstract class AppLocalizations {
   /// **'Library'**
   String get library_title;
 
+  /// Hint in the library's search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search recipes, ingredients, folders'**
+  String get library_searchHint;
+
+  /// Filter chip that shows every recipe instead of one folder.
+  ///
+  /// In en, this message translates to:
+  /// **'All recipes'**
+  String get library_allRecipes;
+
+  /// Chip and dialog title for creating a folder.
+  ///
+  /// In en, this message translates to:
+  /// **'New folder'**
+  String get library_newFolder;
+
+  /// Label of the folder name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder name'**
+  String get library_folderName;
+
+  /// Button that creates a folder.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get library_createFolder;
+
+  /// Menu item and dialog title for renaming the selected folder.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename folder'**
+  String get library_renameFolder;
+
+  /// Menu item that deletes the selected folder. Its recipes stay in the library.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete folder'**
+  String get library_deleteFolder;
+
+  /// Snackbar after deleting a folder.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder deleted'**
+  String get library_folderDeleted;
+
+  /// Snackbar action that undoes the last change.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get library_undo;
+
+  /// Tooltip of the menu button for the selected folder.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder options'**
+  String get library_folderOptions;
+
+  /// Floating button and empty-state action that adds a recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Add recipe'**
+  String get library_addRecipe;
+
+  /// Title when the library has no recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'No recipes yet'**
+  String get library_emptyTitle;
+
+  /// Message when the library has no recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a link or write your own.'**
+  String get library_emptyMessage;
+
+  /// Title when the selected folder has no recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this folder yet'**
+  String get library_emptyFolderTitle;
+
+  /// Message when the selected folder has no recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold a recipe to add it to folders.'**
+  String get library_emptyFolderMessage;
+
+  /// Title when a search finds nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching recipes'**
+  String get library_noMatchesTitle;
+
+  /// Message when a search finds nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another word, or clear the search.'**
+  String get library_noMatchesMessage;
+
+  /// Title when the library fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your recipes'**
+  String get library_loadErrorTitle;
+
+  /// Message when the library fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again in a moment.'**
+  String get library_loadErrorMessage;
+
+  /// Title of the sheet that puts a recipe in folders.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders'**
+  String get library_foldersSheetTitle;
+
+  /// Shown in the folders sheet when there are no folders.
+  ///
+  /// In en, this message translates to:
+  /// **'No folders yet. Create one to sort your recipes.'**
+  String get library_noFolders;
+
+  /// Screen reader hint for pressing and holding a recipe card.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit folders'**
+  String get library_editFoldersHint;
+
+  /// A recipe's total time under an hour.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String library_minutes(int minutes);
+
+  /// A recipe's total time in whole hours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String library_hours(int hours);
+
+  /// A recipe's total time in hours and minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String library_hoursMinutes(int hours, int minutes);
+
   /// Title of the recipe page before its name loads.
   ///
   /// In en, this message translates to:

@@ -2,4 +2,5 @@
 /// file; everything else in this folder is private to the feature.
 library;
 
+export 'application/recipe_data.dart' show recipeProvider;
 export 'recipe_routes.dart';

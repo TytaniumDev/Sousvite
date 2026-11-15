@@ -18,6 +18,10 @@ abstract interface class RecipeRepository() {
   /// Every recipe id, newest first.
   Stream<List<RecipeId>> watchRecipeIds();
 
+  /// The ids of recipes whose title, ingredients, or folder names match
+  /// [query], newest first (PRD 7.1).
+  Stream<List<RecipeId>> watchSearch(String query);
+
   /// One recipe, or null once it is deleted.
   Stream<Recipe?> watchRecipe(RecipeId id);
 
