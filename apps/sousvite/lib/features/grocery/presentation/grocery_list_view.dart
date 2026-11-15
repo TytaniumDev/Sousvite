@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/grocery/application/grocery_entry.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
 import 'package:sousvite/features/grocery/presentation/grocery_entry_row.dart';
+import 'package:sousvite/features/grocery/presentation/store_section_name.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
@@ -50,7 +51,7 @@ class const _Groups({required final GroceryLayout layout})
         for (final section in layout.sections)
           _Group(
             key: ValueKey(section.name),
-            title: section.name ?? l10n.grocery_otherSection,
+            title: l10n.storeSectionName(section.name),
             entryKeys: section.entryKeys,
           ),
         if (layout.checkedKeys.isNotEmpty)

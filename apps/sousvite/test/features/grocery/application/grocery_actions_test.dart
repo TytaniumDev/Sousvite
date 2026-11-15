@@ -42,6 +42,7 @@ void main() {
       expect(items.first.quantity, Quantity(2));
       expect(items.first.sourceRecipeId, soup);
       expect(items.first.sourceIngredientLineId, onion.id);
+      expect(items.first.storeSection, StoreSection.produce.name);
       expect(items.every((item) => item.listId == list.id), isTrue);
     });
 
@@ -66,6 +67,7 @@ void main() {
       final item = repository.items.values.single;
       expect(item.listId, older.id);
       expect(item.name, 'paper towels');
+      expect(item.storeSection, StoreSection.other.name);
       expect(item.sourceRecipeId, isNull);
     });
 

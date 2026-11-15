@@ -74,7 +74,7 @@ void main() {
           'a',
           name: 'Onion',
           quantity: Quantity(2),
-          storeSection: 'Produce',
+          storeSection: 'produce',
           recipeId: const RecipeId('chili'),
         ),
       );
@@ -91,7 +91,7 @@ void main() {
       await pumpScreen(tester);
 
       expect(find.text('Produce'), findsOneWidget);
-      expect(find.text('Other'), findsOneWidget);
+      expect(find.text('Dairy and eggs'), findsOneWidget);
       expect(find.text('Checked'), findsOneWidget);
       expect(find.text('Onion'), findsOneWidget);
       expect(find.text('Chili'), findsOneWidget);
@@ -105,20 +105,21 @@ void main() {
     testWidgets('checking one item rebuilds only its row', (tester) async {
       await arrange();
       await saveList();
-      await groceries.saveItem(_F.item('apples', storeSection: 'Produce'));
-      await groceries.saveItem(_F.item('pears', storeSection: 'Produce'));
+      await groceries.saveItem(_F.item('apples', storeSection: 'produce'));
+      await groceries.saveItem(_F.item('pears', storeSection: 'produce'));
       await groceries.saveItem(_F.item('bread', checked: true));
       final builds = BuildCounter.start();
       await pumpScreen(tester);
       builds.reset();
 
       await groceries.saveItem(
-        _F.item('pears', storeSection: 'Produce').copyWith(name: 'Pears'),
+        _F.item('pears', storeSection: 'produce').copyWith(name: 'Pears'),
       );
       await tester.pumpAndSettle();
 
-      expect(builds.ofKey(const ValueKey('pears')), 1);
-      expect(builds.ofKey(const ValueKey('apples')), 0);
+      // Rows are keyed by groceryKey, which stems plurals.
+      expect(builds.ofKey(const ValueKey('pear')), 1);
+      expect(builds.ofKey(const ValueKey('apple')), 0);
       expect(builds.ofKey(const ValueKey('bread')), 0);
     });
 

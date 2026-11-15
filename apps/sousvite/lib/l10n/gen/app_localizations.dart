@@ -958,6 +958,54 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get grocery_otherSection;
 
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Produce'**
+  String get grocery_sectionProduce;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Meat and seafood'**
+  String get grocery_sectionMeatAndSeafood;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy and eggs'**
+  String get grocery_sectionDairyAndEggs;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Bakery'**
+  String get grocery_sectionBakery;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen'**
+  String get grocery_sectionFrozen;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Spices'**
+  String get grocery_sectionSpices;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Pantry'**
+  String get grocery_sectionPantry;
+
+  /// Store section heading on the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinks'**
+  String get grocery_sectionBeverages;
+
   /// Group at the bottom of the list holding checked-off items.
   ///
   /// In en, this message translates to:

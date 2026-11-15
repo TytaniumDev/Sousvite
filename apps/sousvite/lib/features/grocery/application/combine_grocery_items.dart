@@ -3,15 +3,13 @@ import 'package:sousvite/features/grocery/application/grocery_entry.dart';
 
 /// Combines a list's items into entries grouped by store section.
 ///
-/// A stand-in for GRO-1's combining in `packages/domain`
-/// (docs/BUILD_PLAN.md §6.3): it merges items whose names match exactly,
-/// ignoring case and spacing, and adds amounts only when their units are the
-/// same or convert exactly (2 Tbsp into ⅛ cup). GRO-1 adds plurals ("onion"
-/// and "onions") and store sections from its keyword table, then replaces
-/// this function.
+/// Items whose names share a [groceryKey] ("2 onions" and "1 onion") become
+/// one entry, with amounts added by [combineAmounts]. An item's section is
+/// the one stored on it, else the one [StoreSection.of] finds for its name.
 ///
-/// [items] must be in list order. Sections are sorted by name with "Other"
-/// (no section) last.
+/// [items] must be in list order. Sections follow the store's walking order
+/// ([StoreSection.values]), then sections the user named, alphabetically,
+/// with "Other" last.
 GroceryView combineGroceryItems(List<GroceryItem> items) {
   final itemsByKey = <String, List<GroceryItem>>{};
   for (final item in items) {
@@ -44,55 +42,47 @@ GroceryView combineGroceryItems(List<GroceryItem> items) {
   );
 }
 
-/// The key items are combined by: the name in lower case, with runs of
-/// whitespace collapsed.
-String groceryKey(String name) =>
-    name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-
 GroceryEntry _entry(String key, List<GroceryItem> items) {
-  final totals = <Unit?, Quantity>{};
-  for (final item in items) {
-    final quantity = item.quantity;
-    if (quantity == null) continue;
-    final amount = Amount(quantity, item.unit);
-    // Add to the first total this converts into exactly, in that unit.
-    final (unit, converted) = totals.keys
-        .map((unit) => (unit, _convert(amount, unit)))
-        .firstWhere(
-          (pair) => pair.$2 != null,
-          orElse: () => (item.unit, quantity),
-        );
-    totals.update(
-      unit,
-      (total) => total + converted!,
-      ifAbsent: () => converted!,
-    );
-  }
+  final name = items.first.name.trim();
   return GroceryEntry(
     key: key,
-    name: items.first.name.trim(),
+    name: name,
     items: items,
     amounts: [
-      for (final MapEntry(key: unit, value: quantity) in totals.entries)
-        (quantity: quantity, unit: unit),
+      for (final amount in combineAmounts([
+        for (final item in items)
+          if (item.quantity case final quantity?) Amount(quantity, item.unit),
+      ]))
+        (quantity: amount.quantity, unit: amount.unit),
     ],
     sourceRecipeIds: {for (final item in items) ?item.sourceRecipeId}.toList(),
-    storeSection: items
-        .map((item) => item.storeSection)
-        .firstWhere((section) => section != null, orElse: () => null),
+    storeSection: _section(
+      items
+          .map((item) => item.storeSection)
+          .firstWhere((section) => section != null, orElse: () => null),
+      name,
+    ),
   );
+}
+
+/// The section to group under: [stored] if the item has one, else the
+/// keyword table's. Null for "Other".
+String? _section(String? stored, String name) {
+  final section = stored ?? StoreSection.of(name).name;
+  return section == StoreSection.other.name ? null : section;
 }
 
 int _compareSections(String? a, String? b) => switch ((a, b)) {
   (null, null) => 0,
   (null, _) => 1,
   (_, null) => -1,
-  (final a?, final b?) => a.toLowerCase().compareTo(b.toLowerCase()),
+  (final a?, final b?) => switch ((
+    StoreSection.byName(a),
+    StoreSection.byName(b),
+  )) {
+    (final a?, final b?) => a.index.compareTo(b.index),
+    (_?, null) => -1,
+    (null, _?) => 1,
+    (null, null) => a.toLowerCase().compareTo(b.toLowerCase()),
+  },
 };
-
-/// [amount] counted in [unit], or null when it doesn't convert exactly.
-Quantity? _convert(Amount amount, Unit? unit) {
-  if (amount.unit == unit) return amount.quantity;
-  if (unit == null) return null;
-  return amount.convertTo(unit)?.quantity;
-}

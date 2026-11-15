@@ -563,6 +563,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get grocery_otherSection => 'Other';
 
   @override
+  String get grocery_sectionProduce => 'Produce';
+
+  @override
+  String get grocery_sectionMeatAndSeafood => 'Meat and seafood';
+
+  @override
+  String get grocery_sectionDairyAndEggs => 'Dairy and eggs';
+
+  @override
+  String get grocery_sectionBakery => 'Bakery';
+
+  @override
+  String get grocery_sectionFrozen => 'Frozen';
+
+  @override
+  String get grocery_sectionSpices => 'Spices';
+
+  @override
+  String get grocery_sectionPantry => 'Pantry';
+
+  @override
+  String get grocery_sectionBeverages => 'Drinks';
+
+  @override
   String get grocery_checkedSection => 'Checked';
 
   @override
