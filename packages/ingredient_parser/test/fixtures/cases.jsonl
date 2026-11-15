@@ -1,0 +1,294 @@
+{"text": "1/2 cup milk", "quantity": "1/2", "unit": "cup", "name": "milk", "tags": ["ascii-fraction"]}
+{"text": "1/3 cup honey", "quantity": "1/3", "unit": "cup", "name": "honey", "tags": ["ascii-fraction"]}
+{"text": "2/3 cup water", "quantity": "2/3", "unit": "cup", "name": "water", "tags": ["ascii-fraction"]}
+{"text": "3/4 teaspoon salt", "quantity": "3/4", "unit": "teaspoon", "name": "salt", "tags": ["ascii-fraction"]}
+{"text": "1/8 teaspoon cayenne", "quantity": "1/8", "unit": "teaspoon", "name": "cayenne", "tags": ["ascii-fraction"]}
+{"text": "1/16 teaspoon nutmeg", "quantity": "1/16", "unit": "teaspoon", "name": "nutmeg", "tags": ["ascii-fraction"]}
+{"text": "4/4 cup flour", "quantity": "1", "unit": "cup", "name": "flour", "tags": ["ascii-fraction"]}
+{"text": "6/8 cup oats", "quantity": "3/4", "unit": "cup", "name": "oats", "tags": ["ascii-fraction"]}
+{"text": "1 / 2 cup rice", "quantity": "1/2", "unit": "cup", "name": "rice", "tags": ["ascii-fraction"]}
+{"text": "1⁄2 cup sugar", "quantity": "1/2", "unit": "cup", "name": "sugar", "tags": ["ascii-fraction"]}
+{"text": "½ cup chopped walnuts", "quantity": "1/2", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅓ cup chopped walnuts", "quantity": "1/3", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅔ cup chopped walnuts", "quantity": "2/3", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "¼ cup chopped walnuts", "quantity": "1/4", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "¾ cup chopped walnuts", "quantity": "3/4", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅛ cup chopped walnuts", "quantity": "1/8", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅜ cup chopped walnuts", "quantity": "3/8", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅝ cup chopped walnuts", "quantity": "5/8", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅞ cup chopped walnuts", "quantity": "7/8", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅕ cup chopped walnuts", "quantity": "1/5", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "⅙ cup chopped walnuts", "quantity": "1/6", "unit": "cup", "name": "chopped walnuts", "tags": ["unicode-fraction"]}
+{"text": "1 1/2 cups flour", "quantity": "3/2", "unit": "cup", "name": "flour", "tags": ["mixed-number"]}
+{"text": "2 3/4 cups broth", "quantity": "11/4", "unit": "cup", "name": "broth", "tags": ["mixed-number"]}
+{"text": "1 ½ cups flour", "quantity": "3/2", "unit": "cup", "name": "flour", "tags": ["mixed-number"]}
+{"text": "1½ cups flour", "quantity": "3/2", "unit": "cup", "name": "flour", "tags": ["mixed-number"]}
+{"text": "2⅓ cups oats", "quantity": "7/3", "unit": "cup", "name": "oats", "tags": ["mixed-number"]}
+{"text": "1-1/2 cups sugar", "quantity": "3/2", "unit": "cup", "name": "sugar", "tags": ["mixed-number"]}
+{"text": "1 + 1/2 cups almond flour", "quantity": "3/2", "unit": "cup", "name": "almond flour", "tags": ["mixed-number"]}
+{"text": "2 and 1/4 teaspoons yeast", "quantity": "9/4", "unit": "teaspoon", "name": "yeast", "tags": ["mixed-number"]}
+{"text": "3 ¾ cups water", "quantity": "15/4", "unit": "cup", "name": "water", "tags": ["mixed-number"]}
+{"text": "10 1/2 ounces spinach", "quantity": "21/2", "unit": "ounce", "name": "spinach", "tags": ["mixed-number"]}
+{"text": "1.5 cups milk", "quantity": "3/2", "unit": "cup", "name": "milk", "tags": ["decimal"]}
+{"text": "0.5 teaspoon salt", "quantity": "1/2", "unit": "teaspoon", "name": "salt", "tags": ["decimal"]}
+{"text": ".25 cup oil", "quantity": "1/4", "unit": "cup", "name": "oil", "tags": ["decimal"]}
+{"text": "2.25 pounds chicken thighs", "quantity": "9/4", "unit": "pound", "name": "chicken thighs", "tags": ["decimal"]}
+{"text": "13.5 oz coconut milk", "quantity": "27/2", "unit": "ounce", "name": "coconut milk", "tags": ["decimal"]}
+{"text": "1.2 kg potatoes", "quantity": "6/5", "unit": "kilogram", "name": "potatoes", "tags": ["decimal"]}
+{"text": "one onion, diced", "quantity": "1", "name": "onion", "preparation": "diced", "tags": ["word-number"]}
+{"text": "Two eggs", "quantity": "2", "name": "eggs", "tags": ["word-number"]}
+{"text": "three cloves garlic", "quantity": "3", "unit": "clove", "name": "garlic", "tags": ["word-number"]}
+{"text": "a pinch of salt", "quantity": "1", "unit": "pinch", "name": "salt", "tags": ["word-number"]}
+{"text": "A handful of spinach", "quantity": "1", "unit": "handful", "name": "spinach", "tags": ["word-number"]}
+{"text": "an onion, chopped", "quantity": "1", "name": "onion", "preparation": "chopped", "tags": ["word-number"]}
+{"text": "half a lemon", "quantity": "1/2", "name": "lemon", "tags": ["word-number"]}
+{"text": "Half an avocado, sliced", "quantity": "1/2", "name": "avocado", "preparation": "sliced", "tags": ["word-number"]}
+{"text": "one and a half cups milk", "quantity": "3/2", "unit": "cup", "name": "milk", "tags": ["word-number"]}
+{"text": "a dozen eggs", "quantity": "12", "name": "eggs", "tags": ["word-number"]}
+{"text": "twelve corn tortillas", "quantity": "12", "name": "corn tortillas", "tags": ["word-number"]}
+{"text": "One 2-pound piece of salmon", "quantity": "1", "unit": "piece", "package": {"quantity": "2", "unit": "pound"}, "name": "salmon", "tags": ["word-number"]}
+{"text": "2-3 cloves garlic", "quantity": "2", "quantityMax": "3", "unit": "clove", "name": "garlic", "tags": ["range"]}
+{"text": "2–3 cloves garlic", "quantity": "2", "quantityMax": "3", "unit": "clove", "name": "garlic", "tags": ["range"]}
+{"text": "2—3 cloves garlic", "quantity": "2", "quantityMax": "3", "unit": "clove", "name": "garlic", "tags": ["range"]}
+{"text": "2 - 3 tablespoons olive oil", "quantity": "2", "quantityMax": "3", "unit": "tablespoon", "name": "olive oil", "tags": ["range"]}
+{"text": "2 to 3 tablespoons olive oil", "quantity": "2", "quantityMax": "3", "unit": "tablespoon", "name": "olive oil", "tags": ["range"]}
+{"text": "2 or 3 sprigs thyme", "quantity": "2", "quantityMax": "3", "unit": "sprig", "name": "thyme", "tags": ["range"]}
+{"text": "1/2-1 teaspoon chili flakes", "quantity": "1/2", "quantityMax": "1", "unit": "teaspoon", "name": "chili flakes", "tags": ["range"]}
+{"text": "1 1/2 to 2 pounds pork shoulder", "quantity": "3/2", "quantityMax": "2", "unit": "pound", "name": "pork shoulder", "tags": ["range"]}
+{"text": "½–¾ cup sugar", "quantity": "1/2", "quantityMax": "3/4", "unit": "cup", "name": "sugar", "tags": ["range"]}
+{"text": "10-12 corn tortillas", "quantity": "10", "quantityMax": "12", "name": "corn tortillas", "tags": ["range"]}
+{"text": "4 to 6 medium shallots", "quantity": "4", "quantityMax": "6", "size": "medium", "name": "shallots", "tags": ["range"]}
+{"text": "2 tsp vanilla extract", "quantity": "2", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 tsp. vanilla extract", "quantity": "1", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 tsps vanilla extract", "quantity": "3", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 Tsp vanilla extract", "quantity": "1/2", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 TSP vanilla extract", "quantity": "2", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 teaspoon vanilla extract", "quantity": "1", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 teaspoons vanilla extract", "quantity": "3", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 Teaspoon vanilla extract", "quantity": "1/2", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 t vanilla extract", "quantity": "2", "unit": "teaspoon", "name": "vanilla extract", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 tbsp soy sauce", "quantity": "2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 tbsp. soy sauce", "quantity": "1", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 Tbsp soy sauce", "quantity": "3", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 Tbsp. soy sauce", "quantity": "1/2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 TBSP soy sauce", "quantity": "2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 tbs soy sauce", "quantity": "1", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 tbsps soy sauce", "quantity": "3", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 tbl soy sauce", "quantity": "1/2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 tablespoon soy sauce", "quantity": "2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 tablespoons soy sauce", "quantity": "1", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 Tablespoons soy sauce", "quantity": "3", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 T soy sauce", "quantity": "1/2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 Tb soy sauce", "quantity": "2", "unit": "tablespoon", "name": "soy sauce", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 fl oz heavy cream", "quantity": "2", "unit": "fluidOunce", "name": "heavy cream", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 fl. oz. heavy cream", "quantity": "1", "unit": "fluidOunce", "name": "heavy cream", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 fluid ounce heavy cream", "quantity": "3", "unit": "fluidOunce", "name": "heavy cream", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 fluid ounces heavy cream", "quantity": "1/2", "unit": "fluidOunce", "name": "heavy cream", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 c whole milk", "quantity": "2", "unit": "cup", "name": "whole milk", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 c. whole milk", "quantity": "1", "unit": "cup", "name": "whole milk", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 cup whole milk", "quantity": "3", "unit": "cup", "name": "whole milk", "tags": ["unit-alias", "us-volume"]}
+{"text": "1/2 cups whole milk", "quantity": "1/2", "unit": "cup", "name": "whole milk", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 Cup whole milk", "quantity": "2", "unit": "cup", "name": "whole milk", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 Cups whole milk", "quantity": "1", "unit": "cup", "name": "whole milk", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 pt cherry tomatoes", "quantity": "2", "unit": "pint", "name": "cherry tomatoes", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 pint cherry tomatoes", "quantity": "1", "unit": "pint", "name": "cherry tomatoes", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 pints cherry tomatoes", "quantity": "3", "unit": "pint", "name": "cherry tomatoes", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 qt chicken stock", "quantity": "2", "unit": "quart", "name": "chicken stock", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 quart chicken stock", "quantity": "1", "unit": "quart", "name": "chicken stock", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 quarts chicken stock", "quantity": "3", "unit": "quart", "name": "chicken stock", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 gal water", "quantity": "2", "unit": "gallon", "name": "water", "tags": ["unit-alias", "us-volume"]}
+{"text": "1 gallon water", "quantity": "1", "unit": "gallon", "name": "water", "tags": ["unit-alias", "us-volume"]}
+{"text": "3 gallons water", "quantity": "3", "unit": "gallon", "name": "water", "tags": ["unit-alias", "us-volume"]}
+{"text": "2 ml rice vinegar", "quantity": "2", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "1 mL rice vinegar", "quantity": "1", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "3 ML rice vinegar", "quantity": "3", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "1/2 milliliter rice vinegar", "quantity": "1/2", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "2 milliliters rice vinegar", "quantity": "2", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "1 millilitre rice vinegar", "quantity": "1", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "3 millilitres rice vinegar", "quantity": "3", "unit": "milliliter", "name": "rice vinegar", "tags": ["unit-alias", "metric-volume"]}
+{"text": "2 l vegetable broth", "quantity": "2", "unit": "liter", "name": "vegetable broth", "tags": ["unit-alias", "metric-volume"]}
+{"text": "1 L vegetable broth", "quantity": "1", "unit": "liter", "name": "vegetable broth", "tags": ["unit-alias", "metric-volume"]}
+{"text": "3 liter vegetable broth", "quantity": "3", "unit": "liter", "name": "vegetable broth", "tags": ["unit-alias", "metric-volume"]}
+{"text": "1/2 liters vegetable broth", "quantity": "1/2", "unit": "liter", "name": "vegetable broth", "tags": ["unit-alias", "metric-volume"]}
+{"text": "2 litre vegetable broth", "quantity": "2", "unit": "liter", "name": "vegetable broth", "tags": ["unit-alias", "metric-volume"]}
+{"text": "1 litres vegetable broth", "quantity": "1", "unit": "liter", "name": "vegetable broth", "tags": ["unit-alias", "metric-volume"]}
+{"text": "2 g brown sugar", "quantity": "2", "unit": "gram", "name": "brown sugar", "tags": ["unit-alias", "metric-mass"]}
+{"text": "1 gr brown sugar", "quantity": "1", "unit": "gram", "name": "brown sugar", "tags": ["unit-alias", "metric-mass"]}
+{"text": "3 gram brown sugar", "quantity": "3", "unit": "gram", "name": "brown sugar", "tags": ["unit-alias", "metric-mass"]}
+{"text": "1/2 grams brown sugar", "quantity": "1/2", "unit": "gram", "name": "brown sugar", "tags": ["unit-alias", "metric-mass"]}
+{"text": "2 Grams brown sugar", "quantity": "2", "unit": "gram", "name": "brown sugar", "tags": ["unit-alias", "metric-mass"]}
+{"text": "2 kg potatoes", "quantity": "2", "unit": "kilogram", "name": "potatoes", "tags": ["unit-alias", "metric-mass"]}
+{"text": "1 kilo potatoes", "quantity": "1", "unit": "kilogram", "name": "potatoes", "tags": ["unit-alias", "metric-mass"]}
+{"text": "3 kilos potatoes", "quantity": "3", "unit": "kilogram", "name": "potatoes", "tags": ["unit-alias", "metric-mass"]}
+{"text": "1/2 kilogram potatoes", "quantity": "1/2", "unit": "kilogram", "name": "potatoes", "tags": ["unit-alias", "metric-mass"]}
+{"text": "2 kilograms potatoes", "quantity": "2", "unit": "kilogram", "name": "potatoes", "tags": ["unit-alias", "metric-mass"]}
+{"text": "2 oz cheddar cheese", "quantity": "2", "unit": "ounce", "name": "cheddar cheese", "tags": ["unit-alias", "us-mass"]}
+{"text": "1 oz. cheddar cheese", "quantity": "1", "unit": "ounce", "name": "cheddar cheese", "tags": ["unit-alias", "us-mass"]}
+{"text": "3 ounce cheddar cheese", "quantity": "3", "unit": "ounce", "name": "cheddar cheese", "tags": ["unit-alias", "us-mass"]}
+{"text": "1/2 ounces cheddar cheese", "quantity": "1/2", "unit": "ounce", "name": "cheddar cheese", "tags": ["unit-alias", "us-mass"]}
+{"text": "2 Oz cheddar cheese", "quantity": "2", "unit": "ounce", "name": "cheddar cheese", "tags": ["unit-alias", "us-mass"]}
+{"text": "2 lb ground beef", "quantity": "2", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "1 lb. ground beef", "quantity": "1", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "3 lbs ground beef", "quantity": "3", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "1/2 lbs. ground beef", "quantity": "1/2", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "2 pound ground beef", "quantity": "2", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "1 pounds ground beef", "quantity": "1", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "3 Lbs ground beef", "quantity": "3", "unit": "pound", "name": "ground beef", "tags": ["unit-alias", "us-mass"]}
+{"text": "2 pinch saffron", "quantity": "2", "unit": "pinch", "name": "saffron", "tags": ["unit-alias", "count-unit"]}
+{"text": "1 pinches saffron", "quantity": "1", "unit": "pinch", "name": "saffron", "tags": ["unit-alias", "count-unit"]}
+{"text": "2 piece star anise", "quantity": "2", "unit": "piece", "name": "star anise", "tags": ["unit-alias", "count-unit"]}
+{"text": "1 pieces star anise", "quantity": "1", "unit": "piece", "name": "star anise", "tags": ["unit-alias", "count-unit"]}
+{"text": "3 pc star anise", "quantity": "3", "unit": "piece", "name": "star anise", "tags": ["unit-alias", "count-unit"]}
+{"text": "1/2 pcs star anise", "quantity": "1/2", "unit": "piece", "name": "star anise", "tags": ["unit-alias", "count-unit"]}
+{"text": "100g butter", "quantity": "100", "unit": "gram", "name": "butter", "tags": ["unit-alias", "glued-unit"]}
+{"text": "250ml milk", "quantity": "250", "unit": "milliliter", "name": "milk", "tags": ["unit-alias", "glued-unit"]}
+{"text": "2lb chicken wings", "quantity": "2", "unit": "pound", "name": "chicken wings", "tags": ["unit-alias", "glued-unit"]}
+{"text": "8oz cream cheese", "quantity": "8", "unit": "ounce", "name": "cream cheese", "tags": ["unit-alias", "glued-unit"]}
+{"text": "1.5kg pork belly", "quantity": "3/2", "unit": "kilogram", "name": "pork belly", "tags": ["unit-alias", "glued-unit"]}
+{"text": "1/2lb ground pork", "quantity": "1/2", "unit": "pound", "name": "ground pork", "tags": ["unit-alias", "glued-unit"]}
+{"text": "1 T sugar", "quantity": "1", "unit": "tablespoon", "name": "sugar", "tags": ["case-sensitive-unit"]}
+{"text": "1 t sugar", "quantity": "1", "unit": "teaspoon", "name": "sugar", "tags": ["case-sensitive-unit"]}
+{"text": "2 T. butter", "quantity": "2", "unit": "tablespoon", "name": "butter", "tags": ["case-sensitive-unit"]}
+{"text": "1/2 t. baking soda", "quantity": "1/2", "unit": "teaspoon", "name": "baking soda", "tags": ["case-sensitive-unit"]}
+{"text": "3 cloves garlic", "quantity": "3", "unit": "clove", "name": "garlic", "tags": ["count-unit"]}
+{"text": "1 clove of garlic, minced", "quantity": "1", "unit": "clove", "name": "garlic", "preparation": "minced", "tags": ["count-unit"]}
+{"text": "1 can chickpeas", "quantity": "1", "unit": "can", "name": "chickpeas", "tags": ["count-unit"]}
+{"text": "2 cans black beans", "quantity": "2", "unit": "can", "name": "black beans", "tags": ["count-unit"]}
+{"text": "1 tin tomatoes", "quantity": "1", "unit": "can", "name": "tomatoes", "tags": ["count-unit"]}
+{"text": "4 slices bacon", "quantity": "4", "unit": "slice", "name": "bacon", "tags": ["count-unit"]}
+{"text": "1 stick butter", "quantity": "1", "unit": "stick", "name": "butter", "tags": ["count-unit"]}
+{"text": "1 bunch cilantro", "quantity": "1", "unit": "bunch", "name": "cilantro", "tags": ["count-unit"]}
+{"text": "1 head garlic", "quantity": "1", "unit": "head", "name": "garlic", "tags": ["count-unit"]}
+{"text": "3 sprigs thyme", "quantity": "3", "unit": "sprig", "name": "thyme", "tags": ["count-unit"]}
+{"text": "2 handfuls spinach", "quantity": "2", "unit": "handful", "name": "spinach", "tags": ["count-unit"]}
+{"text": "1 package tofu", "quantity": "1", "unit": "package", "name": "tofu", "tags": ["count-unit"]}
+{"text": "1 pkg cream cheese", "quantity": "1", "unit": "package", "name": "cream cheese", "tags": ["count-unit"]}
+{"text": "1 packet yeast", "quantity": "1", "unit": "packet", "name": "yeast", "tags": ["count-unit"]}
+{"text": "2 dashes bitters", "quantity": "2", "unit": "dash", "name": "bitters", "tags": ["count-unit"]}
+{"text": "3 drops liquid smoke", "quantity": "3", "unit": "drop", "name": "liquid smoke", "tags": ["count-unit"]}
+{"text": "1 splash lemon juice", "quantity": "1", "unit": "splash", "name": "lemon juice", "tags": ["count-unit"]}
+{"text": "1 jar marinara", "quantity": "1", "unit": "jar", "name": "marinara", "tags": ["count-unit"]}
+{"text": "1 tube tomato paste", "quantity": "1", "unit": "tube", "name": "tomato paste", "tags": ["count-unit"]}
+{"text": "1 bag frozen peas", "quantity": "1", "unit": "bag", "name": "frozen peas", "tags": ["count-unit"]}
+{"text": "1 block firm tofu", "quantity": "1", "unit": "block", "name": "firm tofu", "tags": ["count-unit"]}
+{"text": "1 bottle beer", "quantity": "1", "unit": "bottle", "name": "beer", "tags": ["count-unit"]}
+{"text": "1 box spaghetti", "quantity": "1", "unit": "box", "name": "spaghetti", "tags": ["count-unit"]}
+{"text": "1 carton chicken broth", "quantity": "1", "unit": "carton", "name": "chicken broth", "tags": ["count-unit"]}
+{"text": "1 container ricotta", "quantity": "1", "unit": "container", "name": "ricotta", "tags": ["count-unit"]}
+{"text": "2 stalks celery", "quantity": "2", "unit": "stalk", "name": "celery", "tags": ["count-unit"]}
+{"text": "2 ribs celery", "quantity": "2", "unit": "stalk", "name": "celery", "tags": ["count-unit"]}
+{"text": "4 sheets nori", "quantity": "4", "unit": "sheet", "name": "nori", "tags": ["count-unit"]}
+{"text": "1 scoop protein powder", "quantity": "1", "unit": "scoop", "name": "protein powder", "tags": ["count-unit"]}
+{"text": "2 cubes bouillon", "quantity": "2", "unit": "cube", "name": "bouillon", "tags": ["count-unit"]}
+{"text": "2 fillets salmon", "quantity": "2", "unit": "fillet", "name": "salmon", "tags": ["count-unit"]}
+{"text": "6 strips bacon", "quantity": "6", "unit": "strip", "name": "bacon", "tags": ["count-unit"]}
+{"text": "4 ears corn", "quantity": "4", "unit": "ear", "name": "corn", "tags": ["count-unit"]}
+{"text": "1 knob ginger", "quantity": "1", "unit": "knob", "name": "ginger", "tags": ["count-unit"]}
+{"text": "1 loaf sourdough", "quantity": "1", "unit": "loaf", "name": "sourdough", "tags": ["count-unit"]}
+{"text": "1 bulb fennel", "quantity": "1", "unit": "bulb", "name": "fennel", "tags": ["count-unit"]}
+{"text": "4 leaves basil", "quantity": "4", "unit": "leaf", "name": "basil", "tags": ["count-unit"]}
+{"text": "2 inch ginger", "quantity": "2", "unit": "inch", "name": "ginger", "tags": ["count-unit"]}
+{"text": "1 large egg", "quantity": "1", "size": "large", "name": "egg", "tags": ["size"]}
+{"text": "2 small onions", "quantity": "2", "size": "small", "name": "onions", "tags": ["size"]}
+{"text": "1 medium sweet potato", "quantity": "1", "size": "medium", "name": "sweet potato", "tags": ["size"]}
+{"text": "3 extra-large eggs", "quantity": "3", "size": "extra-large", "name": "eggs", "tags": ["size"]}
+{"text": "2 extra large eggs", "quantity": "2", "size": "extra large", "name": "eggs", "tags": ["size"]}
+{"text": "1 jumbo egg", "quantity": "1", "size": "jumbo", "name": "egg", "tags": ["size"]}
+{"text": "3 medium-sized carrots", "quantity": "3", "size": "medium-sized", "name": "carrots", "tags": ["size"]}
+{"text": "1 Large Onion", "quantity": "1", "size": "Large", "name": "Onion", "tags": ["size"]}
+{"text": "2 large cloves garlic", "quantity": "2", "unit": "clove", "size": "large", "name": "garlic", "tags": ["size"]}
+{"text": "1 small head cauliflower", "quantity": "1", "unit": "head", "size": "small", "name": "cauliflower", "tags": ["size"]}
+{"text": "1 large bunch kale", "quantity": "1", "unit": "bunch", "size": "large", "name": "kale", "tags": ["size"]}
+{"text": "1 (2-inch) piece ginger", "quantity": "1", "unit": "piece", "size": "2-inch", "name": "ginger", "tags": ["size"]}
+{"text": "1 large egg, beaten", "quantity": "1", "size": "large", "name": "egg", "preparation": "beaten", "tags": ["size"]}
+{"text": "1 cup large curd cottage cheese", "quantity": "1", "unit": "cup", "name": "large curd cottage cheese", "tags": ["size"]}
+{"text": "1 (15 oz) can black beans, drained", "quantity": "1", "unit": "can", "package": {"quantity": "15", "unit": "ounce"}, "name": "black beans", "preparation": "drained", "tags": ["parenthetical", "package"]}
+{"text": "1 (15-ounce) can chickpeas", "quantity": "1", "unit": "can", "package": {"quantity": "15", "unit": "ounce"}, "name": "chickpeas", "tags": ["parenthetical", "package"]}
+{"text": "2 (14.5-ounce) cans diced tomatoes", "quantity": "2", "unit": "can", "package": {"quantity": "29/2", "unit": "ounce"}, "name": "diced tomatoes", "tags": ["parenthetical", "package"]}
+{"text": "1 (13- to 14-ounce) can coconut milk", "quantity": "1", "unit": "can", "package": {"quantity": "13", "quantityMax": "14", "unit": "ounce"}, "name": "coconut milk", "tags": ["parenthetical", "package"]}
+{"text": "1 (8 oz.) package cream cheese, softened", "quantity": "1", "unit": "package", "package": {"quantity": "8", "unit": "ounce"}, "name": "cream cheese", "preparation": "softened", "tags": ["parenthetical", "package"]}
+{"text": "1 can (13.5 oz) coconut milk", "quantity": "1", "unit": "can", "package": {"quantity": "27/2", "unit": "ounce"}, "name": "coconut milk", "tags": ["parenthetical", "package"]}
+{"text": "1 can diced tomatoes (14.5 oz)", "quantity": "1", "unit": "can", "package": {"quantity": "29/2", "unit": "ounce"}, "name": "diced tomatoes", "tags": ["parenthetical", "package"]}
+{"text": "1 block (14 oz) extra-firm tofu", "quantity": "1", "unit": "block", "package": {"quantity": "14", "unit": "ounce"}, "name": "extra-firm tofu", "tags": ["parenthetical", "package"]}
+{"text": "1 15oz can kidney beans", "quantity": "1", "unit": "can", "package": {"quantity": "15", "unit": "ounce"}, "name": "kidney beans", "tags": ["package"]}
+{"text": "1 28-ounce can crushed tomatoes", "quantity": "1", "unit": "can", "package": {"quantity": "28", "unit": "ounce"}, "name": "crushed tomatoes", "tags": ["package"]}
+{"text": "15 oz can black beans, drained", "quantity": "1", "unit": "can", "package": {"quantity": "15", "unit": "ounce"}, "name": "black beans", "preparation": "drained", "tags": ["package"]}
+{"text": "14oz block firm tofu", "quantity": "1", "unit": "block", "package": {"quantity": "14", "unit": "ounce"}, "name": "firm tofu", "tags": ["package"]}
+{"text": "1 cup (240 ml) milk", "quantity": "1", "unit": "cup", "alternate": {"quantity": "240", "unit": "milliliter"}, "name": "milk", "tags": ["parenthetical", "alternate"]}
+{"text": "1 cup milk (240 ml)", "quantity": "1", "unit": "cup", "alternate": {"quantity": "240", "unit": "milliliter"}, "name": "milk", "tags": ["parenthetical", "alternate"]}
+{"text": "200g (7oz) dried pasta", "quantity": "200", "unit": "gram", "alternate": {"quantity": "7", "unit": "ounce"}, "name": "dried pasta", "tags": ["parenthetical", "alternate"]}
+{"text": "1 1/2 cups (320g) granulated sugar", "quantity": "3/2", "unit": "cup", "alternate": {"quantity": "320", "unit": "gram"}, "name": "granulated sugar", "tags": ["parenthetical", "alternate"]}
+{"text": "5 grams (1 teaspoon) baking soda", "quantity": "5", "unit": "gram", "alternate": {"quantity": "1", "unit": "teaspoon"}, "name": "baking soda", "tags": ["parenthetical", "alternate"]}
+{"text": "1 large onion (about 12 ounces), chopped", "quantity": "1", "alternate": {"quantity": "12", "unit": "ounce"}, "size": "large", "name": "onion", "preparation": "chopped", "tags": ["parenthetical", "alternate"]}
+{"text": "1 pound carrots (about 4 cups), sliced", "quantity": "1", "unit": "pound", "alternate": {"quantity": "4", "unit": "cup"}, "name": "carrots", "preparation": "sliced", "tags": ["parenthetical", "alternate"]}
+{"text": "1 medium sweet potato (8 to 10 ounces)", "quantity": "1", "alternate": {"quantity": "8", "quantityMax": "10", "unit": "ounce"}, "size": "medium", "name": "sweet potato", "tags": ["parenthetical", "alternate"]}
+{"text": "1 cup/150 grams blueberries", "quantity": "1", "unit": "cup", "alternate": {"quantity": "150", "unit": "gram"}, "name": "blueberries", "tags": ["alternate"]}
+{"text": "1/2 cup/113 grams unsalted butter, softened", "quantity": "1/2", "unit": "cup", "alternate": {"quantity": "113", "unit": "gram"}, "name": "unsalted butter", "preparation": "softened", "tags": ["alternate"]}
+{"text": "3 tbsp sugar, 36 grams", "quantity": "3", "unit": "tablespoon", "alternate": {"quantity": "36", "unit": "gram"}, "name": "sugar", "tags": ["alternate"]}
+{"text": "1 cup rice (any kind)", "quantity": "1", "unit": "cup", "name": "rice", "preparation": "any kind", "tags": ["parenthetical", "note"]}
+{"text": "2 tablespoons olive oil (or butter)", "quantity": "2", "unit": "tablespoon", "name": "olive oil", "preparation": "or butter", "tags": ["parenthetical", "note"]}
+{"text": "1 cup cilantro (leaves and tender stems), chopped", "quantity": "1", "unit": "cup", "name": "cilantro", "preparation": "leaves and tender stems, chopped", "tags": ["parenthetical", "note"]}
+{"text": "1/2 cup walnuts (optional)", "quantity": "1/2", "unit": "cup", "name": "walnuts", "preparation": "optional", "tags": ["parenthetical", "note"]}
+{"text": "1 cup (2 sticks) butter", "quantity": "1", "unit": "cup", "name": "butter", "preparation": "2 sticks", "tags": ["parenthetical", "note"]}
+{"text": "2 cups (packed) spinach", "quantity": "2", "unit": "cup", "name": "spinach", "preparation": "packed", "tags": ["parenthetical", "note"]}
+{"text": "Salt to taste", "name": "Salt", "preparation": "to taste", "tags": ["no-amount", "to-taste"]}
+{"text": "salt and pepper, to taste", "name": "salt and pepper", "preparation": "to taste", "tags": ["no-amount", "to-taste"]}
+{"text": "Freshly ground black pepper, to taste", "name": "Freshly ground black pepper", "preparation": "to taste", "tags": ["no-amount", "to-taste"]}
+{"text": "Kosher salt (to taste)", "name": "Kosher salt", "preparation": "to taste", "tags": ["no-amount", "to-taste"]}
+{"text": "Hot sauce, as needed", "name": "Hot sauce", "preparation": "as needed", "tags": ["no-amount", "to-taste"]}
+{"text": "Olive oil, for drizzling", "name": "Olive oil", "preparation": "for drizzling", "tags": ["no-amount"]}
+{"text": "Lemon wedges, for serving", "name": "Lemon wedges", "preparation": "for serving", "tags": ["no-amount"]}
+{"text": "Chopped parsley for garnish", "name": "Chopped parsley", "preparation": "for garnish", "tags": ["no-amount"]}
+{"text": "Cooking spray", "name": "Cooking spray", "tags": ["no-amount"]}
+{"text": "Flaky sea salt (optional)", "name": "Flaky sea salt", "preparation": "optional", "tags": ["no-amount"]}
+{"text": "Optional: red pepper flakes", "name": "red pepper flakes", "preparation": "optional", "tags": ["no-amount"]}
+{"text": "Vegetable oil for frying", "name": "Vegetable oil", "preparation": "for frying", "tags": ["no-amount"]}
+{"text": "1 teaspoon salt, or to taste", "quantity": "1", "unit": "teaspoon", "name": "salt", "preparation": "or to taste", "tags": ["to-taste"]}
+{"text": "1/2 teaspoon pepper, plus more to taste", "quantity": "1/2", "unit": "teaspoon", "name": "pepper", "preparation": "plus more to taste", "tags": ["to-taste"]}
+{"text": "2 tablespoons lime juice, more to taste", "quantity": "2", "unit": "tablespoon", "name": "lime juice", "preparation": "more to taste", "tags": ["to-taste"]}
+{"text": "1 onion, diced", "quantity": "1", "name": "onion", "preparation": "diced", "tags": ["preparation"]}
+{"text": "2 carrots, peeled and chopped", "quantity": "2", "name": "carrots", "preparation": "peeled and chopped", "tags": ["preparation"]}
+{"text": "1 cup parsley, finely chopped", "quantity": "1", "unit": "cup", "name": "parsley", "preparation": "finely chopped", "tags": ["preparation"]}
+{"text": "1 lb chicken breast, cut into 1-inch pieces", "quantity": "1", "unit": "pound", "name": "chicken breast", "preparation": "cut into 1-inch pieces", "tags": ["preparation"]}
+{"text": "3 cloves garlic minced", "quantity": "3", "unit": "clove", "name": "garlic", "preparation": "minced", "tags": ["preparation"]}
+{"text": "2 tablespoons butter, melted and cooled", "quantity": "2", "unit": "tablespoon", "name": "butter", "preparation": "melted and cooled", "tags": ["preparation"]}
+{"text": "1 cup flour, divided", "quantity": "1", "unit": "cup", "name": "flour", "preparation": "divided", "tags": ["preparation"]}
+{"text": "1/4 cup cilantro, chopped, plus more for serving", "quantity": "1/4", "unit": "cup", "name": "cilantro", "preparation": "chopped, plus more for serving", "tags": ["preparation"]}
+{"text": "1 cup chopped onion", "quantity": "1", "unit": "cup", "name": "chopped onion", "tags": ["preparation"]}
+{"text": "2 eggs, at room temperature", "quantity": "2", "name": "eggs", "preparation": "at room temperature", "tags": ["preparation"]}
+{"text": "1 cup water plus 2 tablespoons", "quantity": "1", "unit": "cup", "name": "water", "preparation": "plus 2 tablespoons", "tags": ["preparation"]}
+{"text": "1 cup plus 2 tablespoons flour", "quantity": "1", "unit": "cup", "name": "flour", "preparation": "plus 2 tablespoons", "tags": ["preparation"]}
+{"text": "1 lemon, zested and juiced", "quantity": "1", "name": "lemon", "preparation": "zested and juiced", "tags": ["preparation"]}
+{"text": "Juice of 1 lemon", "quantity": "1", "name": "lemon", "preparation": "Juice", "tags": ["preparation"]}
+{"text": "Zest and juice of 2 limes", "quantity": "2", "name": "limes", "preparation": "Zest and juice", "tags": ["preparation"]}
+{"text": "Finely grated zest of 1 orange", "quantity": "1", "name": "orange", "preparation": "Finely grated zest", "tags": ["preparation"]}
+{"text": "1 pound boneless, skinless chicken thighs", "quantity": "1", "unit": "pound", "name": "boneless, skinless chicken thighs", "tags": ["preparation"]}
+{"text": "4 bone-in, skin-on chicken thighs, patted dry", "quantity": "4", "name": "bone-in, skin-on chicken thighs", "preparation": "patted dry", "tags": ["preparation"]}
+{"text": "1 heaping tablespoon peanut butter", "quantity": "1", "unit": "tablespoon", "name": "peanut butter", "preparation": "heaping", "tags": ["preparation"]}
+{"text": "2 packed cups baby spinach", "quantity": "2", "unit": "cup", "name": "baby spinach", "preparation": "packed", "tags": ["preparation"]}
+{"text": "1 cup sugar (see note)", "quantity": "1", "unit": "cup", "name": "sugar", "preparation": "see note", "tags": ["preparation"]}
+{"text": "1 cup almond milk* see note", "quantity": "1", "unit": "cup", "name": "almond milk", "preparation": "* see note", "tags": ["preparation"]}
+{"text": "2 cups chicken stock, water or dashi", "quantity": "2", "unit": "cup", "name": "chicken stock, water or dashi", "tags": ["preparation", "alternatives"]}
+{"text": "1 red, yellow or orange bell pepper, sliced", "quantity": "1", "name": "red, yellow or orange bell pepper", "preparation": "sliced", "tags": ["preparation", "alternatives"]}
+{"text": "1 pound short pasta, such as penne or rigatoni", "quantity": "1", "unit": "pound", "name": "short pasta", "preparation": "such as penne or rigatoni", "tags": ["preparation", "alternatives"]}
+{"text": "2 cups cooked chickpeas, home-cooked or canned", "quantity": "2", "unit": "cup", "name": "cooked chickpeas", "preparation": "home-cooked or canned", "tags": ["preparation", "alternatives"]}
+{"text": "4 cloves of garlic", "quantity": "4", "unit": "clove", "name": "garlic", "tags": ["of"]}
+{"text": "1 cup of water", "quantity": "1", "unit": "cup", "name": "water", "tags": ["of"]}
+{"text": "Pinch of salt", "quantity": "1", "unit": "pinch", "name": "salt", "tags": ["of"]}
+{"text": "Dash of hot sauce", "quantity": "1", "unit": "dash", "name": "hot sauce", "tags": ["of"]}
+{"text": "2 slices of bread", "quantity": "2", "unit": "slice", "name": "bread", "tags": ["of"]}
+{"text": "1 cup of cream of mushroom soup", "quantity": "1", "unit": "cup", "name": "cream of mushroom soup", "tags": ["of"]}
+{"text": "For the sauce:", "heading": "sauce", "tags": ["heading"]}
+{"text": "For the Dressing", "heading": "Dressing", "tags": ["heading"]}
+{"text": "FOR THE TOPPING:", "heading": "TOPPING", "tags": ["heading"]}
+{"text": "Dressing:", "heading": "Dressing", "tags": ["heading"]}
+{"text": "Spice rub:", "heading": "Spice rub", "tags": ["heading"]}
+{"text": "For serving", "heading": "serving", "tags": ["heading"]}
+{"text": "  2  cups   flour  ", "quantity": "2", "unit": "cup", "name": "flour", "tags": ["whitespace"]}
+{"text": "2 cups flour", "quantity": "2", "unit": "cup", "name": "flour", "tags": ["whitespace"]}
+{"text": "- 1 cup sugar", "quantity": "1", "unit": "cup", "name": "sugar", "tags": ["whitespace"]}
+{"text": "• 2 eggs", "quantity": "2", "name": "eggs", "tags": ["whitespace"]}
+{"text": "1 tbsp honey 🍯", "quantity": "1", "unit": "tablespoon", "name": "honey", "tags": ["whitespace"]}
+{"text": "1 cup⁠ edamame", "quantity": "1", "unit": "cup", "name": "edamame", "tags": ["whitespace"]}
+{"text": "About 2 cups broth", "quantity": "2", "unit": "cup", "name": "broth", "tags": ["whitespace"]}
+{"text": "~1 cup rice", "quantity": "1", "unit": "cup", "name": "rice", "tags": ["whitespace"]}
