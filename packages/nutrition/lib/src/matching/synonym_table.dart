@@ -12,7 +12,7 @@ final class SynonymTable({
   /// such as "chopped".
   Map<String, String> phrases = const {},
 
-  /// Whole names rewritten after [phrases], to pick the usual form of a
+  /// Whole names rewritten after `phrases`, to pick the usual form of a
   /// food: "milk" alone becomes "whole milk", while "coconut milk" stays.
   Map<String, String> defaults = const {},
 }) {

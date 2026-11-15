@@ -14,7 +14,7 @@ final class const RankedFood({
 ///
 /// An ingredient is either matched or explicitly unmatched, so the app can
 /// flag it instead of guessing (ENGINEERING.md §11.2).
-sealed class const FoodMatch() {}
+sealed class const FoodMatch();
 
 /// The ingredient matched [food].
 final class const FoodMatched({

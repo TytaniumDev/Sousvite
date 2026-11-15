@@ -83,20 +83,32 @@ final class _Query(
 /// A food with its name tokenized once.
 final class const _IndexedFood._(
   final Food food,
-  final Set<String> tokens,
+
+  /// Each token of the name, with the index of the comma-separated segment
+  /// it first appears in.
+  final Map<String, int> segments,
+
+  /// The tokens of the segment that says what the food is.
   final Set<String> identity,
 ) {
   factory from(Food food) {
-    final segments = food.name.split(',').map(foodTokens).toList();
+    final parts = food.name.split(',').map(foodTokens).toList();
+    final segments = <String, int>{};
+    for (final (index, tokens) in parts.indexed) {
+      for (final token in tokens) {
+        segments.putIfAbsent(token, () => index);
+      }
+    }
     // USDA names start with what the food is ("Garlic, raw"), sometimes
     // after a category word ("Spices, pepper, black").
-    final identity = segments
+    final identity = parts
         .firstWhere(
-          (s) => s.isNotEmpty && !s.every(categoryWords.contains),
+          (tokens) =>
+              tokens.isNotEmpty && !tokens.every(categoryWords.contains),
           orElse: () => const [],
         )
         .toSet();
-    return _IndexedFood._(food, segments.expand((s) => s).toSet(), identity);
+    return _IndexedFood._(food, segments, identity);
   }
 
   bool get _isGeneric =>
@@ -105,15 +117,17 @@ final class const _IndexedFood._(
   /// How well this food fits [query], or null when it doesn't contain the
   /// main word or covers too little of the name.
   double? scoreFor(_Query query) {
-    if (!tokens.contains(query.head)) return null;
-    final matched = query.set.where(tokens.contains);
+    if (!segments.containsKey(query.head)) return null;
+    final matched = query.set.where(segments.containsKey);
     final coverage = (matched.length + 1) / query.totalWeight;
     if (coverage < FoodMatcher.minimumCoverage) return null;
 
     var penalty = 0.0;
-    for (final token in tokens) {
-      if (query.set.contains(token) || neutralWords.contains(token)) continue;
-      penalty += unwantedWords[token] ?? extraWordPenalty;
+    for (final MapEntry(key: token, value: segment) in segments.entries) {
+      if (query.set.contains(token) || isNeutralWord(token)) continue;
+      penalty +=
+          unwantedWords[token] ??
+          extraWordPenalty * (segment < 2 ? 1 : laterSegmentWeight);
     }
     final identityBonus =
         identity.isNotEmpty && identity.every(query.set.contains)
