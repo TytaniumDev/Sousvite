@@ -13,6 +13,7 @@ import 'package:sousvite/features/grocery/grocery.dart';
 import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/features/nutrition/nutrition.dart';
+import 'package:sousvite/features/recipe/presentation/recipe_screen.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 import 'package:sousvite/features/settings/settings.dart';
 import 'package:sousvite/features/sharing/sharing.dart';
@@ -26,7 +27,6 @@ void main() {
     SettingsRoutes.path: 'Settings',
     ImportRoutes.path: 'Import recipe',
     AccountRoutes.path: 'Account',
-    RecipeRoutes.location(recipeId): 'Recipe',
     EditorRoutes.location(recipeId): 'Edit recipe',
     NutritionRoutes.location(recipeId): 'Nutrition',
     CookingRoutes.location(recipeId): 'Cooking',
@@ -73,6 +73,24 @@ void main() {
 
       final state = GoRouter.of(tester.element(find.byType(AppBar))).state;
       expect(state.pathParameters['recipeId'], recipeId.value);
+    });
+
+    // The recipe page has no app bar title: the recipe's name is its
+    // heading.
+    testWidgets('opens the recipe page', (tester) async {
+      final container = ProviderContainer.test();
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const SousviteApp(),
+        ),
+      );
+
+      container.read(routerProvider).go(RecipeRoutes.location(recipeId));
+      await tester.pumpAndSettle();
+
+      final screen = tester.widget<RecipeScreen>(find.byType(RecipeScreen));
+      expect(screen.recipeId, recipeId);
     });
   });
 }

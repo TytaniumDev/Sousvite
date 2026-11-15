@@ -118,6 +118,24 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get common_retry;
 
+  /// A duration under an hour, such as a recipe's total time.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String common_minutes(int minutes);
+
+  /// A duration in whole hours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String common_hours(int hours);
+
+  /// A duration in hours and minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String common_hoursMinutes(int hours, int minutes);
+
   /// A unit word after an amount of one or less ("½ cup"). The unit is the Unit enum name. Abbreviations follow DESIGN_SYSTEM.md §11.
   ///
   /// In en, this message translates to:
@@ -292,29 +310,161 @@ abstract class AppLocalizations {
   /// **'Edit folders'**
   String get library_editFoldersHint;
 
-  /// A recipe's total time under an hour.
-  ///
-  /// In en, this message translates to:
-  /// **'{minutes} min'**
-  String library_minutes(int minutes);
-
-  /// A recipe's total time in whole hours.
-  ///
-  /// In en, this message translates to:
-  /// **'{hours} h'**
-  String library_hours(int hours);
-
-  /// A recipe's total time in hours and minutes.
-  ///
-  /// In en, this message translates to:
-  /// **'{hours} h {minutes} min'**
-  String library_hoursMinutes(int hours, int minutes);
-
   /// Title of the recipe page before its name loads.
   ///
   /// In en, this message translates to:
   /// **'Recipe'**
   String get recipe_title;
+
+  /// Title when the recipe page opens a recipe that no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe not found'**
+  String get recipe_notFoundTitle;
+
+  /// Message when the recipe page opens a recipe that no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'It may have been deleted on another device.'**
+  String get recipe_notFoundMessage;
+
+  /// Where a recipe came from, under its name.
+  ///
+  /// In en, this message translates to:
+  /// **'From {source}'**
+  String recipe_source(String source);
+
+  /// A recipe's prep time, under its name.
+  ///
+  /// In en, this message translates to:
+  /// **'Prep {time}'**
+  String recipe_prepTime(String time);
+
+  /// A recipe's cook time, under its name.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook {time}'**
+  String recipe_cookTime(String time);
+
+  /// A recipe's total time, under its name.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {time}'**
+  String recipe_totalTime(String time);
+
+  /// The recipe page's main button, which opens cooking mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start cooking'**
+  String get recipe_startCooking;
+
+  /// Button that adds the recipe's ingredients to the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to grocery list'**
+  String get recipe_addToGrocery;
+
+  /// Tooltip of the recipe page's overflow menu.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get recipe_moreOptions;
+
+  /// Menu item that opens the recipe editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit recipe'**
+  String get recipe_edit;
+
+  /// Menu item that puts the recipe into folders.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders'**
+  String get recipe_folders;
+
+  /// Menu item that opens the recipe's experiments and history.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiments and history'**
+  String get recipe_experiment;
+
+  /// Menu item that shares the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get recipe_share;
+
+  /// Heading of the ingredients section.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get recipe_ingredients;
+
+  /// Word after the number in the servings stepper: 4 servings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{serving} other{servings}}'**
+  String recipe_servings(int count);
+
+  /// Tooltip of the servings stepper's minus button.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer servings'**
+  String get recipe_fewerServings;
+
+  /// Tooltip of the servings stepper's plus button.
+  ///
+  /// In en, this message translates to:
+  /// **'More servings'**
+  String get recipe_moreServings;
+
+  /// Button that undoes scaling the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the original amounts'**
+  String get recipe_resetScale;
+
+  /// Unit choice that shows amounts the way the recipe wrote them.
+  ///
+  /// In en, this message translates to:
+  /// **'As written'**
+  String get recipe_unitsOriginal;
+
+  /// Unit choice for US customary units (cups, ounces).
+  ///
+  /// In en, this message translates to:
+  /// **'US'**
+  String get recipe_unitsUs;
+
+  /// Unit choice for metric units (grams, milliliters).
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get recipe_unitsMetric;
+
+  /// Heading of the steps section.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get recipe_steps;
+
+  /// How many steps a step section has.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 step} other{{count} steps}}'**
+  String recipe_stepCount(int count);
+
+  /// What a screen reader says before a step's text.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {number}'**
+  String recipe_stepLabel(int number);
+
+  /// Heading of the recipe's notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get recipe_notes;
 
   /// Title of the recipe editor.
   ///

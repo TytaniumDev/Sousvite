@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/library/presentation/recipe_folders_sheet.dart';
-import 'package:sousvite/features/library/presentation/total_time_label.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 import 'package:sousvite/l10n/l10n.dart';
+import 'package:sousvite/shared/format/duration_label.dart';
 
 /// One recipe in the library. Watches only the recipe's name and total
 /// time, so other edits to the recipe don't rebuild it.
@@ -38,7 +38,7 @@ class const LibraryRecipeCard({
           title: card.title,
           totalTimeLabel: totalTime == null
               ? null
-              : totalTimeLabel(context.l10n, totalTime),
+              : context.l10n.durationLabel(totalTime),
           onTap: () => context.push(RecipeRoutes.location(recipeId)),
         ),
       ),

@@ -22,6 +22,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_retry => 'Try again';
 
   @override
+  String common_minutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String common_hours(int hours) {
+    return '$hours h';
+  }
+
+  @override
+  String common_hoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
   String common_unitOne(String unit) {
     String _temp0 = intl.Intl.selectLogic(unit, {
       'teaspoon': 'tsp',
@@ -152,22 +167,109 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library_editFoldersHint => 'Edit folders';
 
   @override
-  String library_minutes(int minutes) {
-    return '$minutes min';
-  }
-
-  @override
-  String library_hours(int hours) {
-    return '$hours h';
-  }
-
-  @override
-  String library_hoursMinutes(int hours, int minutes) {
-    return '$hours h $minutes min';
-  }
-
-  @override
   String get recipe_title => 'Recipe';
+
+  @override
+  String get recipe_notFoundTitle => 'Recipe not found';
+
+  @override
+  String get recipe_notFoundMessage =>
+      'It may have been deleted on another device.';
+
+  @override
+  String recipe_source(String source) {
+    return 'From $source';
+  }
+
+  @override
+  String recipe_prepTime(String time) {
+    return 'Prep $time';
+  }
+
+  @override
+  String recipe_cookTime(String time) {
+    return 'Cook $time';
+  }
+
+  @override
+  String recipe_totalTime(String time) {
+    return 'Total $time';
+  }
+
+  @override
+  String get recipe_startCooking => 'Start cooking';
+
+  @override
+  String get recipe_addToGrocery => 'Add to grocery list';
+
+  @override
+  String get recipe_moreOptions => 'More options';
+
+  @override
+  String get recipe_edit => 'Edit recipe';
+
+  @override
+  String get recipe_folders => 'Folders';
+
+  @override
+  String get recipe_experiment => 'Experiments and history';
+
+  @override
+  String get recipe_share => 'Share';
+
+  @override
+  String get recipe_ingredients => 'Ingredients';
+
+  @override
+  String recipe_servings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'servings',
+      one: 'serving',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get recipe_fewerServings => 'Fewer servings';
+
+  @override
+  String get recipe_moreServings => 'More servings';
+
+  @override
+  String get recipe_resetScale => 'Back to the original amounts';
+
+  @override
+  String get recipe_unitsOriginal => 'As written';
+
+  @override
+  String get recipe_unitsUs => 'US';
+
+  @override
+  String get recipe_unitsMetric => 'Metric';
+
+  @override
+  String get recipe_steps => 'Steps';
+
+  @override
+  String recipe_stepCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '1 step',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recipe_stepLabel(int number) {
+    return 'Step $number';
+  }
+
+  @override
+  String get recipe_notes => 'Notes';
 
   @override
   String get editor_title => 'Edit recipe';
