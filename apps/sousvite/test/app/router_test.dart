@@ -7,6 +7,7 @@ import 'package:sousvite/app/app.dart';
 import 'package:sousvite/app/router.dart';
 import 'package:sousvite/features/account/account.dart';
 import 'package:sousvite/features/cooking/cooking.dart';
+import 'package:sousvite/features/cooking/presentation/cooking_screen.dart';
 import 'package:sousvite/features/editor/editor.dart';
 import 'package:sousvite/features/experiments/experiments.dart';
 import 'package:sousvite/features/grocery/grocery.dart';
@@ -29,7 +30,6 @@ void main() {
     AccountRoutes.path: 'Account',
     EditorRoutes.location(recipeId): 'Edit recipe',
     NutritionRoutes.location(recipeId): 'Nutrition',
-    CookingRoutes.location(recipeId): 'Cooking',
     ExperimentsRoutes.location(recipeId): 'History',
     SharingRoutes.location(recipeId): 'Share',
   };
@@ -75,8 +75,24 @@ void main() {
       expect(state.pathParameters['recipeId'], recipeId.value);
     });
 
-    // The recipe page has no app bar title: the recipe's name is its
-    // heading.
+    // The recipe page and cooking mode have no fixed app bar title: the
+    // recipe's name or the cook's progress takes its place.
+    testWidgets('opens cooking mode', (tester) async {
+      final container = ProviderContainer.test();
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const SousviteApp(),
+        ),
+      );
+
+      container.read(routerProvider).go(CookingRoutes.location(recipeId));
+      await tester.pumpAndSettle();
+
+      final screen = tester.widget<CookingScreen>(find.byType(CookingScreen));
+      expect(screen.recipeId, recipeId);
+    });
+
     testWidgets('opens the recipe page', (tester) async {
       final container = ProviderContainer.test();
       await tester.pumpWidget(

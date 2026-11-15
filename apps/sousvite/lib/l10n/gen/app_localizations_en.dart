@@ -535,6 +535,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cooking_title => 'Cooking';
 
   @override
+  String get cooking_close => 'Close cooking mode';
+
+  @override
+  String cooking_progress(int number, int count) {
+    return 'Step $number of $count';
+  }
+
+  @override
+  String cooking_sectionProgress(String section, int number, int count) {
+    return '$section · Step $number of $count';
+  }
+
+  @override
+  String get cooking_back => 'Back';
+
+  @override
+  String get cooking_next => 'Next';
+
+  @override
+  String get cooking_done => 'Done';
+
+  @override
+  String get cooking_stepIngredients => 'Ingredients for this step';
+
+  @override
+  String get cooking_timerDone => 'Time\'s up';
+
+  @override
+  String get cooking_noStepsTitle => 'No steps yet';
+
+  @override
+  String get cooking_noStepsMessage =>
+      'Add steps to this recipe to cook it step by step.';
+
+  @override
   String get grocery_title => 'Grocery list';
 
   @override
