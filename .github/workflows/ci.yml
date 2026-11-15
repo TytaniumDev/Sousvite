@@ -80,6 +80,8 @@ jobs:
             min_coverage: 90
           - package: packages/measuring
             min_coverage: 90
+          - package: packages/nutrition
+            min_coverage: 90
           - package: packages/sync
             min_coverage: 90
           - package: packages/units
