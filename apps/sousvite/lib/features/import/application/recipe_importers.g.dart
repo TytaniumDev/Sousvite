@@ -1,0 +1,92 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'recipe_importers.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(urlImporter)
+final urlImporterProvider = UrlImporterProvider._();
+
+final class UrlImporterProvider
+    extends $FunctionalProvider<UrlImporter, UrlImporter, UrlImporter>
+    with $Provider<UrlImporter> {
+  UrlImporterProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'urlImporterProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$urlImporterHash();
+
+  @$internal
+  @override
+  $ProviderElement<UrlImporter> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  UrlImporter create(Ref ref) {
+    return urlImporter(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UrlImporter value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UrlImporter>(value),
+    );
+  }
+}
+
+String _$urlImporterHash() => r'8906f236043faf92cc22b2825674bc999adaa57f';
+
+@ProviderFor(umamiTransfer)
+final umamiTransferProvider = UmamiTransferProvider._();
+
+final class UmamiTransferProvider
+    extends $FunctionalProvider<UmamiTransfer, UmamiTransfer, UmamiTransfer>
+    with $Provider<UmamiTransfer> {
+  UmamiTransferProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'umamiTransferProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$umamiTransferHash();
+
+  @$internal
+  @override
+  $ProviderElement<UmamiTransfer> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  UmamiTransfer create(Ref ref) {
+    return umamiTransfer(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UmamiTransfer value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UmamiTransfer>(value),
+    );
+  }
+}
+
+String _$umamiTransferHash() => r'efb586b981f385bad94458051f37bec3eea9b7c5';
