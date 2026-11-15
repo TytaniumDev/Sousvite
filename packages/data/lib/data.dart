@@ -6,6 +6,8 @@ export 'src/app_database.dart';
 export 'src/change_log/change_recorder.dart';
 export 'src/change_log/change_row_mapping.dart';
 export 'src/change_log/change_set.dart';
+export 'src/change_log/drift_local_store.dart';
+export 'src/change_log/entity_applier.dart';
 export 'src/daos/folder_dao.dart';
 export 'src/daos/food_dao.dart';
 export 'src/daos/grocery_dao.dart';
