@@ -24,12 +24,14 @@ class RecipeScale() extends _$RecipeScale {
     if (factor > Quantity.zero) state = factor;
   }
 
-  /// Scales so the batch makes [servings]. Does nothing until the recipe
-  /// has loaded, or when it has no positive servings to scale from.
-  void scaleToServings(Quantity servings) {
-    final base = ref.read(recipeProvider(recipeId)).value?.servings;
-    if (base == null || base <= Quantity.zero) return;
-    scaleBy(servingsMultiplier(from: base, to: servings));
+  /// Scales a recipe written for [from] servings so the batch makes
+  /// [servings]. Does nothing when [from] is not positive.
+  ///
+  /// The caller passes the recipe's servings, which it already shows,
+  /// because a keep-alive provider can't watch the recipe.
+  void scaleToServings(Quantity servings, {required Quantity from}) {
+    if (from <= Quantity.zero) return;
+    scaleBy(servingsMultiplier(from: from, to: servings));
   }
 
   /// Back to the recipe as written.

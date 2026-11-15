@@ -66,7 +66,7 @@ void main() {
     });
 
     test('scales to a number of servings', () {
-      scale().scaleToServings(Quantity(6));
+      scale().scaleToServings(Quantity(6), from: Quantity(4));
       expect(container.read(recipeScaleProvider(recipeId)), Quantity(3, 2));
       expect(container.read(scaledServingsProvider(recipeId)), Quantity(6));
     });
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('scales line amounts exactly', () {
-      scale().scaleToServings(Quantity(12));
+      scale().scaleToServings(Quantity(12), from: Quantity(4));
       expect(container.read(lineAmountProvider(recipeId, lineId)), (
         amount: Amount(Quantity(9, 4), Unit.cup),
         upTo: Amount(Quantity(3), Unit.cup),
@@ -112,19 +112,19 @@ void main() {
     });
   });
 
-  test('scaling to servings waits for the recipe to load', () {
+  test('ignores a recipe with no servings to scale from', () {
+    container
+        .read(recipeScaleProvider(recipeId).notifier)
+        .scaleToServings(Quantity(2), from: Quantity.zero);
+    expect(container.read(recipeScaleProvider(recipeId)), Quantity.one);
+  });
+
+  test('has no scaled servings before the recipe loads', () {
     final empty = ProviderContainer.test(
       overrides: [
         recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
-        userRecipePrefsRepositoryProvider.overrideWithValue(
-          FakeUserRecipePrefsRepository(),
-        ),
       ],
     );
-    empty
-        .read(recipeScaleProvider(recipeId).notifier)
-        .scaleToServings(Quantity(2));
-    expect(empty.read(recipeScaleProvider(recipeId)), Quantity.one);
     expect(empty.read(scaledServingsProvider(recipeId)), isNull);
   });
 }

@@ -79,7 +79,7 @@ final class RecipeScaleProvider
   }
 }
 
-String _$recipeScaleHash() => r'999b94eb7d49fc50c46f64da736db69b6a4662ef';
+String _$recipeScaleHash() => r'b6a3d87216bc4dc0b84ac8381fc5327b60856279';
 
 /// How much this recipe is scaled for cooking: 2 is a double batch
 /// (PRD 7.6). Shared by the recipe page and cooking mode, so amounts in the
