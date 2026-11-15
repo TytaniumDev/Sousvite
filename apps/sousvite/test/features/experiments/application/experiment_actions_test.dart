@@ -28,22 +28,27 @@ void main() {
     test('records what changed and how it went', () async {
       final experiment = await actions.start(HistoryFixtures.recipeId);
 
-      await actions.describe(experiment, changeDescription: 'Olive oil');
-      final described = repository.experiments[experiment.id]!;
-      await actions.describe(described, notes: 'Lighter');
+      await actions.describe(experiment.id, changeDescription: 'Olive oil');
+      await actions.describe(experiment.id, notes: 'Lighter');
 
       final saved = repository.experiments[experiment.id]!;
       expect(saved.changeDescription, 'Olive oil');
       expect(saved.notes, 'Lighter');
     });
 
-    test('saves nothing when the text is unchanged', () async {
+    test('saves nothing when unchanged or deleted', () async {
       final experiment = await actions.start(HistoryFixtures.recipeId);
-      repository.experiments.clear();
+      var saves = 0;
+      repository
+          .watchExperiments(HistoryFixtures.recipeId)
+          .listen((_) => saves++);
+      await pumpEventQueue();
 
-      await actions.describe(experiment, notes: '');
+      await actions.describe(experiment.id, notes: '');
+      await actions.describe(const ExperimentId('gone'), notes: 'x');
+      await pumpEventQueue();
 
-      expect(repository.experiments, isEmpty);
+      expect(saves, 1);
     });
 
     test('promotes, keeps, and restores', () async {

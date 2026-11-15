@@ -26,7 +26,11 @@ class FakeExperimentRepository() implements ExperimentRepository {
         controller.add(read());
         subscription = _changes.stream.listen((_) => controller.add(read()));
       },
-      onCancel: () => subscription?.cancel(),
+      // Never return the cancel future: a broadcast subscription's is a
+      // root-zone future, which fake-async widget tests never complete.
+      onCancel: () {
+        unawaited(subscription?.cancel());
+      },
     );
     return controller.stream.distinct(listEquals);
   }

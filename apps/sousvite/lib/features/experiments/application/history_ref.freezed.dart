@@ -348,4 +348,274 @@ as DateTime,
 
 }
 
+/// @nodoc
+mixin _$HistoryTimeline {
+
+ List<HistoryRef> get entries;
+/// Create a copy of HistoryTimeline
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$HistoryTimelineCopyWith<HistoryTimeline> get copyWith => _$HistoryTimelineCopyWithImpl<HistoryTimeline>(this as HistoryTimeline, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as HistoryTimeline;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryTimeline&&const DeepCollectionEquality().equals(other.entries, _this.entries));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as HistoryTimeline;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.entries));
+}
+
+@override
+String toString() {
+  final _this = this as HistoryTimeline;
+  return 'HistoryTimeline(entries: ${_this.entries})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $HistoryTimelineCopyWith<$Res>  {
+  factory $HistoryTimelineCopyWith(HistoryTimeline value, $Res Function(HistoryTimeline) _then) = _$HistoryTimelineCopyWithImpl;
+@useResult
+$Res call({
+ List<HistoryRef> entries
+});
+
+
+
+
+}
+/// @nodoc
+class _$HistoryTimelineCopyWithImpl<$Res>
+    implements $HistoryTimelineCopyWith<$Res> {
+  _$HistoryTimelineCopyWithImpl(this._self, this._then);
+
+  final HistoryTimeline _self;
+  final $Res Function(HistoryTimeline) _then;
+
+/// Create a copy of HistoryTimeline
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? entries = null,}) {
+  return _then(HistoryTimeline(
+entries: null == entries ? _self.entries : entries // ignore: cast_nullable_to_non_nullable
+as List<HistoryRef>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [HistoryTimeline].
+extension HistoryTimelinePatterns on HistoryTimeline {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _HistoryTimeline value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _HistoryTimeline() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _HistoryTimeline value)  $default,){
+final _that = this;
+switch (_that) {
+case _HistoryTimeline():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _HistoryTimeline value)?  $default,){
+final _that = this;
+switch (_that) {
+case _HistoryTimeline() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<HistoryRef> entries)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _HistoryTimeline() when $default != null:
+return $default(_that.entries);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<HistoryRef> entries)  $default,) {final _that = this;
+switch (_that) {
+case _HistoryTimeline():
+return $default(_that.entries);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<HistoryRef> entries)?  $default,) {final _that = this;
+switch (_that) {
+case _HistoryTimeline() when $default != null:
+return $default(_that.entries);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _HistoryTimeline implements HistoryTimeline {
+  const _HistoryTimeline({required  List<HistoryRef> entries}): _entries = entries;
+  
+
+ final  List<HistoryRef> _entries;
+@override List<HistoryRef> get entries {
+  if (_entries is EqualUnmodifiableListView) return _entries;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_entries);
+}
+
+
+/// Create a copy of HistoryTimeline
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$HistoryTimelineCopyWith<_HistoryTimeline> get copyWith => __$HistoryTimelineCopyWithImpl<_HistoryTimeline>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryTimeline&&const DeepCollectionEquality().equals(other.entries, _entries));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_entries));
+}
+
+@override
+String toString() {
+    return 'HistoryTimeline(entries: $entries)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$HistoryTimelineCopyWith<$Res> implements $HistoryTimelineCopyWith<$Res> {
+  factory _$HistoryTimelineCopyWith(_HistoryTimeline value, $Res Function(_HistoryTimeline) _then) = __$HistoryTimelineCopyWithImpl;
+@override @useResult
+$Res call({
+ List<HistoryRef> entries
+});
+
+
+
+
+}
+/// @nodoc
+class __$HistoryTimelineCopyWithImpl<$Res>
+    implements _$HistoryTimelineCopyWith<$Res> {
+  __$HistoryTimelineCopyWithImpl(this._self, this._then);
+
+  final _HistoryTimeline _self;
+  final $Res Function(_HistoryTimeline) _then;
+
+/// Create a copy of HistoryTimeline
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? entries = null,}) {
+  return _then(_HistoryTimeline(
+entries: null == entries ? _self._entries : entries // ignore: cast_nullable_to_non_nullable
+as List<HistoryRef>,
+  ));
+}
+
+
+}
+
 // dart format on

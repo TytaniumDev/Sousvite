@@ -17,7 +17,7 @@ Stream<List<Experiment>> recipeExperiments(Ref ref, RecipeId recipeId) =>
 
 /// Versions and experiments together, newest first.
 @riverpod
-AsyncValue<List<HistoryRef>> historyTimeline(Ref ref, RecipeId recipeId) {
+AsyncValue<HistoryTimeline> historyTimeline(Ref ref, RecipeId recipeId) {
   final versions = ref.watch(recipeVersionsProvider(recipeId));
   final experiments = ref.watch(recipeExperimentsProvider(recipeId));
   return switch ((versions, experiments)) {
@@ -28,15 +28,17 @@ AsyncValue<List<HistoryRef>> historyTimeline(Ref ref, RecipeId recipeId) {
     ) => AsyncError(error, stackTrace),
     (AsyncData(value: final versions), AsyncData(value: final experiments)) =>
       AsyncData(
-        [
-          for (final version in versions)
-            HistoryRef.version(id: version.id, createdAt: version.createdAt),
-          for (final experiment in experiments)
-            HistoryRef.experiment(
-              id: experiment.id,
-              createdAt: experiment.createdAt,
-            ),
-        ]..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+        HistoryTimeline(
+          entries: [
+            for (final version in versions)
+              HistoryRef.version(id: version.id, createdAt: version.createdAt),
+            for (final experiment in experiments)
+              HistoryRef.experiment(
+                id: experiment.id,
+                createdAt: experiment.createdAt,
+              ),
+          ]..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+        ),
       ),
     _ => const AsyncLoading(),
   };

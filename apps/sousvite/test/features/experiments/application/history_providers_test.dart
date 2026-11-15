@@ -31,11 +31,11 @@ void main() {
         historyTimelineProvider(_F.recipeId),
         (_, _) {},
       );
-      expect(timeline.read(), isA<AsyncLoading<List<HistoryRef>>>());
+      expect(timeline.read(), isA<AsyncLoading<HistoryTimeline>>());
 
       await pumpEventQueue();
 
-      expect(timeline.read().value, [
+      expect(timeline.read().value!.entries, [
         HistoryRef.version(
           id: const RecipeVersionId('v2'),
           createdAt: DateTime.utc(2026, 3),

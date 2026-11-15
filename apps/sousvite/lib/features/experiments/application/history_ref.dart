@@ -18,3 +18,10 @@ sealed class HistoryRef with _$HistoryRef {
     required DateTime createdAt,
   }) = ExperimentRef;
 }
+
+/// A recipe's timeline, newest first. Compares by value, so editing an
+/// experiment's notes doesn't rebuild the list, only that entry's tile.
+@freezed
+abstract class HistoryTimeline with _$HistoryTimeline {
+  const factory({required List<HistoryRef> entries}) = _HistoryTimeline;
+}

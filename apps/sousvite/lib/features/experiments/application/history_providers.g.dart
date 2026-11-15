@@ -188,11 +188,11 @@ final historyTimelineProvider = HistoryTimelineFamily._();
 final class HistoryTimelineProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<HistoryRef>>,
-          AsyncValue<List<HistoryRef>>,
-          AsyncValue<List<HistoryRef>>
+          AsyncValue<HistoryTimeline>,
+          AsyncValue<HistoryTimeline>,
+          AsyncValue<HistoryTimeline>
         >
-    with $Provider<AsyncValue<List<HistoryRef>>> {
+    with $Provider<AsyncValue<HistoryTimeline>> {
   /// Versions and experiments together, newest first.
   HistoryTimelineProvider._({
     required HistoryTimelineFamily super.from,
@@ -217,21 +217,21 @@ final class HistoryTimelineProvider
 
   @$internal
   @override
-  $ProviderElement<AsyncValue<List<HistoryRef>>> $createElement(
+  $ProviderElement<AsyncValue<HistoryTimeline>> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  AsyncValue<List<HistoryRef>> create(Ref ref) {
+  AsyncValue<HistoryTimeline> create(Ref ref) {
     final argument = this.argument as RecipeId;
     return historyTimeline(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AsyncValue<List<HistoryRef>> value) {
+  Override overrideWithValue(AsyncValue<HistoryTimeline> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<List<HistoryRef>>>(value),
+      providerOverride: $SyncValueProvider<AsyncValue<HistoryTimeline>>(value),
     );
   }
 
@@ -246,12 +246,12 @@ final class HistoryTimelineProvider
   }
 }
 
-String _$historyTimelineHash() => r'ee67e29ae02597fa25115df14c003c5ec87662b4';
+String _$historyTimelineHash() => r'e06e7df75d4f29da1585222973dd715b0262717a';
 
 /// Versions and experiments together, newest first.
 
 final class HistoryTimelineFamily extends $Family
-    with $FunctionalFamilyOverride<AsyncValue<List<HistoryRef>>, RecipeId> {
+    with $FunctionalFamilyOverride<AsyncValue<HistoryTimeline>, RecipeId> {
   HistoryTimelineFamily._()
     : super(
         retry: null,

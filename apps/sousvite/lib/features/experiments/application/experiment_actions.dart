@@ -15,13 +15,16 @@ class const ExperimentActions(final ExperimentRepository _repository) {
   Future<Experiment> start(RecipeId recipeId) =>
       _repository.startExperiment(recipeId);
 
-  /// Records what changed and how it went. Saves nothing when neither
-  /// changed.
+  /// Records what changed and how it went, on the latest copy of the
+  /// experiment so two fields saved one after the other never undo each
+  /// other. Saves nothing when neither changed.
   Future<void> describe(
-    Experiment experiment, {
+    ExperimentId id, {
     String? changeDescription,
     String? notes,
   }) async {
+    final experiment = await _repository.getExperiment(id);
+    if (experiment == null) return;
     final updated = experiment.copyWith(
       changeDescription: changeDescription ?? experiment.changeDescription,
       notes: notes ?? experiment.notes,
