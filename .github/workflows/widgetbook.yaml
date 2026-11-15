@@ -1,0 +1,68 @@
+name: Widgetbook
+
+# Builds the design system's Widgetbook (apps/widgetbook) and publishes it
+# to GitHub Pages: https://tytaniumdev.github.io/Sousvite/
+# CI's web build job already proves it compiles on every pull request.
+on:
+  push:
+    branches: [main]
+    paths:
+      - apps/widgetbook/**
+      - packages/design_system/**
+      - packages/units/**
+      - pubspec.lock
+      - .fvmrc
+      - .github/workflows/widgetbook.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time, and never cancel one halfway through.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get --enforce-lockfile
+
+      # Pages serves the site under /<repository name>/.
+      - name: 🌐 Build
+        working-directory: apps/widgetbook
+        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+
+      - name: 📤 Upload
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/widgetbook/build/web
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v5

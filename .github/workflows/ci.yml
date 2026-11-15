@@ -70,13 +70,19 @@ jobs:
         include:
           - package: apps/sousvite
             min_coverage: 70
+          - package: apps/widgetbook
+            min_coverage: 90
           - package: packages/data
             min_coverage: 90
           - package: packages/design_system
             min_coverage: 90
           - package: packages/domain
             min_coverage: 90
+          - package: packages/measuring
+            min_coverage: 90
           - package: packages/sync
+            min_coverage: 90
+          - package: packages/units
             min_coverage: 90
           - package: tools/usda_builder
             min_coverage: 90
@@ -111,6 +117,12 @@ jobs:
 
       - name: 🌐 Build
         working-directory: apps/sousvite
+        run: flutter build web --release
+
+      # The Widgetbook deploys to GitHub Pages from main (widgetbook.yaml),
+      # so make sure it still builds before a change merges.
+      - name: 📚 Build Widgetbook
+        working-directory: apps/widgetbook
         run: flutter build web --release
 
   # Cloud Functions and security rules, tested against the Firebase emulators.

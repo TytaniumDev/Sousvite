@@ -7,6 +7,7 @@ environment:
 
 workspace:
   - apps/sousvite
+  - apps/widgetbook
   - packages/data
   - packages/design_system
   - packages/domain
@@ -15,4 +16,5 @@ workspace:
   - packages/nutrition
   - packages/recipe_import
   - packages/sync
+  - packages/units
   - tools/usda_builder

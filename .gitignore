@@ -15,3 +15,7 @@ pubspec_overrides.yaml
 
 # OS
 .DS_Store
+
+# Golden test failure images from flutter_test and alchemist.
+test/failures/
+**/test/**/failures/

@@ -1,4 +1,16 @@
 {
   "indexes": [],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "usdaCache",
+      "fieldPath": "body",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "usdaCache",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    }
+  ]
 }

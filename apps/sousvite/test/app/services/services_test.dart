@@ -67,6 +67,7 @@ void main() {
   group('repository providers', () {
     test('throw until a data task implements them', () {
       for (final provider in <ProviderListenable<Object>>[
+        appSettingsRepositoryProvider,
         recipeRepositoryProvider,
         folderRepositoryProvider,
         foodRepositoryProvider,

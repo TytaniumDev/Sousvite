@@ -91,8 +91,12 @@ apps/
                            cooking, grocery, experiments, sharing,
                            settings, account
 packages/
+  units/                   Quantity, Unit, Amount, conversion, scaling,
+                           measurable rounding, fraction-glyph formatting.
+                           Pure Dart with no repo dependencies.
   domain/                  Entities, value objects, repository interfaces,
                            pure logic. No Flutter, Drift, or Firebase.
+                           Re-exports units.
   data/                    Drift schema, DAOs, repository implementations
   sync/                    Change log, hybrid logical clock, merge,
                            transports (Google Drive, Firestore)
@@ -108,7 +112,10 @@ functions/                 Firebase Cloud Functions (TypeScript)
 
 Rules:
 
-- `domain` depends on nothing in the repo. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain`.
+- `units` depends on nothing in the repo. It is the shared vocabulary for amounts, so the UI and the domain use the same `Quantity` type *(Decided: Tyler, 2026-11-14)*.
+- `domain` depends only on `units`, and re-exports it, so `package:domain/domain.dart` still gives every unit type. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain`.
+- `design_system` may depend on `units` (never on `domain`), so widgets such as `AmountText` take a `Quantity` directly.
+- `sync` depends only on `domain` and never on Drift. `data` depends on `sync` for the change model and clock (its `ChangeRecorder` writes the change log), and implements the local store the sync engine defines, so the engine is tested without a database.
 - Only `apps/sousvite` depends on Flutter, except for `design_system`.
 - Features are folders inside the app, not packages, to avoid glue code between them.
 - Each feature folder mirrors the layers: `presentation/`, `application/`, and feature-specific `data/` when needed.
@@ -145,7 +152,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 - The database is the single source of truth. The UI reads only from it.
 - **Full-text search** (FTS5) indexes recipe titles, ingredient names, and folder names (PRD 7.1).
 - **Amounts** are exact rational numbers (numerator and denominator), not floats, so ⅓ cup × 3 is exactly 1 cup.
-- **Units** (`packages/domain/lib/src/units/`): each unit belongs to a family (US volume, metric volume, US mass, metric mass, count) and counts a whole number of the family's smallest unit, so conversion within a family is exact. US to metric is approximate and always ends in **measurable rounding**: friendly cup fractions (¼, ⅓, ½, ⅔, ¾), tablespoons to ½, teaspoons to ⅛, metric to 0.5, 1, or 5 depending on size, ounces and pounds to ¼, counts to ¼ or ½. A friendly amount may be at most 5% off before rounding falls back to a smaller unit. Rounding applies only to scaled or converted amounts; unscaled amounts show as written.
+- **Units** (`packages/units/`): each unit belongs to a family (US volume, metric volume, US mass, metric mass, count) and counts a whole number of the family's smallest unit, so conversion within a family is exact. US to metric is approximate and always ends in **measurable rounding**: friendly cup fractions (¼, ⅓, ½, ⅔, ¾), tablespoons to ½, teaspoons to ⅛, metric to 0.5, 1, or 5 depending on size, ounces and pounds to ¼, counts to ¼ or ½. A friendly amount may be at most 5% off before rounding falls back to a smaller unit. Rounding applies only to scaled or converted amounts; unscaled amounts show as written.
 - **Ordering** of sections, steps, and ingredients uses fractional index keys, so moving one item changes one row and merges cleanly during sync.
 - **Migrations** are versioned with Drift's schema tooling and tested with generated schema snapshots.
 
@@ -202,10 +209,14 @@ The sync engine is transport-agnostic. One interface, two implementations:
 ```dart
 abstract interface class SyncTransport {
   Future<void> push(List<Change> changes);
-  Stream<List<Change>> pull({required SyncCursor since});
+  // Each batch carries the cursor that resumes after it. No cursor starts
+  // from the latest snapshot.
+  Stream<({List<Change> changes, SyncCursor cursor})> pull({SyncCursor? since});
   Future<void> writeSnapshot(Snapshot snapshot);
 }
 ```
+
+The engine (`packages/sync/lib/src/engine/`) talks to the database through a `LocalStore` interface that `packages/data` implements. It pushes only this device's own changes, merges each pulled batch in one local transaction, and saves the cursor in that transaction, so an interrupted sync resumes without loss. The app writes a snapshot now and then (for example daily), and switching transports is `replay()`: a snapshot of the current state into the new transport.
 
 | | Google Drive (free) | Sousvite cloud (Pro) |
 |---|---|---|
@@ -258,6 +269,7 @@ Because both carry the same change log, **switching transports** means replaying
 
 - **Bundled:** USDA FoodData Central *Foundation Foods* and *SR Legacy* (generic ingredients), with nutrients and household portions. `tools/usda_builder` turns the official CSV releases into a compact SQLite file, about 9 MB on disk and under 2 MB compressed (schema in `tools/usda_builder/README.md`). The file is committed to the repo as a normal file (no Git LFS) and regenerated only with the tool. On web it's downloaded once on first launch and cached.
 - **Online, then cached:** USDA *Branded Foods* through our Cloud Function proxy, and Open Food Facts via its public API. Looked-up foods are saved to Drift, so recipes using them keep working offline.
+- The USDA proxy is the `usdaProxy` callable function (`functions/src/usda_proxy/`), with App Check enforced. It takes `{action: 'search', query, pageNumber?, pageSize?}` (Branded Foods only; page size 25 by default, at most 50) or `{action: 'food', fdcId}`, and returns FoodData Central's JSON unchanged. The `USDA_API_KEY` secret goes upstream in a header and never reaches the client. Responses are cached in the server-only `usdaCache` Firestore collection (searches 7 days, foods 30 days, case-insensitive searches share an entry), and a TTL policy on `expiresAt` deletes old entries. Errors: `invalid-argument`, `not-found`, `resource-exhausted` (USDA's rate limit), `unavailable`.
 - **Licensing:** USDA data is public domain. Open Food Facts data is ODbL (share-alike), so we keep attribution and keep OFF data separate from our own data.
 
 ### 11.2 Matching and math
@@ -286,11 +298,13 @@ Because both carry the same change log, **switching transports** means replaying
 
 - **Smart step text:** finds mentions of each ingredient in step text (name plus synonyms and head noun, longest match first) and inserts the scaled amount. Replacements are visible and editable (PRD risk table).
 - **Measuring decomposition:** turns an amount into the fewest tools the user owns, as a small search over their cups and spoons with a rounding tolerance. For example, ¾ cup → ½ cup + ¼ cup, and 5 tsp → 1 Tbsp + 2 tsp.
+- **Step timers:** finds the times in a step ("bake 20 to 25 minutes", "1 hour 15 minutes", "half an hour") and returns each one's text, position, and shortest and longest duration, so cooking mode can offer a `TimerChip` and choose which end of a range to count down from. "Overnight" counts as 8 to 12 hours. Intervals ("every 5 minutes"), limits on their own ("up to 3 hours"), days (storage, not cooking), and vague times ("a few minutes") are left out.
 
 ## 14. Recipe import *(Decided)*
 
 - **URL import** runs on the device in `packages/recipe_import`. It reads schema.org `Recipe` JSON-LD first, microdata second, and falls back to simple heuristics, then runs each ingredient line through the parser.
 - On **web**, browsers block cross-site requests, so the page is fetched through a Cloud Function proxy that returns the HTML. Parsing still happens on the client.
+- The proxy is the `fetchProxy` callable function (`functions/src/fetch_proxy/`). App Check is enforced. It fetches only public addresses (every redirect hop and every DNS answer is checked, so it can't reach private or metadata addresses), follows at most 5 redirects, allows 10 seconds, and returns only HTML up to 5 MB as `{url, contentType, body}`, where `url` is the final URL after redirects. A failure is an `HttpsError` whose `details.reason` says why (`invalidUrl`, `blockedAddress`, `tooManyRedirects`, `upstreamStatus` with `details.status`, `unsupportedContentType`, `tooLarge`, `timeout`, `network`), so import can report failures by site. It identifies itself with a `Sousvite/1.0` User-Agent that links to the repo.
 - Results always open in a review screen before saving, and failures are reported by site so we can see which sites need work (PRD 10).
 - **Umami import and export** live in the same package. The format is to be validated against real Umami exports early (PRD risk table).
 
@@ -313,6 +327,8 @@ Because both carry the same change log, **switching transports** means replaying
 - **Lints** *(Decided)*: consistency is enforced by lints, not by convention. When a style rule can be checked by a lint, we turn the lint on instead of writing the rule down. The rules live in one root `analysis_options.yaml`: `very_good_analysis` as the base, plus `use_primary_constructors`, `migrate_design_widgets`, `prefer_expression_function_bodies`, `avoid_annotating_with_dynamic`, `use_decorated_box`, `use_if_null_to_convert_nulls_to_bools`, `prefer_void_to_null`, `unnecessary_async`, `unnecessary_await_in_return`, `avoid_futureor_void`, `unsafe_variance`, `no_dynamic_casts`, `annotate_redeclares`, `avoid_null_checks_in_equality_operators`, and `no_runtimetype_tostring`. Each package's `analysis_options.yaml` includes the root file and adds only its own excludes and plugins (`riverpod_lint` in the app). Rules left off conflict with ones `very_good_analysis` enables (`omit_obvious_property_types`, `prefer_double_quotes`, `prefer_relative_imports`, `always_specify_types`, `unnecessary_final`) or flag our design (`avoid_classes_with_only_static_members` for token classes, `one_member_abstracts` for service interfaces). An `// ignore:` always carries a comment saying why.
 - **Formatting:** `dart format`, checked in CI.
 - **CI** *(Decided)*: GitHub Actions, added in the app scaffold PR, built on Very Good Ventures' reusable [`very_good_workflows`](https://github.com/VeryGoodOpenSource/very_good_workflows). Every package gets a job from their `dart_package` or `flutter_package` workflow (format, analyze, tests, and a coverage gate). Our own steps add code-generation freshness checks and a web build. Mobile builds and Firebase Hosting preview deploys follow once the app runs.
+- **Deploys** *(Decided)*: every push to `main` deploys the web app to Firebase Hosting on the single `sousvite` project (`.github/workflows/deploy_web.yaml`, https://sousvite.web.app) with the `FIREBASE_SERVICE_ACCOUNT` secret; without the secret the build runs and the deploy is skipped with a warning. The Widgetbook deploys to GitHub Pages (`.github/workflows/widgetbook.yaml`, https://tytaniumdev.github.io/Sousvite/) when it or the design system changes. Hosting sets no cross-origin isolation headers, because they would block recipe photos from other sites; Drift picks a storage mode that works without them.
+- **Widgetbook** *(Decided)*: `apps/widgetbook` shows every `design_system` component with knobs, in the four themes and at 100% to 200% text. Use cases are written by hand as `WidgetbookComponent` lists, one file per component, because `widgetbook_generator` still needs `build` 4 and `analyzer` below 14 while the workspace is on `build` 5. Its themes come from a `ThemeAddon` that sets `material_ui`'s `Theme`, since Widgetbook's `MaterialThemeAddon` takes Flutter's deprecated `ThemeData`.
 - **Coverage gate** *(Default)*: 90% for the pure packages, where most logic lives, and 70% for the app, where goldens and integration tests carry part of the load. These numbers will be tuned in the scaffold PR.
 - **Not used:** the Very Good CLI starter template, because it is built around Bloc and we use Riverpod.
 - **Merging:** PRs merge automatically once CI is green.
