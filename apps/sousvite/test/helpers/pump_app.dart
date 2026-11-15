@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
@@ -23,6 +24,26 @@ extension PumpApp on WidgetTester {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: widget,
+      ),
+    ),
+  );
+
+  /// Like [pumpApp], but shows [router], so tests can check where a screen
+  /// navigates.
+  Future<void> pumpRouterApp(
+    GoRouter router, {
+    List<Override> overrides = const [],
+  }) => pumpWidget(
+    ProviderScope(
+      overrides: overrides,
+      child: MaterialApp.router(
+        theme: AppTheme.light(),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
       ),
     ),
   );

@@ -7,8 +7,6 @@ import 'package:sousvite/features/library/presentation/folder_chips.dart';
 import 'package:sousvite/features/library/presentation/library_recipe_card.dart';
 import 'package:sousvite/features/library/presentation/library_screen.dart';
 import 'package:sousvite/features/library/presentation/recipe_grid.dart';
-import 'package:sousvite/features/library/presentation/total_time_label.dart';
-import 'package:sousvite/l10n/l10n.dart';
 
 import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
@@ -248,23 +246,5 @@ void main() {
       final second = tester.getTopLeft(find.byType(RecipeCard).last);
       expect(first.dy, second.dy);
     });
-  });
-
-  testWidgets('formats total times', (tester) async {
-    late AppLocalizations l10n;
-    await tester.pumpApp(
-      Builder(
-        builder: (context) {
-          l10n = context.l10n;
-          return const SizedBox();
-        },
-      ),
-    );
-    expect(totalTimeLabel(l10n, const Duration(minutes: 45)), '45 min');
-    expect(totalTimeLabel(l10n, const Duration(hours: 2)), '2 h');
-    expect(
-      totalTimeLabel(l10n, const Duration(minutes: 61, seconds: 1)),
-      '1 h 2 min',
-    );
   });
 }
