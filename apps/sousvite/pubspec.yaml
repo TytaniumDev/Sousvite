@@ -30,6 +30,7 @@ dependencies:
   intl: any
   material_symbols_icons: ^4.2960.0
   material_ui: ^1.11.0
+  nutrition: any
   riverpod_annotation: ^4.0.8
   sentry_flutter: ^10.4.0
   uuid: ^4.5.1

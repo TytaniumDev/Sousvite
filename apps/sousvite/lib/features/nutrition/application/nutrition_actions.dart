@@ -24,7 +24,7 @@ class NutritionActions({
   ) async => estimateGrams(line, switch (choice) {
     OnlineFoodChoice(:final online) => online.portions,
     SavedFoodChoice(:final food) => await foods.getPortions(food.id),
-  });
+  }, foodName: choice.food.name);
 
   /// Matches [line] to the food in [choice], weighing [gramWeight] grams.
   /// Replaces the line's [current] match, if any. A food found online is

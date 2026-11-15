@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,7 +18,7 @@ void main() {
 
   Future<NutritionHarness> open(
     WidgetTester tester, {
-    void Function(NutritionHarness harness)? before,
+    FutureOr<void> Function(NutritionHarness harness)? before,
   }) async {
     tester.view
       ..physicalSize = const Size(800, 2400)
@@ -24,7 +26,7 @@ void main() {
     addTearDown(tester.view.reset);
     final harness = NutritionHarness();
     await harness.seed();
-    before?.call(harness);
+    await before?.call(harness);
     await harness.pump(tester, location: location);
     return harness;
   }
@@ -131,7 +133,11 @@ void main() {
     testWidgets('asks for grams when the weight is unknown', (tester) async {
       final harness = await open(
         tester,
-        before: (harness) {
+        before: (harness) async {
+          // A count with no portions to weigh it by.
+          await harness.recipes.saveIngredientLine(
+            _F.line('milk', quantity: Quantity.one, unit: Unit.piece),
+          );
           harness.online = [
             (
               food: _F.food('off-milk', source: NutritionSource.openFoodFacts),

@@ -85,14 +85,31 @@ void main() {
       expect(estimateGrams(_F.line('l', quantity: Quantity(2)), [egg]), 100);
     });
 
-    test('is null without an amount or a matching portion', () {
-      expect(estimateGrams(_F.line('l'), [cup]), isNull);
+    test('converts to a portion in another volume unit', () {
+      // 1 tsp is 1/48 cup; half a cup weighs 40 g.
       expect(
         estimateGrams(_F.line('l', quantity: Quantity(1), unit: .teaspoon), [
           cup,
         ]),
-        isNull,
+        closeTo(5 / 3, 1e-9),
       );
+    });
+
+    test('uses the density of the food, else of the ingredient', () {
+      final oneCup = _F.line('flour', quantity: Quantity(1), unit: .cup);
+      expect(
+        estimateGrams(oneCup, const [], foodName: 'Sugars, granulated'),
+        closeTo(201.1, 0.1),
+      );
+      expect(estimateGrams(oneCup, const []), closeTo(125.4, 0.1));
+      expect(
+        estimateGrams(oneCup, const [], foodName: 'Mystery food'),
+        closeTo(125.4, 0.1),
+      );
+    });
+
+    test('is null without an amount, a portion, or a density', () {
+      expect(estimateGrams(_F.line('l'), [cup]), isNull);
       expect(
         estimateGrams(_F.line('l', quantity: Quantity(1), unit: .cup), [
           cup.copyWith(amount: Quantity.zero),
