@@ -184,6 +184,288 @@ abstract class AppLocalizations {
   /// **'Nutrition'**
   String get nutrition_title;
 
+  /// Toggle option: show nutrition for one serving.
+  ///
+  /// In en, this message translates to:
+  /// **'Per serving'**
+  String get nutrition_perServing;
+
+  /// Toggle option: show nutrition for the whole recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Per batch'**
+  String get nutrition_perBatch;
+
+  /// Says what nutrition numbers cover, with the number of servings the batch divides into.
+  ///
+  /// In en, this message translates to:
+  /// **'Per serving (1 of {servings})'**
+  String nutrition_perServingOf(String servings);
+
+  /// Says nutrition numbers cover the whole recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole batch'**
+  String get nutrition_wholeBatch;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get nutrition_calories;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get nutrition_protein;
+
+  /// Nutrient name: carbohydrates.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get nutrition_carbs;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get nutrition_fat;
+
+  /// Nutrient name, shown under fat.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturated fat'**
+  String get nutrition_saturatedFat;
+
+  /// Nutrient name, shown under fat.
+  ///
+  /// In en, this message translates to:
+  /// **'Trans fat'**
+  String get nutrition_transFat;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Cholesterol'**
+  String get nutrition_cholesterol;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Sodium'**
+  String get nutrition_sodium;
+
+  /// Nutrient name, shown under carbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber'**
+  String get nutrition_fiber;
+
+  /// Nutrient name, shown under carbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sugars'**
+  String get nutrition_sugars;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Vitamin D'**
+  String get nutrition_vitaminD;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Calcium'**
+  String get nutrition_calcium;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Iron'**
+  String get nutrition_iron;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Potassium'**
+  String get nutrition_potassium;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Vitamin A'**
+  String get nutrition_vitaminA;
+
+  /// Nutrient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Vitamin C'**
+  String get nutrition_vitaminC;
+
+  /// Unit after a calorie value.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal'**
+  String get nutrition_unitKilocalories;
+
+  /// Unit after a value in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'g'**
+  String get nutrition_unitGrams;
+
+  /// Unit after a value in milligrams.
+  ///
+  /// In en, this message translates to:
+  /// **'mg'**
+  String get nutrition_unitMilligrams;
+
+  /// Unit after a value in micrograms.
+  ///
+  /// In en, this message translates to:
+  /// **'µg'**
+  String get nutrition_unitMicrograms;
+
+  /// Next to nutrition totals: how many ingredients have no nutrition data and are left out.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Excludes 1 unmatched ingredient} other{Excludes {count} unmatched ingredients}}'**
+  String nutrition_excludesUnmatched(int count);
+
+  /// Link from the unmatched count to the nutrition screen, to match those ingredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix'**
+  String get nutrition_fix;
+
+  /// Label next to the number of servings nutrition divides into.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get nutrition_servingSize;
+
+  /// Unit word after the number of servings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{serving} other{servings}}'**
+  String nutrition_servingsUnit(int count);
+
+  /// Button that lowers the number of servings.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer servings'**
+  String get nutrition_fewerServings;
+
+  /// Button that raises the number of servings.
+  ///
+  /// In en, this message translates to:
+  /// **'More servings'**
+  String get nutrition_moreServings;
+
+  /// Heading of the detailed nutrient table.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrients'**
+  String get nutrition_nutrients;
+
+  /// Heading of the list of ingredient matches.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get nutrition_ingredients;
+
+  /// Shown when the recipe has no ingredients.
+  ///
+  /// In en, this message translates to:
+  /// **'No ingredients yet'**
+  String get nutrition_noIngredients;
+
+  /// Explains the empty ingredient list on the nutrition screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Add ingredients to the recipe to see its nutrition.'**
+  String get nutrition_noIngredientsMessage;
+
+  /// Match source: USDA FoodData Central.
+  ///
+  /// In en, this message translates to:
+  /// **'USDA'**
+  String get nutrition_sourceUsda;
+
+  /// Match source: Open Food Facts.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Food Facts'**
+  String get nutrition_sourceOpenFoodFacts;
+
+  /// Match status: the user picked or changed the match.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited'**
+  String get nutrition_edited;
+
+  /// Match status: no nutrition data for this ingredient.
+  ///
+  /// In en, this message translates to:
+  /// **'Not matched'**
+  String get nutrition_notMatched;
+
+  /// Under an unmatched ingredient.
+  ///
+  /// In en, this message translates to:
+  /// **'Not counted in the totals'**
+  String get nutrition_notCounted;
+
+  /// Under an ingredient: the food it is matched to and its weight.
+  ///
+  /// In en, this message translates to:
+  /// **'{food} · {grams} g'**
+  String nutrition_matchedFood(String food, String grams);
+
+  /// Title of the sheet for changing an ingredient's food.
+  ///
+  /// In en, this message translates to:
+  /// **'Change match'**
+  String get nutrition_changeMatch;
+
+  /// Label of the field for an ingredient's weight in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get nutrition_weight;
+
+  /// Error when the app can't work out an ingredient's weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the weight in grams'**
+  String get nutrition_weightNeeded;
+
+  /// Button that saves a corrected weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Save weight'**
+  String get nutrition_saveWeight;
+
+  /// Button that removes an ingredient's match so it is flagged instead of guessed.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unmatched'**
+  String get nutrition_leaveUnmatched;
+
+  /// Label of the food search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get nutrition_searchFoods;
+
+  /// Shown when a food search finds nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No foods found'**
+  String get nutrition_noFoods;
+
   /// Title of cooking mode.
   ///
   /// In en, this message translates to:

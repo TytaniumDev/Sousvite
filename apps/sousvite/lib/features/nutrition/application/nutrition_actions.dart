@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/nutrition/application/food_choice.dart';
+import 'package:sousvite/features/nutrition/application/nutrition_math.dart';
 import 'package:uuid/uuid.dart';
 
 part 'nutrition_actions.g.dart';
@@ -15,6 +16,16 @@ class NutritionActions({
   /// Makes a new unique id.
   required final String Function() newId,
 }) {
+  /// How much [line] weighs as [choice], from the food's household
+  /// portions, or null when its amount can't be converted.
+  Future<double?> estimateWeight(
+    IngredientLine line,
+    FoodChoice choice,
+  ) async => estimateGrams(line, switch (choice) {
+    OnlineFoodChoice(:final online) => online.portions,
+    SavedFoodChoice(:final food) => await foods.getPortions(food.id),
+  });
+
   /// Matches [line] to the food in [choice], weighing [gramWeight] grams.
   /// Replaces the line's [current] match, if any. A food found online is
   /// cached first, so the recipe keeps working offline.

@@ -94,6 +94,97 @@ final class NutritionLinesFamily extends $Family
   String toString() => r'nutritionLinesProvider';
 }
 
+/// The recipe's ingredient line ids, in order. Emits only when lines are
+/// added, removed, or moved, so the match list doesn't rebuild on edits.
+
+@ProviderFor(nutritionLineIds)
+final nutritionLineIdsProvider = NutritionLineIdsFamily._();
+
+/// The recipe's ingredient line ids, in order. Emits only when lines are
+/// added, removed, or moved, so the match list doesn't rebuild on edits.
+
+final class NutritionLineIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<IngredientLineId>>,
+          List<IngredientLineId>,
+          Stream<List<IngredientLineId>>
+        >
+    with
+        $FutureModifier<List<IngredientLineId>>,
+        $StreamProvider<List<IngredientLineId>> {
+  /// The recipe's ingredient line ids, in order. Emits only when lines are
+  /// added, removed, or moved, so the match list doesn't rebuild on edits.
+  NutritionLineIdsProvider._({
+    required NutritionLineIdsFamily super.from,
+    required RecipeId super.argument,
+  }) : super(
+         retry: null,
+         name: r'nutritionLineIdsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$nutritionLineIdsHash();
+
+  @override
+  String toString() {
+    return r'nutritionLineIdsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<IngredientLineId>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<IngredientLineId>> create(Ref ref) {
+    final argument = this.argument as RecipeId;
+    return nutritionLineIds(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NutritionLineIdsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$nutritionLineIdsHash() => r'9e163d4687f074a996cde888f8af027a17248cc0';
+
+/// The recipe's ingredient line ids, in order. Emits only when lines are
+/// added, removed, or moved, so the match list doesn't rebuild on edits.
+
+final class NutritionLineIdsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<IngredientLineId>>, RecipeId> {
+  NutritionLineIdsFamily._()
+    : super(
+        retry: null,
+        name: r'nutritionLineIdsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The recipe's ingredient line ids, in order. Emits only when lines are
+  /// added, removed, or moved, so the match list doesn't rebuild on edits.
+
+  NutritionLineIdsProvider call(RecipeId recipeId) =>
+      NutritionLineIdsProvider._(argument: recipeId, from: this);
+
+  @override
+  String toString() => r'nutritionLineIdsProvider';
+}
+
 /// Each matched line's match, by line id.
 
 @ProviderFor(nutritionMatches)

@@ -1,13 +1,11 @@
+import 'package:design_system/design_system.dart' show NutritionBasis;
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'nutrition_basis.g.dart';
+// The design system's toggle and this controller share one enum.
+export 'package:design_system/design_system.dart' show NutritionBasis;
 
-/// Whether nutrition is shown for one serving or the whole batch.
-enum NutritionBasis() {
-  perServing,
-  batch,
-}
+part 'nutrition_basis.g.dart';
 
 /// The basis the user picked for [recipeId]'s nutrition. Starts per
 /// serving, the number most people want (PRD 7.4).

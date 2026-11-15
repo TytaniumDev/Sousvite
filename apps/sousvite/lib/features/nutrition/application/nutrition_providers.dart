@@ -14,6 +14,16 @@ part 'nutrition_providers.g.dart';
 Stream<List<IngredientLine>> nutritionLines(Ref ref, RecipeId recipeId) =>
     ref.watch(recipeRepositoryProvider).watchIngredientLines(recipeId);
 
+/// The recipe's ingredient line ids, in order. Emits only when lines are
+/// added, removed, or moved, so the match list doesn't rebuild on edits.
+@riverpod
+Stream<List<IngredientLineId>> nutritionLineIds(Ref ref, RecipeId recipeId) =>
+    ref
+        .watch(recipeRepositoryProvider)
+        .watchIngredientLines(recipeId)
+        .map((lines) => [for (final line in lines) line.id])
+        .distinct(listEquals);
+
 /// Each matched line's match, by line id.
 @riverpod
 Stream<Map<IngredientLineId, NutritionMatch>> nutritionMatches(
