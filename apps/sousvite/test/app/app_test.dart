@@ -2,12 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/app.dart';
+import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/settings/settings.dart';
+
+import '../features/settings/fakes.dart';
 
 void main() {
   group(SousviteApp, () {
     testWidgets('follows the theme mode setting', (tester) async {
-      final container = ProviderContainer.test();
+      final container = ProviderContainer.test(
+        overrides: [
+          appSettingsRepositoryProvider.overrideWithValue(
+            FakeAppSettingsRepository(),
+          ),
+        ],
+      );
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -17,7 +26,7 @@ void main() {
       MaterialApp app() => tester.widget(find.byType(MaterialApp));
       expect(app().themeMode, ThemeMode.system);
 
-      container
+      await container
           .read(themeModeControllerProvider.notifier)
           .select(ThemeMode.dark);
       await tester.pump();

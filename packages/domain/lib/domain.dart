@@ -2,6 +2,7 @@
 /// Sousvite.
 library;
 
+export 'src/entities/app_settings.dart';
 export 'src/entities/experiment.dart';
 export 'src/entities/folder.dart';
 export 'src/entities/folder_entry.dart';
@@ -20,6 +21,7 @@ export 'src/entities/recipe_step.dart';
 export 'src/entities/recipe_version.dart';
 export 'src/entities/step_section.dart';
 export 'src/entities/user_recipe_prefs.dart';
+export 'src/repositories/app_settings_repository.dart';
 export 'src/repositories/experiment_repository.dart';
 export 'src/repositories/folder_repository.dart';
 export 'src/repositories/food_repository.dart';

@@ -8,6 +8,10 @@ part 'repositories.g.dart';
 // body with its Drift implementation (docs/BUILD_PLAN.md).
 
 @Riverpod(keepAlive: true)
+AppSettingsRepository appSettingsRepository(Ref ref) =>
+    throw UnimplementedError('AppSettingsRepository is not implemented yet.');
+
+@Riverpod(keepAlive: true)
 RecipeRepository recipeRepository(Ref ref) =>
     throw UnimplementedError('RecipeRepository is not implemented yet.');
 
