@@ -28,7 +28,7 @@ void main() {
       expect(entry.amounts, [(quantity: Quantity(3), unit: null)]);
     });
 
-    test('keeps different units apart, in the order they appear', () {
+    test('converts exactly within a unit family', () {
       final view = combineGroceryItems([
         _F.item('a', name: 'milk', quantity: Quantity(1), unit: Unit.cup),
         _F.item('b', name: 'milk', quantity: Quantity(2), unit: .tablespoon),
@@ -36,8 +36,22 @@ void main() {
       ]);
 
       expect(view.entries['milk']!.amounts, [
-        (quantity: Quantity(3, 2), unit: Unit.cup),
-        (quantity: Quantity(2), unit: Unit.tablespoon),
+        (quantity: Quantity(13, 8), unit: Unit.cup),
+      ]);
+    });
+
+    test('keeps units that do not convert apart, in order', () {
+      final view = combineGroceryItems([
+        _F.item('a', name: 'flour', quantity: Quantity(1), unit: Unit.cup),
+        _F.item('b', name: 'flour', quantity: Quantity(200), unit: .gram),
+        _F.item('c', name: 'flour', quantity: Quantity(2)),
+        _F.item('d', name: 'flour', quantity: Quantity(1), unit: .kilogram),
+      ]);
+
+      expect(view.entries['flour']!.amounts, [
+        (quantity: Quantity(1), unit: Unit.cup),
+        (quantity: Quantity(1200), unit: Unit.gram),
+        (quantity: Quantity(2), unit: null),
       ]);
     });
 

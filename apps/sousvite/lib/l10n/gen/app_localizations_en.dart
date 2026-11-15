@@ -22,6 +22,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get common_retry => 'Try again';
 
   @override
+  String common_unitOne(String unit) {
+    String _temp0 = intl.Intl.selectLogic(unit, {
+      'teaspoon': 'tsp',
+      'tablespoon': 'Tbsp',
+      'fluidOunce': 'fl oz',
+      'cup': 'cup',
+      'pint': 'pint',
+      'quart': 'quart',
+      'gallon': 'gallon',
+      'milliliter': 'ml',
+      'liter': 'l',
+      'gram': 'g',
+      'kilogram': 'kg',
+      'ounce': 'oz',
+      'pound': 'lb',
+      'pinch': 'pinch',
+      'piece': 'piece',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String common_unitOther(String unit) {
+    String _temp0 = intl.Intl.selectLogic(unit, {
+      'teaspoon': 'tsp',
+      'tablespoon': 'Tbsp',
+      'fluidOunce': 'fl oz',
+      'cup': 'cups',
+      'pint': 'pints',
+      'quart': 'quarts',
+      'gallon': 'gallons',
+      'milliliter': 'ml',
+      'liter': 'l',
+      'gram': 'g',
+      'kilogram': 'kg',
+      'ounce': 'oz',
+      'pound': 'lb',
+      'pinch': 'pinches',
+      'piece': 'pieces',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get common_undo => 'Undo';
+
+  @override
   String get nav_library => 'Library';
 
   @override
@@ -50,6 +99,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get grocery_title => 'Grocery list';
+
+  @override
+  String get grocery_emptyTitle => 'Your list is empty';
+
+  @override
+  String get grocery_emptyMessage =>
+      'Add a recipe\'s ingredients from its page, or add an item here.';
+
+  @override
+  String get grocery_errorTitle => 'Couldn\'t load your grocery list';
+
+  @override
+  String get grocery_errorMessage => 'Try again in a moment.';
+
+  @override
+  String get grocery_addItem => 'Add item';
+
+  @override
+  String get grocery_itemName => 'Item';
+
+  @override
+  String get grocery_add => 'Add';
+
+  @override
+  String get grocery_otherSection => 'Other';
+
+  @override
+  String get grocery_checkedSection => 'Checked';
+
+  @override
+  String get grocery_removeChecked => 'Remove checked items';
+
+  @override
+  String get grocery_checkedRemoved => 'Checked items removed';
+
+  @override
+  String grocery_itemRemoved(String name) {
+    return '$name removed';
+  }
+
+  @override
+  String get grocery_moreOptions => 'More options';
+
+  @override
+  String get grocery_addToGroceryList => 'Add to grocery list';
+
+  @override
+  String get grocery_addToList => 'Add to list';
+
+  @override
+  String get grocery_addedToList => 'Added to grocery list';
+
+  @override
+  String get grocery_noIngredients => 'This recipe has no ingredients yet.';
 
   @override
   String get experiments_title => 'History';

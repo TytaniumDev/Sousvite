@@ -18,7 +18,12 @@ Stream<T> _watch<T>(
       controller.add(read());
       subscription = changes.listen((_) => controller.add(read()));
     },
-    onCancel: () => subscription?.cancel(),
+    // Not returning the cancel future: a broadcast subscription's is a
+    // root-zone future, which fake-async widget tests never complete, so
+    // `stream.first` would hang.
+    onCancel: () {
+      unawaited(subscription?.cancel());
+    },
   );
   return controller.stream.distinct(equals);
 }

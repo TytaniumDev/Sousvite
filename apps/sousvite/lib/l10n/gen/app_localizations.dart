@@ -118,6 +118,24 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get common_retry;
 
+  /// A unit word after an amount of one or less ("½ cup"). The unit is the Unit enum name. Abbreviations follow DESIGN_SYSTEM.md §11.
+  ///
+  /// In en, this message translates to:
+  /// **'{unit, select, teaspoon{tsp} tablespoon{Tbsp} fluidOunce{fl oz} cup{cup} pint{pint} quart{quart} gallon{gallon} milliliter{ml} liter{l} gram{g} kilogram{kg} ounce{oz} pound{lb} pinch{pinch} piece{piece} other{}}'**
+  String common_unitOne(String unit);
+
+  /// A unit word after an amount over one ("2 cups"). Abbreviations never take a plural.
+  ///
+  /// In en, this message translates to:
+  /// **'{unit, select, teaspoon{tsp} tablespoon{Tbsp} fluidOunce{fl oz} cup{cups} pint{pints} quart{quarts} gallon{gallons} milliliter{ml} liter{l} gram{g} kilogram{kg} ounce{oz} pound{lb} pinch{pinches} piece{pieces} other{}}'**
+  String common_unitOther(String unit);
+
+  /// Snackbar action that reverses what just happened.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get common_undo;
+
   /// Navigation destination for the recipe library.
   ///
   /// In en, this message translates to:
@@ -177,6 +195,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grocery list'**
   String get grocery_title;
+
+  /// Heading when the grocery list has no items.
+  ///
+  /// In en, this message translates to:
+  /// **'Your list is empty'**
+  String get grocery_emptyTitle;
+
+  /// Explains how to fill an empty grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a recipe\'s ingredients from its page, or add an item here.'**
+  String get grocery_emptyMessage;
+
+  /// Heading when the grocery list fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your grocery list'**
+  String get grocery_errorTitle;
+
+  /// What to do when the grocery list fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again in a moment.'**
+  String get grocery_errorMessage;
+
+  /// Button that adds an item to the grocery list by hand.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get grocery_addItem;
+
+  /// Label of the text field for an item typed by hand.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get grocery_itemName;
+
+  /// Confirms adding the typed item.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get grocery_add;
+
+  /// Store section for items that have none.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get grocery_otherSection;
+
+  /// Group at the bottom of the list holding checked-off items.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked'**
+  String get grocery_checkedSection;
+
+  /// Menu item that clears every checked-off item.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove checked items'**
+  String get grocery_removeChecked;
+
+  /// Snackbar after checked items are cleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked items removed'**
+  String get grocery_checkedRemoved;
+
+  /// Snackbar after an item is swiped away.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} removed'**
+  String grocery_itemRemoved(String name);
+
+  /// Screen reader label of the grocery list's overflow menu.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get grocery_moreOptions;
+
+  /// Title of the sheet that adds a recipe's ingredients to the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to grocery list'**
+  String get grocery_addToGroceryList;
+
+  /// Button that adds the selected ingredients to the grocery list.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to list'**
+  String get grocery_addToList;
+
+  /// Snackbar after a recipe's ingredients are added.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to grocery list'**
+  String get grocery_addedToList;
+
+  /// Shown in the add-to-list sheet for a recipe with no ingredients.
+  ///
+  /// In en, this message translates to:
+  /// **'This recipe has no ingredients yet.'**
+  String get grocery_noIngredients;
 
   /// Title of a recipe's history of versions and experiments.
   ///

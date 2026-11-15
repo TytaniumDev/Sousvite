@@ -49,6 +49,20 @@ abstract class GrocerySection with _$GrocerySection {
   }) = _GrocerySection;
 }
 
+/// Which rows the screen shows and in what groups, without the rows'
+/// contents. The list watches only this, so checking off an item rebuilds
+/// its row alone unless it moves between groups.
+@freezed
+abstract class GroceryLayout with _$GroceryLayout {
+  const factory({
+    /// Sections of unchecked entries, in display order.
+    required List<GrocerySection> sections,
+
+    /// Keys of checked entries, in list order.
+    required List<String> checkedKeys,
+  }) = _GroceryLayout;
+}
+
 /// The grocery list as the screen shows it: unchecked entries grouped by
 /// store section, then the checked ones (DESIGN_SYSTEM.md §10.6).
 @freezed
@@ -66,4 +80,8 @@ abstract class const GroceryView._() with _$GroceryView {
 
   /// Whether the list has nothing on it.
   bool get isEmpty => entries.isEmpty;
+
+  /// The groups and order of rows, for the list to watch.
+  GroceryLayout get layout =>
+      GroceryLayout(sections: sections, checkedKeys: checkedKeys);
 }
