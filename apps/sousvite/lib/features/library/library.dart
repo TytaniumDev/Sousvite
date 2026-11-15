@@ -3,3 +3,4 @@
 library;
 
 export 'library_routes.dart';
+export 'presentation/recipe_folders_sheet.dart' show showRecipeFoldersSheet;

@@ -21,7 +21,9 @@ class FakeUserRecipePrefsRepository() implements UserRecipePrefsRepository {
           if (next != last) controller.add(last = next);
         });
       },
-      onCancel: () => changes?.cancel(),
+      // Returning the cancel future would complete `.first` in the root
+      // zone, outside a widget test's fake async.
+      onCancel: () => unawaited(changes?.cancel()),
     );
     return controller.stream;
   }

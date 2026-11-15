@@ -83,6 +83,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library_title => 'Library';
 
   @override
+  String get library_searchHint => 'Search recipes, ingredients, folders';
+
+  @override
+  String get library_allRecipes => 'All recipes';
+
+  @override
+  String get library_newFolder => 'New folder';
+
+  @override
+  String get library_folderName => 'Folder name';
+
+  @override
+  String get library_createFolder => 'Create';
+
+  @override
+  String get library_renameFolder => 'Rename folder';
+
+  @override
+  String get library_deleteFolder => 'Delete folder';
+
+  @override
+  String get library_folderDeleted => 'Folder deleted';
+
+  @override
+  String get library_undo => 'Undo';
+
+  @override
+  String get library_folderOptions => 'Folder options';
+
+  @override
+  String get library_addRecipe => 'Add recipe';
+
+  @override
+  String get library_emptyTitle => 'No recipes yet';
+
+  @override
+  String get library_emptyMessage => 'Paste a link or write your own.';
+
+  @override
+  String get library_emptyFolderTitle => 'Nothing in this folder yet';
+
+  @override
+  String get library_emptyFolderMessage =>
+      'Press and hold a recipe to add it to folders.';
+
+  @override
+  String get library_noMatchesTitle => 'No matching recipes';
+
+  @override
+  String get library_noMatchesMessage =>
+      'Try another word, or clear the search.';
+
+  @override
+  String get library_loadErrorTitle => 'Couldn\'t load your recipes';
+
+  @override
+  String get library_loadErrorMessage => 'Try again in a moment.';
+
+  @override
+  String get library_foldersSheetTitle => 'Folders';
+
+  @override
+  String get library_noFolders =>
+      'No folders yet. Create one to sort your recipes.';
+
+  @override
+  String get library_editFoldersHint => 'Edit folders';
+
+  @override
+  String library_minutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String library_hours(int hours) {
+    return '$hours h';
+  }
+
+  @override
+  String library_hoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
   String get recipe_title => 'Recipe';
 
   @override

@@ -9,6 +9,7 @@ environment:
   flutter: ">=3.50.0"
 
 dependencies:
+  clock: any
   cloud_functions: ^7.0.1
   collection: any
   data: any
