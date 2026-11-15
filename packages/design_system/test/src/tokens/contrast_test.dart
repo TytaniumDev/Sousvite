@@ -30,6 +30,13 @@ void main() {
           scheme.onPrimaryContainer,
           scheme.primaryContainer,
         ),
+        // Amounts in the editor's step text (StepText). Cooking mode drops
+        // the highlight, so only the standard schemes need this pair.
+        if (target < 7)
+          'primary on primary-container': (
+            scheme.primary,
+            scheme.primaryContainer,
+          ),
         'on-secondary on secondary': (scheme.onSecondary, scheme.secondary),
         'on-secondary-container on secondary-container': (
           scheme.onSecondaryContainer,

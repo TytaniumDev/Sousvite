@@ -304,6 +304,7 @@ Shared widgets live in `packages/design_system`. They follow Engineering §5 str
 
 - **Plain inputs.** A widget takes plain values (strings, numbers, enums, callbacks), never domain entities, repositories, or providers. Feature folders read providers and pass values down. This keeps each widget testable in isolation and lets it rebuild only when its inputs change.
 - **`const` constructors** and no widget-returning helper methods.
+- **Words come from the caller.** `design_system` has no strings of its own. Every label, unit word, and screen-reader text is a parameter, already localized by the app, so all user-facing strings stay in `app_en.arb`. Amounts are the exception that proves the rule: widgets take the `Quantity` itself (from `packages/units`) and format the number, while the unit word is still passed in.
 - **One concern each.** A widget that needs a timer or animation owns it locally (for example `TimerChip`), so ticking never rebuilds its parent.
 - **Every widget has golden tests** in all four schemes (§12).
 
@@ -319,18 +320,18 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 |---|---|---|
 | `RecipeCard` | Photo, recipe name (serif), total time, calories per serving, optional badges | `title`, `image`, `totalTime`, `caloriesPerServing`, `badges`, `onTap` |
 | `AmountText` | A formatted amount with fraction glyphs and an optional screen-reader label | `quantity` (`Quantity` from `units`), `unit` (localized word), `semanticsLabel`, `style` |
-| `StepText` | Step text with amounts placed inline and emphasized | `segments` (text and amount parts), `style` |
-| `MeasuringGuide` | Which measuring tools to use: `½ cup` `+` `¼ cup` | `tools` (list of tool labels) |
-| `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `amount`, `name`, `preparation`, `checked`, `onChanged` |
-| `IngredientSplitPreview` | How a typed line was split: amount, ingredient, and preparation as chips the user can fix | `amount`, `name`, `preparation`, `onEdit` |
+| `StepText` | Step text with amounts placed inline and emphasized | `segments` (`StepTextSegment` words and `StepAmountSegment` quantity and unit), `style`, `amountStyle`, `highlightAmounts` (editor) |
+| `MeasuringGuide` | Which measuring tools to use: `½ cup` `+` `¼ cup` | `tools` (quantity and unit word of each tool), `style` |
+| `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `quantity`, `unit`, `name`, `preparation`, `checked`, `onChanged` (null for read-only) |
+| `IngredientSplitPreview` | How a typed line was split: amount, ingredient, and preparation as chips the user can fix | `quantity`, `unit`, `name`, `preparation`, a spoken label for each part, `onEdit(part)` |
 | `MacroBar` | Horizontal bar of protein, carbs, and fat by calories, with small gaps between segments | `protein`, `carbs`, `fat` (grams) |
 | `MacroSummary` | Calories plus P / C / F grams, with the macro bar | `calories`, `protein`, `carbs`, `fat`, `basis` (per serving or batch) |
 | `NutrientRow` | One row in the detailed nutrients table | `label`, `value`, `unit`, `indent` |
 | `MatchStatusChip` | Where an ingredient's nutrition came from: USDA, Open Food Facts, Edited, or Not matched | `status` |
 | `ServingStepper` | − 4 servings + | `servings`, `onChanged`, `min`, `max` |
 | `BasisToggle` | Per serving / Per batch | `basis`, `onChanged` |
-| `SectionHeader` | A step section name ("Prep") with step count; drag handle in the editor | `title`, `count`, `reorderable` |
-| `TimerChip` | A time found in a step; tap to start; shows the countdown while running | `duration`, `label`, `onStart` |
+| `SectionHeader` | A step section name ("Prep") with step count; drag handle in the editor | `title`, `countLabel` ("3 steps"), `reorderIndex` and `reorderLabel` (show the drag handle) |
+| `TimerChip` | A time found in a step; tap to start; shows the countdown while running | `label`, `duration`, `startedAt` (null while idle), `doneLabel`, `onStart`, `onStop` |
 | `GroceryItemRow` | Checkbox, combined quantity, item name, and which recipes it came from | `quantity`, `name`, `sources`, `checked`, `onChanged` |
 | `ShareBadge` | "Shared" (joint share) or "Copy" so people know which they're editing | `kind` |
 | `ExperimentBadge` | Marks an experiment, in terracotta | `label` |
@@ -345,7 +346,9 @@ Details that matter:
 - **Amounts in steps** (`StepText`, `cookingAmount`): bold, in `primary`, with a `primary-container` highlight behind them in the editor so replacements are visible and easy to correct (PRD risk table). In cooking mode, the highlight is dropped and the amount is just bold `primary`, which is enough at that size.
 - **MacroBar** segments are always labeled nearby (by `MacroSummary` or a legend). Segments are separated by 2 dp gaps in the surface color so they read without relying on hue alone.
 - **MatchStatusChip** pairs color with an icon and a word: USDA and Open Food Facts are neutral (`surface-container-high` with an icon), Edited uses `secondary-container`, Not matched uses `warning-container` with a warning icon.
-- **TimerChip** is idle in `secondary-container`, running in `tertiary-container` with a live countdown, and done with a pulse (§8.2).
+- **TimerChip** is idle in `secondary-container`, running in `tertiary-container` with a live countdown, and done with a pulse (§8.2). The feature owns whether a timer runs and passes `startedAt`, so running timers survive step changes and collect in the tray; the chip only ticks its own countdown. Sound and vibration are the feature's job.
+- **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Read-only rows follow the theme's density (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp and toggle when tapped anywhere.
+- **MeasuringGuide** shows each tool as a `surface-container-high` pill joined by `+`, wrapping onto more lines when space runs out.
 
 ## 10. Patterns
 
@@ -471,7 +474,8 @@ packages/design_system/
       widgets/                  One file per component in §9.2
   assets/fonts/                 Newsreader and Plus Jakarta Sans variable fonts (OFL)
   test/
-    goldens/                    Light, dark, cooking-light, cooking-dark, 200% text
+    src/widgets/goldens/ci/     Text drawn as blocks, so they match on any machine
+    src/widgets/goldens/linux/  Real fonts and icons, for review; made on Linux only (CI)
     contrast_test.dart          §12 color pair checks
 ```
 
@@ -487,7 +491,7 @@ packages/design_system/
 ### 13.3 Rules
 
 - No hex colors, raw font sizes, or raw spacing numbers outside `packages/design_system`. A custom lint (or a `grep` check in CI) flags `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`.
-- `design_system` depends only on Flutter, `material_ui`, `material_symbols_icons`, `units` (pure Dart: `Quantity` and its formatting), and its own fonts. Never on `domain`, Riverpod, or any feature.
+- `design_system` depends only on Flutter, `material_ui`, `material_symbols_icons`, `units` (pure Dart: `Quantity` and its formatting), `clock` (so `TimerChip`'s countdown follows the test clock), and its own fonts. Never on `domain`, Riverpod, or any feature.
 - New shared widgets go into `design_system` only once two features need them. Until then they live in the feature folder.
 
 ## 14. Open questions
