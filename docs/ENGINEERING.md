@@ -297,7 +297,7 @@ Because both carry the same change log, **switching transports** means replaying
 `packages/measuring` holds two pure modules:
 
 - **Smart step text:** finds mentions of each ingredient in step text (name plus synonyms and head noun, longest match first) and inserts the scaled amount. Replacements are visible and editable (PRD risk table).
-- **Measuring decomposition:** turns an amount into the fewest tools the user owns, as a small search over their cups and spoons with a rounding tolerance. For example, ¾ cup → ½ cup + ¼ cup, and 5 tsp → 1 Tbsp + 2 tsp.
+- **Measuring decomposition:** turns an amount into the fewest tools the user owns, as a small search over their cups and spoons with a rounding tolerance. For example, ¾ cup → ½ cup + ¼ cup, and 5 tsp → 1 Tbsp + 2 tsp. `decompose` allows the same 5% tolerance as measurable rounding; among plans with the fewest fills it picks the closest, then the one with the fewest different tools, then larger tools. It returns each tool once with a fill count (2 × 1 tsp), largest first. Metric volumes are converted to the US tools; masses and counts get no plan. The tool set is passed in: settings owns the default set.
 - **Step timers:** finds the times in a step ("bake 20 to 25 minutes", "1 hour 15 minutes", "half an hour") and returns each one's text, position, and shortest and longest duration, so cooking mode can offer a `TimerChip` and choose which end of a range to count down from. "Overnight" counts as 8 to 12 hours. Intervals ("every 5 minutes"), limits on their own ("up to 3 hours"), days (storage, not cooking), and vague times ("a few minutes") are left out.
 
 ## 14. Recipe import *(Decided)*
