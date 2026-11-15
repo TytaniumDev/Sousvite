@@ -259,6 +259,7 @@ Because both carry the same change log, **switching transports** means replaying
 
 - **Bundled:** USDA FoodData Central *Foundation Foods* and *SR Legacy* (generic ingredients), with nutrients and household portions. `tools/usda_builder` turns the official CSV release into a compact SQLite file, a few MB in size. The file is committed to the repo as a normal file (no Git LFS) and regenerated only with the tool. On web it's downloaded once on first launch and cached.
 - **Online, then cached:** USDA *Branded Foods* through our Cloud Function proxy, and Open Food Facts via its public API. Looked-up foods are saved to Drift, so recipes using them keep working offline.
+- The USDA proxy is the `usdaProxy` callable function (`functions/src/usda_proxy/`), with App Check enforced. It takes `{action: 'search', query, pageNumber?, pageSize?}` (Branded Foods only; page size 25 by default, at most 50) or `{action: 'food', fdcId}`, and returns FoodData Central's JSON unchanged. The `USDA_API_KEY` secret goes upstream in a header and never reaches the client. Responses are cached in the server-only `usdaCache` Firestore collection (searches 7 days, foods 30 days, case-insensitive searches share an entry), and a TTL policy on `expiresAt` deletes old entries. Errors: `invalid-argument`, `not-found`, `resource-exhausted` (USDA's rate limit), `unavailable`.
 - **Licensing:** USDA data is public domain. Open Food Facts data is ODbL (share-alike), so we keep attribution and keep OFF data separate from our own data.
 
 ### 11.2 Matching and math
