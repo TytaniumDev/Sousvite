@@ -176,6 +176,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get import_title => 'Import recipe';
 
   @override
+  String get import_fromWeb => 'From a web page';
+
+  @override
+  String get import_urlLabel => 'Recipe link';
+
+  @override
+  String get import_urlHint => 'Paste a link to a recipe';
+
+  @override
+  String get import_importButton => 'Import';
+
+  @override
+  String get import_importing => 'Getting the recipe…';
+
+  @override
+  String get import_thisSite => 'this site';
+
+  @override
+  String get import_invalidUrl =>
+      'That doesn\'t look like a link. Check it and try again.';
+
+  @override
+  String import_unreachable(String site) {
+    return 'Couldn\'t reach $site. Check your connection and try again.';
+  }
+
+  @override
+  String import_noRecipe(String site) {
+    return 'Couldn\'t find a recipe on $site. You can add it by hand instead.';
+  }
+
+  @override
+  String get import_invalidFile => 'That file isn\'t an Umami export.';
+
+  @override
+  String get import_notAvailable => 'This kind of import isn\'t ready yet.';
+
+  @override
+  String get import_failed =>
+      'Something went wrong with the import. Try again.';
+
+  @override
+  String get import_umami => 'Umami';
+
+  @override
+  String get import_umamiMessage =>
+      'Bring your Umami library in, or export your recipes in a format Umami can read.';
+
+  @override
+  String get import_umamiImport => 'Import from Umami';
+
+  @override
+  String get import_umamiImporting => 'Importing…';
+
+  @override
+  String get import_umamiExport => 'Export for Umami';
+
+  @override
+  String get import_umamiExporting => 'Exporting…';
+
+  @override
+  String import_umamiImported(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Imported $count recipes',
+      one: 'Imported 1 recipe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String import_umamiExported(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Exported $count recipes',
+      one: 'Exported 1 recipe',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get nutrition_title => 'Nutrition';
 
   @override

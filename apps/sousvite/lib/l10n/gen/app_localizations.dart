@@ -328,6 +328,126 @@ abstract class AppLocalizations {
   /// **'Import recipe'**
   String get import_title;
 
+  /// Import screen section heading for importing from a URL.
+  ///
+  /// In en, this message translates to:
+  /// **'From a web page'**
+  String get import_fromWeb;
+
+  /// Label of the field for a recipe's web address.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe link'**
+  String get import_urlLabel;
+
+  /// Hint in the empty recipe link field.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a link to a recipe'**
+  String get import_urlHint;
+
+  /// Button that imports the recipe at the link.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get import_importButton;
+
+  /// Shown while a recipe is being imported.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting the recipe…'**
+  String get import_importing;
+
+  /// Stands in for a site's name in import messages when it is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'this site'**
+  String get import_thisSite;
+
+  /// Shown when the recipe link isn't a web address.
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t look like a link. Check it and try again.'**
+  String get import_invalidUrl;
+
+  /// Shown when the site can't be reached.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach {site}. Check your connection and try again.'**
+  String import_unreachable(String site);
+
+  /// Shown when the page has no recipe the app can read.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t find a recipe on {site}. You can add it by hand instead.'**
+  String import_noRecipe(String site);
+
+  /// Shown when the picked file can't be read as an Umami export.
+  ///
+  /// In en, this message translates to:
+  /// **'That file isn\'t an Umami export.'**
+  String get import_invalidFile;
+
+  /// Shown while an importer is still being built.
+  ///
+  /// In en, this message translates to:
+  /// **'This kind of import isn\'t ready yet.'**
+  String get import_notAvailable;
+
+  /// Shown when an import fails for an unexpected reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong with the import. Try again.'**
+  String get import_failed;
+
+  /// Import screen section heading for Umami import and export.
+  ///
+  /// In en, this message translates to:
+  /// **'Umami'**
+  String get import_umami;
+
+  /// Explains the Umami section.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your Umami library in, or export your recipes in a format Umami can read.'**
+  String get import_umamiMessage;
+
+  /// Button that imports an Umami export file.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Umami'**
+  String get import_umamiImport;
+
+  /// Import button label while an Umami import runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing…'**
+  String get import_umamiImporting;
+
+  /// Button that exports recipes in Umami's format.
+  ///
+  /// In en, this message translates to:
+  /// **'Export for Umami'**
+  String get import_umamiExport;
+
+  /// Export button label while an Umami export runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting…'**
+  String get import_umamiExporting;
+
+  /// Snackbar after an Umami import.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Imported 1 recipe} other{Imported {count} recipes}}'**
+  String import_umamiImported(int count);
+
+  /// Snackbar after an Umami export.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Exported 1 recipe} other{Exported {count} recipes}}'**
+  String import_umamiExported(int count);
+
   /// Title of the nutrition match review screen.
   ///
   /// In en, this message translates to:
