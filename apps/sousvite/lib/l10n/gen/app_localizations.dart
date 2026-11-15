@@ -904,6 +904,66 @@ abstract class AppLocalizations {
   /// **'Cooking'**
   String get cooking_title;
 
+  /// Tooltip of the button that leaves cooking mode, keeping your place.
+  ///
+  /// In en, this message translates to:
+  /// **'Close cooking mode'**
+  String get cooking_close;
+
+  /// Where you are in cooking mode, for a step outside any section.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {number} of {count}'**
+  String cooking_progress(int number, int count);
+
+  /// Where you are in cooking mode: the step's section, then the step number in the whole recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'{section} · Step {number} of {count}'**
+  String cooking_sectionProgress(String section, int number, int count);
+
+  /// Button that goes to the previous step.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get cooking_back;
+
+  /// Button that goes to the next step.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get cooking_next;
+
+  /// Button on the last step that finishes cooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get cooking_done;
+
+  /// Heading of the checklist of the ingredients a step uses.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients for this step'**
+  String get cooking_stepIngredients;
+
+  /// Shown on a timer chip when its time has run out.
+  ///
+  /// In en, this message translates to:
+  /// **'Time\'s up'**
+  String get cooking_timerDone;
+
+  /// Title in cooking mode when the recipe has no steps.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps yet'**
+  String get cooking_noStepsTitle;
+
+  /// Message in cooking mode when the recipe has no steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Add steps to this recipe to cook it step by step.'**
+  String get cooking_noStepsMessage;
+
   /// Title of the grocery list screen.
   ///
   /// In en, this message translates to:
