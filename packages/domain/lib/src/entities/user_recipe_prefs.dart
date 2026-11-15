@@ -1,20 +1,8 @@
 import 'package:domain/src/value_objects/ids.dart';
-import 'package:domain/src/value_objects/quantity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:units/units.dart';
 
 part 'user_recipe_prefs.freezed.dart';
-
-/// How amounts are shown for one recipe.
-enum UnitSystem() {
-  /// As written in the recipe.
-  original,
-
-  /// US customary units.
-  us,
-
-  /// Metric units.
-  metric,
-}
 
 /// This user's settings for one recipe. Kept apart from [RecipeId]'s own
 /// fields so a joint share never overwrites another member's choices

@@ -91,8 +91,12 @@ apps/
                            cooking, grocery, experiments, sharing,
                            settings, account
 packages/
+  units/                   Quantity, Unit, Amount, conversion, scaling,
+                           measurable rounding, fraction-glyph formatting.
+                           Pure Dart with no repo dependencies.
   domain/                  Entities, value objects, repository interfaces,
                            pure logic. No Flutter, Drift, or Firebase.
+                           Re-exports units.
   data/                    Drift schema, DAOs, repository implementations
   sync/                    Change log, hybrid logical clock, merge,
                            transports (Google Drive, Firestore)
@@ -108,7 +112,9 @@ functions/                 Firebase Cloud Functions (TypeScript)
 
 Rules:
 
-- `domain` depends on nothing in the repo. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain`.
+- `units` depends on nothing in the repo. It is the shared vocabulary for amounts, so the UI and the domain use the same `Quantity` type *(Decided: Tyler, 2026-11-14)*.
+- `domain` depends only on `units`, and re-exports it, so `package:domain/domain.dart` still gives every unit type. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain`.
+- `design_system` may depend on `units` (never on `domain`), so widgets such as `AmountText` take a `Quantity` directly.
 - `sync` depends only on `domain` and never on Drift. `data` depends on `sync` for the change model and clock (its `ChangeRecorder` writes the change log), and implements the local store the sync engine defines, so the engine is tested without a database.
 - Only `apps/sousvite` depends on Flutter, except for `design_system`.
 - Features are folders inside the app, not packages, to avoid glue code between them.
@@ -146,7 +152,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 - The database is the single source of truth. The UI reads only from it.
 - **Full-text search** (FTS5) indexes recipe titles, ingredient names, and folder names (PRD 7.1).
 - **Amounts** are exact rational numbers (numerator and denominator), not floats, so ⅓ cup × 3 is exactly 1 cup.
-- **Units** (`packages/domain/lib/src/units/`): each unit belongs to a family (US volume, metric volume, US mass, metric mass, count) and counts a whole number of the family's smallest unit, so conversion within a family is exact. US to metric is approximate and always ends in **measurable rounding**: friendly cup fractions (¼, ⅓, ½, ⅔, ¾), tablespoons to ½, teaspoons to ⅛, metric to 0.5, 1, or 5 depending on size, ounces and pounds to ¼, counts to ¼ or ½. A friendly amount may be at most 5% off before rounding falls back to a smaller unit. Rounding applies only to scaled or converted amounts; unscaled amounts show as written.
+- **Units** (`packages/units/`): each unit belongs to a family (US volume, metric volume, US mass, metric mass, count) and counts a whole number of the family's smallest unit, so conversion within a family is exact. US to metric is approximate and always ends in **measurable rounding**: friendly cup fractions (¼, ⅓, ½, ⅔, ¾), tablespoons to ½, teaspoons to ⅛, metric to 0.5, 1, or 5 depending on size, ounces and pounds to ¼, counts to ¼ or ½. A friendly amount may be at most 5% off before rounding falls back to a smaller unit. Rounding applies only to scaled or converted amounts; unscaled amounts show as written.
 - **Ordering** of sections, steps, and ingredients uses fractional index keys, so moving one item changes one row and merges cleanly during sync.
 - **Migrations** are versioned with Drift's schema tooling and tested with generated schema snapshots.
 

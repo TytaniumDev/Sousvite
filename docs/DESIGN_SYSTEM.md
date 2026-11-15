@@ -195,7 +195,7 @@ Defined in an `AppTypography` theme extension. All of them use Plus Jakarta Sans
 
 - Newsreader is for names and titles only. Never for body text, buttons, or numbers. Cooking mode is all Plus Jakarta Sans.
 - Every number that lines up with another number uses tabular figures.
-- Amounts are written with fraction glyphs (`1 ½ cups`, never `1 1/2 cups` or `1.5 cups` in US units). The formatter lives in `packages/measuring`, and the widget adds a screen-reader label ("one and a half cups").
+- Amounts are written with fraction glyphs (`1 ½ cups`, never `1 1/2 cups` or `1.5 cups` in US units). `QuantityFormat.format()` in `packages/units` writes the number, the app supplies the localized unit word, and `AmountText` joins them with a non-breaking space. A spoken label ("one and a half cups") can be passed for screen readers.
 - Sentence case everywhere, including buttons and titles ("Add to grocery list", not "Add To Grocery List").
 - Line length for reading (notes, steps on wide screens) stays under about 70 characters; the recipe column maxes out at 720 dp.
 - The app supports system text scaling up to 200%. Cooking mode caps the scale at 1.5×, because its base sizes are already about twice body size (§10.4).
@@ -318,7 +318,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | Component | What it shows | Key inputs |
 |---|---|---|
 | `RecipeCard` | Photo, recipe name (serif), total time, calories per serving, optional badges | `title`, `image`, `totalTime`, `caloriesPerServing`, `badges`, `onTap` |
-| `AmountText` | A formatted amount with fraction glyphs and a screen-reader label | `quantity` (rational), `unit`, `style` |
+| `AmountText` | A formatted amount with fraction glyphs and an optional screen-reader label | `quantity` (`Quantity` from `units`), `unit` (localized word), `semanticsLabel`, `style` |
 | `StepText` | Step text with amounts placed inline and emphasized | `segments` (text and amount parts), `style` |
 | `MeasuringGuide` | Which measuring tools to use: `½ cup` `+` `¼ cup` | `tools` (list of tool labels) |
 | `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `amount`, `name`, `preparation`, `checked`, `onChanged` |
@@ -487,7 +487,7 @@ packages/design_system/
 ### 13.3 Rules
 
 - No hex colors, raw font sizes, or raw spacing numbers outside `packages/design_system`. A custom lint (or a `grep` check in CI) flags `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`.
-- `design_system` depends only on Flutter, `material_ui`, `material_symbols_icons`, and its own fonts. Never on `domain`, Riverpod, or any feature.
+- `design_system` depends only on Flutter, `material_ui`, `material_symbols_icons`, `units` (pure Dart: `Quantity` and its formatting), and its own fonts. Never on `domain`, Riverpod, or any feature.
 - New shared widgets go into `design_system` only once two features need them. Until then they live in the feature folder.
 
 ## 14. Open questions

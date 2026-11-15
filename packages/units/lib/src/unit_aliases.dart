@@ -1,4 +1,4 @@
-import 'package:domain/src/value_objects/unit.dart';
+import 'package:units/src/unit.dart';
 
 /// The [Unit] that [text] names, such as "Tbsp." or "cups", or null when
 /// [text] is not a unit the app knows.

@@ -1,5 +1,5 @@
-import 'package:domain/domain.dart';
 import 'package:test/test.dart';
+import 'package:units/units.dart';
 
 void main() {
   group(Unit, () {

@@ -2,6 +2,11 @@
 /// Sousvite.
 library;
 
+// Quantities and units live in their own package so design_system can use
+// them without depending on the domain. Re-exported here, so domain users
+// import one library.
+export 'package:units/units.dart';
+
 export 'src/entities/app_settings.dart';
 export 'src/entities/experiment.dart';
 export 'src/entities/folder.dart';
@@ -29,13 +34,6 @@ export 'src/repositories/grocery_repository.dart';
 export 'src/repositories/measuring_tool_repository.dart';
 export 'src/repositories/recipe_repository.dart';
 export 'src/repositories/user_recipe_prefs_repository.dart';
-export 'src/units/amount.dart';
-export 'src/units/measurable_rounding.dart';
-export 'src/units/scaling.dart';
-export 'src/units/unit_aliases.dart';
-export 'src/units/unit_conversion.dart';
 export 'src/value_objects/ids.dart';
 export 'src/value_objects/nutrition_source.dart';
-export 'src/value_objects/quantity.dart';
 export 'src/value_objects/sort_key.dart';
-export 'src/value_objects/unit.dart';

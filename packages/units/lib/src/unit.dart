@@ -1,4 +1,5 @@
-import 'package:domain/src/entities/user_recipe_prefs.dart';
+import 'package:units/src/quantity_format.dart';
+import 'package:units/src/unit_system.dart';
 
 /// What a [Unit] measures.
 enum UnitDimension() {
@@ -31,8 +32,9 @@ enum UnitFamily(
 
 /// A measuring unit the app understands.
 ///
-/// Display text (such as "Tbsp" or "cups") is not stored here. It is
-/// formatted by `packages/measuring` and localized in the app.
+/// Display text (such as "Tbsp" or "cups") is not stored here. Unit words
+/// are user-facing strings, so the app localizes them; the number is
+/// formatted by [QuantityFormat].
 enum Unit(
   /// The family this unit converts within.
   final UnitFamily family,

@@ -17,7 +17,8 @@ If your change contradicts one of these docs, update the doc in the same PR. If 
 
 ```
 apps/sousvite/            Flutter app. Features are folders in lib/features/
-packages/domain/          Entities, value objects, repository interfaces. Pure Dart
+packages/units/           Quantity, Unit, Amount, and the unit math. Pure Dart, no dependencies
+packages/domain/          Entities, value objects, repository interfaces. Pure Dart; re-exports units
 packages/data/            Drift schema, DAOs, repository implementations. Pure Dart
 packages/design_system/   Tokens, theme, shared widgets. Flutter only
 packages/<pure>/          sync, ingredient_parser, recipe_import, nutrition, measuring
@@ -79,7 +80,7 @@ npm test                   # builds, starts the emulators (demo-sousvite), runs 
 
 - Layers: presentation → application → domain ← data. The domain knows nothing about Flutter, Drift, or Firebase.
 - Only `apps/sousvite` and `packages/design_system` depend on Flutter.
-- `design_system` never depends on `domain`, Riverpod, or a feature.
+- `design_system` never depends on `domain`, Riverpod, or a feature. It may use `units`, so widgets can take a `Quantity`.
 - **Features are folders, not packages:** `lib/features/<name>/` with `presentation/`, `application/`, and `data/` when needed.
 - **A feature's public surface is one file,** `lib/features/<name>/<name>.dart`. Other features import only that file.
 - **Routes live in the feature:** `<name>_routes.dart` exposes `<Name>Routes.path`, `.routes`, and `.location(...)` when the path has parameters. `lib/app/router.dart` only composes them. Navigate with `context.go(CookingRoutes.location(id))`, never a string literal.

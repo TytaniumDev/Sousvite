@@ -1,4 +1,4 @@
-import 'package:domain/src/value_objects/quantity.dart';
+import 'package:units/src/quantity.dart';
 
 /// The multiplier that scales a recipe written for [from] servings so it
 /// makes [to] servings (PRD 7.6). Exact, so 4 to 6 servings is 3/2.
