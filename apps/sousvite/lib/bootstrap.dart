@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sousvite/app/services/error_reporter.dart';
+import 'package:sousvite/app/services/firebase.dart';
+import 'package:sousvite/firebase_options.dart';
 
 /// Starts the app: sets up error reporting, then runs [builder] inside the
 /// app's [ProviderContainer].
@@ -12,7 +14,10 @@ import 'package:sousvite/app/services/error_reporter.dart';
 /// RevenueCat) goes here, behind the service interfaces in `app/services/`.
 Future<void> bootstrap(Widget Function() builder) async {
   WidgetsFlutterBinding.ensureInitialized();
-  final container = ProviderContainer();
+  final firebase = await initFirebase(DefaultFirebaseOptions.currentPlatform);
+  final container = ProviderContainer(
+    overrides: [firebaseAppProvider.overrideWithValue(firebase)],
+  );
   await initErrorReporting(container.read(sentryDsnProvider));
   // After Sentry starts, so these handlers replace Sentry's own and every
   // error takes the one path through ErrorReporter.

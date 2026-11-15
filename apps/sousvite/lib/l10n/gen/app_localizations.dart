@@ -339,6 +339,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account'**
   String get account_title;
+
+  /// Explains on the account screen why someone might sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to sync your recipes across your devices and share them. Everything else works without an account.'**
+  String get account_signInBody;
+
+  /// Button that signs in with a Google account.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get account_signInWithGoogle;
+
+  /// Button that signs in with an Apple account.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Apple'**
+  String get account_signInWithApple;
+
+  /// Note under the sign-in buttons: Apple accounts can't use Drive sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing through Google Drive needs a Google account.'**
+  String get account_driveNeedsGoogle;
+
+  /// Shown in place of a name when the account has no name or email.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account'**
+  String get account_unnamedUser;
+
+  /// Fallback line under the account name when the sign-in method is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in'**
+  String get account_signedIn;
+
+  /// Line under the account name for a Google account.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with Google'**
+  String get account_signedInWithGoogle;
+
+  /// Line under the account name for an Apple account.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with Apple'**
+  String get account_signedInWithApple;
+
+  /// Shown above the sign-out button.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recipes stay on this device when you sign out.'**
+  String get account_signOutNote;
+
+  /// Button that signs out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get account_signOut;
+
+  /// Button that starts deleting the account.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get account_deleteAccount;
+
+  /// Title of the dialog that confirms deleting the account.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get account_deleteTitle;
+
+  /// Explains what deleting the account removes and keeps (PRD 7.9).
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes your account and everything Sousvite stores for you online. It can\'t be undone. Your recipes stay on this device, and recipes you share jointly stay with the others in the share.'**
+  String get account_deleteBody;
+
+  /// Confirms deleting the account in the dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get account_deleteConfirm;
+
+  /// Snackbar after the account is deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted'**
+  String get account_deleted;
+
+  /// Snackbar when signing in, signing out, or deleting the account fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach your account. Check your connection and try again.'**
+  String get account_error;
 }
 
 class _AppLocalizationsDelegate

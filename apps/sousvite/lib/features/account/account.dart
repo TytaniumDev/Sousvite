@@ -3,3 +3,4 @@
 library;
 
 export 'account_routes.dart';
+export 'application/auth_user.dart';

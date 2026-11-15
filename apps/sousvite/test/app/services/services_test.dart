@@ -18,9 +18,10 @@ void main() {
       final auth = container.read(authServiceProvider);
 
       expect(await auth.watchUser().first, isNull);
-      await expectLater(auth.signInWithGoogle(), throwsUnsupportedError);
-      await expectLater(auth.signInWithApple(), throwsUnsupportedError);
+      await expectLater(auth.signInWithGoogle(), throwsA(isA<AuthFailure>()));
+      await expectLater(auth.signInWithApple(), throwsA(isA<AuthFailure>()));
       await auth.signOut();
+      expect(await auth.deleteAccount(), AuthOutcome.completed);
     });
 
     test('entitlements are never Pro', () async {
@@ -61,6 +62,20 @@ void main() {
         const AuthUser(id: '1', displayName: 'Tyler').hashCode,
       );
       expect(user, isNot(const AuthUser(id: '2')));
+      expect(
+        user,
+        isNot(
+          const AuthUser(
+            id: '1',
+            displayName: 'Tyler',
+            method: SignInMethod.apple,
+          ),
+        ),
+      );
+    });
+
+    test('AuthFailure names its cause', () {
+      expect('${AuthFailure(StateError('offline'))}', contains('offline'));
     });
   });
 
