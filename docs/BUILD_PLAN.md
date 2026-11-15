@@ -255,7 +255,7 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 
 | ID | Task | Owns | Depends on | Done when |
 |---|---|---|---|---|
-| REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Firebase Hosting deploy for web, Sentry symbol and source-map upload. Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile` | §8 accounts, OBS-1 | A tagged commit produces builds testers can install |
+| REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Sentry symbol and source-map upload. (The web deploy to Firebase Hosting already runs on every push to `main` from `.github/workflows/deploy_web.yaml`.) Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile` | §8 accounts, OBS-1 | A tagged commit produces builds testers can install |
 | E2E-1 | **Integration tests.** Import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device (ENGINEERING §15) | `app/integration_test/**` | All features | Runs in CI on web and one mobile target |
 
 ## 7. Beta readiness
@@ -289,7 +289,7 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
 - [x] Add an iOS app, an Android app, and a web app to the project, using the app id from §8.0. Registered 2026-11-14 as `Sousvite iOS`, `Sousvite Android`, and `Sousvite Web`.
 - [x] Turn on **Firestore** (production mode, region close to you, for example `us-central1`), **Cloud Storage**, and **Hosting**. Done 2026-11-14 with deny-all rules; Storage is in `us-central1` for the no-cost tier.
 - [ ] **App Check:** register App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web).
-- [ ] For CI deploys (`REL-1`): create a service account with the Firebase deploy roles, or set up Workload Identity Federation for GitHub, and add it as a GitHub Actions secret.
+- [ ] For CI deploys (`deploy_web.yaml` now, `REL-1` later): in [Google Cloud → IAM → Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts?project=sousvite), create `github-deploy` with the roles **Firebase Hosting Admin**, **API Keys Viewer**, and **Cloud Run Viewer**. Under its Keys tab, add a JSON key, save it as `~/Sousvite-secrets/firebase-deploy.json`, and run `tools/secrets/set_github_secrets.sh` (it sets `FIREBASE_SERVICE_ACCOUNT`).
 - [ ] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets).
 
 ### 8.2 Apple Developer Program (needed by Apple sign-in, iOS builds, TestFlight, iOS purchases)
