@@ -179,6 +179,168 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutrition_title => 'Nutrition';
 
   @override
+  String get nutrition_perServing => 'Per serving';
+
+  @override
+  String get nutrition_perBatch => 'Per batch';
+
+  @override
+  String nutrition_perServingOf(String servings) {
+    return 'Per serving (1 of $servings)';
+  }
+
+  @override
+  String get nutrition_wholeBatch => 'Whole batch';
+
+  @override
+  String get nutrition_calories => 'Calories';
+
+  @override
+  String get nutrition_protein => 'Protein';
+
+  @override
+  String get nutrition_carbs => 'Carbs';
+
+  @override
+  String get nutrition_fat => 'Fat';
+
+  @override
+  String get nutrition_saturatedFat => 'Saturated fat';
+
+  @override
+  String get nutrition_transFat => 'Trans fat';
+
+  @override
+  String get nutrition_cholesterol => 'Cholesterol';
+
+  @override
+  String get nutrition_sodium => 'Sodium';
+
+  @override
+  String get nutrition_fiber => 'Fiber';
+
+  @override
+  String get nutrition_sugars => 'Sugars';
+
+  @override
+  String get nutrition_vitaminD => 'Vitamin D';
+
+  @override
+  String get nutrition_calcium => 'Calcium';
+
+  @override
+  String get nutrition_iron => 'Iron';
+
+  @override
+  String get nutrition_potassium => 'Potassium';
+
+  @override
+  String get nutrition_vitaminA => 'Vitamin A';
+
+  @override
+  String get nutrition_vitaminC => 'Vitamin C';
+
+  @override
+  String get nutrition_unitKilocalories => 'kcal';
+
+  @override
+  String get nutrition_unitGrams => 'g';
+
+  @override
+  String get nutrition_unitMilligrams => 'mg';
+
+  @override
+  String get nutrition_unitMicrograms => 'µg';
+
+  @override
+  String nutrition_excludesUnmatched(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Excludes $count unmatched ingredients',
+      one: 'Excludes 1 unmatched ingredient',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nutrition_fix => 'Fix';
+
+  @override
+  String get nutrition_servingSize => 'Servings';
+
+  @override
+  String nutrition_servingsUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'servings',
+      one: 'serving',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nutrition_fewerServings => 'Fewer servings';
+
+  @override
+  String get nutrition_moreServings => 'More servings';
+
+  @override
+  String get nutrition_nutrients => 'Nutrients';
+
+  @override
+  String get nutrition_ingredients => 'Ingredients';
+
+  @override
+  String get nutrition_noIngredients => 'No ingredients yet';
+
+  @override
+  String get nutrition_noIngredientsMessage =>
+      'Add ingredients to the recipe to see its nutrition.';
+
+  @override
+  String get nutrition_sourceUsda => 'USDA';
+
+  @override
+  String get nutrition_sourceOpenFoodFacts => 'Open Food Facts';
+
+  @override
+  String get nutrition_edited => 'Edited';
+
+  @override
+  String get nutrition_notMatched => 'Not matched';
+
+  @override
+  String get nutrition_notCounted => 'Not counted in the totals';
+
+  @override
+  String nutrition_matchedFood(String food, String grams) {
+    return '$food · $grams g';
+  }
+
+  @override
+  String get nutrition_changeMatch => 'Change match';
+
+  @override
+  String get nutrition_weight => 'Weight';
+
+  @override
+  String get nutrition_weightNeeded => 'Enter the weight in grams';
+
+  @override
+  String get nutrition_saveWeight => 'Save weight';
+
+  @override
+  String get nutrition_leaveUnmatched => 'Leave unmatched';
+
+  @override
+  String get nutrition_searchFoods => 'Search foods';
+
+  @override
+  String get nutrition_noFoods => 'No foods found';
+
+  @override
   String get cooking_title => 'Cooking';
 
   @override

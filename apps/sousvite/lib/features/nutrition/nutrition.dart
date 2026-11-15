@@ -3,3 +3,4 @@
 library;
 
 export 'nutrition_routes.dart';
+export 'presentation/nutrition_summary.dart' show NutritionSummary;
