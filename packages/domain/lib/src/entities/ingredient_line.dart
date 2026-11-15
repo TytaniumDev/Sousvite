@@ -1,8 +1,7 @@
 import 'package:domain/src/value_objects/ids.dart';
-import 'package:domain/src/value_objects/quantity.dart';
 import 'package:domain/src/value_objects/sort_key.dart';
-import 'package:domain/src/value_objects/unit.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:units/units.dart';
 
 part 'ingredient_line.freezed.dart';
 

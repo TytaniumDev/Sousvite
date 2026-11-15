@@ -1,6 +1,6 @@
-import 'package:domain/src/value_objects/quantity.dart';
-import 'package:domain/src/value_objects/unit.dart';
 import 'package:meta/meta.dart';
+import 'package:units/src/quantity.dart';
+import 'package:units/src/unit.dart';
 
 /// A [Quantity] together with its [Unit], such as ⅓ cup.
 ///

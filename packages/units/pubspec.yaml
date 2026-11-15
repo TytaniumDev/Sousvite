@@ -1,0 +1,17 @@
+name: units
+description: >-
+  Exact quantities, measuring units, and the math between them. Pure Dart,
+  shared by domain and design_system. ENGINEERING.md §4.2.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  meta: ^1.17.0
+
+dev_dependencies:
+  test: ^1.30.0
+  very_good_analysis: ^11.0.0

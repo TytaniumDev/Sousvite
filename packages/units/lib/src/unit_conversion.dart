@@ -1,6 +1,6 @@
-import 'package:domain/src/units/amount.dart';
-import 'package:domain/src/value_objects/quantity.dart';
-import 'package:domain/src/value_objects/unit.dart';
+import 'package:units/src/amount.dart';
+import 'package:units/src/quantity.dart';
+import 'package:units/src/unit.dart';
 
 /// Milliliters in one US teaspoon. Exact: the US gallon is 231 cubic
 /// inches and the inch is 2.54 cm.

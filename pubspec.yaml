@@ -15,4 +15,5 @@ workspace:
   - packages/nutrition
   - packages/recipe_import
   - packages/sync
+  - packages/units
   - tools/usda_builder

@@ -1,5 +1,6 @@
 import 'package:domain/src/entities/user_recipe_prefs.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:units/units.dart';
 
 part 'app_settings.freezed.dart';
 
