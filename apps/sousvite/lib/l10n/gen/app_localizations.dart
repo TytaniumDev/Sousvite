@@ -466,6 +466,18 @@ abstract class AppLocalizations {
   /// **'Notes'**
   String get recipe_notes;
 
+  /// Heading of the recipe's nutrition section.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get recipe_nutrition;
+
+  /// Button that opens the full nutrition screen.
+  ///
+  /// In en, this message translates to:
+  /// **'All nutrients'**
+  String get recipe_allNutrients;
+
   /// Title of the recipe editor.
   ///
   /// In en, this message translates to:

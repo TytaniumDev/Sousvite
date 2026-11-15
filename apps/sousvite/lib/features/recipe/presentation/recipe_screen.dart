@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
 import 'package:sousvite/features/recipe/presentation/ingredients_section.dart';
+import 'package:sousvite/features/recipe/presentation/nutrition_section.dart';
 import 'package:sousvite/features/recipe/presentation/recipe_actions.dart';
 import 'package:sousvite/features/recipe/presentation/recipe_header.dart';
 import 'package:sousvite/features/recipe/presentation/recipe_menu.dart';
@@ -13,7 +14,8 @@ import 'package:sousvite/features/recipe/presentation/steps_section.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
-/// The recipe page: name, actions, ingredients, steps, and notes
+/// The recipe page: name, actions, ingredients, steps, nutrition, and
+/// notes
 /// (DESIGN_SYSTEM.md §10.1).
 ///
 /// This widget only watches whether the recipe exists; each part below
@@ -78,6 +80,7 @@ class const _RecipeBody({required final RecipeId recipeId})
           const SizedBox(height: AppSpacing.space8),
           StepsSection(recipeId: recipeId),
         ],
+        NutritionSection(recipeId: recipeId),
         RecipeNotes(recipeId: recipeId),
       ],
     );

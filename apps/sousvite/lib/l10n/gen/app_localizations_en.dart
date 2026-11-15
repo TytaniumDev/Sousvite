@@ -272,6 +272,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recipe_notes => 'Notes';
 
   @override
+  String get recipe_nutrition => 'Nutrition';
+
+  @override
+  String get recipe_allNutrients => 'All nutrients';
+
+  @override
   String get editor_title => 'Edit recipe';
 
   @override

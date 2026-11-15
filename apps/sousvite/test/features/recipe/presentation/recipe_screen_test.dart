@@ -13,6 +13,7 @@ import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/fake_user_recipe_prefs_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 
 void main() {
   const recipeId = RecipeId('r1');
@@ -71,6 +72,7 @@ void main() {
         recipeRepositoryProvider.overrideWithValue(recipes),
         userRecipePrefsRepositoryProvider.overrideWithValue(prefs),
         folderRepositoryProvider.overrideWithValue(FakeFolderRepository()),
+        foodRepositoryProvider.overrideWithValue(FakeFoodRepository()),
       ],
     );
     await tester.pumpAndSettle();
@@ -93,8 +95,6 @@ void main() {
     await tester.scrollUntilVisible(find.text('Prep'), 100);
     expect(find.text('Prep'), findsOneWidget);
     expect(find.text('1 step'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Rest the batter.'), 100);
-    expect(find.text('Rest the batter.'), findsOneWidget);
 
     // Loose steps come first, then each section, numbered through.
     final tiles = tester.widgetList<RecipeStepTile>(
@@ -104,6 +104,9 @@ void main() {
       ('cook', 1),
       ('mix', 2),
     ]);
+
+    await tester.scrollUntilVisible(find.text('Rest the batter.'), 100);
+    expect(find.text('Rest the batter.'), findsOneWidget);
   });
 
   testWidgets('scaling servings changes amounts and rebuilds only rows', (
@@ -210,6 +213,7 @@ void main() {
           recipeRepositoryProvider.overrideWithValue(recipes),
           userRecipePrefsRepositoryProvider.overrideWithValue(prefs),
           folderRepositoryProvider.overrideWithValue(FakeFolderRepository()),
+          foodRepositoryProvider.overrideWithValue(FakeFoodRepository()),
         ],
       );
       await tester.pumpAndSettle();
@@ -220,6 +224,16 @@ void main() {
       await tester.tap(find.text('Start cooking'));
       await tester.pumpAndSettle();
       expect(opened, ['/cook/r1']);
+    });
+
+    testWidgets('all nutrients opens the nutrition screen', (tester) async {
+      await pumpWithRouter(tester);
+      await tester.scrollUntilVisible(find.text('All nutrients'), 100);
+      await tester.ensureVisible(find.text('All nutrients'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('All nutrients'));
+      await tester.pumpAndSettle();
+      expect(opened, ['/nutrition/r1']);
     });
 
     for (final (item, location) in [

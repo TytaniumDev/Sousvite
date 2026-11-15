@@ -130,6 +130,10 @@
   "@recipe_stepLabel": {"description": "What a screen reader says before a step's text.", "placeholders": {"number": {"type": "int"}}},
   "recipe_notes": "Notes",
   "@recipe_notes": {"description": "Heading of the recipe's notes."},
+  "recipe_nutrition": "Nutrition",
+  "@recipe_nutrition": {"description": "Heading of the recipe's nutrition section."},
+  "recipe_allNutrients": "All nutrients",
+  "@recipe_allNutrients": {"description": "Button that opens the full nutrition screen."},
 
   "editor_title": "Edit recipe",
   "@editor_title": {"description": "Title of the recipe editor."},
