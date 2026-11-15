@@ -1,0 +1,230 @@
+# Common recipe ingredients and the USDA foods that count as a correct match.
+# Format: ingredient<TAB>acceptable food name, more names separated by " | ".
+# "-" means USDA has no such food, so the ingredient should stay unmatched.
+# Matching accuracy over this list is checked in test/src/matching/food_matcher_accuracy_test.dart.
+all-purpose flour	Wheat flour, white, all-purpose, unenriched
+unsalted butter	Butter, without salt
+butter	Butter, salted
+eggs	Egg, whole, raw, fresh
+large eggs	Egg, whole, raw, fresh
+egg yolks	Egg, yolk, raw, fresh
+egg whites	Egg, white, raw, fresh
+garlic	Garlic, raw
+garlic cloves	Garlic, raw
+yellow onion	Onions, yellow, raw
+onion	Onions, raw
+red onion	Onions, red, raw
+olive oil	Oil, olive, salad or cooking
+extra-virgin olive oil	Oil, olive, extra virgin
+vegetable oil	Oil, soybean, salad or cooking
+canola oil	Oil, canola
+granulated sugar	Sugars, granulated
+sugar	Sugars, granulated
+brown sugar	Sugars, brown
+light brown sugar	Sugars, brown
+powdered sugar	Sugars, powdered
+salt	Salt, table
+kosher salt	Salt, table
+whole milk	Milk, whole, 3.25% milkfat, with added vitamin D
+milk	Milk, whole, 3.25% milkfat, with added vitamin D
+black pepper	Spices, pepper, black
+ground black pepper	Spices, pepper, black
+boneless skinless chicken breasts	Chicken, breast, boneless, skinless, raw
+chicken thighs	Chicken, thigh, meat and skin, raw
+ground beef	Beef, ground, 80% lean meat / 20% fat, raw
+baking soda	Leavening agents, baking soda
+baking powder	Leavening agents, baking powder, double-acting, straight phosphate
+vanilla extract	Vanilla extract
+heavy cream	Cream, fluid, heavy whipping
+heavy whipping cream	Cream, fluid, heavy whipping
+parmesan cheese	Cheese, parmesan, hard
+cheddar cheese	Cheese, cheddar
+mozzarella cheese	Cheese, mozzarella, whole milk
+cream cheese	Cheese, cream
+sour cream	Cream, sour, cultured
+lemon juice	Lemon juice, raw
+lime juice	Lime juice, raw
+honey	Honey
+soy sauce	Soy sauce made from soy and wheat (shoyu)
+long grain white rice	Rice, white, long grain, unenriched, raw
+brown rice	Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)
+spaghetti	Pasta, dry, enriched, spaghetti
+pasta	Pasta, dry, enriched
+tomatoes	Tomatoes, red, ripe, raw, year round average
+cherry tomatoes	Tomatoes, grape, raw
+canned diced tomatoes	Tomatoes, canned, red, ripe, diced
+tomato paste	Tomato, paste, canned, without salt added
+chicken broth	Soup, chicken broth, ready-to-serve
+beef broth	Soup, beef broth or bouillon canned, ready-to-serve
+cilantro	Coriander (cilantro) leaves, raw
+fresh parsley	Parsley, fresh
+scallions	Green onion, (scallion), bulb and greens, root removed, raw
+green onions	Green onion, (scallion), bulb and greens, root removed, raw
+red bell pepper	Peppers, bell, red, raw
+carrots	Carrots, raw
+celery	Celery, raw
+russet potatoes	Potatoes, russet, without skin, raw
+sweet potatoes	Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)
+mayonnaise	Mayonnaise, Regular
+dijon mustard	Mustard, prepared, yellow
+maple syrup	Syrups, maple
+ground cinnamon	Spices, cinnamon, ground
+ground cumin	Spices, cumin seed
+paprika	Spices, paprika
+smoked paprika	Spices, paprika
+chili powder	Spices, chili powder
+dried oregano	Spices, oregano, dried
+fresh basil	Basil, fresh
+dried thyme	Spices, thyme, dried
+fresh ginger	Ginger root, raw
+avocado	Avocados, raw, all commercial varieties
+lime	Limes, raw
+lemon	Lemons, raw, without peel
+spinach	Spinach, raw
+baby spinach	Spinach, baby
+mushrooms	Mushrooms, white, raw
+zucchini	Squash, summer, zucchini, includes skin, raw
+broccoli	Broccoli, raw
+cauliflower	Cauliflower, raw
+rolled oats	Oats, whole grain, rolled, old fashioned
+peanut butter	Peanut butter, creamy | Peanut butter, smooth style, with salt
+semisweet chocolate chips	Candies, semisweet chocolate
+cocoa powder	Cocoa, dry powder, unsweetened
+cornstarch	Cornstarch
+red wine vinegar	Vinegar, red wine
+balsamic vinegar	Vinegar, balsamic
+apple cider vinegar	Vinegar, cider
+water	Water, bottled, generic | Beverages, water, tap, drinking
+bacon	Pork, cured, bacon, unprepared
+italian sausage	Sausage, Italian, sweet, links
+shrimp	Crustaceans, shrimp, raw
+salmon	Fish, salmon, Atlantic, farmed, raw
+ground turkey	Turkey, Ground, raw
+pork chops	Pork, chop, center cut, raw
+greek yogurt	Yogurt, Greek, plain, whole milk
+plain yogurt	Yogurt, plain, whole milk
+buttermilk	Buttermilk, low fat
+bananas	Bananas, raw
+apples	Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)
+blueberries	Blueberries, raw
+strawberries	Strawberries, raw
+raisins	Raisins, seeded | Raisins, dark, seedless
+walnuts	Nuts, walnuts, english
+pecans	Nuts, pecans
+almonds	Nuts, almonds
+coconut milk	Nuts, coconut milk, raw (liquid expressed from grated meat and water)
+black beans	Beans, black, mature seeds, raw
+chickpeas	Chickpeas, (garbanzo beans, bengal gram), dry | Chickpeas (garbanzo beans, bengal gram), mature seeds, raw
+kidney beans	Beans, kidney, red, mature seeds, raw
+lentils	Lentils, raw
+quinoa	Quinoa, uncooked
+bread crumbs	Bread, crumbs, dry, grated, plain
+panko	Bread, crumbs, dry, grated, plain
+tortillas	Tortilla, corn, shelf stable | Tortillas, ready-to-bake or -fry, corn | Tortillas, ready-to-bake or -fry, flour, shelf stable
+corn	Corn, sweet, white, raw | Corn, sweet, yellow, raw
+frozen peas	Peas, green, frozen, unprepared (Includes foods for USDA's Food Distribution Program)
+cabbage	Cabbage, raw
+cucumber	Cucumber, peeled, raw
+jalapeno	Peppers, jalapeno, raw
+red pepper flakes	Spices, pepper, red or cayenne
+nutmeg	Spices, nutmeg, ground
+cayenne pepper	Spices, pepper, red or cayenne
+garlic powder	Spices, garlic powder
+onion powder	Spices, onion powder
+bay leaves	Spices, bay leaf
+sesame oil	Oil, sesame, salad or cooking
+rice vinegar	-
+hot sauce	Sauce, ready-to-serve, pepper or hot | Sauce, hot chile, sriracha
+worcestershire sauce	Sauce, worcestershire
+ketchup	Catsup
+yeast	Leavening agents, yeast, baker's, active dry
+cream of tartar	Leavening agents, cream of tartar
+molasses	Molasses
+shortening	Shortening, vegetable, household, composite
+lemon zest	Lemon peel, raw
+orange juice	Orange juice, raw (Includes foods for USDA's Food Distribution Program)
+chicken wings	Chicken, wing, meat and skin, raw
+pork tenderloin	Pork, loin, tenderloin, boneless, raw
+flank steak	Beef, flank, steak, boneless, choice, raw
+firm tofu	Tofu, raw, firm, prepared with calcium sulfate
+feta cheese	Cheese, feta
+goat cheese	Cheese, goat, hard type | Cheese, goat, soft type
+ricotta cheese	Cheese, ricotta, whole milk
+half and half	Cream, fluid, half and half
+evaporated milk	Milk, evaporated, 2% fat, with added vitamin A and vitamin D
+sweetened condensed milk	Sweetened condensed milk
+coconut oil	Oil, coconut
+sesame seeds	Seeds, sesame seeds, whole, roasted and toasted
+pine nuts	Nuts, pine nuts, raw
+cashews	Nuts, cashew nuts, raw
+dates	Dates, medjool | Dates, deglet noor
+dark chocolate	Chocolate, dark, 60-69% cacao solids
+unsweetened applesauce	Applesauce, unsweetened, with added vitamin C
+oranges	Oranges, raw, all commercial varieties
+peaches	Peaches, yellow, raw
+mango	Mangos, raw
+pineapple	Pineapple, raw
+grapes	Grapes, red, seedless, raw
+red potatoes	Potatoes, red, without skin, raw
+kale	Kale, raw
+romaine lettuce	Lettuce, romaine, green, raw
+eggplant	Eggplant, raw
+butternut squash	Squash, winter, butternut, raw
+green beans	Beans, snap, green, raw
+asparagus	Asparagus, raw
+shallots	Shallots, raw
+leeks	Leeks, bulb and greens, root removed, raw
+fresh rosemary	Rosemary, fresh
+fresh thyme	Thyme, fresh
+dried basil	Spices, basil, dried
+curry powder	Spices, curry powder
+turmeric	Spices, turmeric, ground
+ground ginger	Spices, ginger, ground
+allspice	Spices, allspice, ground
+cloves	Spices, cloves, ground
+cardamom	Spices, cardamom
+vanilla bean	-
+almond flour	Flour, almond
+whole wheat flour	Flour, whole wheat, unenriched
+bread flour	Flour, bread, white, enriched, unbleached
+cornmeal	Cornmeal, whole-grain, yellow
+agave	Sweetener, syrup, agave
+corn syrup	Syrups, corn, dark | Syrups, corn, light
+chicken thighs boneless skinless	Chicken, thigh, boneless, skinless, raw
+ham	Ham, sliced, restaurant | Ham, chopped, not canned | Ham, honey, smoked, cooked
+pepperoni	Pepperoni, beef and pork, sliced
+tuna	Fish, tuna, fresh, bluefin, raw | Fish, tuna, light, canned in water, drained solids
+cod	Fish, cod, Atlantic, raw
+tilapia	Fish, tilapia, raw
+crab	Crustaceans, crab, blue, raw
+scallops	Scallops, sea, frozen, wild caught
+white wine	Alcoholic beverage, wine, table, white
+red wine	Alcoholic beverage, wine, table, red
+beer	Alcoholic beverage, beer, regular, all
+coffee	Beverages, coffee, brewed, prepared with tap water
+milk chocolate chips	Candies, milk chocolate
+marshmallows	Candies, marshmallows
+graham crackers	Cookies, graham crackers, plain or honey (includes cinnamon) | Cookies, graham crackers, plain or honey, lowfat
+oil	Oil, soybean, salad or cooking
+cream	Cream, heavy
+cheese	Cheese, cheddar
+eggs whites	Egg, white, raw, fresh
+anchovies	Fish, anchovy, european, raw
+capers	Capers, canned
+olives	Olives, green, Manzanilla, stuffed with pimiento
+black olives	Olives, ripe, canned (small-extra large)
+pickles	Pickles, cucumber, sour
+sauerkraut	Sauerkraut, canned, solids and liquids
+salsa	Sauce, salsa, ready-to-serve
+hummus	Hummus, commercial
+pesto	Sauce, pesto, ready-to-serve, refrigerated
+tahini	Seeds, sesame butter, tahini, type of kernels unspecified
+miso	Miso
+fish sauce	Sauce, fish, ready-to-serve
+oyster sauce	Sauce, oyster, ready-to-serve
+hoisin sauce	Sauce, hoisin, ready-to-serve
+sriracha	Sauce, hot chile, sriracha
+tomato sauce	Tomato products, canned, sauce
+marinara sauce	Sauce, pasta, spaghetti/marinara, ready-to-serve
+barbecue sauce	Sauce, barbecue
+gelatin	Gelatins, dry powder, unsweetened

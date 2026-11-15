@@ -1,7 +1,8 @@
 /// Food matching, unit to gram conversion, and nutrition totals. See
 /// ENGINEERING.md §11.
-///
-/// Empty shell from the scaffold. docs/BUILD_PLAN.md lists the tasks that fill
-/// it in. When you add the first code and tests, add this package to the matrix
-/// in .github/workflows/ci.yml.
 library;
+
+export 'src/matching/food_match.dart';
+export 'src/matching/food_matcher.dart';
+export 'src/matching/match_vocabulary.dart' show standardSynonyms;
+export 'src/matching/synonym_table.dart';
