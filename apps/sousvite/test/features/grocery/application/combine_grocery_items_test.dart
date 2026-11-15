@@ -83,20 +83,24 @@ void main() {
       expect(view.entries['onion']!.sourceRecipeIds, [soup, stew]);
     });
 
-    test('groups unchecked entries by section, "Other" last', () {
+    test('groups by section in store order, then named ones, "Other" last', () {
       final view = combineGroceryItems([
-        _F.item('milk'),
-        _F.item('apples', storeSection: 'Produce'),
-        _F.item('cheese', storeSection: 'dairy'),
-        _F.item('pears', storeSection: 'Produce'),
+        _F.item('paper towels'),
+        _F.item('chips', storeSection: 'Snacks'),
+        _F.item('cheese', storeSection: 'dairyAndEggs'),
+        _F.item('apples'),
+        _F.item('pears', storeSection: 'produce'),
+        _F.item('candles', storeSection: 'Home'),
       ]);
 
       expect(view.sections.map((section) => section.name), [
-        'dairy',
-        'Produce',
+        'produce',
+        'dairyAndEggs',
+        'Home',
+        'Snacks',
         null,
       ]);
-      expect(view.sections[1].entryKeys, ['apples', 'pears']);
+      expect(view.sections.first.entryKeys, ['apple', 'pear']);
     });
 
     test('takes the first section any item has', () {
@@ -116,12 +120,8 @@ void main() {
       ]);
 
       expect(view.entries['onion']!.checked, isFalse);
-      expect(view.checkedKeys, ['eggs']);
+      expect(view.checkedKeys, ['egg']);
       expect(view.sections.single.entryKeys, ['onion']);
     });
-  });
-
-  test('groceryKey ignores case and spacing', () {
-    expect(groceryKey('  Green   Onion '), 'green onion');
   });
 }

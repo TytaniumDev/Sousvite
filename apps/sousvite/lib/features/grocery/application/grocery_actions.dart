@@ -27,6 +27,7 @@ class GroceryActions({
           listId: listId,
           name: line.name ?? line.rawText,
           sortKey: ids.sortKey(),
+          storeSection: StoreSection.of(line.name ?? line.rawText).name,
           quantity: line.quantity,
           unit: line.unit,
           sourceIngredientLineId: line.id,
@@ -46,6 +47,7 @@ class GroceryActions({
         listId: await _listId(),
         name: trimmed,
         sortKey: ids.sortKey(),
+        storeSection: StoreSection.of(trimmed).name,
       ),
     );
   }
