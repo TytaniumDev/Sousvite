@@ -318,7 +318,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 
 | Component | What it shows | Key inputs |
 |---|---|---|
-| `RecipeCard` | Photo, recipe name (serif), total time, calories per serving, optional badges | `title`, `image`, `totalTime`, `caloriesPerServing`, `badges`, `onTap` |
+| `RecipeCard` | Photo, recipe name (serif), total time, calories per serving, optional badges | `title`, `image` (`ImageProvider`), `totalTimeLabel` ("45 min"), `caloriesLabel` ("520 kcal"), `badges`, `onTap` |
 | `AmountText` | A formatted amount with fraction glyphs and an optional screen-reader label | `quantity` (`Quantity` from `units`), `unit` (localized word), `semanticsLabel`, `style` |
 | `StepText` | Step text with amounts placed inline and emphasized | `segments` (`StepTextSegment` words and `StepAmountSegment` quantity and unit), `style`, `amountStyle`, `highlightAmounts` (editor) |
 | `MeasuringGuide` | Which measuring tools to use: `½ cup` `+` `¼ cup` | `tools` (quantity and unit word of each tool), `style` |
@@ -332,13 +332,13 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `BasisToggle` | Per serving / Per batch | `basis`, `onChanged`, `perServingLabel`, `batchLabel` |
 | `SectionHeader` | A step section name ("Prep") with step count; drag handle in the editor | `title`, `countLabel` ("3 steps"), `reorderIndex` and `reorderLabel` (show the drag handle) |
 | `TimerChip` | A time found in a step; tap to start; shows the countdown while running | `label`, `duration`, `startedAt` (null while idle), `doneLabel`, `onStart`, `onStop` |
-| `GroceryItemRow` | Checkbox, combined quantity, item name, and which recipes it came from | `quantity`, `name`, `sources`, `checked`, `onChanged` |
-| `ShareBadge` | "Shared" (joint share) or "Copy" so people know which they're editing | `kind` |
+| `GroceryItemRow` | Checkbox, combined quantity, item name, and which recipes it came from | `name`, `quantity`, `unit`, `sourcesLabel` ("Chili, Cornbread"), `checked`, `onChanged` |
+| `ShareBadge` | "Shared" (joint share) or "Copy" so people know which they're editing | `kind` (`ShareBadgeKind`), `label` |
 | `ExperimentBadge` | Marks an experiment, in terracotta | `label` |
-| `ProBadge` | Marks a Pro feature | none |
-| `SyncStatusIcon` | Synced, syncing, offline, or error, as a small icon with a tooltip | `status` |
+| `ProBadge` | Marks a Pro feature | `label` |
+| `SyncStatusIcon` | Synced, syncing, offline, or error, as a small icon with a tooltip | `status` (`SyncIconStatus`), `label` |
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
-| `ErrorState` | What went wrong and how to fix it, with a retry action | `message`, `onRetry` |
+| `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
 
 Details that matter:
@@ -351,6 +351,10 @@ Details that matter:
 - **MeasuringGuide** shows each tool as a `surface-container-high` pill joined by `+`, wrapping onto more lines when space runs out.
 - **Nutrition numbers** are whole for calories and milligrams, and keep one decimal below 10 g (`2.5 g`, `31 g`), dropping a trailing `.0`. `NutrientPrecision` holds this rule so every nutrition widget rounds the same way.
 - **ServingStepper** steps by whole servings: from 2½, minus goes to 2 and plus goes to 3. A fractional serving size typed elsewhere is kept until the next step.
+- **Badges and status chips share one shape:** a small icon and a word on a fill with `radiusSm`. `ShareBadge` is sage for a joint share and neutral for a copy, `ExperimentBadge` is terracotta, and `ProBadge` uses `primary-container`.
+- **GroceryItemRow** puts the amount at the end of the row, taking at most half of it. From 150% text, the amount moves under the name, so neither breaks mid-word.
+- **SyncStatusIcon** is quiet (`on-surface-variant`) for synced, syncing, and offline; only an error uses `error`. While syncing, the icon turns, and holds still under reduced motion. Its tooltip area is a full 48 dp target.
+- **EmptyState and ErrorState** share one centered layout, at most 360 dp wide, with the title marked as a heading. ErrorState's icon is in `error` and its retry is a tonal button.
 
 ## 10. Patterns
 

@@ -1,6 +1,5 @@
 import 'package:design_system/src/theme/context_ext.dart';
-import 'package:design_system/src/tokens/radii.dart';
-import 'package:design_system/src/tokens/spacing.dart';
+import 'package:design_system/src/widgets/status_pill.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -59,34 +58,11 @@ class const MatchStatusChip({
         Symbols.warning_rounded,
       ),
     };
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: AppRadii.borderSm,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.space2,
-          vertical: AppSpacing.space1,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: _iconSize, color: foreground),
-            const SizedBox(width: AppSpacing.space1),
-            Flexible(
-              child: Text(
-                label,
-                style: context.textStyles.labelMedium?.copyWith(
-                  color: foreground,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return StatusPill(
+      icon: icon,
+      label: label,
+      background: background,
+      foreground: foreground,
     );
   }
-
-  static const double _iconSize = 16;
 }
