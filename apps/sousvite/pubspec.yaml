@@ -9,12 +9,15 @@ environment:
   flutter: ">=3.50.0"
 
 dependencies:
+  cloud_functions: ^7.0.1
   collection: any
   data: any
   design_system: any
   domain: any
   drift: ^2.35.4
   drift_flutter: ^0.3.1
+  firebase_auth: ^7.0.1
+  firebase_core: ^5.1.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -22,6 +25,7 @@ dependencies:
   flutter_riverpod: ^3.5.0
   freezed_annotation: ^3.1.0
   go_router: ^18.1.4
+  google_sign_in: ^7.2.0
   intl: any
   material_symbols_icons: ^4.2960.0
   material_ui: ^1.11.0

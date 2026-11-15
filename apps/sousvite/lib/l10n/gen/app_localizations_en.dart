@@ -140,4 +140,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get account_title => 'Account';
+
+  @override
+  String get account_signInBody =>
+      'Sign in to sync your recipes across your devices and share them. Everything else works without an account.';
+
+  @override
+  String get account_signInWithGoogle => 'Sign in with Google';
+
+  @override
+  String get account_signInWithApple => 'Sign in with Apple';
+
+  @override
+  String get account_driveNeedsGoogle =>
+      'Syncing through Google Drive needs a Google account.';
+
+  @override
+  String get account_unnamedUser => 'Your account';
+
+  @override
+  String get account_signedIn => 'Signed in';
+
+  @override
+  String get account_signedInWithGoogle => 'Signed in with Google';
+
+  @override
+  String get account_signedInWithApple => 'Signed in with Apple';
+
+  @override
+  String get account_signOutNote =>
+      'Your recipes stay on this device when you sign out.';
+
+  @override
+  String get account_signOut => 'Sign out';
+
+  @override
+  String get account_deleteAccount => 'Delete account';
+
+  @override
+  String get account_deleteTitle => 'Delete your account?';
+
+  @override
+  String get account_deleteBody =>
+      'This deletes your account and everything Sousvite stores for you online. It can\'t be undone. Your recipes stay on this device, and recipes you share jointly stay with the others in the share.';
+
+  @override
+  String get account_deleteConfirm => 'Delete account';
+
+  @override
+  String get account_deleted => 'Account deleted';
+
+  @override
+  String get account_error =>
+      'Couldn\'t reach your account. Check your connection and try again.';
 }

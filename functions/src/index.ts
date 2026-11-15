@@ -6,5 +6,6 @@ import { setGlobalOptions } from 'firebase-functions/v2';
 // Same region as Cloud Storage. maxInstances caps cost if a client misbehaves.
 setGlobalOptions({ region: 'us-central1', maxInstances: 10 });
 
+export { deleteAccount } from './delete_account/delete_account.js';
 export { fetchProxy } from './fetch_proxy/fetch_proxy.js';
 export { usdaProxy } from './usda_proxy/usda_proxy.js';
