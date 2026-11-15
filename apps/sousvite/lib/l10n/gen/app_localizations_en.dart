@@ -158,6 +158,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get experiments_title => 'History';
 
   @override
+  String get experiments_emptyTitle => 'No history yet';
+
+  @override
+  String get experiments_emptyMessage =>
+      'Start an experiment to try a change without touching the recipe.';
+
+  @override
+  String get experiments_errorTitle => 'Couldn\'t load this history';
+
+  @override
+  String get experiments_errorMessage => 'Try again in a moment.';
+
+  @override
+  String get experiments_start => 'Start an experiment';
+
+  @override
+  String get experiments_badge => 'Experiment';
+
+  @override
+  String get experiments_outcomeOpen => 'In progress';
+
+  @override
+  String get experiments_outcomeAdopted => 'Made the recipe';
+
+  @override
+  String get experiments_outcomeKept => 'Kept as an experiment';
+
+  @override
+  String get experiments_untitled => 'Untitled experiment';
+
+  @override
+  String get experiments_savedVersion => 'Saved version';
+
+  @override
+  String get experiments_whatChanged => 'What changed';
+
+  @override
+  String get experiments_whatChangedHint => 'Swapped butter for olive oil';
+
+  @override
+  String get experiments_howItWent => 'How it went';
+
+  @override
+  String get experiments_edit => 'Edit the experiment';
+
+  @override
+  String get experiments_cook => 'Cook it';
+
+  @override
+  String get experiments_promote => 'Make this the recipe';
+
+  @override
+  String get experiments_promoted => 'This is now the recipe';
+
+  @override
+  String get experiments_keep => 'Keep as an experiment';
+
+  @override
+  String get experiments_notFound => 'This experiment no longer exists.';
+
+  @override
+  String get experiments_versionNotFound => 'This version no longer exists.';
+
+  @override
+  String get experiments_restore => 'Restore this version';
+
+  @override
+  String get experiments_restored => 'Version restored';
+
+  @override
+  String get experiments_ingredients => 'Ingredients';
+
+  @override
+  String get experiments_steps => 'Steps';
+
+  @override
   String get sharing_title => 'Share';
 
   @override

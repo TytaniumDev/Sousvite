@@ -304,6 +304,156 @@ abstract class AppLocalizations {
   /// **'History'**
   String get experiments_title;
 
+  /// Heading when a recipe has no past versions or experiments.
+  ///
+  /// In en, this message translates to:
+  /// **'No history yet'**
+  String get experiments_emptyTitle;
+
+  /// Explains what fills a recipe's history.
+  ///
+  /// In en, this message translates to:
+  /// **'Start an experiment to try a change without touching the recipe.'**
+  String get experiments_emptyMessage;
+
+  /// Heading when a recipe's history fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this history'**
+  String get experiments_errorTitle;
+
+  /// What to do when history fails to load.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again in a moment.'**
+  String get experiments_errorMessage;
+
+  /// Button that starts an experiment as a copy of the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Start an experiment'**
+  String get experiments_start;
+
+  /// Badge and screen title marking an experiment.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiment'**
+  String get experiments_badge;
+
+  /// An experiment still being tried.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get experiments_outcomeOpen;
+
+  /// An experiment that became the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Made the recipe'**
+  String get experiments_outcomeAdopted;
+
+  /// An experiment logged without changing the recipe; also the snackbar after keeping one.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept as an experiment'**
+  String get experiments_outcomeKept;
+
+  /// Shown for an experiment with no description of what changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled experiment'**
+  String get experiments_untitled;
+
+  /// Shown for a past version with no summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved version'**
+  String get experiments_savedVersion;
+
+  /// Label of the field describing an experiment's change.
+  ///
+  /// In en, this message translates to:
+  /// **'What changed'**
+  String get experiments_whatChanged;
+
+  /// Example text in the what-changed field.
+  ///
+  /// In en, this message translates to:
+  /// **'Swapped butter for olive oil'**
+  String get experiments_whatChangedHint;
+
+  /// Label of the field for notes on how an experiment turned out.
+  ///
+  /// In en, this message translates to:
+  /// **'How it went'**
+  String get experiments_howItWent;
+
+  /// Button that opens the experiment's copy of the recipe in the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit the experiment'**
+  String get experiments_edit;
+
+  /// Button that opens the experiment in cooking mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook it'**
+  String get experiments_cook;
+
+  /// Button that replaces the recipe with the experiment.
+  ///
+  /// In en, this message translates to:
+  /// **'Make this the recipe'**
+  String get experiments_promote;
+
+  /// Snackbar after an experiment becomes the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'This is now the recipe'**
+  String get experiments_promoted;
+
+  /// Button that logs the experiment without changing the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep as an experiment'**
+  String get experiments_keep;
+
+  /// Shown when an opened experiment was deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'This experiment no longer exists.'**
+  String get experiments_notFound;
+
+  /// Shown when an opened version can't be found.
+  ///
+  /// In en, this message translates to:
+  /// **'This version no longer exists.'**
+  String get experiments_versionNotFound;
+
+  /// Button that puts the recipe back the way it was at this version.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore this version'**
+  String get experiments_restore;
+
+  /// Snackbar after a version is restored.
+  ///
+  /// In en, this message translates to:
+  /// **'Version restored'**
+  String get experiments_restored;
+
+  /// Heading of a past version's ingredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get experiments_ingredients;
+
+  /// Heading of a past version's steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get experiments_steps;
+
   /// Title of the share screen.
   ///
   /// In en, this message translates to:
