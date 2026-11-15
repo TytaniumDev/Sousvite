@@ -274,7 +274,7 @@ Because both carry the same change log, **switching transports** means replaying
 
 ### 11.2 Matching and math
 
-- Matching is deterministic: normalize the ingredient name, apply a synonym table ("scallion" → "green onion"), then rank candidates by token overlap, preferring generic USDA foods.
+- Matching is deterministic: normalize the ingredient name, apply a synonym table ("scallion" → "green onion"), then rank candidates by token overlap, preferring generic USDA foods. The word lists and weights live in `packages/nutrition/lib/src/matching/match_vocabulary.dart`; a fixture of common ingredients (`packages/nutrition/test/fixtures/matching/`) measures accuracy in CI against the 90% target (PRD §8).
 - Every match records its source and can be changed by the user. Unmatched lines are flagged, never guessed silently (PRD 7.4).
 - **Unit → grams:** weights convert directly. Volumes use the food's USDA portion data first, and a curated density table second. Counts ("2 eggs") use USDA portions.
 - Totals are computed in `packages/nutrition` as pure functions: batch totals, then per serving using each user's serving size.
