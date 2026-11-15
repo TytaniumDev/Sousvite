@@ -79,7 +79,7 @@ final class RecipeScaleProvider
   }
 }
 
-String _$recipeScaleHash() => r'83ac7a06df12acd86de81d840ff0a1266b27c82a';
+String _$recipeScaleHash() => r'999b94eb7d49fc50c46f64da736db69b6a4662ef';
 
 /// How much this recipe is scaled for cooking: 2 is a double batch
 /// (PRD 7.6). Shared by the recipe page and cooking mode, so amounts in the
@@ -242,72 +242,75 @@ final class ScaledServingsFamily extends $Family
   String toString() => r'scaledServingsProvider';
 }
 
-/// One line's amount at the current scale. Null while loading or when the
-/// line is gone.
+/// One line's amount at the current scale, in this recipe's unit system
+/// (PRD 7.6). Null while loading, once the line is gone, or when the line
+/// has no amount ("salt to taste").
 ///
-/// Unit conversion and rounding to amounts people can measure come from
-/// `FND-1` and are applied here once it lands.
+/// As written, amounts are shown exactly as the recipe has them. Once
+/// scaled or converted, they are rounded to something people can measure.
 
-@ProviderFor(scaledLineAmount)
-final scaledLineAmountProvider = ScaledLineAmountFamily._();
+@ProviderFor(lineAmount)
+final lineAmountProvider = LineAmountFamily._();
 
-/// One line's amount at the current scale. Null while loading or when the
-/// line is gone.
+/// One line's amount at the current scale, in this recipe's unit system
+/// (PRD 7.6). Null while loading, once the line is gone, or when the line
+/// has no amount ("salt to taste").
 ///
-/// Unit conversion and rounding to amounts people can measure come from
-/// `FND-1` and are applied here once it lands.
+/// As written, amounts are shown exactly as the recipe has them. Once
+/// scaled or converted, they are rounded to something people can measure.
 
-final class ScaledLineAmountProvider
-    extends $FunctionalProvider<ScaledAmount?, ScaledAmount?, ScaledAmount?>
-    with $Provider<ScaledAmount?> {
-  /// One line's amount at the current scale. Null while loading or when the
-  /// line is gone.
+final class LineAmountProvider
+    extends $FunctionalProvider<LineAmount?, LineAmount?, LineAmount?>
+    with $Provider<LineAmount?> {
+  /// One line's amount at the current scale, in this recipe's unit system
+  /// (PRD 7.6). Null while loading, once the line is gone, or when the line
+  /// has no amount ("salt to taste").
   ///
-  /// Unit conversion and rounding to amounts people can measure come from
-  /// `FND-1` and are applied here once it lands.
-  ScaledLineAmountProvider._({
-    required ScaledLineAmountFamily super.from,
+  /// As written, amounts are shown exactly as the recipe has them. Once
+  /// scaled or converted, they are rounded to something people can measure.
+  LineAmountProvider._({
+    required LineAmountFamily super.from,
     required (RecipeId, IngredientLineId) super.argument,
   }) : super(
          retry: null,
-         name: r'scaledLineAmountProvider',
+         name: r'lineAmountProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$scaledLineAmountHash();
+  String debugGetCreateSourceHash() => _$lineAmountHash();
 
   @override
   String toString() {
-    return r'scaledLineAmountProvider'
+    return r'lineAmountProvider'
         ''
         '$argument';
   }
 
   @$internal
   @override
-  $ProviderElement<ScaledAmount?> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<LineAmount?> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  ScaledAmount? create(Ref ref) {
+  LineAmount? create(Ref ref) {
     final argument = this.argument as (RecipeId, IngredientLineId);
-    return scaledLineAmount(ref, argument.$1, argument.$2);
+    return lineAmount(ref, argument.$1, argument.$2);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ScaledAmount? value) {
+  Override overrideWithValue(LineAmount? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ScaledAmount?>(value),
+      providerOverride: $SyncValueProvider<LineAmount?>(value),
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ScaledLineAmountProvider && other.argument == argument;
+    return other is LineAmountProvider && other.argument == argument;
   }
 
   @override
@@ -316,35 +319,36 @@ final class ScaledLineAmountProvider
   }
 }
 
-String _$scaledLineAmountHash() => r'a40964b516c06e08589fe0402b37a5109f807c25';
+String _$lineAmountHash() => r'81e58aa0955ec6448ba7464f28fb29936236da90';
 
-/// One line's amount at the current scale. Null while loading or when the
-/// line is gone.
+/// One line's amount at the current scale, in this recipe's unit system
+/// (PRD 7.6). Null while loading, once the line is gone, or when the line
+/// has no amount ("salt to taste").
 ///
-/// Unit conversion and rounding to amounts people can measure come from
-/// `FND-1` and are applied here once it lands.
+/// As written, amounts are shown exactly as the recipe has them. Once
+/// scaled or converted, they are rounded to something people can measure.
 
-final class ScaledLineAmountFamily extends $Family
-    with
-        $FunctionalFamilyOverride<ScaledAmount?, (RecipeId, IngredientLineId)> {
-  ScaledLineAmountFamily._()
+final class LineAmountFamily extends $Family
+    with $FunctionalFamilyOverride<LineAmount?, (RecipeId, IngredientLineId)> {
+  LineAmountFamily._()
     : super(
         retry: null,
-        name: r'scaledLineAmountProvider',
+        name: r'lineAmountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// One line's amount at the current scale. Null while loading or when the
-  /// line is gone.
+  /// One line's amount at the current scale, in this recipe's unit system
+  /// (PRD 7.6). Null while loading, once the line is gone, or when the line
+  /// has no amount ("salt to taste").
   ///
-  /// Unit conversion and rounding to amounts people can measure come from
-  /// `FND-1` and are applied here once it lands.
+  /// As written, amounts are shown exactly as the recipe has them. Once
+  /// scaled or converted, they are rounded to something people can measure.
 
-  ScaledLineAmountProvider call(RecipeId recipeId, IngredientLineId lineId) =>
-      ScaledLineAmountProvider._(argument: (recipeId, lineId), from: this);
+  LineAmountProvider call(RecipeId recipeId, IngredientLineId lineId) =>
+      LineAmountProvider._(argument: (recipeId, lineId), from: this);
 
   @override
-  String toString() => r'scaledLineAmountProvider';
+  String toString() => r'lineAmountProvider';
 }

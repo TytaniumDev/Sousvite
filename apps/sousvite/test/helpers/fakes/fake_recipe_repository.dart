@@ -27,20 +27,18 @@ class FakeRecipeRepository() implements RecipeRepository {
     List<StepSection> stepSections = const [],
     List<RecipeStep> steps = const [],
   }) {
-    _recipes[recipe.id] = recipe;
-    for (final s in ingredientSections) {
-      _ingredientSections[s.id] = s;
-    }
-    for (final l in lines) {
-      _lines[l.id] = l;
-    }
-    for (final s in stepSections) {
-      _stepSections[s.id] = s;
-    }
-    for (final s in steps) {
-      _steps[s.id] = s;
-    }
-    _changes.add(null);
+    unawaited(
+      saveSnapshot(
+        RecipeSnapshot(
+          recipe: recipe,
+          ingredientSections: ingredientSections,
+          ingredientLines: lines,
+          stepSections: stepSections,
+          steps: steps,
+        ),
+      ),
+    );
+    writes.removeLast();
   }
 
   Stream<T> _watch<T>(T Function() read) {
@@ -144,6 +142,23 @@ class FakeRecipeRepository() implements RecipeRepository {
   @override
   Future<void> saveStep(RecipeStep step) =>
       _write(step, () => _steps[step.id] = step);
+
+  @override
+  Future<void> saveSnapshot(RecipeSnapshot snapshot) => _write(snapshot, () {
+    _recipes[snapshot.recipe.id] = snapshot.recipe;
+    for (final s in snapshot.ingredientSections) {
+      _ingredientSections[s.id] = s;
+    }
+    for (final l in snapshot.ingredientLines) {
+      _lines[l.id] = l;
+    }
+    for (final s in snapshot.stepSections) {
+      _stepSections[s.id] = s;
+    }
+    for (final s in snapshot.steps) {
+      _steps[s.id] = s;
+    }
+  });
 
   @override
   Future<void> deleteRecipe(RecipeId id) => _write(('delete', id), () {

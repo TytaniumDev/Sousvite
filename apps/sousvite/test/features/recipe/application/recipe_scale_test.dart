@@ -4,8 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
 import 'package:sousvite/features/recipe/application/recipe_scale.dart';
+import 'package:sousvite/features/recipe/application/recipe_units.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
+import '../../../helpers/fakes/fake_user_recipe_prefs_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 
 void main() {
@@ -29,7 +31,12 @@ void main() {
       );
     container =
         ProviderContainer.test(
-            overrides: [recipeRepositoryProvider.overrideWithValue(repository)],
+            overrides: [
+              recipeRepositoryProvider.overrideWithValue(repository),
+              userRecipePrefsRepositoryProvider.overrideWithValue(
+                FakeUserRecipePrefsRepository(),
+              ),
+            ],
           )
           ..listen(recipeProvider(recipeId), (_, _) {})
           ..listen(ingredientLinesProvider(recipeId), (_, _) {});
@@ -64,25 +71,44 @@ void main() {
       expect(container.read(scaledServingsProvider(recipeId)), Quantity(6));
     });
 
-    test('scales line amounts exactly', () {
-      scale().scaleToServings(Quantity(12));
-      expect(container.read(scaledLineAmountProvider(recipeId, lineId)), (
-        quantity: Quantity(9, 4),
-        quantityMax: Quantity(3),
-        unit: Unit.cup,
+    test('shows amounts as written until scaled or converted', () {
+      expect(container.read(lineAmountProvider(recipeId, lineId)), (
+        amount: Amount(Quantity(3, 4), Unit.cup),
+        upTo: Amount(Quantity(1), Unit.cup),
       ));
       expect(
         container.read(
-          scaledLineAmountProvider(recipeId, const IngredientLineId('l2')),
-        ),
-        (quantity: null, quantityMax: null, unit: null),
-      );
-      expect(
-        container.read(
-          scaledLineAmountProvider(recipeId, const IngredientLineId('gone')),
+          lineAmountProvider(recipeId, const IngredientLineId('l2')),
         ),
         isNull,
       );
+      expect(
+        container.read(
+          lineAmountProvider(recipeId, const IngredientLineId('gone')),
+        ),
+        isNull,
+      );
+    });
+
+    test('scales line amounts exactly', () {
+      scale().scaleToServings(Quantity(12));
+      expect(container.read(lineAmountProvider(recipeId, lineId)), (
+        amount: Amount(Quantity(9, 4), Unit.cup),
+        upTo: Amount(Quantity(3), Unit.cup),
+      ));
+    });
+
+    test('converts line amounts to the chosen unit system', () async {
+      container.listen(recipePrefsProvider(recipeId), (_, _) {});
+      await container
+          .read(recipeUnitSystemProvider(recipeId).notifier)
+          .select(UnitSystem.metric);
+      await container.pump();
+      await container.pump();
+
+      final shown = container.read(lineAmountProvider(recipeId, lineId));
+      expect(shown?.amount.unit, Unit.milliliter);
+      expect(shown?.upTo?.unit, Unit.milliliter);
     });
   });
 
@@ -90,6 +116,9 @@ void main() {
     final empty = ProviderContainer.test(
       overrides: [
         recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
+        userRecipePrefsRepositoryProvider.overrideWithValue(
+          FakeUserRecipePrefsRepository(),
+        ),
       ],
     );
     empty

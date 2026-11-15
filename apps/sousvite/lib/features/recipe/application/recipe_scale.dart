@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
+import 'package:sousvite/features/recipe/application/recipe_units.dart';
 
 part 'recipe_scale.g.dart';
 
@@ -28,7 +29,7 @@ class RecipeScale() extends _$RecipeScale {
   void scaleToServings(Quantity servings) {
     final base = ref.read(recipeProvider(recipeId)).value?.servings;
     if (base == null || base <= Quantity.zero) return;
-    scaleBy(servings / base);
+    scaleBy(servingsMultiplier(from: base, to: servings));
   }
 
   /// Back to the recipe as written.
@@ -46,42 +47,39 @@ Quantity? scaledServings(Ref ref, RecipeId recipeId) {
   return base * ref.watch(recipeScaleProvider(recipeId));
 }
 
-/// An amount as shown: quantity (and the top of a range) with its unit.
-typedef ScaledAmount = ({
-  Quantity? quantity,
-  Quantity? quantityMax,
-  Unit? unit,
-});
+/// One ingredient line's amount as shown: `amount`, and for a range such
+/// as "2–3 cups" the top of the range, `upTo`.
+typedef LineAmount = ({Amount amount, Amount? upTo});
 
-/// One line's amount at the current scale. Null while loading or when the
-/// line is gone.
+/// One line's amount at the current scale, in this recipe's unit system
+/// (PRD 7.6). Null while loading, once the line is gone, or when the line
+/// has no amount ("salt to taste").
 ///
-/// Unit conversion and rounding to amounts people can measure come from
-/// `FND-1` and are applied here once it lands.
+/// As written, amounts are shown exactly as the recipe has them. Once
+/// scaled or converted, they are rounded to something people can measure.
 @riverpod
-ScaledAmount? scaledLineAmount(
-  Ref ref,
-  RecipeId recipeId,
-  IngredientLineId lineId,
-) {
-  final amount = ref.watch(
+LineAmount? lineAmount(Ref ref, RecipeId recipeId, IngredientLineId lineId) {
+  final written = ref.watch(
     ingredientLineProvider(recipeId, lineId).select(
-      (line) => line == null
+      (line) => line?.quantity == null
           ? null
           : (
-              quantity: line.quantity,
-              quantityMax: line.quantityMax,
-              unit: line.unit,
+              amount: Amount(line!.quantity!, line.unit),
+              upTo: line.quantityMax == null
+                  ? null
+                  : Amount(line.quantityMax!, line.unit),
             ),
     ),
   );
-  if (amount == null) return null;
+  if (written == null) return null;
   final factor = ref.watch(recipeScaleProvider(recipeId));
+  final system = ref.watch(recipeUnitSystemProvider(recipeId));
+  if (factor == Quantity.one && system == .original) return written;
+
+  Amount shown(Amount amount) => amount.scaled(factor).measurableIn(system);
+  final upTo = written.upTo;
   return (
-    quantity: amount.quantity == null ? null : amount.quantity! * factor,
-    quantityMax: amount.quantityMax == null
-        ? null
-        : amount.quantityMax! * factor,
-    unit: amount.unit,
+    amount: shown(written.amount),
+    upTo: upTo == null ? null : shown(upTo),
   );
 }
