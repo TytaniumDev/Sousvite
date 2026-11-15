@@ -325,11 +325,11 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `quantity`, `unit`, `name`, `preparation`, `checked`, `onChanged` (null for read-only) |
 | `IngredientSplitPreview` | How a typed line was split: amount, ingredient, and preparation as chips the user can fix | `quantity`, `unit`, `name`, `preparation`, a spoken label for each part, `onEdit(part)` |
 | `MacroBar` | Horizontal bar of protein, carbs, and fat by calories, with small gaps between segments | `protein`, `carbs`, `fat` (grams) |
-| `MacroSummary` | Calories plus P / C / F grams, with the macro bar | `calories`, `protein`, `carbs`, `fat`, `basis` (per serving or batch) |
-| `NutrientRow` | One row in the detailed nutrients table | `label`, `value`, `unit`, `indent` |
-| `MatchStatusChip` | Where an ingredient's nutrition came from: USDA, Open Food Facts, Edited, or Not matched | `status` |
-| `ServingStepper` | − 4 servings + | `servings`, `onChanged`, `min`, `max` |
-| `BasisToggle` | Per serving / Per batch | `basis`, `onChanged` |
+| `MacroSummary` | Calories plus P / C / F grams, with the macro bar | `calories`, `protein`, `carbs`, `fat`, `basisLabel` ("Per serving"), `labels` (`MacroLabels`) |
+| `NutrientRow` | One row in the detailed nutrients table | `label`, `value`, `unit`, `precision`, `indent` |
+| `MatchStatusChip` | Where an ingredient's nutrition came from: USDA, Open Food Facts, Edited, or Not matched | `status`, `label` |
+| `ServingStepper` | − 4 servings + | `servings` (`Quantity`), `unit`, `onChanged`, `decreaseLabel`, `increaseLabel`, `min`, `max` |
+| `BasisToggle` | Per serving / Per batch | `basis`, `onChanged`, `perServingLabel`, `batchLabel` |
 | `SectionHeader` | A step section name ("Prep") with step count; drag handle in the editor | `title`, `countLabel` ("3 steps"), `reorderIndex` and `reorderLabel` (show the drag handle) |
 | `TimerChip` | A time found in a step; tap to start; shows the countdown while running | `label`, `duration`, `startedAt` (null while idle), `doneLabel`, `onStart`, `onStop` |
 | `GroceryItemRow` | Checkbox, combined quantity, item name, and which recipes it came from | `quantity`, `name`, `sources`, `checked`, `onChanged` |
@@ -339,7 +339,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `SyncStatusIcon` | Synced, syncing, offline, or error, as a small icon with a tooltip | `status` |
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `message`, `onRetry` |
-| `CompactDensity` | Applies compact density to its subtree (§6.2) | `child` |
+| `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
 
 Details that matter:
 
@@ -349,6 +349,8 @@ Details that matter:
 - **TimerChip** is idle in `secondary-container`, running in `tertiary-container` with a live countdown, and done with a pulse (§8.2). The feature owns whether a timer runs and passes `startedAt`, so running timers survive step changes and collect in the tray; the chip only ticks its own countdown. Sound and vibration are the feature's job.
 - **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Read-only rows follow the theme's density (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp and toggle when tapped anywhere.
 - **MeasuringGuide** shows each tool as a `surface-container-high` pill joined by `+`, wrapping onto more lines when space runs out.
+- **Nutrition numbers** are whole for calories and milligrams, and keep one decimal below 10 g (`2.5 g`, `31 g`), dropping a trailing `.0`. `NutrientPrecision` holds this rule so every nutrition widget rounds the same way.
+- **ServingStepper** steps by whole servings: from 2½, minus goes to 2 and plus goes to 3. A fractional serving size typed elsewhere is kept until the next step.
 
 ## 10. Patterns
 
