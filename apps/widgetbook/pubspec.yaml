@@ -1,0 +1,29 @@
+name: sousvite_widgetbook
+description: >-
+  A Widgetbook of every design_system component, with the app's themes and
+  text scales. Published to GitHub Pages; never shipped in the app.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
+
+dependencies:
+  clock: ^1.1.3
+  design_system: any
+  flutter:
+    sdk: flutter
+  material_symbols_icons: ^4.2960.0
+  material_ui: ^1.11.0
+  units: any
+  widgetbook: ^3.25.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^11.0.0
+
+flutter:
+  uses-material-design: true

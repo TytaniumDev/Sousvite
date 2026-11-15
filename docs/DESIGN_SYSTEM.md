@@ -499,6 +499,7 @@ packages/design_system/
 - No hex colors, raw font sizes, or raw spacing numbers outside `packages/design_system`. A custom lint (or a `grep` check in CI) flags `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`.
 - `design_system` depends only on Flutter, `material_ui`, `material_symbols_icons`, `units` (pure Dart: `Quantity` and its formatting), `clock` (so `TimerChip`'s countdown follows the test clock), and its own fonts. Never on `domain`, Riverpod, or any feature.
 - New shared widgets go into `design_system` only once two features need them. Until then they live in the feature folder.
+- Every public component gets use cases in `apps/widgetbook/lib/src/components/`, listed in `directories.dart`. A test there counts the components, so it fails until the new one is added.
 
 ## 14. Open questions
 

@@ -17,6 +17,7 @@ If your change contradicts one of these docs, update the doc in the same PR. If 
 
 ```
 apps/sousvite/            Flutter app. Features are folders in lib/features/
+apps/widgetbook/          Widgetbook of every design_system component, published to GitHub Pages
 packages/units/           Quantity, Unit, Amount, and the unit math. Pure Dart, no dependencies
 packages/domain/          Entities, value objects, repository interfaces. Pure Dart; re-exports units
 packages/data/            Drift schema, DAOs, repository implementations. Pure Dart

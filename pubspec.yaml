@@ -7,6 +7,7 @@ environment:
 
 workspace:
   - apps/sousvite
+  - apps/widgetbook
   - packages/data
   - packages/design_system
   - packages/domain
