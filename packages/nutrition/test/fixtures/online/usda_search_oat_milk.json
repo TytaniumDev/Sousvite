@@ -1,0 +1,77 @@
+{
+ "totalHits": 2,
+ "currentPage": 1,
+ "totalPages": 1,
+ "foods": [
+  {
+   "fdcId": 2153416,
+   "description": "OAT MILK",
+   "dataType": "Branded",
+   "gtinUpc": "00051500255520",
+   "brandOwner": "Example Foods Inc.",
+   "brandName": "EXAMPLE",
+   "servingSize": 240,
+   "servingSizeUnit": "g",
+   "householdServingFullText": "1 cup",
+   "foodNutrients": [
+    {
+     "nutrientId": 1008,
+     "nutrientName": "Energy",
+     "nutrientNumber": "208",
+     "unitName": "KCAL",
+     "value": 50
+    },
+    {
+     "nutrientId": 1003,
+     "nutrientName": "Protein",
+     "nutrientNumber": "203",
+     "unitName": "G",
+     "value": 0.42
+    },
+    {
+     "nutrientId": 1005,
+     "nutrientName": "Carbohydrate, by difference",
+     "nutrientNumber": "205",
+     "unitName": "G",
+     "value": 6.67
+    },
+    {
+     "nutrientId": 1004,
+     "nutrientName": "Total lipid (fat)",
+     "nutrientNumber": "204",
+     "unitName": "G",
+     "value": 2.08
+    },
+    {
+     "nutrientId": 1093,
+     "nutrientName": "Sodium, Na",
+     "nutrientNumber": "307",
+     "unitName": "MG",
+     "value": 42
+    }
+   ]
+  },
+  {
+   "fdcId": 2209871,
+   "description": "OAT BEVERAGE",
+   "dataType": "Branded",
+   "gtinUpc": "850000000001",
+   "brandOwner": "Another Co.",
+   "servingSize": 250,
+   "servingSizeUnit": "ml",
+   "householdServingFullText": "1 carton",
+   "foodNutrients": [
+    {
+     "nutrientId": 1008,
+     "nutrientName": "Energy",
+     "nutrientNumber": "208",
+     "unitName": "KCAL",
+     "value": 48
+    }
+   ]
+  },
+  {
+   "description": "MISSING ID"
+  }
+ ]
+}

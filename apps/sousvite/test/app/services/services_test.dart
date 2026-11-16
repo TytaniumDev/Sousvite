@@ -31,12 +31,19 @@ void main() {
       );
     });
 
-    test('the nutrition API finds nothing', () async {
-      final api = container.read(nutritionApiProvider);
+    test('the offline nutrition API finds nothing', () async {
+      const api = OfflineNutritionApi();
 
       expect(await api.search('oats'), isEmpty);
       expect(await api.lookupBarcode('0123'), isNull);
     });
+
+    test(
+      'the nutrition API goes online, without USDA when Firebase is off',
+      () {
+        expect(container.read(nutritionApiProvider), isA<OnlineNutritionApi>());
+      },
+    );
 
     test('the error reporter prints to the console', () async {
       final printed = <String?>[];

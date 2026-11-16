@@ -8,13 +8,20 @@ part of 'nutrition_api.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// USDA through our proxy when Firebase is set up, and Open Food Facts
+/// always. Browsers don't let pages set a `User-Agent`, so web sends none.
 
 @ProviderFor(nutritionApi)
 final nutritionApiProvider = NutritionApiProvider._();
 
+/// USDA through our proxy when Firebase is set up, and Open Food Facts
+/// always. Browsers don't let pages set a `User-Agent`, so web sends none.
+
 final class NutritionApiProvider
     extends $FunctionalProvider<NutritionApi, NutritionApi, NutritionApi>
     with $Provider<NutritionApi> {
+  /// USDA through our proxy when Firebase is set up, and Open Food Facts
+  /// always. Browsers don't let pages set a `User-Agent`, so web sends none.
   NutritionApiProvider._()
     : super(
         from: null,
@@ -48,4 +55,4 @@ final class NutritionApiProvider
   }
 }
 
-String _$nutritionApiHash() => r'88cf3507a48d0fe5cdcb910a3e11f7c24518e3b5';
+String _$nutritionApiHash() => r'aaf6c9aed765e3127591ada0713e9e3bbef7c82f';
