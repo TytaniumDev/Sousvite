@@ -27,7 +27,7 @@ describe('removeUserFromSharing', () => {
     await acceptInvite(callFrom('bob', { inviteId: shared.inviteId }));
     const alone = await shareJointly(callFrom('alice', { name: 'Soup' }));
     const copy = await handleSendCopy(() => stores)(
-      callFrom('bob', { title: 'Pie', changes: [{}] }),
+      callFrom('bob', { title: 'Pie', entities: [{}] }),
     );
     await acceptInvite(callFrom('alice', { inviteId: copy.inviteId }));
     const link = await handlePublishLink(() => stores)(

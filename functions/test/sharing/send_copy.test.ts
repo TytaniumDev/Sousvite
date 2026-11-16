@@ -9,8 +9,8 @@ import {
   testSharingStores,
 } from '../helpers/sharing_test_stores.js';
 
-const changes = [
-  { entity: 'recipe', entityId: 'r1', field: 'title', value: 'Lasagna' },
+const entities = [
+  { entity: 'recipe', entityId: 'r1', fields: { title: 'Lasagna' } },
 ];
 
 describe('send a copy', () => {
@@ -27,7 +27,7 @@ describe('send a copy', () => {
 
   it('puts the copy in the inbox of each person who opens the link', async () => {
     const { inviteId } = await sendCopy(
-      callFrom('alice', { title: 'Lasagna', changes }, 'Alice'),
+      callFrom('alice', { title: 'Lasagna', entities }, 'Alice'),
     );
 
     const bob = await acceptInvite(callFrom('bob', { inviteId }));
@@ -43,7 +43,7 @@ describe('send a copy', () => {
     expect(item).toMatchObject({
       title: 'Lasagna',
       fromName: 'Alice',
-      changes,
+      entities,
     });
     expect(item?.receivedAt).toBeDefined();
     expect(
@@ -53,9 +53,9 @@ describe('send a copy', () => {
 
   it.each([
     [{ title: 'Lasagna' }],
-    [{ title: 'Lasagna', changes: [] }],
-    [{ title: 'Lasagna', changes: 'nope' }],
-    [{ changes }],
+    [{ title: 'Lasagna', entities: [] }],
+    [{ title: 'Lasagna', entities: 'nope' }],
+    [{ entities }],
   ])('refuses bad data %j', async (data) => {
     await expect(sendCopy(callFrom('alice', data))).rejects.toMatchObject({
       code: 'invalid-argument',
@@ -66,7 +66,7 @@ describe('send a copy', () => {
     const huge = [{ value: 'x'.repeat(1024 * 1024) }];
 
     await expect(
-      sendCopy(callFrom('alice', { title: 'Lasagna', changes: huge })),
+      sendCopy(callFrom('alice', { title: 'Lasagna', entities: huge })),
     ).rejects.toMatchObject({
       code: 'invalid-argument',
       details: { reason: 'tooLarge' },

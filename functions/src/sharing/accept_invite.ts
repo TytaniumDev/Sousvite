@@ -72,7 +72,7 @@ export const handleAcceptInvite =
         await item.set({
           title: invite.title,
           fromName: invite.fromName,
-          changes: invite.changes,
+          entities: invite.entities,
           receivedAt: FieldValue.serverTimestamp(),
         });
         return { kind: 'copy', itemId: item.id, title: invite.title };

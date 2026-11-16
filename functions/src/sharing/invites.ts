@@ -24,12 +24,16 @@ export interface JointInvite extends InviteBase {
   readonly spaceId: string;
 }
 
-/** `invites/{inviteId}` for send a copy: the copied changes. */
+/** `invites/{inviteId}` for send a copy: the copied entities. */
 export interface CopyInvite extends InviteBase {
   readonly kind: 'copy';
 
-  /** The sender's changes for the copied recipe or folder. The recipient's app gives them new ids when it imports them. */
-  readonly changes: readonly unknown[];
+  /**
+   * Every entity of the copied recipe or folder, each as
+   * `{ entity, entityId, fields }` in the app's change log encoding. The
+   * recipient's app gives them new ids when it imports them.
+   */
+  readonly entities: readonly unknown[];
 }
 
 /** One invite document. */

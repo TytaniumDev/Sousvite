@@ -19,8 +19,8 @@ export interface SendCopyResult {
 
 /**
  * Makes an invite link that gives whoever opens it their own copy of a
- * recipe or folder. The app sends the current changes of everything it
- * copies; the recipient's app imports them with new ids, so the copies
+ * recipe or folder. The app sends every entity it copies, in its change
+ * log encoding; the recipient's app imports them with new ids, so the copies
  * never affect each other (PRD 7.10).
  */
 export const handleSendCopy =
@@ -29,11 +29,11 @@ export const handleSendCopy =
     const uid = requireUid(request);
     const data = requireObject(request.data);
     const title = requireString(data, 'title');
-    const changes = data.changes;
-    if (!Array.isArray(changes) || changes.length === 0) {
-      throw invalid('Expected changes to be a non-empty list');
+    const entities = data.entities;
+    if (!Array.isArray(entities) || entities.length === 0) {
+      throw invalid('Expected entities to be a non-empty list');
     }
-    requireFits(changes, 'changes');
+    requireFits(entities, 'entities');
     const { firestore, now } = stores();
     await requireProToShare(firestore, uid, now());
 
@@ -44,7 +44,7 @@ export const handleSendCopy =
         title,
         fromUid: uid,
         fromName: callerName(request),
-        changes,
+        entities,
       },
       now(),
     );
