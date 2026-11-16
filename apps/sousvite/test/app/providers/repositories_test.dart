@@ -52,4 +52,22 @@ void main() {
       expect(await database.syncDao.changesAfter(null), isNotEmpty);
     });
   });
+
+  group('folderRepositoryProvider', () {
+    test('saves folders to the database once the recorder loads', () async {
+      final providers = container();
+      await providers.read(changeRecorderProvider.future);
+      final repository = providers.read(folderRepositoryProvider);
+      final folder = Folder(
+        id: const FolderId('f1'),
+        name: 'Soups',
+        createdAt: DateTime.utc(2026, 11, 16),
+      );
+
+      await repository.saveFolder(folder);
+
+      expect(repository, isA<DriftFolderRepository>());
+      expect(await repository.getFolder(folder.id), folder);
+    });
+  });
 }
