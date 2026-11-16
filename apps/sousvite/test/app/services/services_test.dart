@@ -91,7 +91,6 @@ void main() {
       for (final provider in <ProviderListenable<Object>>[
         appSettingsRepositoryProvider,
         foodRepositoryProvider,
-        experimentRepositoryProvider,
         measuringToolRepositoryProvider,
         userRecipePrefsRepositoryProvider,
       ]) {

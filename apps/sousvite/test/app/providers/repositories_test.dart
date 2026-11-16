@@ -88,4 +88,25 @@ void main() {
       expect(await repository.watchLists().first, [list]);
     });
   });
+
+  group('experimentRepositoryProvider', () {
+    test('starts experiments on saved recipes', () async {
+      final providers = container();
+      await providers.read(changeRecorderProvider.future);
+      final recipe = Recipe(
+        id: const RecipeId('r1'),
+        title: 'Soup',
+        servings: Quantity(2),
+        createdAt: DateTime.utc(2026, 11, 16),
+        updatedAt: DateTime.utc(2026, 11, 16),
+      );
+      await providers.read(recipeRepositoryProvider).saveRecipe(recipe);
+      final repository = providers.read(experimentRepositoryProvider);
+
+      final experiment = await repository.startExperiment(recipe.id);
+
+      expect(repository, isA<DriftExperimentRepository>());
+      expect(await repository.watchExperiments(recipe.id).first, [experiment]);
+    });
+  });
 }
