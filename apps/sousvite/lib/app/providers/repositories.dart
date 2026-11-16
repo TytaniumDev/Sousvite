@@ -12,7 +12,10 @@ part 'repositories.g.dart';
 
 @Riverpod(keepAlive: true)
 AppSettingsRepository appSettingsRepository(Ref ref) =>
-    throw UnimplementedError('AppSettingsRepository is not implemented yet.');
+    DriftAppSettingsRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
+    );
 
 @Riverpod(keepAlive: true)
 RecipeRepository recipeRepository(Ref ref) => DriftRecipeRepository(
@@ -51,10 +54,14 @@ GroceryRepository groceryRepository(Ref ref) => DriftGroceryRepository(
 
 @Riverpod(keepAlive: true)
 MeasuringToolRepository measuringToolRepository(Ref ref) =>
-    throw UnimplementedError('MeasuringToolRepository is not implemented yet.');
+    DriftMeasuringToolRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
+    );
 
 @Riverpod(keepAlive: true)
 UserRecipePrefsRepository userRecipePrefsRepository(Ref ref) =>
-    throw UnimplementedError(
-      'UserRecipePrefsRepository is not implemented yet.',
+    DriftUserRecipePrefsRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
     );

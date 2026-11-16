@@ -9,7 +9,18 @@ import '../fakes.dart';
 void main() {
   group(UnitSystemController, () {
     test('shows amounts as written until settings load', () {
-      final container = ProviderContainer.test();
+      final container = ProviderContainer.test(
+        overrides: [
+          appSettingsRepositoryProvider.overrideWithValue(
+            FakeAppSettingsRepository(
+              const AppSettings(
+                theme: ThemePreference.dark,
+                unitSystem: UnitSystem.metric,
+              ),
+            ),
+          ),
+        ],
+      );
 
       expect(container.read(unitSystemControllerProvider), UnitSystem.original);
     });

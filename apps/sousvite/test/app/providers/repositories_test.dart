@@ -109,4 +109,34 @@ void main() {
       expect(await repository.watchExperiments(recipe.id).first, [experiment]);
     });
   });
+
+  group('settings repositories', () {
+    test('save settings, tools, and prefs to the database', () async {
+      final providers = container();
+      await providers.read(changeRecorderProvider.future);
+      final settings = providers.read(appSettingsRepositoryProvider);
+      final tools = providers.read(measuringToolRepositoryProvider);
+      final prefs = providers.read(userRecipePrefsRepositoryProvider);
+      final tool = MeasuringTool(
+        id: const MeasuringToolId('c1'),
+        capacity: Quantity(1),
+        unit: Unit.cup,
+      );
+      final recipePrefs = UserRecipePrefs(
+        recipeId: const RecipeId('r1'),
+        servings: Quantity(2),
+      );
+
+      await settings.saveSettings(const AppSettings(theme: .dark));
+      await tools.saveTool(tool);
+      await prefs.savePrefs(recipePrefs);
+
+      expect(
+        await settings.watchSettings().first,
+        const AppSettings(theme: ThemePreference.dark),
+      );
+      expect(await tools.watchTools().first, [tool]);
+      expect(await prefs.watchPrefs(recipePrefs.recipeId).first, recipePrefs);
+    });
+  });
 }
