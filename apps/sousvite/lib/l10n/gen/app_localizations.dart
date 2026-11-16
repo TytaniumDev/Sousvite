@@ -244,6 +244,18 @@ abstract class AppLocalizations {
   /// **'Add recipe'**
   String get library_addRecipe;
 
+  /// Option that adds a recipe from a web page.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from a link'**
+  String get library_importRecipe;
+
+  /// Option that opens the editor for a new recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a recipe'**
+  String get library_writeRecipe;
+
   /// Title when the library has no recipes.
   ///
   /// In en, this message translates to:
@@ -483,6 +495,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit recipe'**
   String get editor_title;
+
+  /// Title of the editor for a recipe that has not been saved yet.
+  ///
+  /// In en, this message translates to:
+  /// **'New recipe'**
+  String get editor_newTitle;
+
+  /// Button that saves the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get editor_save;
+
+  /// Shown when saving a recipe with no name.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the recipe a name first'**
+  String get editor_nameRequired;
+
+  /// Label of the recipe name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe name'**
+  String get editor_name;
+
+  /// Label of the field for how many servings the recipe makes.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get editor_servings;
+
+  /// Label of the recipe total time field.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time in minutes'**
+  String get editor_totalMinutes;
+
+  /// Shown at the top of the editor after importing a recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported from {source}. Check the ingredients and steps, then save.'**
+  String editor_importedFrom(String source);
+
+  /// Heading of the ingredients part of the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get editor_ingredients;
+
+  /// Example ingredient line shown in an empty ingredient field.
+  ///
+  /// In en, this message translates to:
+  /// **'1 ½ cups rolled oats'**
+  String get editor_ingredientHint;
+
+  /// Button that adds an ingredient line.
+  ///
+  /// In en, this message translates to:
+  /// **'Add ingredient'**
+  String get editor_addIngredient;
+
+  /// Tooltip of the button that removes an ingredient line.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove ingredient'**
+  String get editor_removeIngredient;
+
+  /// Button that adds a named section, such as "For the sauce".
+  ///
+  /// In en, this message translates to:
+  /// **'Add section'**
+  String get editor_addSection;
+
+  /// Label of a section name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Section name'**
+  String get editor_sectionName;
+
+  /// Tooltip of the button that removes a section and what is in it.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove section'**
+  String get editor_removeSection;
+
+  /// What a screen reader says for a section's drag handle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder {section}'**
+  String editor_reorderSection(String section);
+
+  /// What a screen reader says before a parsed amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get editor_amount;
+
+  /// What a screen reader says before a parsed ingredient name.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredient'**
+  String get editor_ingredient;
+
+  /// What a screen reader says before a parsed preparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation'**
+  String get editor_preparation;
+
+  /// Heading of the steps part of the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get editor_steps;
+
+  /// Hint in an empty step field.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe this step'**
+  String get editor_stepHint;
+
+  /// Button that adds a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Add step'**
+  String get editor_addStep;
+
+  /// Tooltip of the button that removes a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove step'**
+  String get editor_removeStep;
+
+  /// Label of the recipe notes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get editor_notes;
+
+  /// Tooltip of the editor's overflow menu.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get editor_moreOptions;
+
+  /// Menu item that makes a copy of the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get editor_duplicate;
+
+  /// Name of a duplicated recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} (copy)'**
+  String editor_copyTitle(String title);
+
+  /// Menu item that deletes the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete recipe'**
+  String get editor_delete;
+
+  /// Shown after deleting a recipe, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe deleted'**
+  String get editor_deleted;
+
+  /// Button that brings back a deleted recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get editor_undo;
+
+  /// Title of the dialog shown when leaving the editor with unsaved changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get editor_discardTitle;
+
+  /// Message of the dialog shown when leaving the editor with unsaved changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes to this recipe haven\'t been saved.'**
+  String get editor_discardMessage;
+
+  /// Button that leaves the editor without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get editor_discard;
+
+  /// Button that stays in the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get editor_keepEditing;
 
   /// Title of the recipe import screen.
   ///

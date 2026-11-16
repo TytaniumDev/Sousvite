@@ -19,6 +19,23 @@ class FakeRecipeRepository() implements RecipeRepository {
   /// Every save and delete, in order, for tests that check writes.
   final List<Object> writes = [];
 
+  /// A saved recipe, read synchronously for widget tests.
+  Recipe? recipeById(RecipeId id) => _recipes[id];
+
+  /// A recipe's lines in order, read synchronously for widget tests.
+  List<IngredientLine> linesOf(RecipeId recipeId) => _sorted(
+    _lines.values,
+    (line) => line.recipeId == recipeId,
+    (line) => line.sortKey,
+  );
+
+  /// A recipe's steps in order, read synchronously for widget tests.
+  List<RecipeStep> stepsOf(RecipeId recipeId) => _sorted(
+    _steps.values,
+    (step) => step.recipeId == recipeId,
+    (step) => step.sortKey,
+  );
+
   /// Adds a whole recipe at once, without recording [writes].
   void seed({
     required Recipe recipe,
