@@ -283,7 +283,7 @@ final class GroceryRepositoryProvider
   }
 }
 
-String _$groceryRepositoryHash() => r'60b731b7d3595b92ec6a8baefb80affccc1ca65a';
+String _$groceryRepositoryHash() => r'2330bd65c9dbed13b72ceaf276ddfeb755232336';
 
 @ProviderFor(measuringToolRepository)
 final measuringToolRepositoryProvider = MeasuringToolRepositoryProvider._();
