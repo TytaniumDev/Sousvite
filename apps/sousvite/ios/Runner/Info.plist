@@ -6,6 +6,19 @@
 	<string>Sousvite uses the camera when you take a photo of a recipe.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Sousvite opens your photos when you choose a photo for a recipe.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.tytaniumdev.sousvite</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sousvite</string>
+			</array>
+		</dict>
+	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

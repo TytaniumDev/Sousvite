@@ -11,6 +11,7 @@ import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
 import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/import/presentation/umami_section.dart';
+import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
@@ -23,13 +24,21 @@ void main() {
   late FakeUmamiTransfer umami;
 
   // Made inside each test so their futures run in the fake-async zone.
-  Future<void> pump(WidgetTester tester) async {
-    importer = FakeUrlImporter();
+  Future<void> pump(
+    WidgetTester tester, {
+    String initialLocation = ImportRoutes.path,
+    RecipeSnapshot? result,
+  }) async {
+    importer = FakeUrlImporter()..result = result;
     umami = FakeUmamiTransfer();
     final router = GoRouter(
-      initialLocation: ImportRoutes.path,
+      initialLocation: initialLocation,
       routes: [
         ...ImportRoutes.routes,
+        GoRoute(
+          path: LibraryRoutes.path,
+          builder: (context, state) => const Scaffold(body: Text('Library')),
+        ),
         GoRoute(
           path: '/editor/:recipeId',
           builder: (context, state) => Scaffold(body: Text(state.uri.path)),
@@ -86,6 +95,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('/editor/chili'), findsOneWidget);
+    });
+
+    testWidgets('imports a link shared from another app', (tester) async {
+      await pump(
+        tester,
+        initialLocation: ImportRoutes.sharedLocation(
+          'Best chili https://a.com/chili?x=1+2',
+        ),
+        result: RecipeSnapshot(recipe: RecipeFixtures.recipe(id: 'chili')),
+      );
+
+      expect(importer.requested, [Uri.parse('https://a.com/chili?x=1+2')]);
+      expect(find.text('/editor/chili'), findsOneWidget);
+    });
+
+    testWidgets('closes to the library when opened from the share sheet', (
+      tester,
+    ) async {
+      await pump(tester);
+
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Library'), findsOneWidget);
     });
 
     testWidgets('says why a link failed', (tester) async {

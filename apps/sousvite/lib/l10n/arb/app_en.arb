@@ -222,6 +222,8 @@
 
   "import_title": "Import recipe",
   "@import_title": {"description": "Title of the recipe import screen."},
+  "import_close": "Close",
+  "@import_close": {"description": "Tooltip of the button that closes the import screen when it was opened from the share sheet."},
   "import_fromWeb": "From a web page",
   "@import_fromWeb": {"description": "Import screen section heading for importing from a URL."},
   "import_urlLabel": "Recipe link",
