@@ -1,12 +1,27 @@
 rules_version = '2';
 
-// Everything is denied until a task adds rules for its own collections:
+// Everything is denied unless a section below allows it:
 // private spaces (SYN-5) and sharing (SHR-1). ENGINEERING.md §9.
 // Rules are tested in functions/test/rules/ against the emulator.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // Sharing (SHR-1). ENGINEERING.md §8.4 and §9.1. Shared spaces, their
+    // members, invites, inbox items, and view-only links are written only by
+    // the sharing functions, which check membership themselves.
+
+    // Anyone signed in who has an invite link can see what it offers before
+    // accepting. Ids are random, so invites can't be listed or guessed.
+    match /invites/{inviteId} {
+      allow get: if request.auth != null;
+    }
+
+    // Copies sent to a user wait here until their app imports and deletes them.
+    match /inbox/{uid}/items/{itemId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
     }
   }
 }
