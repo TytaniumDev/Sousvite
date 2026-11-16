@@ -8826,6 +8826,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final UserRecipePrefsDao userRecipePrefsDao = UserRecipePrefsDao(
     this as AppDatabase,
   );
+  late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
   late final SyncDao syncDao = SyncDao(this as AppDatabase);
   Future<int> rebuildRecipeSearch() {
     return customInsert(

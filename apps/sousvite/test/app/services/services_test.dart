@@ -89,10 +89,7 @@ void main() {
   group('repository providers', () {
     test('throw until a data task implements them', () {
       for (final provider in <ProviderListenable<Object>>[
-        appSettingsRepositoryProvider,
         foodRepositoryProvider,
-        measuringToolRepositoryProvider,
-        userRecipePrefsRepositoryProvider,
       ]) {
         expect(() => container.read(provider), throwsA(anything));
       }
