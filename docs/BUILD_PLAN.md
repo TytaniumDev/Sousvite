@@ -255,7 +255,7 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 
 | ID | Task | Owns | Depends on | Done when |
 |---|---|---|---|---|
-| REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Sentry symbol and source-map upload. (The web deploy to Firebase Hosting already runs on every push to `main` from `.github/workflows/deploy_web.yaml`.) Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile` | §8 accounts, OBS-1 | A tagged commit produces builds testers can install |
+| REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Sentry symbol and source-map upload. (The web deploy to Firebase Hosting already runs on every push to `main` from `.github/workflows/deploy_web.yaml`.) Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile`, release signing in `app/android/app/build.gradle.kts` | §8 accounts, OBS-1 | Every push to `main` produces builds testers can install (Tyler, 2026-11-16) |
 | E2E-1 | **Integration tests.** Import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device (ENGINEERING §15) | `app/integration_test/**` | All features | Runs in CI on web and one mobile target |
 
 ## 7. Beta readiness
@@ -328,7 +328,7 @@ Costs $25 once.
 ### 8.5 Signing keys (needed by `REL-1`)
 
 - [x] **Android upload key:** run `tools/secrets/set_github_secrets.sh` on your computer. It creates the keystore in `~/Sousvite-secrets/`, sets it as GitHub Actions secrets, and prints the SHA fingerprints for §8.3. Back up the keystore and its password file in your password manager. Use Play App Signing so Google holds the app signing key. Created 2026-11-14 (alias `upload`).
-- [ ] **iOS:** let the release pipeline manage certificates and profiles through the App Store Connect API key from §8.2 (an agent sets this up in `REL-1`).
+- [ ] **iOS:** fastlane `match` keeps the Apple Distribution certificate and the App Store profile, encrypted, in the private `TytaniumDev/TytaniumDev-certificates` repo that Tyler's other apps already use, so one certificate covers every app on the team. The release workflow reads it with a deploy key and talks to Apple with the App Store Connect API key from §8.2 (App Manager is enough, because signing is manual rather than Apple's cloud signing). Before the first iOS release: set `MATCH_PASSWORD` and `MATCH_SSH_PRIVATE_KEY` (§8.9; the script copies them from Doppler), and create the Sousvite profile once with `fastlane certs` in `apps/sousvite/ios`, on a computer that can push to the certificates repo.
 
 ### 8.6 Nutrition data (needed by `BE-2`, `NUT-3`)
 
@@ -364,6 +364,7 @@ Costs $25 once.
   | `PLAY_SERVICE_ACCOUNT_JSON` | `play-service-account.json` (§8.4) |
   | `FIREBASE_SERVICE_ACCOUNT` | `firebase-deploy.json` (§8.1) |
   | `SENTRY_AUTH_TOKEN` | Sentry auth token (§8.8), typed at a hidden prompt |
+  | `MATCH_PASSWORD`, `MATCH_SSH_PRIVATE_KEY` | The fastlane match password and the certificates repo's deploy key (§8.5), copied from Doppler (project `blinkbreak`) |
 
 ### 8.10 Inputs only Tyler has (not accounts)
 
@@ -388,5 +389,5 @@ Costs $25 once.
 Decided by Tyler on 2026-11-13.
 
 1. **Bundled USDA file:** the generated SQLite file is committed to the repo as a normal file, without Git LFS. It is about 9 MB (under 2 MB compressed, which is what Git stores) and USDA updates it about twice a year, so the history grows slowly. Git LFS has a small free quota that every CI checkout uses, and building the file in CI would download hundreds of MB of CSVs on every build.
-2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses the App Store Connect API key from §8.2.
+2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses fastlane match with the shared certificates repo and the App Store Connect API key from §8.2 (§8.5). Every push to `main` ships a TestFlight and Play internal build (Tyler, 2026-11-16).
 3. **Firebase:** one project, with no dev and prod split (§8.1).

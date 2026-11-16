@@ -1,0 +1,29 @@
+# Android release lanes (BUILD_PLAN.md REL-1). Run from apps/sousvite/android:
+#
+#   BUNDLE_GEMFILE=../Gemfile bundle exec fastlane <lane>
+#
+# `.github/workflows/release.yaml` runs `internal` after `flutter build
+# appbundle` has built and signed the bundle.
+#
+# Environment:
+#   PLAY_SERVICE_ACCOUNT_JSON   the Play Console service account key (JSON)
+#
+# Google Play only accepts API uploads once the app exists in Play Console
+# and its first bundle was uploaded there by hand (BUILD_PLAN.md §8.4).
+
+default_platform(:android)
+
+platform :android do
+  desc "Upload the signed bundle to the Play internal testing track"
+  lane :internal do
+    upload_to_play_store(
+      json_key_data: ENV.fetch("PLAY_SERVICE_ACCOUNT_JSON"),
+      track: "internal",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
