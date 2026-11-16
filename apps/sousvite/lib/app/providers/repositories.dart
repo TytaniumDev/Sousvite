@@ -32,8 +32,16 @@ FoodRepository foodRepository(Ref ref) =>
     throw UnimplementedError('FoodRepository is not implemented yet.');
 
 @Riverpod(keepAlive: true)
-ExperimentRepository experimentRepository(Ref ref) =>
-    throw UnimplementedError('ExperimentRepository is not implemented yet.');
+ExperimentRepository experimentRepository(Ref ref) {
+  final database = ref.watch(appDatabaseProvider);
+  final recorder = ref.watch(changeRecorderProvider).requireValue;
+  return DriftExperimentRepository(
+    database,
+    recorder: recorder,
+    recipes: DriftRecipeRepository(database, recorder: recorder),
+    now: clock.now,
+  );
+}
 
 @Riverpod(keepAlive: true)
 GroceryRepository groceryRepository(Ref ref) => DriftGroceryRepository(

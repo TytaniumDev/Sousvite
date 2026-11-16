@@ -125,6 +125,69 @@ final class DriftRecipeRepository(
   Future<Recipe?> getRecipe(RecipeId id) async =>
       (await _dao.recipe(id.value).getSingleOrNull())?.toEntity();
 
+  /// The recipe [id] with every part, in sort order, or null when it does
+  /// not exist. Used to save versions and start experiments.
+  Future<RecipeSnapshot?> getSnapshot(RecipeId id) async {
+    final recipe = await getRecipe(id);
+    if (recipe == null) return null;
+    final recipeId = id.value;
+    return RecipeSnapshot(
+      recipe: recipe,
+      ingredientSections: [
+        for (final row in await _dao.ingredientSectionsOf(recipeId).get())
+          row.toEntity(),
+      ],
+      ingredientLines: [
+        for (final row in await _dao.ingredientLinesOf(recipeId).get())
+          row.toEntity(),
+      ],
+      stepSections: [
+        for (final row in await _dao.stepSectionsOf(recipeId).get())
+          row.toEntity(),
+      ],
+      steps: [
+        for (final row in await _dao.stepsOf(recipeId).get()) row.toEntity(),
+      ],
+    );
+  }
+
+  /// Makes the recipe in [contents] hold exactly its parts: parts not in
+  /// it are deleted and the rest saved, in one transaction. The recipe's
+  /// fields come from `contents.recipe`. Used by restore and promote.
+  Future<void> replaceContents(RecipeSnapshot contents) =>
+      recorder.write((changes) async {
+        final current = await getSnapshot(contents.recipe.id);
+        if (current != null) {
+          final keep = <String>{
+            for (final part in contents.ingredientSections) part.id.value,
+            for (final part in contents.ingredientLines) part.id.value,
+            for (final part in contents.stepSections) part.id.value,
+            for (final part in contents.steps) part.id.value,
+          };
+          for (final line in current.ingredientLines) {
+            if (!keep.contains(line.id.value)) {
+              await _deleteIngredientLine(changes, line.id.value);
+            }
+          }
+          for (final section in current.ingredientSections) {
+            if (!keep.contains(section.id.value)) {
+              await _deleteIngredientSection(changes, section.id.value);
+            }
+          }
+          for (final step in current.steps) {
+            if (!keep.contains(step.id.value)) {
+              await _deleteStep(changes, step.id.value);
+            }
+          }
+          for (final section in current.stepSections) {
+            if (!keep.contains(section.id.value)) {
+              await _deleteStepSection(changes, section.id.value);
+            }
+          }
+        }
+        await _saveSnapshot(changes, contents);
+      });
+
   // Writes.
 
   @override
@@ -149,21 +212,7 @@ final class DriftRecipeRepository(
 
   @override
   Future<void> saveSnapshot(RecipeSnapshot snapshot) =>
-      recorder.write((changes) async {
-        await _saveRecipe(changes, snapshot.recipe);
-        for (final section in snapshot.ingredientSections) {
-          await _saveIngredientSection(changes, section);
-        }
-        for (final line in snapshot.ingredientLines) {
-          await _saveIngredientLine(changes, line);
-        }
-        for (final section in snapshot.stepSections) {
-          await _saveStepSection(changes, section);
-        }
-        for (final step in snapshot.steps) {
-          await _saveStep(changes, step);
-        }
-      });
+      recorder.write((changes) => _saveSnapshot(changes, snapshot));
 
   @override
   Future<void> deleteRecipe(RecipeId id) => recorder.write((changes) async {
@@ -220,6 +269,22 @@ final class DriftRecipeRepository(
       recorder.write((changes) => _deleteStep(changes, id.value));
 
   // One entity at a time, inside a write.
+
+  Future<void> _saveSnapshot(ChangeSet changes, RecipeSnapshot snapshot) async {
+    await _saveRecipe(changes, snapshot.recipe);
+    for (final section in snapshot.ingredientSections) {
+      await _saveIngredientSection(changes, section);
+    }
+    for (final line in snapshot.ingredientLines) {
+      await _saveIngredientLine(changes, line);
+    }
+    for (final section in snapshot.stepSections) {
+      await _saveStepSection(changes, section);
+    }
+    for (final step in snapshot.steps) {
+      await _saveStep(changes, step);
+    }
+  }
 
   Future<void> _saveRecipe(ChangeSet changes, Recipe recipe) async {
     final before = await _dao.recipe(recipe.id.value).getSingleOrNull();
