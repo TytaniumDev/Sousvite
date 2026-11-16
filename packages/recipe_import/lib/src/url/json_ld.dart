@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:html/dom.dart';
+import 'package:recipe_import/src/text_cleanup.dart';
 import 'package:recipe_import/src/url/recipe_page_data.dart';
-import 'package:recipe_import/src/url/text_cleanup.dart';
 
 /// The first schema.org `Recipe` in the page's JSON-LD scripts, or null.
 ///

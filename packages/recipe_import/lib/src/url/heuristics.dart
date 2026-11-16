@@ -1,6 +1,6 @@
 import 'package:html/dom.dart';
+import 'package:recipe_import/src/text_cleanup.dart';
 import 'package:recipe_import/src/url/recipe_page_data.dart';
-import 'package:recipe_import/src/url/text_cleanup.dart';
 
 /// A last try for pages without recipe markup: the `<h1>` as the name, and
 /// the first list after a heading that says "Ingredients" and after one

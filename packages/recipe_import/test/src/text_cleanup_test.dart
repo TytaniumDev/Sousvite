@@ -1,4 +1,4 @@
-import 'package:recipe_import/src/url/text_cleanup.dart';
+import 'package:recipe_import/src/text_cleanup.dart';
 import 'package:test/test.dart';
 
 void main() {
