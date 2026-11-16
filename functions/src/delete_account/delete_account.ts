@@ -1,6 +1,7 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { type Auth, getAuth } from 'firebase-admin/auth';
 import { type Firestore, getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import { logger } from 'firebase-functions/v2';
 import {
   type CallableRequest,
@@ -12,6 +13,13 @@ import {
 export interface AccountStores {
   readonly auth: Auth;
   readonly firestore: Firestore;
+  /** The default Cloud Storage bucket, where snapshots and photos live. */
+  readonly bucket: Bucket;
+}
+
+/** The part of a Cloud Storage bucket that deleting an account uses. */
+export interface Bucket {
+  deleteFiles(options: { prefix: string }): Promise<unknown>;
 }
 
 /**
@@ -22,6 +30,16 @@ export interface AccountStores {
  */
 export const userDocumentPaths = (uid: string): readonly string[] => [
   `users/${uid}`,
+  // The private space and its change log (SYN-5, ENGINEERING.md §9.1).
+  `spaces/u_${uid}`,
+];
+
+/**
+ * Every Cloud Storage prefix that belongs to one user: the private space's
+ * snapshots and photos (ENGINEERING.md §9.1).
+ */
+export const userStoragePrefixes = (uid: string): readonly string[] => [
+  `spaces/u_${uid}/`,
 ];
 
 /**
@@ -36,9 +54,12 @@ export const handleDeleteAccount =
     if (uid === undefined) {
       throw new HttpsError('unauthenticated', 'Sign in to delete your account');
     }
-    const { auth, firestore } = stores();
+    const { auth, firestore, bucket } = stores();
     for (const path of userDocumentPaths(uid)) {
       await firestore.recursiveDelete(firestore.doc(path));
+    }
+    for (const prefix of userStoragePrefixes(uid)) {
+      await bucket.deleteFiles({ prefix });
     }
     try {
       await auth.deleteUser(uid);
@@ -64,6 +85,10 @@ export const deleteAccount = onCall(
     // The emulators point the Admin SDK at themselves through the
     // environment, so this needs no options.
     const app = getApps()[0] ?? initializeApp();
-    return { auth: getAuth(app), firestore: getFirestore(app) };
+    return {
+      auth: getAuth(app),
+      firestore: getFirestore(app),
+      bucket: getStorage(app).bucket(),
+    };
   }),
 );
