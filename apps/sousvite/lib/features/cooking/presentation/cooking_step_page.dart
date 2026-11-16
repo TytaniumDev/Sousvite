@@ -79,11 +79,11 @@ class const CookingStepText({
     final system = ref.watch(recipeUnitSystemProvider(recipeId));
     final l10n = context.l10n;
 
-    StepAmountSegment inline(Amount written) {
+    StepAmountSegment inline(Amount written, {String? countWord}) {
       final shown = shownAmount(written, factor: factor, system: system);
       return StepAmountSegment(
         quantity: shown.quantity,
-        unit: l10n.unitWord(shown.unit, shown.quantity),
+        unit: l10n.unitWord(shown.unit, shown.quantity, countWord: countWord),
       );
     }
 
@@ -91,16 +91,22 @@ class const CookingStepText({
       for (final part in parts)
         ...switch (part) {
           StepWords(:final text) => [StepTextSegment(text)],
-          StepMention(:final amount, :final amountMax, :final name) => [
-            if (amountMax == null)
-              inline(amount)
-            else ...[
-              inline(Amount(amount.quantity, null)),
-              const StepTextSegment('–'),
-              inline(Amount(amountMax, amount.unit)),
+          StepMention(
+            :final amount,
+            :final amountMax,
+            :final countWord,
+            :final name,
+          ) =>
+            [
+              if (amountMax == null)
+                inline(amount, countWord: countWord)
+              else ...[
+                inline(Amount(amount.quantity, null)),
+                const StepTextSegment('–'),
+                inline(Amount(amountMax, amount.unit), countWord: countWord),
+              ],
+              StepTextSegment(' $name'),
             ],
-            StepTextSegment(' $name'),
-          ],
         },
     ];
     final large = WindowSizeClass.of(context) != .compact;

@@ -123,6 +123,36 @@ void main() {
     );
   });
 
+  testWidgets('shows a count word with the amount, scaled', (tester) async {
+    recipes = FakeRecipeRepository()
+      ..seed(
+        recipe: RecipeFixtures.recipe(),
+        lines: [
+          RecipeFixtures.line(
+            'garlic',
+            quantity: Quantity(3),
+            countWord: 'clove',
+            name: 'garlic',
+          ),
+        ],
+        steps: [RecipeFixtures.step('fry', text: 'Add the garlic.')],
+      );
+    await pumpCooking(tester);
+    expect(
+      find.text('Add 3\u00a0cloves garlic.', findRichText: true),
+      findsOneWidget,
+    );
+
+    ProviderScope.containerOf(tester.element(find.byType(CookingScreen)))
+        .read(recipeScaleProvider(recipeId).notifier)
+        .scaleBy(Quantity(2));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Add 6\u00a0cloves garlic.', findRichText: true),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('moves with Next and Back, and by swiping', (tester) async {
     final builds = BuildCounter.start();
     await pumpCooking(tester);

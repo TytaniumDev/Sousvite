@@ -12,6 +12,7 @@ IngredientLine _line(
   Quantity? quantity,
   Quantity? quantityMax,
   Unit? unit,
+  String? countWord,
 }) => IngredientLine(
   id: IngredientLineId('line-${_nextId++}'),
   recipeId: const RecipeId('recipe'),
@@ -20,6 +21,7 @@ IngredientLine _line(
   quantity: quantity,
   quantityMax: quantityMax,
   unit: unit,
+  countWord: countWord,
   name: name,
 );
 
@@ -28,9 +30,15 @@ String _render(List<StepPart> parts) => parts
     .map(
       (part) => switch (part) {
         StepWords(:final text) => text,
-        StepMention(:final amount, :final amountMax, :final name) =>
+        StepMention(
+          :final amount,
+          :final amountMax,
+          :final countWord,
+          :final name,
+        ) =>
           '{${amount.quantity}${amountMax == null ? '' : '-$amountMax'}'
-              '${amount.unit == null ? '' : ' ${amount.unit!.name}'} $name}',
+              '${amount.unit == null ? '' : ' ${amount.unit!.name}'}'
+              '${countWord == null ? '' : ' $countWord'} $name}',
       },
     )
     .join();
@@ -75,6 +83,15 @@ void main() {
       expect(
         _smart('Add the garlic.', [cloves], scale: Quantity(2)),
         'Add {4-6 garlic}.',
+      );
+    });
+
+    test('carries the count word, for "6 cloves garlic"', () {
+      final cloves = _line('garlic', quantity: Quantity(3), countWord: 'clove');
+
+      expect(
+        _smart('Add the garlic.', [cloves], scale: Quantity(2)),
+        'Add {6 clove garlic}.',
       );
     });
 

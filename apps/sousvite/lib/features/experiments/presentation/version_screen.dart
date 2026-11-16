@@ -72,7 +72,11 @@ class const _Snapshot({
                   quantity: line.quantity,
                   unit: line.quantity == null
                       ? null
-                      : l10n.unitWord(line.unit, line.quantity!),
+                      : l10n.unitWord(
+                          line.unit,
+                          line.quantity!,
+                          countWord: line.countWord,
+                        ),
                   preparation: line.preparation,
                 ),
             ],
