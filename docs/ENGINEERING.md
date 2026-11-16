@@ -234,10 +234,11 @@ Because both carry the same change log, **switching transports** means replaying
 - A **space** is a set of entities that sync together. Each user has a private space, and each joint share is its own space with members.
 - Joint shares always live in Firestore, even for Drive-sync users (PRD 7.12).
 - **Share jointly:** the recipe or folder moves into a new shared space, and membership is enforced by Firestore security rules.
-- **Send a copy:** a Cloud Function writes a copy, with new ids, into the recipient's inbox, and the recipient's app imports it into their own space.
+- **Invite links** pick the recipients (Tyler, 2026-11-16): sharing makes a link (`https://sousvite.web.app/invite/{id}`, valid 14 days) that the sharer sends through any app. Opening it in the app (signed in) shows whether it's a joint share or a copy, then accepts it. This works for Apple users with hidden emails and for people who don't have the app yet. Invites are stored in `invites/{inviteId}`, written and read only by the sharing functions (`functions/src/sharing/`).
+- **Send a copy:** the sender's app sends every entity of the recipe in its change log encoding (`RecipeSnapshotCodec`). Accepting returns them to the recipient's app, which saves them with new ids (`copyRecipe`) as its own recipe, so they sync to the recipient's other devices like any recipe. There is no server inbox.
 - **Leaving or deleting** a joint share removes the user from the space and keeps a local copy for the others (PRD 7.10).
 - **Experiments in shared recipes** stay in the creator's private space unless "Share with others" is on, and then they move into the shared space.
-- **View-only links:** a Cloud Function renders a read-only page on Firebase Hosting from a published snapshot.
+- **View-only links:** the app publishes the recipe as plain text (`shareLinks/{linkId}`), and the `shareLinkPage` function renders it at `/r/{linkId}` on Firebase Hosting, with the source credited and `noindex`. Publishing again replaces it, and the owner can turn a link off.
 - **Pro check:** a share syncs only while at least one member has Pro. The entitlement is stored server-side and enforced by rules (§9).
 
 ## 9. Backend: Firebase *(Decided)*
@@ -245,7 +246,7 @@ Because both carry the same change log, **switching transports** means replaying
 | Service | Use |
 |---|---|
 | Firebase Auth | Google and Apple sign-in. Signed-out users have no account at all. |
-| Firestore | Pro change logs and snapshots, shared spaces, membership, share inbox |
+| Firestore | Pro change logs and snapshots, shared spaces, membership, invites, view-only links |
 | Cloud Functions | Fetch proxy for web URL import, USDA API proxy (hides the API key), send-a-copy, share links, subscription webhooks |
 | Cloud Storage | Recipe photos for Pro users and shares |
 | Hosting | Flutter web app and view-only recipe pages |

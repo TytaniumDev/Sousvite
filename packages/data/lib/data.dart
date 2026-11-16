@@ -33,3 +33,4 @@ export 'src/recipes/drift_recipe_repository.dart';
 export 'src/recipes/recipe_codecs.dart';
 export 'src/recipes/recipe_rows.dart';
 export 'src/recipes/recipe_search_query.dart';
+export 'src/recipes/recipe_snapshot_codec.dart';

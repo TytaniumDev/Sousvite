@@ -37,6 +37,7 @@ export 'src/repositories/grocery_repository.dart';
 export 'src/repositories/measuring_tool_repository.dart';
 export 'src/repositories/recipe_repository.dart';
 export 'src/repositories/user_recipe_prefs_repository.dart';
+export 'src/snapshots/recipe_repository_snapshots.dart';
 export 'src/snapshots/recipe_snapshot_copy.dart';
 export 'src/text/plural.dart';
 export 'src/value_objects/ids.dart';
