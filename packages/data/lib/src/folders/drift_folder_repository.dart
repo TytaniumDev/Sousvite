@@ -93,7 +93,7 @@ final class DriftFolderRepository(
         final entry = FolderEntry(
           folderId: folderId,
           recipeId: recipeId,
-          addedAt: now(),
+          addedAt: now().toUtc(),
         );
         changes.setChanged(_entries, entry);
         await _dao.upsertEntry(entry.toCompanion());

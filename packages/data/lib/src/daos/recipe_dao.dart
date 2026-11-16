@@ -1,5 +1,6 @@
 import 'package:data/src/app_database.dart';
 import 'package:data/src/tables/folder_tables.dart';
+import 'package:data/src/tables/history_tables.dart';
 import 'package:data/src/tables/recipe_tables.dart';
 import 'package:drift/drift.dart';
 
@@ -18,15 +19,23 @@ part 'recipe_dao.g.dart';
     RecipeSteps,
     Folders,
     FolderEntries,
+    Experiments,
   ],
 )
 class RecipeDao(super.attachedDatabase)
     extends DatabaseAccessor<AppDatabase>
     with _$RecipeDaoMixin {
-  /// Every recipe id, newest first.
+  /// Every library recipe id, newest first. An experiment's working copy
+  /// is not a library recipe, so it is left out.
   Stream<List<String>> watchRecipeIds() =>
       (selectOnly(recipes)
             ..addColumns([recipes.id])
+            ..where(
+              recipes.id.isNotInQuery(
+                selectOnly(experiments)
+                  ..addColumns([experiments.workingRecipeId]),
+              ),
+            )
             ..orderBy([
               OrderingTerm.desc(recipes.createdAt),
               OrderingTerm.asc(recipes.id),
@@ -34,7 +43,7 @@ class RecipeDao(super.attachedDatabase)
           .map((row) => row.read(recipes.id)!)
           .watch();
 
-  /// Ids of recipes whose search text matches the FTS5 [match]
+  /// Ids of library recipes whose search text matches the FTS5 [match]
   /// expression, newest first.
   ///
   /// The index is written by triggers, so the query re-runs when any table
@@ -43,9 +52,10 @@ class RecipeDao(super.attachedDatabase)
     'SELECT r.id AS id FROM recipe_search s '
     'INNER JOIN recipes r ON r.id = s.recipe_id '
     'WHERE recipe_search MATCH ?1 '
+    'AND r.id NOT IN (SELECT working_recipe_id FROM experiments) '
     'ORDER BY r.created_at DESC, r.id',
     variables: [Variable.withString(match)],
-    readsFrom: {recipes, ingredientLines, folders, folderEntries},
+    readsFrom: {recipes, ingredientLines, folders, folderEntries, experiments},
   ).map((row) => row.read<String>('id')).watch();
 
   /// The recipe with [id].

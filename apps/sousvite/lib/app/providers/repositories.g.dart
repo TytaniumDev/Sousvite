@@ -236,7 +236,7 @@ final class ExperimentRepositoryProvider
 }
 
 String _$experimentRepositoryHash() =>
-    r'291634bd73262f1b89f9837cae21db5a27535c3a';
+    r'9363a30dccc1aa8f892af1ab161923b52e594bb0';
 
 @ProviderFor(groceryRepository)
 final groceryRepositoryProvider = GroceryRepositoryProvider._();
