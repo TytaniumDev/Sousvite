@@ -23,6 +23,7 @@ class GroceryItems() extends Table {
   IntColumn get quantityNumerator => integer().nullable()();
   IntColumn get quantityDenominator => integer().nullable()();
   TextColumn get unit => textEnum<Unit>().nullable()();
+  TextColumn get countWord => text().nullable()();
   TextColumn get storeSection => text().nullable()();
   BoolColumn get checked => boolean().withDefault(const Constant(false))();
   TextColumn get sourceIngredientLineId => text().nullable()();

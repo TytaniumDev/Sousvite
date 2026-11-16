@@ -76,5 +76,24 @@ void main() {
       expect(line.unit, Unit.cup);
       expect(line.countWord, 'clove');
     });
+
+    test('round-trips a grocery item with a count word', () async {
+      await database
+          .into(database.groceryItems)
+          .insert(
+            GroceryItemsCompanion.insert(
+              id: 'g1',
+              listId: 'list1',
+              name: 'garlic',
+              sortKey: 'a0',
+              countWord: const Value('clove'),
+            ),
+          );
+
+      final item = await database.select(database.groceryItems).getSingle();
+
+      expect(item.countWord, 'clove');
+      expect(item.unit, isNull);
+    });
   });
 }

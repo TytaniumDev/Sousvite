@@ -3,9 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'grocery_entry.freezed.dart';
 
-/// One amount of a grocery entry, in one unit. An entry made of items in
-/// different units shows each, such as "1 cup + 2 Tbsp".
-typedef GroceryAmount = ({Quantity quantity, Unit? unit});
+/// One amount of a grocery entry, in one unit or count word. An entry
+/// made of items in different units shows each, such as "1 cup + 2 Tbsp".
+typedef GroceryAmount = ({Quantity quantity, Unit? unit, String? countWord});
 
 /// One row on the grocery list: every item with the same name, combined
 /// across recipes and manual additions (PRD 7.7).
@@ -22,7 +22,8 @@ abstract class const GroceryEntry._() with _$GroceryEntry {
     /// The items this entry combines, in list order.
     required List<GroceryItem> items,
 
-    /// The combined amounts, one per unit, in the order units first appear.
+    /// The combined amounts, one per unit or count word, in the order they
+    /// first appear.
     required List<GroceryAmount> amounts,
 
     /// The recipes the items came from, without repeats. Empty when every

@@ -88,8 +88,19 @@ void main() {
         _F.item('d', name: 'milk', quantity: Quantity(200), unit: Unit.gram),
       );
       await groceries.saveItem(_F.item('eggs', checked: true));
+      for (final (id, count) in [('g1', 3), ('g2', 2)]) {
+        await groceries.saveItem(
+          _F.item(
+            id,
+            name: 'garlic',
+            quantity: Quantity(count),
+            countWord: 'clove',
+          ),
+        );
+      }
       await pumpScreen(tester);
 
+      expect(find.textContaining('cloves'), findsOneWidget);
       expect(find.text('Produce'), findsOneWidget);
       expect(find.text('Dairy and eggs'), findsOneWidget);
       expect(find.text('Checked'), findsOneWidget);

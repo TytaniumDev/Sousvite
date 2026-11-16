@@ -30,7 +30,13 @@ class const GroceryEntryRow({
         name: entry.name,
         checked: entry.checked,
         quantity: first?.quantity,
-        unit: first == null ? null : l10n.unitWord(first.unit, first.quantity),
+        unit: first == null
+            ? null
+            : l10n.unitWord(
+                first.unit,
+                first.quantity,
+                countWord: first.countWord,
+              ),
         sourcesLabel: _sourcesLabel(context, ref, entry),
         onChanged: (checked) => ref
             .read(groceryActionsProvider)
@@ -68,7 +74,11 @@ String? _sourcesLabel(BuildContext context, WidgetRef ref, GroceryEntry entry) {
     for (final amount in entry.amounts.skip(1))
       [
         amount.quantity.format(),
-        ?l10n.unitWord(amount.unit, amount.quantity),
+        ?l10n.unitWord(
+          amount.unit,
+          amount.quantity,
+          countWord: amount.countWord,
+        ),
       ].join(' '),
   ];
   final titles = [

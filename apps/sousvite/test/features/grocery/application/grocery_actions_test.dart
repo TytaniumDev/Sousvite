@@ -32,13 +32,25 @@ void main() {
         quantity: Quantity(2),
       );
       final water = _F.line('l2', recipeId: 'soup');
+      final garlic = _F.line(
+        'l3',
+        recipeId: 'soup',
+        name: 'garlic',
+        quantity: Quantity(3),
+        countWord: 'clove',
+      );
 
-      await actions.addFromRecipe(soup, [onion, water]);
+      await actions.addFromRecipe(soup, [onion, water, garlic]);
 
       final list = repository.lists.values.single;
       expect(list.createdAt, now);
       final items = repository.items.values.toList();
-      expect(items.map((item) => item.name), ['onion', water.rawText]);
+      expect(items.map((item) => item.name), [
+        'onion',
+        water.rawText,
+        'garlic',
+      ]);
+      expect(items.last.countWord, 'clove');
       expect(items.first.quantity, Quantity(2));
       expect(items.first.sourceRecipeId, soup);
       expect(items.first.sourceIngredientLineId, onion.id);
