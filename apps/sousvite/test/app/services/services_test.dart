@@ -90,7 +90,6 @@ void main() {
     test('throw until a data task implements them', () {
       for (final provider in <ProviderListenable<Object>>[
         appSettingsRepositoryProvider,
-        folderRepositoryProvider,
         foodRepositoryProvider,
         experimentRepositoryProvider,
         groceryRepositoryProvider,

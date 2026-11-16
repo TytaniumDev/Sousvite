@@ -147,7 +147,7 @@ final class FolderRepositoryProvider
   }
 }
 
-String _$folderRepositoryHash() => r'e3b95c295d64265da7a6af8b1f6890d820b76fe2';
+String _$folderRepositoryHash() => r'1917fd283236d45c8ca2425a7fa0221032d2fc42';
 
 @ProviderFor(foodRepository)
 final foodRepositoryProvider = FoodRepositoryProvider._();
