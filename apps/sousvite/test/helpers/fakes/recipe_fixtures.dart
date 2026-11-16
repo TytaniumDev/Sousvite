@@ -26,6 +26,7 @@ abstract final class RecipeFixtures() {
     Quantity? quantity,
     Quantity? quantityMax,
     Unit? unit,
+    String? countWord,
     String? name,
     String? rawText,
   }) => IngredientLine(
@@ -37,6 +38,7 @@ abstract final class RecipeFixtures() {
     quantity: quantity,
     quantityMax: quantityMax,
     unit: unit,
+    countWord: countWord,
     name: name,
   );
 

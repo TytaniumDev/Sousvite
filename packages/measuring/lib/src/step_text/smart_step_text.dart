@@ -226,6 +226,7 @@ List<StepPart> _smartStepText(
         original: step.substring(start, last.end),
         amount: Amount(line.quantity! * scale, line.unit),
         amountMax: line.quantityMax == null ? null : line.quantityMax! * scale,
+        countWord: line.countWord,
         name: _displayName(line.name!.trim(), first.text),
       ),
     );

@@ -13,25 +13,31 @@ void main() {
   });
 
   group('StepMention', () {
-    StepMention mention({Quantity? amountMax, String name = 'garlic'}) =>
-        StepMention(
-          lineId: const IngredientLineId('a'),
-          original: 'the garlic',
-          amount: Amount(Quantity(2), null),
-          amountMax: amountMax,
-          name: name,
-        );
+    StepMention mention({
+      Quantity? amountMax,
+      String name = 'garlic',
+      String? countWord,
+    }) => StepMention(
+      lineId: const IngredientLineId('a'),
+      original: 'the garlic',
+      amount: Amount(Quantity(2), null),
+      amountMax: amountMax,
+      name: name,
+      countWord: countWord,
+    );
 
     test('compares by value', () {
       expect(mention(), mention());
       expect(mention().hashCode, mention().hashCode);
       expect(mention(), isNot(mention(name: 'onion')));
       expect(mention(), isNot(mention(amountMax: Quantity(3))));
+      expect(mention(), isNot(mention(countWord: 'clove')));
     });
 
     test('has a debug form', () {
       expect(mention().toString(), '[2: garlic]');
       expect(mention(amountMax: Quantity(3)).toString(), '[2-3: garlic]');
+      expect(mention(countWord: 'clove').toString(), '[2 clove: garlic]');
       expect(
         StepMention(
           lineId: const IngredientLineId('a'),
