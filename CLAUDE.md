@@ -30,6 +30,8 @@ firestore.rules, storage.rules   Security rules, tested in functions/test/rules/
 
 This is a [pub workspace](https://dart.dev/tools/pub/workspaces): one root `pubspec.yaml`, one `pubspec.lock`, one `flutter pub get`.
 
+Stack: Riverpod 3 (code generation), Drift, go_router, freezed, `very_good_analysis` lints, Firebase for the Pro backend. ENGINEERING.md §3 has the full list and the reasons.
+
 ## Commands
 
 Flutter is pinned in `.fvmrc` (CI reads it). Use that version.
@@ -119,6 +121,9 @@ ENGINEERING.md §5 is the rule. In practice:
 - Layout: `WindowSizeClass.of(context)` for compact, medium, and expanded.
 - Icons: `Symbols.<name>_rounded` from `material_symbols_icons`; `fill: 1` for selected states.
 - A shared widget moves into `design_system` only once two features need it, takes plain values (never entities or providers), and gets golden tests in all four schemes plus 200% text scale.
+- `design_system` has no l10n: every label is a parameter, and features pass `context.l10n.*`. Amount widgets (`AmountText`, `IngredientRow`) take a `Quantity` plus a unit word from `l10n.unitWord(unit, quantity, countWord:)` in `lib/shared/units/unit_words.dart`.
+- Goldens use `designSystemGoldenTest` and are committed in two sets, `goldens/ci/` and `goldens/linux/` (update them on Linux). Every component also gets a Widgetbook entry in `apps/widgetbook/lib/src/components/`, listed in `directories.dart`; `directories_test.dart` pins the count.
+- Building or changing a screen: follow the [`build-screen` skill](.claude/skills/build-screen/SKILL.md).
 
 ## Strings
 
