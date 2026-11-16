@@ -137,7 +137,6 @@ flowchart LR
   SYN3 --> SYN5[SYN-5 Firestore transport]
   BE0 --> SYN5
   SYN5 --> SHR1[SHR-1 Sharing backend]
-  PRO1[PRO-1 Subscriptions] --> SHR1
   SHR1 --> APPSHR[APP-SHR Sharing UI]
   SYN4 & SYN5 --> APPSYN[APP-SYN Sync settings]
   APPACC[APP-ACC Sign-in] --> APPSYN
@@ -213,7 +212,7 @@ Each `DATA-*` task implements one aggregate's repository interface, fills in its
 | DATA-2 | **Recipes.** Recipe, ingredient lines, sections, and steps; fractional sort keys; FTS5 over titles, ingredient names, and folder names (a schema PR, §3.3) | `packages/data/lib/src/recipes/`, the recipe DAO | DATA-1 | Watch queries are `distinct()`; search tested; migration snapshot added |
 | DATA-3 | **Folders.** Folders and many-to-many entries | `packages/data/lib/src/folders/`, the folder DAO | DATA-1 | |
 | DATA-4 | **Grocery lists.** Lists and items linked to source lines | `packages/data/lib/src/grocery/`, the grocery DAO | DATA-1 | |
-| DATA-5 | **Versions and experiments.** Snapshots, experiments, promote, restore, and the losing-edit history entries from `SYN-1` | `packages/data/lib/src/history/`, the history DAO | DATA-1 | Promote and restore are single transactions |
+| DATA-5 | **Versions and experiments.** One `RecipeVersion` per editor Save (ENGINEERING §8.3), experiments, promote, restore, and the losing-edit history entries from `SYN-1` | `packages/data/lib/src/history/`, the history DAO | DATA-1 | Promote and restore are single transactions |
 | DATA-6 | **Preferences and tools.** `UserRecipePrefs`, `MeasuringTool`, and app settings (theme mode, units, sync choice). The scaffold has no settings table, so adding one is a schema PR (§3.3); say in the PR which settings sync and which stay on the device | `packages/data/lib/src/prefs/`, `user_recipe_prefs_dao.dart`, `measuring_tool_dao.dart` | DATA-1 | |
 | DATA-7 | **Foods.** Attach the bundled USDA file read-only, cache branded and OFF foods, store `NutritionMatch` rows; web download-once of the bundled file | `packages/data/lib/src/foods/`, the food DAO | USDA-1 | Works on all three platforms; replacing the bundled file needs no migration |
 | BE-1 | **Fetch proxy** for web URL import, App Check enforced, with an allow-list of content types and a size limit | `functions/src/fetch_proxy/` | BE-0 | Emulator tests; rejects requests without App Check |
@@ -234,8 +233,8 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 | APP-GRO | `grocery` | Add to grocery list sheet with line-by-line include, several recipes per list, combined items by store section, check-off, manual items (7.7) | DS-3, GRO-1, DATA-4 |
 | APP-EXP | `experiments` | Start, edit, record what changed and how it went, promote or keep, history timeline, view and restore past versions (7.11) | DATA-5 |
 | APP-SET | `settings` | Theme mode, units, my measuring tools, about and licenses including Open Food Facts attribution (7.5, 7.6) | DATA-6 |
-| APP-ACC | `account`, plus `app/lib/app/services/auth_service.dart` | Optional sign-in with Google or Apple replacing the `AuthService` stub, attaching existing local data on first sign-in, sign-out (7.9), and **delete account**, which both stores require: a `delete_account` function (`functions/src/delete_account/`) deletes the Firebase user and their server data, and the device keeps a local copy | BE-0; Auth emulator for tests; §8.1 to §8.4 for real devices |
-| APP-SYN | `account/sync/` (subfolder) | Choose Drive or Sousvite cloud, switch between them, sync status in the shell via `SyncStatusIcon` (7.8) | APP-ACC, SYN-4, SYN-5 |
+| APP-ACC | `account`, plus `app/lib/app/services/auth_service.dart` | Optional sign-in with Google or Apple replacing the `AuthService` stub, the signed-out callout for free Google Drive backup and sync on the library and in Settings (ENGINEERING §10), attaching existing local data on first sign-in, sign-out (7.9), and **delete account**, which both stores require: a `delete_account` function (`functions/src/delete_account/`) deletes the Firebase user and their server data (ENGINEERING §9.1), and the device keeps a local copy | BE-0; Auth emulator for tests; §8.1 to §8.4 for real devices |
+| APP-SYN | `account/sync/` (subfolder) | Choose Drive or Sousvite cloud (Sousvite cloud by default during the beta), switch between them, sync status in the shell via `SyncStatusIcon` including "Sign in again" for web Drive (7.8). `BetaEntitlements` in `app/lib/app/services/entitlements.dart` replaces `FreeEntitlements` (ENGINEERING §9.2) | APP-ACC, SYN-4, SYN-5 |
 | APP-SHR | `sharing` | Share jointly or send a copy, recipient sees which, leave a joint share, view-only links, experiment "Share with others" toggle (7.10, 7.11) | SHR-1 |
 | PRO-1 | `account/pro/` (subfolder), `app/lib/app/services/entitlements.dart`, `functions/src/revenuecat_webhook/` | Paywall, RevenueCat SDK, `Entitlements` implementation replacing the scaffold stub, webhook that writes the entitlement to Firestore (7.12) | BE-0; §8.7 for real purchases |
 
@@ -245,9 +244,9 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 |---|---|---|---|---|
 | SYN-2 | **Sync engine.** Push and pull loop, apply remote changes to Drift idempotently, cursors, snapshots and compaction, replay into a new transport | `packages/sync/lib/src/engine/` | SYN-1, DATA-1 | Engine tests with an in-memory transport converge across simulated devices |
 | SYN-3 | **Transport contract.** The `SyncTransport` interface, an in-memory implementation, and the shared contract test suite both transports must pass | `packages/sync/lib/src/transport/`, `packages/sync/test/contract/` | SYN-2 | In-memory transport passes the suite |
-| SYN-4 | **Google Drive transport.** `appDataFolder`, per-device change files, snapshots, polling cadence | `packages/sync/lib/src/drive/` | SYN-3 | Passes the contract suite against a fake Drive API; one manual run against a real account (§8.3) |
-| SYN-5 | **Firestore transport and private-space rules.** `spaces/{spaceId}/changes`, snapshots, realtime listener, security rules for private spaces | `packages/sync/lib/src/firestore/`, the private-space section of `firestore.rules` | SYN-3, BE-0 | Passes the contract suite on the Firestore emulator; rules tests |
-| SHR-1 | **Sharing backend.** Shared spaces and membership rules, the "at least one member has Pro" check, send-a-copy function, view-only link pages on Hosting, leaving a share | `functions/src/sharing/`, the sharing section of `firestore.rules`, `hosting/` for share pages | SYN-5, PRO-1 | Emulator tests for every rule in ENGINEERING §8.3 |
+| SYN-4 | **Google Drive transport.** `appDataFolder` layout from ENGINEERING §8.2, per-device change files that are never deleted, snapshots, polling cadence, backoff on rate limits, silent token renewal on web. First removes pruning from the in-memory transport and the contract suite (changes are kept forever, ENGINEERING §8.1) | `packages/sync/lib/src/drive/`, plus the pruning in `packages/sync/lib/src/transport/` and `packages/sync/test/contract/` | SYN-3 | Passes the contract suite against a fake Drive API; one manual run against a real account (§8.3) |
+| SYN-5 | **Firestore transport and private-space rules.** The layout in ENGINEERING §9.1: `users/{uid}`, `spaces/{spaceId}/batches`, snapshot files in Cloud Storage, realtime listener, security rules for users and private spaces, and the `proRequired()` switch (off, ENGINEERING §9.2) | `packages/sync/lib/src/firestore/`, the users and private-space sections of `firestore.rules`, the snapshot section of `storage.rules` | SYN-3, BE-0 | Passes the contract suite on the Firestore emulator; rules tests |
+| SHR-1 | **Sharing backend.** Shared spaces and membership rules, the "at least one member has Pro" check behind `proRequired()` (ENGINEERING §9.2), send-a-copy function and `inbox`, `shareLinks` and view-only link pages on Hosting, leaving a share | `functions/src/sharing/`, the sharing section of `firestore.rules`, `hosting/` for share pages | SYN-5 | Emulator tests for every rule in ENGINEERING §8.4, with the Pro gate both off and on |
 | MEDIA-1 | **Recipe photos on device.** Pick or take a photo, resize, store locally, show in `RecipeCard` and the recipe page | `app/lib/shared/photos/` | DATA-2 | Works offline on all platforms |
 | MEDIA-2 | **Photo sync.** Upload and download through Drive (free) or Cloud Storage (Pro and shares), with storage rules | `packages/sync/lib/src/blobs/`, `storage.rules` | MEDIA-1, SYN-4, SYN-5 | Emulator rules tests; contract tests for both blob stores |
 
@@ -337,7 +336,7 @@ Costs $25 once.
 
 ### 8.7 RevenueCat and Stripe (needed by `PRO-1`)
 
-**Deferred** (Tyler, 2026-11-14): all payment and billing setup waits until later. `PRO-1` can still be written and tested against fakes; it needs these accounts only for real purchases, and the app keeps the `FreeEntitlements` stub until then.
+**Deferred** (Tyler, 2026-11-14): all payment and billing setup waits until later. `PRO-1` can still be written and tested against fakes; it needs these accounts only for real purchases, and until then the app uses `BetaEntitlements`, which reports Pro for everyone during the beta (ENGINEERING §9.2; APP-SYN swaps it in).
 
 - [ ] Create a [RevenueCat](https://www.revenuecat.com) account and project. Its free tier covers a beta.
 - [ ] Add the **iOS app** (with the In-App Purchase key from §8.2), the **Android app** (with the Play service account from §8.4), and **Web Billing** (connect a Stripe account, below).
