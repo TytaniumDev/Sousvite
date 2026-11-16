@@ -1,6 +1,6 @@
 import 'package:html/dom.dart';
+import 'package:recipe_import/src/text_cleanup.dart';
 import 'package:recipe_import/src/url/recipe_page_data.dart';
-import 'package:recipe_import/src/url/text_cleanup.dart';
 
 /// The first schema.org `Recipe` marked up with microdata
 /// (`itemtype="https://schema.org/Recipe"`), or null.

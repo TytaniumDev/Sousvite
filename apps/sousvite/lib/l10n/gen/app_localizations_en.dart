@@ -428,7 +428,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get import_invalidFile => 'That file isn\'t an Umami export.';
+  String get import_invalidFile =>
+      'That file isn\'t an Umami HTML export. In Umami, export your recipes as HTML, then pick the zip file.';
 
   @override
   String get import_notAvailable => 'This kind of import isn\'t ready yet.';

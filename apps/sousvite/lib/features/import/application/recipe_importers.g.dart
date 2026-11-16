@@ -57,12 +57,17 @@ final class UrlImporterProvider
 
 String _$urlImporterHash() => r'bd21ea927bad6a7dbde9bc1246a389ca0ae3d144';
 
+/// The whole library, through the system file picker.
+
 @ProviderFor(umamiTransfer)
 final umamiTransferProvider = UmamiTransferProvider._();
+
+/// The whole library, through the system file picker.
 
 final class UmamiTransferProvider
     extends $FunctionalProvider<UmamiTransfer, UmamiTransfer, UmamiTransfer>
     with $Provider<UmamiTransfer> {
+  /// The whole library, through the system file picker.
   UmamiTransferProvider._()
     : super(
         from: null,
@@ -96,4 +101,4 @@ final class UmamiTransferProvider
   }
 }
 
-String _$umamiTransferHash() => r'efb586b981f385bad94458051f37bec3eea9b7c5';
+String _$umamiTransferHash() => r'495f45638721acc2b4a1b2ea6d31f53f97f9722a';

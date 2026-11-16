@@ -176,14 +176,4 @@ void main() {
       );
     });
   });
-
-  group('servingsFromYield', () {
-    test('reads the first whole number', () {
-      expect(servingsFromYield('Serves 4-6'), Quantity(4));
-      expect(servingsFromYield('12'), Quantity(12));
-      expect(servingsFromYield('a few'), isNull);
-      expect(servingsFromYield('0'), isNull);
-      expect(servingsFromYield(null), isNull);
-    });
-  });
 }

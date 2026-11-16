@@ -3,10 +3,13 @@ import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/app/services/firebase.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
+import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/page_fetchers.dart';
 import 'package:sousvite/features/import/data/page_url_importer.dart';
+import 'package:sousvite/features/import/data/umami_files.dart';
 import 'package:uuid/uuid.dart';
 
 part 'recipe_importers.g.dart';
@@ -38,17 +41,6 @@ class const UnavailableUrlImporter() implements UrlImporter {
       throw ImportFailure(.notAvailable, site: url.host);
 }
 
-/// Stands in until Umami import and export (IMP-2) exist.
-class const UnavailableUmamiTransfer() implements UmamiTransfer {
-  @override
-  Future<int?> importLibrary() async =>
-      throw const ImportFailure(.notAvailable);
-
-  @override
-  Future<int?> exportLibrary() async =>
-      throw const ImportFailure(.notAvailable);
-}
-
 /// Fetches pages straight from the site on iOS and Android, and through
 /// the fetch proxy on web.
 @Riverpod(keepAlive: true)
@@ -68,5 +60,11 @@ UrlImporter urlImporter(Ref ref) {
   return PageUrlImporter(directPageFetcher(client), newId: const Uuid().v4);
 }
 
+/// The whole library, through the system file picker.
 @Riverpod(keepAlive: true)
-UmamiTransfer umamiTransfer(Ref ref) => const UnavailableUmamiTransfer();
+UmamiTransfer umamiTransfer(Ref ref) => LibraryUmamiTransfer(
+  files: const SystemUmamiFiles(),
+  recipes: ref.watch(recipeRepositoryProvider),
+  folders: ref.watch(folderRepositoryProvider),
+  newId: const Uuid().v4,
+);
