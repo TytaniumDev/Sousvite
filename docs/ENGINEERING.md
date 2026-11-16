@@ -175,7 +175,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 | `ChangeLog`, `SyncState` | See §8 |
 | `LocalValues` | Values that stay on this device and never sync, such as its device id |
 
-The bundled USDA database ships as a separate, read-only SQLite file attached to the main database, so app updates can replace it without migrations.
+The bundled USDA database ships as a separate, read-only SQLite file, so app updates can replace it without migrations. The app opens it as its own connection from the asset's bytes (an in-memory file system, so the same code runs on native SQLite and WebAssembly) rather than attaching it to the main database; `DriftFoodRepository` reads the local cache first, then the bundled file.
 
 ## 8. Sync *(Decided)*
 
