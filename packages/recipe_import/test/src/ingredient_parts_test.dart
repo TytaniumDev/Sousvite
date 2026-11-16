@@ -26,10 +26,13 @@ void main() {
       expect(line.rawText, '2-3 cups rolled oats, toasted');
     });
 
-    test('keeps a size and count word in the name as written', () {
-      expect(_parts('3 cloves garlic, minced').name, 'cloves garlic');
+    test('sets the count word, and keeps a size in the name', () {
+      final garlic = _parts('3 cloves garlic, minced');
+      expect(garlic.countWord, 'clove');
+      expect(garlic.unit, isNull);
+      expect(garlic.name, 'garlic');
       expect(_parts('1 large egg').name, 'large egg');
-      expect(_parts('2 Garlic Cloves').name, 'Garlic Cloves');
+      expect(_parts('2 Large Eggs').name, 'Large Eggs');
     });
 
     test('leaves a line with no name unnamed', () {
