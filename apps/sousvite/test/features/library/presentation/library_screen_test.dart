@@ -12,7 +12,11 @@ import 'package:sousvite/features/library/presentation/library_recipe_card.dart'
 import 'package:sousvite/features/library/presentation/library_screen.dart';
 import 'package:sousvite/features/library/presentation/recipe_grid.dart';
 
+import 'package:sousvite/shared/photos/photos.dart';
+import 'package:sousvite/shared/photos/stored_photo_image.dart';
+
 import '../../../helpers/fakes/fake_folder_repository.dart';
+import '../../../helpers/fakes/fake_photo_store.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
@@ -21,12 +25,16 @@ void main() {
   const breakfast = FolderId('breakfast');
   late FakeRecipeRepository recipes;
   late FakeFolderRepository folders;
+  late FakePhotoStore photos;
 
   setUp(() {
+    photos = FakePhotoStore();
     recipes = FakeRecipeRepository()
       ..seed(
-        recipe: RecipeFixtures.recipe(id: 'oats')
-            .copyWith(totalTime: const Duration(minutes: 90)),
+        recipe: RecipeFixtures.recipe(id: 'oats').copyWith(
+          totalTime: const Duration(minutes: 90),
+          photoRef: 'oats-photo',
+        ),
       )
       ..seed(
         recipe: RecipeFixtures.recipe(
@@ -52,6 +60,7 @@ void main() {
       overrides: [
         recipeRepositoryProvider.overrideWithValue(recipes),
         folderRepositoryProvider.overrideWithValue(folders),
+        photoStoreProvider.overrideWithValue(photos),
       ],
     );
     await tester.pumpAndSettle();
@@ -67,6 +76,18 @@ void main() {
           .widgetList<RecipeCard>(find.byType(RecipeCard))
           .map((card) => card.title);
       expect(titles, ['Tomato soup', 'Oat pancakes']);
+      final images = tester
+          .widgetList<RecipeCard>(find.byType(RecipeCard))
+          .map((card) => card.image);
+      expect(images.first, isNull);
+      expect(
+        images.last,
+        isA<ResizeImage>().having(
+          (i) => i.imageProvider,
+          'photo',
+          StoredPhotoImage(photos, 'oats-photo'),
+        ),
+      );
       expect(find.text('1 h 30 min'), findsOneWidget);
     });
 
@@ -272,6 +293,7 @@ void main() {
         overrides: [
           recipeRepositoryProvider.overrideWithValue(recipes),
           folderRepositoryProvider.overrideWithValue(folders),
+          photoStoreProvider.overrideWithValue(photos),
         ],
       );
       await tester.pumpAndSettle();

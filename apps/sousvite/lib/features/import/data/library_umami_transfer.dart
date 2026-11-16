@@ -19,9 +19,16 @@ class const LibraryUmamiTransfer({
 
   /// Makes ids for imported recipes and new folders.
   required final String Function() newId,
+
+  /// Saves the photo at an address on this device, and returns the
+  /// recipe's `photoRef` for it (`RecipePhotos.importFrom`).
+  required final Future<String?> Function(String? url) importPhoto,
 }) implements UmamiTransfer {
   /// The name export offers for the file.
   static const exportFileName = 'Sousvite recipes.zip';
+
+  /// How many photos download at once during import.
+  static const photoDownloads = 6;
 
   @override
   Future<int?> importLibrary() async {
@@ -37,8 +44,15 @@ class const LibraryUmamiTransfer({
       for (final folder in await folders.watchFolders().first)
         folder.name: folder.id,
     };
-    for (final (:snapshot, :book, imageUrl: _) in imported) {
-      await recipes.saveSnapshot(snapshot);
+    final photoRefs = await _importPhotos([
+      for (final recipe in imported) recipe.imageUrl,
+    ]);
+    for (final (index, (:snapshot, :book, imageUrl: _)) in imported.indexed) {
+      await recipes.saveSnapshot(
+        snapshot.copyWith(
+          recipe: snapshot.recipe.copyWith(photoRef: photoRefs[index]),
+        ),
+      );
       if (book == null || book.trim().isEmpty) continue;
       final folderId = folderIds[book] ??= await _newFolder(book);
       await folders.addRecipeToFolder(folderId, snapshot.recipe.id);
@@ -54,13 +68,36 @@ class const LibraryUmamiTransfer({
     final exported = [
       for (final id in recipeIds)
         if (await _snapshot(id) case final snapshot?)
-          (snapshot: snapshot, book: books[id], imageUrl: null),
+          (
+            snapshot: snapshot,
+            book: books[id],
+            imageUrl: _photoAddress(snapshot.recipe.photoRef),
+          ),
     ];
     final saved = await files.saveArchive(
       exportFileName,
       writeUmamiArchive(exported),
     );
     return saved ? exported.length : null;
+  }
+
+  /// Each address's `photoRef`, downloading [photoDownloads] at a time.
+  Future<List<String?>> _importPhotos(List<String?> urls) async {
+    final refs = <String?>[];
+    for (var start = 0; start < urls.length; start += photoDownloads) {
+      final batch = urls.skip(start).take(photoDownloads);
+      refs.addAll(await Future.wait(batch.map(importPhoto)));
+    }
+    return refs;
+  }
+
+  /// The photo's address for Umami, which can only point at the web. A
+  /// photo saved only on this device stays behind.
+  static String? _photoAddress(String? photoRef) {
+    final url = photoRef == null ? null : Uri.tryParse(photoRef);
+    return url != null && (url.isScheme('http') || url.isScheme('https'))
+        ? photoRef
+        : null;
   }
 
   Future<FolderId> _newFolder(String name) async {
