@@ -102,7 +102,11 @@ class const _LineRow({
       quantity: quantity,
       unit: quantity == null
           ? null
-          : context.l10n.unitWord(line.unit, quantity),
+          : context.l10n.unitWord(
+              line.unit,
+              quantity,
+              countWord: line.countWord,
+            ),
       preparation: line.preparation,
       checked: included,
       onChanged: (_) => ref

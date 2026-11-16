@@ -19,7 +19,8 @@ mixin _$GroceryEntry {
 /// entry exists, so it doubles as the row's key.
  String get key;/// The name shown, as the first item spelled it.
  String get name;/// The items this entry combines, in list order.
- List<GroceryItem> get items;/// The combined amounts, one per unit, in the order units first appear.
+ List<GroceryItem> get items;/// The combined amounts, one per unit or count word, in the order they
+/// first appear.
  List<GroceryAmount> get amounts;/// The recipes the items came from, without repeats. Empty when every
 /// item was added by hand.
  List<RecipeId> get sourceRecipeIds;/// The store section the entry is grouped under, or null for "Other".
@@ -242,9 +243,11 @@ class _GroceryEntry extends GroceryEntry {
   return EqualUnmodifiableListView(_items);
 }
 
-/// The combined amounts, one per unit, in the order units first appear.
+/// The combined amounts, one per unit or count word, in the order they
+/// first appear.
  final  List<GroceryAmount> _amounts;
-/// The combined amounts, one per unit, in the order units first appear.
+/// The combined amounts, one per unit or count word, in the order they
+/// first appear.
 @override List<GroceryAmount> get amounts {
   if (_amounts is EqualUnmodifiableListView) return _amounts;
   // ignore: implicit_dynamic_type

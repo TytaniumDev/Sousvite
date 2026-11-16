@@ -5937,6 +5937,17 @@ class $GroceryItemsTable extends GroceryItems
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       ).withConverter<Unit?>($GroceryItemsTable.$converterunitn);
+  static const VerificationMeta _countWordMeta = const VerificationMeta(
+    'countWord',
+  );
+  @override
+  late final GeneratedColumn<String> countWord = GeneratedColumn<String>(
+    'count_word',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _storeSectionMeta = const VerificationMeta(
     'storeSection',
   );
@@ -5994,6 +6005,7 @@ class $GroceryItemsTable extends GroceryItems
     quantityNumerator,
     quantityDenominator,
     unit,
+    countWord,
     storeSection,
     checked,
     sourceIngredientLineId,
@@ -6056,6 +6068,12 @@ class $GroceryItemsTable extends GroceryItems
           data['quantity_denominator']!,
           _quantityDenominatorMeta,
         ),
+      );
+    }
+    if (data.containsKey('count_word')) {
+      context.handle(
+        _countWordMeta,
+        countWord.isAcceptableOrUnknown(data['count_word']!, _countWordMeta),
       );
     }
     if (data.containsKey('store_section')) {
@@ -6130,6 +6148,10 @@ class $GroceryItemsTable extends GroceryItems
           data['${effectivePrefix}unit'],
         ),
       ),
+      countWord: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}count_word'],
+      ),
       storeSection: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}store_section'],
@@ -6168,6 +6190,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
   final int? quantityNumerator;
   final int? quantityDenominator;
   final Unit? unit;
+  final String? countWord;
   final String? storeSection;
   final bool checked;
   final String? sourceIngredientLineId;
@@ -6180,6 +6203,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     this.quantityNumerator,
     this.quantityDenominator,
     this.unit,
+    this.countWord,
     this.storeSection,
     required this.checked,
     this.sourceIngredientLineId,
@@ -6202,6 +6226,9 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
       map['unit'] = Variable<String>(
         $GroceryItemsTable.$converterunitn.toSql(unit),
       );
+    }
+    if (!nullToAbsent || countWord != null) {
+      map['count_word'] = Variable<String>(countWord);
     }
     if (!nullToAbsent || storeSection != null) {
       map['store_section'] = Variable<String>(storeSection);
@@ -6231,6 +6258,9 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
           ? const Value.absent()
           : Value(quantityDenominator),
       unit: unit == null && nullToAbsent ? const Value.absent() : Value(unit),
+      countWord: countWord == null && nullToAbsent
+          ? const Value.absent()
+          : Value(countWord),
       storeSection: storeSection == null && nullToAbsent
           ? const Value.absent()
           : Value(storeSection),
@@ -6261,6 +6291,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
       unit: $GroceryItemsTable.$converterunitn.fromJson(
         serializer.fromJson<String?>(json['unit']),
       ),
+      countWord: serializer.fromJson<String?>(json['countWord']),
       storeSection: serializer.fromJson<String?>(json['storeSection']),
       checked: serializer.fromJson<bool>(json['checked']),
       sourceIngredientLineId: serializer.fromJson<String?>(
@@ -6282,6 +6313,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
       'unit': serializer.toJson<String?>(
         $GroceryItemsTable.$converterunitn.toJson(unit),
       ),
+      'countWord': serializer.toJson<String?>(countWord),
       'storeSection': serializer.toJson<String?>(storeSection),
       'checked': serializer.toJson<bool>(checked),
       'sourceIngredientLineId': serializer.toJson<String?>(
@@ -6299,6 +6331,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     Value<int?> quantityNumerator = const Value.absent(),
     Value<int?> quantityDenominator = const Value.absent(),
     Value<Unit?> unit = const Value.absent(),
+    Value<String?> countWord = const Value.absent(),
     Value<String?> storeSection = const Value.absent(),
     bool? checked,
     Value<String?> sourceIngredientLineId = const Value.absent(),
@@ -6315,6 +6348,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
         ? quantityDenominator.value
         : this.quantityDenominator,
     unit: unit.present ? unit.value : this.unit,
+    countWord: countWord.present ? countWord.value : this.countWord,
     storeSection: storeSection.present ? storeSection.value : this.storeSection,
     checked: checked ?? this.checked,
     sourceIngredientLineId: sourceIngredientLineId.present
@@ -6337,6 +6371,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
           ? data.quantityDenominator.value
           : this.quantityDenominator,
       unit: data.unit.present ? data.unit.value : this.unit,
+      countWord: data.countWord.present ? data.countWord.value : this.countWord,
       storeSection: data.storeSection.present
           ? data.storeSection.value
           : this.storeSection,
@@ -6360,6 +6395,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
           ..write('quantityNumerator: $quantityNumerator, ')
           ..write('quantityDenominator: $quantityDenominator, ')
           ..write('unit: $unit, ')
+          ..write('countWord: $countWord, ')
           ..write('storeSection: $storeSection, ')
           ..write('checked: $checked, ')
           ..write('sourceIngredientLineId: $sourceIngredientLineId, ')
@@ -6377,6 +6413,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     quantityNumerator,
     quantityDenominator,
     unit,
+    countWord,
     storeSection,
     checked,
     sourceIngredientLineId,
@@ -6393,6 +6430,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
           other.quantityNumerator == this.quantityNumerator &&
           other.quantityDenominator == this.quantityDenominator &&
           other.unit == this.unit &&
+          other.countWord == this.countWord &&
           other.storeSection == this.storeSection &&
           other.checked == this.checked &&
           other.sourceIngredientLineId == this.sourceIngredientLineId &&
@@ -6407,6 +6445,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
   final Value<int?> quantityNumerator;
   final Value<int?> quantityDenominator;
   final Value<Unit?> unit;
+  final Value<String?> countWord;
   final Value<String?> storeSection;
   final Value<bool> checked;
   final Value<String?> sourceIngredientLineId;
@@ -6420,6 +6459,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     this.quantityNumerator = const Value.absent(),
     this.quantityDenominator = const Value.absent(),
     this.unit = const Value.absent(),
+    this.countWord = const Value.absent(),
     this.storeSection = const Value.absent(),
     this.checked = const Value.absent(),
     this.sourceIngredientLineId = const Value.absent(),
@@ -6434,6 +6474,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     this.quantityNumerator = const Value.absent(),
     this.quantityDenominator = const Value.absent(),
     this.unit = const Value.absent(),
+    this.countWord = const Value.absent(),
     this.storeSection = const Value.absent(),
     this.checked = const Value.absent(),
     this.sourceIngredientLineId = const Value.absent(),
@@ -6451,6 +6492,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     Expression<int>? quantityNumerator,
     Expression<int>? quantityDenominator,
     Expression<String>? unit,
+    Expression<String>? countWord,
     Expression<String>? storeSection,
     Expression<bool>? checked,
     Expression<String>? sourceIngredientLineId,
@@ -6466,6 +6508,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
       if (quantityDenominator != null)
         'quantity_denominator': quantityDenominator,
       if (unit != null) 'unit': unit,
+      if (countWord != null) 'count_word': countWord,
       if (storeSection != null) 'store_section': storeSection,
       if (checked != null) 'checked': checked,
       if (sourceIngredientLineId != null)
@@ -6483,6 +6526,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     Value<int?>? quantityNumerator,
     Value<int?>? quantityDenominator,
     Value<Unit?>? unit,
+    Value<String?>? countWord,
     Value<String?>? storeSection,
     Value<bool>? checked,
     Value<String?>? sourceIngredientLineId,
@@ -6497,6 +6541,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
       quantityNumerator: quantityNumerator ?? this.quantityNumerator,
       quantityDenominator: quantityDenominator ?? this.quantityDenominator,
       unit: unit ?? this.unit,
+      countWord: countWord ?? this.countWord,
       storeSection: storeSection ?? this.storeSection,
       checked: checked ?? this.checked,
       sourceIngredientLineId:
@@ -6532,6 +6577,9 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
         $GroceryItemsTable.$converterunitn.toSql(unit.value),
       );
     }
+    if (countWord.present) {
+      map['count_word'] = Variable<String>(countWord.value);
+    }
     if (storeSection.present) {
       map['store_section'] = Variable<String>(storeSection.value);
     }
@@ -6562,6 +6610,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
           ..write('quantityNumerator: $quantityNumerator, ')
           ..write('quantityDenominator: $quantityDenominator, ')
           ..write('unit: $unit, ')
+          ..write('countWord: $countWord, ')
           ..write('storeSection: $storeSection, ')
           ..write('checked: $checked, ')
           ..write('sourceIngredientLineId: $sourceIngredientLineId, ')
@@ -11491,6 +11540,7 @@ typedef $$GroceryItemsTableCreateCompanionBuilder =
       Value<int?> quantityNumerator,
       Value<int?> quantityDenominator,
       Value<Unit?> unit,
+      Value<String?> countWord,
       Value<String?> storeSection,
       Value<bool> checked,
       Value<String?> sourceIngredientLineId,
@@ -11506,6 +11556,7 @@ typedef $$GroceryItemsTableUpdateCompanionBuilder =
       Value<int?> quantityNumerator,
       Value<int?> quantityDenominator,
       Value<Unit?> unit,
+      Value<String?> countWord,
       Value<String?> storeSection,
       Value<bool> checked,
       Value<String?> sourceIngredientLineId,
@@ -11557,6 +11608,11 @@ class $$GroceryItemsTableFilterComposer
         column: $table.unit,
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
+
+  ColumnFilters<String> get countWord => $composableBuilder(
+    column: $table.countWord,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get storeSection => $composableBuilder(
     column: $table.storeSection,
@@ -11623,6 +11679,11 @@ class $$GroceryItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get countWord => $composableBuilder(
+    column: $table.countWord,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get storeSection => $composableBuilder(
     column: $table.storeSection,
     builder: (column) => ColumnOrderings(column),
@@ -11677,6 +11738,9 @@ class $$GroceryItemsTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<Unit?, String> get unit =>
       $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<String> get countWord =>
+      $composableBuilder(column: $table.countWord, builder: (column) => column);
 
   GeneratedColumn<String> get storeSection => $composableBuilder(
     column: $table.storeSection,
@@ -11735,6 +11799,7 @@ class $$GroceryItemsTableTableManager
                 Value<int?> quantityNumerator = const Value.absent(),
                 Value<int?> quantityDenominator = const Value.absent(),
                 Value<Unit?> unit = const Value.absent(),
+                Value<String?> countWord = const Value.absent(),
                 Value<String?> storeSection = const Value.absent(),
                 Value<bool> checked = const Value.absent(),
                 Value<String?> sourceIngredientLineId = const Value.absent(),
@@ -11748,6 +11813,7 @@ class $$GroceryItemsTableTableManager
                 quantityNumerator: quantityNumerator,
                 quantityDenominator: quantityDenominator,
                 unit: unit,
+                countWord: countWord,
                 storeSection: storeSection,
                 checked: checked,
                 sourceIngredientLineId: sourceIngredientLineId,
@@ -11763,6 +11829,7 @@ class $$GroceryItemsTableTableManager
                 Value<int?> quantityNumerator = const Value.absent(),
                 Value<int?> quantityDenominator = const Value.absent(),
                 Value<Unit?> unit = const Value.absent(),
+                Value<String?> countWord = const Value.absent(),
                 Value<String?> storeSection = const Value.absent(),
                 Value<bool> checked = const Value.absent(),
                 Value<String?> sourceIngredientLineId = const Value.absent(),
@@ -11776,6 +11843,7 @@ class $$GroceryItemsTableTableManager
                 quantityNumerator: quantityNumerator,
                 quantityDenominator: quantityDenominator,
                 unit: unit,
+                countWord: countWord,
                 storeSection: storeSection,
                 checked: checked,
                 sourceIngredientLineId: sourceIngredientLineId,

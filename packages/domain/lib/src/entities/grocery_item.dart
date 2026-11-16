@@ -17,6 +17,11 @@ abstract class GroceryItem with _$GroceryItem {
     Quantity? quantity,
     Unit? unit,
 
+    /// A count word used as the unit when [unit] has none, singular and
+    /// lowercase, copied from the ingredient line: "clove" in "3 cloves
+    /// garlic". Null when [unit] is set or the item has neither.
+    String? countWord,
+
     /// Store section name used for grouping, such as "Produce".
     String? storeSection,
     @Default(false) bool checked,

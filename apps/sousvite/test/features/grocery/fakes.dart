@@ -118,6 +118,7 @@ abstract final class GroceryFixtures() {
     String? name,
     Quantity? quantity,
     Unit? unit,
+    String? countWord,
     String? storeSection,
     bool checked = false,
     RecipeId? recipeId,
@@ -129,6 +130,7 @@ abstract final class GroceryFixtures() {
     sortKey: SortKey(id),
     quantity: quantity,
     unit: unit,
+    countWord: countWord,
     storeSection: storeSection,
     checked: checked,
     sourceRecipeId: recipeId,
@@ -151,13 +153,16 @@ abstract final class GroceryFixtures() {
     String? name,
     Quantity? quantity,
     Unit? unit,
+    String? countWord,
   }) => IngredientLine(
     id: IngredientLineId(id),
     recipeId: RecipeId(recipeId),
-    rawText: '${quantity ?? ''} ${unit?.name ?? ''} ${name ?? id}'.trim(),
+    rawText: '${quantity ?? ''} ${unit?.name ?? countWord ?? ''} ${name ?? id}'
+        .trim(),
     sortKey: SortKey(id),
     name: name,
     quantity: quantity,
     unit: unit,
+    countWord: countWord,
   );
 }

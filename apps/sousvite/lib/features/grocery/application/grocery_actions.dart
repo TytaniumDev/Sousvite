@@ -30,6 +30,7 @@ class GroceryActions({
           storeSection: StoreSection.of(line.name ?? line.rawText).name,
           quantity: line.quantity,
           unit: line.unit,
+          countWord: line.countWord,
           sourceIngredientLineId: line.id,
           sourceRecipeId: recipeId,
         ),

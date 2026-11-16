@@ -62,7 +62,7 @@ class AppDatabase(super.e) extends _$AppDatabase {
   /// Bump this with every schema change, add the step to [migration], and
   /// run `dart run drift_dev make-migrations` to snapshot the new schema.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -71,6 +71,9 @@ class AppDatabase(super.e) extends _$AppDatabase {
       // v2: ingredient lines keep a count word ("clove") as text.
       from1To2: (m, schema) =>
           m.addColumn(schema.ingredientLines, schema.ingredientLines.countWord),
+      // v3: grocery items keep the count word of the line they came from.
+      from2To3: (m, schema) =>
+          m.addColumn(schema.groceryItems, schema.groceryItems.countWord),
     ),
   );
 }

@@ -25,7 +25,9 @@ void main() {
       final entry = view.entries['onion']!;
       expect(entry.name, 'Onion');
       expect(entry.items, hasLength(2));
-      expect(entry.amounts, [(quantity: Quantity(3), unit: null)]);
+      expect(entry.amounts, [
+        (quantity: Quantity(3), unit: null, countWord: null),
+      ]);
     });
 
     test('converts exactly within a unit family', () {
@@ -36,7 +38,7 @@ void main() {
       ]);
 
       expect(view.entries['milk']!.amounts, [
-        (quantity: Quantity(13, 8), unit: Unit.cup),
+        (quantity: Quantity(13, 8), unit: Unit.cup, countWord: null),
       ]);
     });
 
@@ -49,9 +51,24 @@ void main() {
       ]);
 
       expect(view.entries['flour']!.amounts, [
-        (quantity: Quantity(1), unit: Unit.cup),
-        (quantity: Quantity(1200), unit: Unit.gram),
-        (quantity: Quantity(2), unit: null),
+        (quantity: Quantity(1), unit: Unit.cup, countWord: null),
+        (quantity: Quantity(1200), unit: Unit.gram, countWord: null),
+        (quantity: Quantity(2), unit: null, countWord: null),
+      ]);
+    });
+
+    test('adds count words only with the same word', () {
+      final view = combineGroceryItems([
+        _F.item('a', name: 'garlic', quantity: Quantity(3), countWord: 'clove'),
+        _F.item('b', name: 'garlic', quantity: Quantity(1), countWord: 'head'),
+        _F.item('c', name: 'garlic', quantity: Quantity(2), countWord: 'clove'),
+        _F.item('d', name: 'garlic', quantity: Quantity(1)),
+      ]);
+
+      expect(view.entries['garlic']!.amounts, [
+        (quantity: Quantity(5), unit: null, countWord: 'clove'),
+        (quantity: Quantity(1), unit: null, countWord: 'head'),
+        (quantity: Quantity(1), unit: null, countWord: null),
       ]);
     });
 
@@ -62,7 +79,7 @@ void main() {
       ]);
 
       expect(view.entries['salt']!.amounts, [
-        (quantity: Quantity(1), unit: Unit.teaspoon),
+        (quantity: Quantity(1), unit: Unit.teaspoon, countWord: null),
       ]);
       expect(
         combineGroceryItems([_F.item('a')]).entries['a']!.amounts,

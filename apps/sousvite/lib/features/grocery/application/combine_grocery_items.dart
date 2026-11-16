@@ -48,13 +48,7 @@ GroceryEntry _entry(String key, List<GroceryItem> items) {
     key: key,
     name: name,
     items: items,
-    amounts: [
-      for (final amount in combineAmounts([
-        for (final item in items)
-          if (item.quantity case final quantity?) Amount(quantity, item.unit),
-      ]))
-        (quantity: amount.quantity, unit: amount.unit),
-    ],
+    amounts: _amounts(items),
     sourceRecipeIds: {for (final item in items) ?item.sourceRecipeId}.toList(),
     storeSection: _section(
       items
@@ -63,6 +57,22 @@ GroceryEntry _entry(String key, List<GroceryItem> items) {
       name,
     ),
   );
+}
+
+/// [items]' amounts added up. Items with a count word ("3 cloves garlic")
+/// add up only with the same word; the rest by [combineAmounts].
+List<GroceryAmount> _amounts(List<GroceryItem> items) {
+  final byCountWord = <String?, List<Amount>>{};
+  for (final item in items) {
+    if (item.quantity case final quantity?) {
+      (byCountWord[item.countWord] ??= []).add(Amount(quantity, item.unit));
+    }
+  }
+  return [
+    for (final MapEntry(key: countWord, value: amounts) in byCountWord.entries)
+      for (final amount in combineAmounts(amounts))
+        (quantity: amount.quantity, unit: amount.unit, countWord: countWord),
+  ];
 }
 
 /// The section to group under: [stored] if the item has one, else the

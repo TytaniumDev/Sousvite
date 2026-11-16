@@ -169,7 +169,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 | `Food`, `FoodNutrient`, `FoodPortion` | Bundled USDA data (read-only) plus cached branded and Open Food Facts foods |
 | `RecipeVersion` | Snapshot of a recipe at a point in history |
 | `Experiment` | Copy of a recipe version with change description, notes, share flag, outcome |
-| `GroceryList`, `GroceryItem` | Items link back to source ingredient lines for combining |
+| `GroceryList`, `GroceryItem` | Items link back to source ingredient lines for combining, and keep the line's unit or count word, so "3 cloves garlic" and "2 cloves garlic" add up to "5 cloves garlic" |
 | `MeasuringTool` | Tools the user owns (PRD 7.5) |
 | `UserRecipePrefs` | Per-user serving size and units, kept separate from the recipe so joint shares don't overwrite them |
 | `ChangeLog`, `SyncState` | See §8 |

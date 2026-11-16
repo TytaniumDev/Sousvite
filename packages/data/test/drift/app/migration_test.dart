@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v3.dart' as v3;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -61,6 +62,43 @@ void main() {
       validateItems: (newDatabase) async {
         expect(await newDatabase.select(newDatabase.ingredientLines).get(), [
           newLine,
+        ]);
+      },
+    );
+  });
+
+  test('v2 to v3 keeps grocery items, with no count word', () async {
+    const oldItem = v2.GroceryItemsData(
+      id: 'g1',
+      listId: 'list1',
+      name: 'garlic',
+      sortKey: 'a0',
+      quantityNumerator: 3,
+      quantityDenominator: 1,
+      checked: 0,
+    );
+    const newItem = v3.GroceryItemsData(
+      id: 'g1',
+      listId: 'list1',
+      name: 'garlic',
+      sortKey: 'a0',
+      quantityNumerator: 3,
+      quantityDenominator: 1,
+      checked: 0,
+    );
+
+    await verifier.testWithDataIntegrity(
+      oldVersion: 2,
+      newVersion: 3,
+      createOld: v2.DatabaseAtV2.new,
+      createNew: v3.DatabaseAtV3.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDatabase) {
+        batch.insert(oldDatabase.groceryItems, oldItem);
+      },
+      validateItems: (newDatabase) async {
+        expect(await newDatabase.select(newDatabase.groceryItems).get(), [
+          newItem,
         ]);
       },
     );
