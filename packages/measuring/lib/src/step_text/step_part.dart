@@ -43,6 +43,10 @@ final class const StepMention({
 
   /// The top of a range ("2–3 cloves"), scaled. Null when not a range.
   final Quantity? amountMax,
+
+  /// The line's count word, singular, shown as the unit when the amount
+  /// has none: "clove" in "add 6 cloves garlic". Null when there is none.
+  final String? countWord,
 }) extends StepPart {
   @override
   bool operator ==(Object other) =>
@@ -51,16 +55,22 @@ final class const StepMention({
       other.original == original &&
       other.amount == amount &&
       other.amountMax == amountMax &&
+      other.countWord == countWord &&
       other.name == name;
 
   @override
-  int get hashCode => Object.hash(lineId, original, amount, amountMax, name);
+  int get hashCode =>
+      Object.hash(lineId, original, amount, amountMax, countWord, name);
 
   /// A debug form such as `[3/2 cup: rolled oats]`.
   @override
   String toString() {
     final max = amountMax == null ? '' : '-$amountMax';
-    final unit = amount.unit == null ? '' : ' ${amount.unit!.name}';
+    final unit = switch ((amount.unit, countWord)) {
+      (final Unit unit, _) => ' ${unit.name}',
+      (null, final String word) => ' $word',
+      (null, null) => '',
+    };
     return '[${amount.quantity}$max$unit: $name]';
   }
 }

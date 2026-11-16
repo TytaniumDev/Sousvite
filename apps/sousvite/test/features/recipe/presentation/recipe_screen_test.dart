@@ -109,6 +109,36 @@ void main() {
     expect(find.text('Rest the batter.'), findsOneWidget);
   });
 
+  testWidgets('shows a count word as the unit, singular or plural', (
+    tester,
+  ) async {
+    recipes = FakeRecipeRepository()
+      ..seed(
+        recipe: RecipeFixtures.recipe(),
+        lines: [
+          RecipeFixtures.line(
+            'garlic',
+            sortKey: 'a',
+            quantity: Quantity.one,
+            countWord: 'clove',
+            name: 'garlic',
+          ),
+          RecipeFixtures.line(
+            'thyme',
+            sortKey: 'b',
+            quantity: Quantity(2),
+            quantityMax: Quantity(3),
+            countWord: 'sprig',
+            name: 'thyme',
+          ),
+        ],
+      );
+    await pumpRecipe(tester);
+
+    expect(find.text('1\u00a0clove'), findsOneWidget);
+    expect(find.textContaining('2–3\u00a0sprigs thyme'), findsOneWidget);
+  });
+
   testWidgets('scaling servings changes amounts and rebuilds only rows', (
     tester,
   ) async {
@@ -158,34 +188,6 @@ void main() {
     expect(builds.ofKey(ValueKey(eggs.id)), 0);
     expect(builds.of<RecipeIngredientRow>(), 1);
     expect(builds.of<RecipeStepTile>(), 0);
-  });
-
-  testWidgets('shows a count word as the unit, in ranges too', (tester) async {
-    recipes = FakeRecipeRepository()
-      ..seed(
-        recipe: RecipeFixtures.recipe(),
-        lines: [
-          RecipeFixtures.line(
-            'garlic',
-            sortKey: 'a',
-            quantity: Quantity(3),
-            countWord: 'clove',
-            name: 'garlic',
-          ),
-          RecipeFixtures.line(
-            'thyme',
-            sortKey: 'b',
-            quantity: Quantity(2),
-            quantityMax: Quantity(3),
-            countWord: 'sprig',
-            name: 'thyme',
-          ),
-        ],
-      );
-    await pumpRecipe(tester);
-
-    expect(find.text('3\u00a0cloves'), findsOneWidget);
-    expect(find.textContaining('2–3\u00a0sprigs thyme'), findsOneWidget);
   });
 
   testWidgets('says when the recipe is gone', (tester) async {

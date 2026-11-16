@@ -123,7 +123,7 @@ void main() {
     );
   });
 
-  testWidgets('a count word reads as the unit', (tester) async {
+  testWidgets('shows a count word with the amount, scaled', (tester) async {
     recipes = FakeRecipeRepository()
       ..seed(
         recipe: RecipeFixtures.recipe(),
@@ -135,12 +135,20 @@ void main() {
             name: 'garlic',
           ),
         ],
-        steps: [RecipeFixtures.step('fry', text: 'Fry the garlic.')],
+        steps: [RecipeFixtures.step('fry', text: 'Add the garlic.')],
       );
     await pumpCooking(tester);
-
     expect(
-      find.text('Fry 3\u00a0cloves garlic.', findRichText: true),
+      find.text('Add 3\u00a0cloves garlic.', findRichText: true),
+      findsOneWidget,
+    );
+
+    ProviderScope.containerOf(tester.element(find.byType(CookingScreen)))
+        .read(recipeScaleProvider(recipeId).notifier)
+        .scaleBy(Quantity(2));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Add 6\u00a0cloves garlic.', findRichText: true),
       findsOneWidget,
     );
   });

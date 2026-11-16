@@ -240,7 +240,7 @@ class const _SplitPreview({
         quantity: quantity,
         unit: quantity == null
             ? null
-            : l10n.amountWord(split.unit, split.countWord, quantity),
+            : l10n.unitWord(split.unit, quantity, countWord: split.countWord),
         preparation: split.preparation,
         amountLabel: l10n.editor_amount,
         nameLabel: l10n.editor_ingredient,

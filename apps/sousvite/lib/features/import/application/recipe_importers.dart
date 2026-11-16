@@ -1,6 +1,13 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:domain/domain.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/services/firebase.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
+import 'package:sousvite/features/import/data/page_fetchers.dart';
+import 'package:sousvite/features/import/data/page_url_importer.dart';
+import 'package:uuid/uuid.dart';
 
 part 'recipe_importers.g.dart';
 
@@ -23,7 +30,8 @@ abstract interface class UmamiTransfer() {
   Future<int?> exportLibrary();
 }
 
-/// Stands in until URL import (IMP-1) exists.
+/// Stands in where URL import can't work: on web without Firebase, which
+/// fetches pages through our proxy.
 class const UnavailableUrlImporter() implements UrlImporter {
   @override
   Future<RecipeSnapshot> importUrl(Uri url) async =>
@@ -41,8 +49,24 @@ class const UnavailableUmamiTransfer() implements UmamiTransfer {
       throw const ImportFailure(.notAvailable);
 }
 
+/// Fetches pages straight from the site on iOS and Android, and through
+/// the fetch proxy on web.
 @Riverpod(keepAlive: true)
-UrlImporter urlImporter(Ref ref) => const UnavailableUrlImporter();
+UrlImporter urlImporter(Ref ref) {
+  if (kIsWeb) {
+    final app = ref.watch(firebaseAppProvider);
+    if (app == null) return const UnavailableUrlImporter();
+    return PageUrlImporter(
+      proxyPageFetcher(
+        FirebaseFunctions.instanceFor(app: app, region: 'us-central1'),
+      ),
+      newId: const Uuid().v4,
+    );
+  }
+  final client = http.Client();
+  ref.onDispose(client.close);
+  return PageUrlImporter(directPageFetcher(client), newId: const Uuid().v4);
+}
 
 @Riverpod(keepAlive: true)
 UmamiTransfer umamiTransfer(Ref ref) => const UnavailableUmamiTransfer();

@@ -8,13 +8,20 @@ part of 'recipe_importers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Fetches pages straight from the site on iOS and Android, and through
+/// the fetch proxy on web.
 
 @ProviderFor(urlImporter)
 final urlImporterProvider = UrlImporterProvider._();
 
+/// Fetches pages straight from the site on iOS and Android, and through
+/// the fetch proxy on web.
+
 final class UrlImporterProvider
     extends $FunctionalProvider<UrlImporter, UrlImporter, UrlImporter>
     with $Provider<UrlImporter> {
+  /// Fetches pages straight from the site on iOS and Android, and through
+  /// the fetch proxy on web.
   UrlImporterProvider._()
     : super(
         from: null,
@@ -48,7 +55,7 @@ final class UrlImporterProvider
   }
 }
 
-String _$urlImporterHash() => r'8906f236043faf92cc22b2825674bc999adaa57f';
+String _$urlImporterHash() => r'bd21ea927bad6a7dbde9bc1246a389ca0ae3d144';
 
 @ProviderFor(umamiTransfer)
 final umamiTransferProvider = UmamiTransferProvider._();
