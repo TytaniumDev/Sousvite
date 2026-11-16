@@ -112,5 +112,4 @@ final class DriftFolderRepository(
           FolderEntryCodec.entryId(folderId, recipeId),
         );
       });
-
 }
