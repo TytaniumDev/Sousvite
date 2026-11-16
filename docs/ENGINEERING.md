@@ -287,7 +287,7 @@ usdaCache/{key}                      USDA proxy cache (§11.1). Functions only.
 
 Cloud Storage holds `spaces/{spaceId}/snapshots/{hlc}.json.gz` (a snapshot can pass Firestore's 1 MiB document limit) and `spaces/{spaceId}/photos/{photoId}`.
 
-- A user's private space id is `u_{uid}`, so a device can find it without a query.
+- A user's private space id on the server is `u_{uid}`, so a device can find it without a query. On the device it stays `private` (DATA-2), and the Firestore transport maps between the two, so signing in never rewrites local changes.
 - A push with more changes than fit in one document (about 500 or 900 KB) splits into several batches.
 - **Rules:** a member of `memberUids` can read the space, create batches with their own `uid` and a server `pushedAt`, and never update or delete a batch. Only the owner of a private space is a member. Shared-space membership changes go through the sharing functions.
 - **Delete account** removes `users/{uid}`, the private space with its batches and snapshots, the inbox, and the user from every shared space's `memberUids` (PRD 7.9).
