@@ -1,42 +1,17 @@
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:drift/drift.dart' show Value;
-import 'package:drift/native.dart';
 import 'package:sync/sync.dart';
 import 'package:test/test.dart';
 
-/// One simulated device: a database, its recipe repository, and a sync
-/// engine over a shared in-memory space.
-final class _Device(final String id, final InMemorySyncSpace space) {
-  final database = AppDatabase(NativeDatabase.memory());
+import '../../helpers/test_device.dart';
 
-  /// The wall clock in milliseconds; each read moves it on.
-  int time = 1000;
-  var _ids = 0;
-
-  late final clock = HybridLogicalClock(id, wallClock: () => time++);
-  late final recorder = ChangeRecorder(
-    database,
-    clock: clock,
-    spaceId: 'private',
-    newId: () => '$id-${_ids++}',
-  );
+/// A test device with a recipe repository.
+final class _Device(super.id, super.space) extends TestDevice {
   late final repository = DriftRecipeRepository(database, recorder: recorder);
-  late final engine = SyncEngine(
-    store: DriftLocalStore(
-      database,
-      deviceId: id,
-      appliers: repository.appliers,
-    ),
-    transport: InMemoryTransport(space),
-    clock: clock,
-    transportKey: 'memory',
-    spaceId: 'private',
-  );
 
-  Future<List<Change>> changes() async => [
-    for (final row in await database.syncDao.changesAfter(null)) row.toChange(),
-  ];
+  @override
+  Map<String, EntityApplier> get appliers => repository.appliers;
 }
 
 final _created = DateTime.utc(2026, 11, 16);
@@ -339,10 +314,7 @@ void main() {
         await phone.repository.saveSnapshot(_soup());
       });
 
-      Future<Set<String>> tombstones() async => {
-        for (final change in await phone.changes())
-          if (change.isTombstone) change.entityId,
-      };
+      Future<Set<String>> tombstones() => phone.tombstones();
 
       test('a recipe with every part, leaving tombstones', () async {
         await phone.repository.deleteRecipe(recipeId);

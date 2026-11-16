@@ -6,9 +6,16 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/settings/settings.dart';
 
 import '../features/settings/fakes.dart';
+import '../helpers/fakes/fake_folder_repository.dart';
 import '../helpers/fakes/fake_recipe_repository.dart';
 
 void main() {
+  // The library opens first; fakes keep the real database out of tests.
+  final libraryRepositories = [
+    recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
+    folderRepositoryProvider.overrideWithValue(FakeFolderRepository()),
+  ];
+
   group(SousviteApp, () {
     testWidgets('follows the theme mode setting', (tester) async {
       final container = ProviderContainer.test(
@@ -16,7 +23,7 @@ void main() {
           appSettingsRepositoryProvider.overrideWithValue(
             FakeAppSettingsRepository(),
           ),
-          recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
+          ...libraryRepositories,
         ],
       );
       await tester.pumpWidget(
@@ -39,9 +46,7 @@ void main() {
     testWidgets('sets the window title', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
-          ],
+          overrides: libraryRepositories,
           child: const SousviteApp(),
         ),
       );

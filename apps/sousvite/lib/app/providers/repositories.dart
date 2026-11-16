@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -20,8 +21,11 @@ RecipeRepository recipeRepository(Ref ref) => DriftRecipeRepository(
 );
 
 @Riverpod(keepAlive: true)
-FolderRepository folderRepository(Ref ref) =>
-    throw UnimplementedError('FolderRepository is not implemented yet.');
+FolderRepository folderRepository(Ref ref) => DriftFolderRepository(
+  ref.watch(appDatabaseProvider),
+  recorder: ref.watch(changeRecorderProvider).requireValue,
+  now: clock.now,
+);
 
 @Riverpod(keepAlive: true)
 FoodRepository foodRepository(Ref ref) =>
