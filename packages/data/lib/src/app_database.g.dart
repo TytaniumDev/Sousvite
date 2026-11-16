@@ -3,6 +3,333 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class RecipeSearch extends Table
+    with
+        TableInfo<RecipeSearch, RecipeSearchData>,
+        VirtualTableInfo<RecipeSearch, RecipeSearchData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  RecipeSearch(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _recipeIdMeta = const VerificationMeta(
+    'recipeId',
+  );
+  late final GeneratedColumn<String> recipeId = GeneratedColumn<String>(
+    'recipe_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _ingredientsMeta = const VerificationMeta(
+    'ingredients',
+  );
+  late final GeneratedColumn<String> ingredients = GeneratedColumn<String>(
+    'ingredients',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _foldersMeta = const VerificationMeta(
+    'folders',
+  );
+  late final GeneratedColumn<String> folders = GeneratedColumn<String>(
+    'folders',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [recipeId, title, ingredients, folders];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recipe_search';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecipeSearchData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('recipe_id')) {
+      context.handle(
+        _recipeIdMeta,
+        recipeId.isAcceptableOrUnknown(data['recipe_id']!, _recipeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recipeIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('ingredients')) {
+      context.handle(
+        _ingredientsMeta,
+        ingredients.isAcceptableOrUnknown(
+          data['ingredients']!,
+          _ingredientsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_ingredientsMeta);
+    }
+    if (data.containsKey('folders')) {
+      context.handle(
+        _foldersMeta,
+        folders.isAcceptableOrUnknown(data['folders']!, _foldersMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_foldersMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  RecipeSearchData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecipeSearchData(
+      recipeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipe_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      ingredients: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ingredients'],
+      )!,
+      folders: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}folders'],
+      )!,
+    );
+  }
+
+  @override
+  RecipeSearch createAlias(String alias) {
+    return RecipeSearch(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+  @override
+  String get moduleAndArgs =>
+      'fts5(recipe_id UNINDEXED, title, ingredients, folders, tokenize = \'unicode61 remove_diacritics 2\')';
+}
+
+class RecipeSearchData extends DataClass
+    implements Insertable<RecipeSearchData> {
+  final String recipeId;
+  final String title;
+  final String ingredients;
+  final String folders;
+  const RecipeSearchData({
+    required this.recipeId,
+    required this.title,
+    required this.ingredients,
+    required this.folders,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['recipe_id'] = Variable<String>(recipeId);
+    map['title'] = Variable<String>(title);
+    map['ingredients'] = Variable<String>(ingredients);
+    map['folders'] = Variable<String>(folders);
+    return map;
+  }
+
+  RecipeSearchCompanion toCompanion(bool nullToAbsent) {
+    return RecipeSearchCompanion(
+      recipeId: Value(recipeId),
+      title: Value(title),
+      ingredients: Value(ingredients),
+      folders: Value(folders),
+    );
+  }
+
+  factory RecipeSearchData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecipeSearchData(
+      recipeId: serializer.fromJson<String>(json['recipe_id']),
+      title: serializer.fromJson<String>(json['title']),
+      ingredients: serializer.fromJson<String>(json['ingredients']),
+      folders: serializer.fromJson<String>(json['folders']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'recipe_id': serializer.toJson<String>(recipeId),
+      'title': serializer.toJson<String>(title),
+      'ingredients': serializer.toJson<String>(ingredients),
+      'folders': serializer.toJson<String>(folders),
+    };
+  }
+
+  RecipeSearchData copyWith({
+    String? recipeId,
+    String? title,
+    String? ingredients,
+    String? folders,
+  }) => RecipeSearchData(
+    recipeId: recipeId ?? this.recipeId,
+    title: title ?? this.title,
+    ingredients: ingredients ?? this.ingredients,
+    folders: folders ?? this.folders,
+  );
+  RecipeSearchData copyWithCompanion(RecipeSearchCompanion data) {
+    return RecipeSearchData(
+      recipeId: data.recipeId.present ? data.recipeId.value : this.recipeId,
+      title: data.title.present ? data.title.value : this.title,
+      ingredients: data.ingredients.present
+          ? data.ingredients.value
+          : this.ingredients,
+      folders: data.folders.present ? data.folders.value : this.folders,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecipeSearchData(')
+          ..write('recipeId: $recipeId, ')
+          ..write('title: $title, ')
+          ..write('ingredients: $ingredients, ')
+          ..write('folders: $folders')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(recipeId, title, ingredients, folders);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecipeSearchData &&
+          other.recipeId == this.recipeId &&
+          other.title == this.title &&
+          other.ingredients == this.ingredients &&
+          other.folders == this.folders);
+}
+
+class RecipeSearchCompanion extends UpdateCompanion<RecipeSearchData> {
+  final Value<String> recipeId;
+  final Value<String> title;
+  final Value<String> ingredients;
+  final Value<String> folders;
+  final Value<int> rowid;
+  const RecipeSearchCompanion({
+    this.recipeId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.ingredients = const Value.absent(),
+    this.folders = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecipeSearchCompanion.insert({
+    required String recipeId,
+    required String title,
+    required String ingredients,
+    required String folders,
+    this.rowid = const Value.absent(),
+  }) : recipeId = Value(recipeId),
+       title = Value(title),
+       ingredients = Value(ingredients),
+       folders = Value(folders);
+  static Insertable<RecipeSearchData> custom({
+    Expression<String>? recipeId,
+    Expression<String>? title,
+    Expression<String>? ingredients,
+    Expression<String>? folders,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (recipeId != null) 'recipe_id': recipeId,
+      if (title != null) 'title': title,
+      if (ingredients != null) 'ingredients': ingredients,
+      if (folders != null) 'folders': folders,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecipeSearchCompanion copyWith({
+    Value<String>? recipeId,
+    Value<String>? title,
+    Value<String>? ingredients,
+    Value<String>? folders,
+    Value<int>? rowid,
+  }) {
+    return RecipeSearchCompanion(
+      recipeId: recipeId ?? this.recipeId,
+      title: title ?? this.title,
+      ingredients: ingredients ?? this.ingredients,
+      folders: folders ?? this.folders,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (recipeId.present) {
+      map['recipe_id'] = Variable<String>(recipeId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (ingredients.present) {
+      map['ingredients'] = Variable<String>(ingredients.value);
+    }
+    if (folders.present) {
+      map['folders'] = Variable<String>(folders.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecipeSearchCompanion(')
+          ..write('recipeId: $recipeId, ')
+          ..write('title: $title, ')
+          ..write('ingredients: $ingredients, ')
+          ..write('folders: $folders, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $RecipesTable extends Recipes with TableInfo<$RecipesTable, RecipeRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -783,316 +1110,6 @@ class RecipesCompanion extends UpdateCompanion<RecipeRow> {
           ..write('notes: $notes, ')
           ..write('sourceUrl: $sourceUrl, ')
           ..write('sourceName: $sourceName, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $IngredientSectionsTable extends IngredientSections
-    with TableInfo<$IngredientSectionsTable, IngredientSectionRow> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $IngredientSectionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _recipeIdMeta = const VerificationMeta(
-    'recipeId',
-  );
-  @override
-  late final GeneratedColumn<String> recipeId = GeneratedColumn<String>(
-    'recipe_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _sortKeyMeta = const VerificationMeta(
-    'sortKey',
-  );
-  @override
-  late final GeneratedColumn<String> sortKey = GeneratedColumn<String>(
-    'sort_key',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, recipeId, name, sortKey];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'ingredient_sections';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<IngredientSectionRow> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('recipe_id')) {
-      context.handle(
-        _recipeIdMeta,
-        recipeId.isAcceptableOrUnknown(data['recipe_id']!, _recipeIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_recipeIdMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('sort_key')) {
-      context.handle(
-        _sortKeyMeta,
-        sortKey.isAcceptableOrUnknown(data['sort_key']!, _sortKeyMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_sortKeyMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  IngredientSectionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return IngredientSectionRow(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      recipeId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}recipe_id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      sortKey: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sort_key'],
-      )!,
-    );
-  }
-
-  @override
-  $IngredientSectionsTable createAlias(String alias) {
-    return $IngredientSectionsTable(attachedDatabase, alias);
-  }
-}
-
-class IngredientSectionRow extends DataClass
-    implements Insertable<IngredientSectionRow> {
-  final String id;
-  final String recipeId;
-  final String name;
-  final String sortKey;
-  const IngredientSectionRow({
-    required this.id,
-    required this.recipeId,
-    required this.name,
-    required this.sortKey,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['recipe_id'] = Variable<String>(recipeId);
-    map['name'] = Variable<String>(name);
-    map['sort_key'] = Variable<String>(sortKey);
-    return map;
-  }
-
-  IngredientSectionsCompanion toCompanion(bool nullToAbsent) {
-    return IngredientSectionsCompanion(
-      id: Value(id),
-      recipeId: Value(recipeId),
-      name: Value(name),
-      sortKey: Value(sortKey),
-    );
-  }
-
-  factory IngredientSectionRow.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return IngredientSectionRow(
-      id: serializer.fromJson<String>(json['id']),
-      recipeId: serializer.fromJson<String>(json['recipeId']),
-      name: serializer.fromJson<String>(json['name']),
-      sortKey: serializer.fromJson<String>(json['sortKey']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'recipeId': serializer.toJson<String>(recipeId),
-      'name': serializer.toJson<String>(name),
-      'sortKey': serializer.toJson<String>(sortKey),
-    };
-  }
-
-  IngredientSectionRow copyWith({
-    String? id,
-    String? recipeId,
-    String? name,
-    String? sortKey,
-  }) => IngredientSectionRow(
-    id: id ?? this.id,
-    recipeId: recipeId ?? this.recipeId,
-    name: name ?? this.name,
-    sortKey: sortKey ?? this.sortKey,
-  );
-  IngredientSectionRow copyWithCompanion(IngredientSectionsCompanion data) {
-    return IngredientSectionRow(
-      id: data.id.present ? data.id.value : this.id,
-      recipeId: data.recipeId.present ? data.recipeId.value : this.recipeId,
-      name: data.name.present ? data.name.value : this.name,
-      sortKey: data.sortKey.present ? data.sortKey.value : this.sortKey,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('IngredientSectionRow(')
-          ..write('id: $id, ')
-          ..write('recipeId: $recipeId, ')
-          ..write('name: $name, ')
-          ..write('sortKey: $sortKey')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, recipeId, name, sortKey);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is IngredientSectionRow &&
-          other.id == this.id &&
-          other.recipeId == this.recipeId &&
-          other.name == this.name &&
-          other.sortKey == this.sortKey);
-}
-
-class IngredientSectionsCompanion
-    extends UpdateCompanion<IngredientSectionRow> {
-  final Value<String> id;
-  final Value<String> recipeId;
-  final Value<String> name;
-  final Value<String> sortKey;
-  final Value<int> rowid;
-  const IngredientSectionsCompanion({
-    this.id = const Value.absent(),
-    this.recipeId = const Value.absent(),
-    this.name = const Value.absent(),
-    this.sortKey = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  IngredientSectionsCompanion.insert({
-    required String id,
-    required String recipeId,
-    required String name,
-    required String sortKey,
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       recipeId = Value(recipeId),
-       name = Value(name),
-       sortKey = Value(sortKey);
-  static Insertable<IngredientSectionRow> custom({
-    Expression<String>? id,
-    Expression<String>? recipeId,
-    Expression<String>? name,
-    Expression<String>? sortKey,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (recipeId != null) 'recipe_id': recipeId,
-      if (name != null) 'name': name,
-      if (sortKey != null) 'sort_key': sortKey,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  IngredientSectionsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? recipeId,
-    Value<String>? name,
-    Value<String>? sortKey,
-    Value<int>? rowid,
-  }) {
-    return IngredientSectionsCompanion(
-      id: id ?? this.id,
-      recipeId: recipeId ?? this.recipeId,
-      name: name ?? this.name,
-      sortKey: sortKey ?? this.sortKey,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (recipeId.present) {
-      map['recipe_id'] = Variable<String>(recipeId.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (sortKey.present) {
-      map['sort_key'] = Variable<String>(sortKey.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('IngredientSectionsCompanion(')
-          ..write('id: $id, ')
-          ..write('recipeId: $recipeId, ')
-          ..write('name: $name, ')
-          ..write('sortKey: $sortKey, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1904,6 +1921,843 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
   }
 }
 
+class $FolderEntriesTable extends FolderEntries
+    with TableInfo<$FolderEntriesTable, FolderEntryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FolderEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _folderIdMeta = const VerificationMeta(
+    'folderId',
+  );
+  @override
+  late final GeneratedColumn<String> folderId = GeneratedColumn<String>(
+    'folder_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recipeIdMeta = const VerificationMeta(
+    'recipeId',
+  );
+  @override
+  late final GeneratedColumn<String> recipeId = GeneratedColumn<String>(
+    'recipe_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addedAtMeta = const VerificationMeta(
+    'addedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
+    'added_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [folderId, recipeId, addedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'folder_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FolderEntryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('folder_id')) {
+      context.handle(
+        _folderIdMeta,
+        folderId.isAcceptableOrUnknown(data['folder_id']!, _folderIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_folderIdMeta);
+    }
+    if (data.containsKey('recipe_id')) {
+      context.handle(
+        _recipeIdMeta,
+        recipeId.isAcceptableOrUnknown(data['recipe_id']!, _recipeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recipeIdMeta);
+    }
+    if (data.containsKey('added_at')) {
+      context.handle(
+        _addedAtMeta,
+        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_addedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {folderId, recipeId};
+  @override
+  FolderEntryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FolderEntryRow(
+      folderId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}folder_id'],
+      )!,
+      recipeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipe_id'],
+      )!,
+      addedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}added_at'],
+      )!,
+    );
+  }
+
+  @override
+  $FolderEntriesTable createAlias(String alias) {
+    return $FolderEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class FolderEntryRow extends DataClass implements Insertable<FolderEntryRow> {
+  final String folderId;
+  final String recipeId;
+  final DateTime addedAt;
+  const FolderEntryRow({
+    required this.folderId,
+    required this.recipeId,
+    required this.addedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['folder_id'] = Variable<String>(folderId);
+    map['recipe_id'] = Variable<String>(recipeId);
+    map['added_at'] = Variable<DateTime>(addedAt);
+    return map;
+  }
+
+  FolderEntriesCompanion toCompanion(bool nullToAbsent) {
+    return FolderEntriesCompanion(
+      folderId: Value(folderId),
+      recipeId: Value(recipeId),
+      addedAt: Value(addedAt),
+    );
+  }
+
+  factory FolderEntryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FolderEntryRow(
+      folderId: serializer.fromJson<String>(json['folderId']),
+      recipeId: serializer.fromJson<String>(json['recipeId']),
+      addedAt: serializer.fromJson<DateTime>(json['addedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'folderId': serializer.toJson<String>(folderId),
+      'recipeId': serializer.toJson<String>(recipeId),
+      'addedAt': serializer.toJson<DateTime>(addedAt),
+    };
+  }
+
+  FolderEntryRow copyWith({
+    String? folderId,
+    String? recipeId,
+    DateTime? addedAt,
+  }) => FolderEntryRow(
+    folderId: folderId ?? this.folderId,
+    recipeId: recipeId ?? this.recipeId,
+    addedAt: addedAt ?? this.addedAt,
+  );
+  FolderEntryRow copyWithCompanion(FolderEntriesCompanion data) {
+    return FolderEntryRow(
+      folderId: data.folderId.present ? data.folderId.value : this.folderId,
+      recipeId: data.recipeId.present ? data.recipeId.value : this.recipeId,
+      addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FolderEntryRow(')
+          ..write('folderId: $folderId, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('addedAt: $addedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(folderId, recipeId, addedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FolderEntryRow &&
+          other.folderId == this.folderId &&
+          other.recipeId == this.recipeId &&
+          other.addedAt == this.addedAt);
+}
+
+class FolderEntriesCompanion extends UpdateCompanion<FolderEntryRow> {
+  final Value<String> folderId;
+  final Value<String> recipeId;
+  final Value<DateTime> addedAt;
+  final Value<int> rowid;
+  const FolderEntriesCompanion({
+    this.folderId = const Value.absent(),
+    this.recipeId = const Value.absent(),
+    this.addedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FolderEntriesCompanion.insert({
+    required String folderId,
+    required String recipeId,
+    required DateTime addedAt,
+    this.rowid = const Value.absent(),
+  }) : folderId = Value(folderId),
+       recipeId = Value(recipeId),
+       addedAt = Value(addedAt);
+  static Insertable<FolderEntryRow> custom({
+    Expression<String>? folderId,
+    Expression<String>? recipeId,
+    Expression<DateTime>? addedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (folderId != null) 'folder_id': folderId,
+      if (recipeId != null) 'recipe_id': recipeId,
+      if (addedAt != null) 'added_at': addedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FolderEntriesCompanion copyWith({
+    Value<String>? folderId,
+    Value<String>? recipeId,
+    Value<DateTime>? addedAt,
+    Value<int>? rowid,
+  }) {
+    return FolderEntriesCompanion(
+      folderId: folderId ?? this.folderId,
+      recipeId: recipeId ?? this.recipeId,
+      addedAt: addedAt ?? this.addedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (folderId.present) {
+      map['folder_id'] = Variable<String>(folderId.value);
+    }
+    if (recipeId.present) {
+      map['recipe_id'] = Variable<String>(recipeId.value);
+    }
+    if (addedAt.present) {
+      map['added_at'] = Variable<DateTime>(addedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FolderEntriesCompanion(')
+          ..write('folderId: $folderId, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('addedAt: $addedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FoldersTable extends Folders with TableInfo<$FoldersTable, FolderRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FoldersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'folders';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FolderRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FolderRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FolderRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $FoldersTable createAlias(String alias) {
+    return $FoldersTable(attachedDatabase, alias);
+  }
+}
+
+class FolderRow extends DataClass implements Insertable<FolderRow> {
+  final String id;
+  final String name;
+  final DateTime createdAt;
+  const FolderRow({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  FoldersCompanion toCompanion(bool nullToAbsent) {
+    return FoldersCompanion(
+      id: Value(id),
+      name: Value(name),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory FolderRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FolderRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  FolderRow copyWith({String? id, String? name, DateTime? createdAt}) =>
+      FolderRow(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  FolderRow copyWithCompanion(FoldersCompanion data) {
+    return FolderRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FolderRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FolderRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.createdAt == this.createdAt);
+}
+
+class FoldersCompanion extends UpdateCompanion<FolderRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const FoldersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FoldersCompanion.insert({
+    required String id,
+    required String name,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       createdAt = Value(createdAt);
+  static Insertable<FolderRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FoldersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return FoldersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FoldersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $IngredientSectionsTable extends IngredientSections
+    with TableInfo<$IngredientSectionsTable, IngredientSectionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $IngredientSectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recipeIdMeta = const VerificationMeta(
+    'recipeId',
+  );
+  @override
+  late final GeneratedColumn<String> recipeId = GeneratedColumn<String>(
+    'recipe_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sortKeyMeta = const VerificationMeta(
+    'sortKey',
+  );
+  @override
+  late final GeneratedColumn<String> sortKey = GeneratedColumn<String>(
+    'sort_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, recipeId, name, sortKey];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ingredient_sections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<IngredientSectionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('recipe_id')) {
+      context.handle(
+        _recipeIdMeta,
+        recipeId.isAcceptableOrUnknown(data['recipe_id']!, _recipeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recipeIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('sort_key')) {
+      context.handle(
+        _sortKeyMeta,
+        sortKey.isAcceptableOrUnknown(data['sort_key']!, _sortKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sortKeyMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  IngredientSectionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return IngredientSectionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      recipeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipe_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      sortKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sort_key'],
+      )!,
+    );
+  }
+
+  @override
+  $IngredientSectionsTable createAlias(String alias) {
+    return $IngredientSectionsTable(attachedDatabase, alias);
+  }
+}
+
+class IngredientSectionRow extends DataClass
+    implements Insertable<IngredientSectionRow> {
+  final String id;
+  final String recipeId;
+  final String name;
+  final String sortKey;
+  const IngredientSectionRow({
+    required this.id,
+    required this.recipeId,
+    required this.name,
+    required this.sortKey,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['recipe_id'] = Variable<String>(recipeId);
+    map['name'] = Variable<String>(name);
+    map['sort_key'] = Variable<String>(sortKey);
+    return map;
+  }
+
+  IngredientSectionsCompanion toCompanion(bool nullToAbsent) {
+    return IngredientSectionsCompanion(
+      id: Value(id),
+      recipeId: Value(recipeId),
+      name: Value(name),
+      sortKey: Value(sortKey),
+    );
+  }
+
+  factory IngredientSectionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return IngredientSectionRow(
+      id: serializer.fromJson<String>(json['id']),
+      recipeId: serializer.fromJson<String>(json['recipeId']),
+      name: serializer.fromJson<String>(json['name']),
+      sortKey: serializer.fromJson<String>(json['sortKey']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'recipeId': serializer.toJson<String>(recipeId),
+      'name': serializer.toJson<String>(name),
+      'sortKey': serializer.toJson<String>(sortKey),
+    };
+  }
+
+  IngredientSectionRow copyWith({
+    String? id,
+    String? recipeId,
+    String? name,
+    String? sortKey,
+  }) => IngredientSectionRow(
+    id: id ?? this.id,
+    recipeId: recipeId ?? this.recipeId,
+    name: name ?? this.name,
+    sortKey: sortKey ?? this.sortKey,
+  );
+  IngredientSectionRow copyWithCompanion(IngredientSectionsCompanion data) {
+    return IngredientSectionRow(
+      id: data.id.present ? data.id.value : this.id,
+      recipeId: data.recipeId.present ? data.recipeId.value : this.recipeId,
+      name: data.name.present ? data.name.value : this.name,
+      sortKey: data.sortKey.present ? data.sortKey.value : this.sortKey,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IngredientSectionRow(')
+          ..write('id: $id, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('name: $name, ')
+          ..write('sortKey: $sortKey')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, recipeId, name, sortKey);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is IngredientSectionRow &&
+          other.id == this.id &&
+          other.recipeId == this.recipeId &&
+          other.name == this.name &&
+          other.sortKey == this.sortKey);
+}
+
+class IngredientSectionsCompanion
+    extends UpdateCompanion<IngredientSectionRow> {
+  final Value<String> id;
+  final Value<String> recipeId;
+  final Value<String> name;
+  final Value<String> sortKey;
+  final Value<int> rowid;
+  const IngredientSectionsCompanion({
+    this.id = const Value.absent(),
+    this.recipeId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.sortKey = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  IngredientSectionsCompanion.insert({
+    required String id,
+    required String recipeId,
+    required String name,
+    required String sortKey,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       recipeId = Value(recipeId),
+       name = Value(name),
+       sortKey = Value(sortKey);
+  static Insertable<IngredientSectionRow> custom({
+    Expression<String>? id,
+    Expression<String>? recipeId,
+    Expression<String>? name,
+    Expression<String>? sortKey,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (recipeId != null) 'recipe_id': recipeId,
+      if (name != null) 'name': name,
+      if (sortKey != null) 'sort_key': sortKey,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  IngredientSectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? recipeId,
+    Value<String>? name,
+    Value<String>? sortKey,
+    Value<int>? rowid,
+  }) {
+    return IngredientSectionsCompanion(
+      id: id ?? this.id,
+      recipeId: recipeId ?? this.recipeId,
+      name: name ?? this.name,
+      sortKey: sortKey ?? this.sortKey,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (recipeId.present) {
+      map['recipe_id'] = Variable<String>(recipeId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (sortKey.present) {
+      map['sort_key'] = Variable<String>(sortKey.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('IngredientSectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('name: $name, ')
+          ..write('sortKey: $sortKey, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $StepSectionsTable extends StepSections
     with TableInfo<$StepSectionsTable, StepSectionRow> {
   @override
@@ -2569,533 +3423,6 @@ class RecipeStepsCompanion extends UpdateCompanion<RecipeStepRow> {
           ..write('sectionId: $sectionId, ')
           ..write('body: $body, ')
           ..write('sortKey: $sortKey, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $FoldersTable extends Folders with TableInfo<$FoldersTable, FolderRow> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $FoldersTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, name, createdAt];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'folders';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<FolderRow> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  FolderRow map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FolderRow(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $FoldersTable createAlias(String alias) {
-    return $FoldersTable(attachedDatabase, alias);
-  }
-}
-
-class FolderRow extends DataClass implements Insertable<FolderRow> {
-  final String id;
-  final String name;
-  final DateTime createdAt;
-  const FolderRow({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['name'] = Variable<String>(name);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  FoldersCompanion toCompanion(bool nullToAbsent) {
-    return FoldersCompanion(
-      id: Value(id),
-      name: Value(name),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory FolderRow.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FolderRow(
-      id: serializer.fromJson<String>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'name': serializer.toJson<String>(name),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  FolderRow copyWith({String? id, String? name, DateTime? createdAt}) =>
-      FolderRow(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        createdAt: createdAt ?? this.createdAt,
-      );
-  FolderRow copyWithCompanion(FoldersCompanion data) {
-    return FolderRow(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FolderRow(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, createdAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FolderRow &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.createdAt == this.createdAt);
-}
-
-class FoldersCompanion extends UpdateCompanion<FolderRow> {
-  final Value<String> id;
-  final Value<String> name;
-  final Value<DateTime> createdAt;
-  final Value<int> rowid;
-  const FoldersCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  FoldersCompanion.insert({
-    required String id,
-    required String name,
-    required DateTime createdAt,
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       name = Value(name),
-       createdAt = Value(createdAt);
-  static Insertable<FolderRow> custom({
-    Expression<String>? id,
-    Expression<String>? name,
-    Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  FoldersCompanion copyWith({
-    Value<String>? id,
-    Value<String>? name,
-    Value<DateTime>? createdAt,
-    Value<int>? rowid,
-  }) {
-    return FoldersCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FoldersCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $FolderEntriesTable extends FolderEntries
-    with TableInfo<$FolderEntriesTable, FolderEntryRow> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $FolderEntriesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _folderIdMeta = const VerificationMeta(
-    'folderId',
-  );
-  @override
-  late final GeneratedColumn<String> folderId = GeneratedColumn<String>(
-    'folder_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _recipeIdMeta = const VerificationMeta(
-    'recipeId',
-  );
-  @override
-  late final GeneratedColumn<String> recipeId = GeneratedColumn<String>(
-    'recipe_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _addedAtMeta = const VerificationMeta(
-    'addedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
-    'added_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [folderId, recipeId, addedAt];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'folder_entries';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<FolderEntryRow> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('folder_id')) {
-      context.handle(
-        _folderIdMeta,
-        folderId.isAcceptableOrUnknown(data['folder_id']!, _folderIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_folderIdMeta);
-    }
-    if (data.containsKey('recipe_id')) {
-      context.handle(
-        _recipeIdMeta,
-        recipeId.isAcceptableOrUnknown(data['recipe_id']!, _recipeIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_recipeIdMeta);
-    }
-    if (data.containsKey('added_at')) {
-      context.handle(
-        _addedAtMeta,
-        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_addedAtMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {folderId, recipeId};
-  @override
-  FolderEntryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FolderEntryRow(
-      folderId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}folder_id'],
-      )!,
-      recipeId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}recipe_id'],
-      )!,
-      addedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}added_at'],
-      )!,
-    );
-  }
-
-  @override
-  $FolderEntriesTable createAlias(String alias) {
-    return $FolderEntriesTable(attachedDatabase, alias);
-  }
-}
-
-class FolderEntryRow extends DataClass implements Insertable<FolderEntryRow> {
-  final String folderId;
-  final String recipeId;
-  final DateTime addedAt;
-  const FolderEntryRow({
-    required this.folderId,
-    required this.recipeId,
-    required this.addedAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['folder_id'] = Variable<String>(folderId);
-    map['recipe_id'] = Variable<String>(recipeId);
-    map['added_at'] = Variable<DateTime>(addedAt);
-    return map;
-  }
-
-  FolderEntriesCompanion toCompanion(bool nullToAbsent) {
-    return FolderEntriesCompanion(
-      folderId: Value(folderId),
-      recipeId: Value(recipeId),
-      addedAt: Value(addedAt),
-    );
-  }
-
-  factory FolderEntryRow.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FolderEntryRow(
-      folderId: serializer.fromJson<String>(json['folderId']),
-      recipeId: serializer.fromJson<String>(json['recipeId']),
-      addedAt: serializer.fromJson<DateTime>(json['addedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'folderId': serializer.toJson<String>(folderId),
-      'recipeId': serializer.toJson<String>(recipeId),
-      'addedAt': serializer.toJson<DateTime>(addedAt),
-    };
-  }
-
-  FolderEntryRow copyWith({
-    String? folderId,
-    String? recipeId,
-    DateTime? addedAt,
-  }) => FolderEntryRow(
-    folderId: folderId ?? this.folderId,
-    recipeId: recipeId ?? this.recipeId,
-    addedAt: addedAt ?? this.addedAt,
-  );
-  FolderEntryRow copyWithCompanion(FolderEntriesCompanion data) {
-    return FolderEntryRow(
-      folderId: data.folderId.present ? data.folderId.value : this.folderId,
-      recipeId: data.recipeId.present ? data.recipeId.value : this.recipeId,
-      addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FolderEntryRow(')
-          ..write('folderId: $folderId, ')
-          ..write('recipeId: $recipeId, ')
-          ..write('addedAt: $addedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(folderId, recipeId, addedAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FolderEntryRow &&
-          other.folderId == this.folderId &&
-          other.recipeId == this.recipeId &&
-          other.addedAt == this.addedAt);
-}
-
-class FolderEntriesCompanion extends UpdateCompanion<FolderEntryRow> {
-  final Value<String> folderId;
-  final Value<String> recipeId;
-  final Value<DateTime> addedAt;
-  final Value<int> rowid;
-  const FolderEntriesCompanion({
-    this.folderId = const Value.absent(),
-    this.recipeId = const Value.absent(),
-    this.addedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  FolderEntriesCompanion.insert({
-    required String folderId,
-    required String recipeId,
-    required DateTime addedAt,
-    this.rowid = const Value.absent(),
-  }) : folderId = Value(folderId),
-       recipeId = Value(recipeId),
-       addedAt = Value(addedAt);
-  static Insertable<FolderEntryRow> custom({
-    Expression<String>? folderId,
-    Expression<String>? recipeId,
-    Expression<DateTime>? addedAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (folderId != null) 'folder_id': folderId,
-      if (recipeId != null) 'recipe_id': recipeId,
-      if (addedAt != null) 'added_at': addedAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  FolderEntriesCompanion copyWith({
-    Value<String>? folderId,
-    Value<String>? recipeId,
-    Value<DateTime>? addedAt,
-    Value<int>? rowid,
-  }) {
-    return FolderEntriesCompanion(
-      folderId: folderId ?? this.folderId,
-      recipeId: recipeId ?? this.recipeId,
-      addedAt: addedAt ?? this.addedAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (folderId.present) {
-      map['folder_id'] = Variable<String>(folderId.value);
-    }
-    if (recipeId.present) {
-      map['recipe_id'] = Variable<String>(recipeId.value);
-    }
-    if (addedAt.present) {
-      map['added_at'] = Variable<DateTime>(addedAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FolderEntriesCompanion(')
-          ..write('folderId: $folderId, ')
-          ..write('recipeId: $recipeId, ')
-          ..write('addedAt: $addedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8154,34 +8481,272 @@ class SyncStateCompanion extends UpdateCompanion<SyncStateRow> {
   }
 }
 
+class $LocalValuesTable extends LocalValues
+    with TableInfo<$LocalValuesTable, LocalValueRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalValuesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_values';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalValueRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  LocalValueRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalValueRow(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalValuesTable createAlias(String alias) {
+    return $LocalValuesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalValueRow extends DataClass implements Insertable<LocalValueRow> {
+  final String key;
+  final String value;
+  const LocalValueRow({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  LocalValuesCompanion toCompanion(bool nullToAbsent) {
+    return LocalValuesCompanion(key: Value(key), value: Value(value));
+  }
+
+  factory LocalValueRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalValueRow(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  LocalValueRow copyWith({String? key, String? value}) =>
+      LocalValueRow(key: key ?? this.key, value: value ?? this.value);
+  LocalValueRow copyWithCompanion(LocalValuesCompanion data) {
+    return LocalValueRow(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalValueRow(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalValueRow &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class LocalValuesCompanion extends UpdateCompanion<LocalValueRow> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> rowid;
+  const LocalValuesCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalValuesCompanion.insert({
+    required String key,
+    required String value,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<LocalValueRow> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalValuesCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<int>? rowid,
+  }) {
+    return LocalValuesCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalValuesCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final RecipeSearch recipeSearch = RecipeSearch(this);
   late final $RecipesTable recipes = $RecipesTable(this);
-  late final $IngredientSectionsTable ingredientSections =
-      $IngredientSectionsTable(this);
   late final $IngredientLinesTable ingredientLines = $IngredientLinesTable(
     this,
   );
+  late final $FolderEntriesTable folderEntries = $FolderEntriesTable(this);
+  late final $FoldersTable folders = $FoldersTable(this);
+  late final Trigger recipeSearchRecipeInsert = Trigger(
+    'CREATE TRIGGER recipe_search_recipe_insert AFTER INSERT ON recipes BEGIN DELETE FROM recipe_search WHERE recipe_id = new.id;INSERT INTO recipe_search (recipe_id, title, ingredients, folders) SELECT r.id, r.title, (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), \' \'), \'\') FROM ingredient_lines AS l WHERE l.recipe_id = r.id), (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = r.id) FROM recipes AS r WHERE r.id = new.id;END',
+    'recipe_search_recipe_insert',
+  );
+  late final Trigger recipeSearchRecipeUpdate = Trigger(
+    'CREATE TRIGGER recipe_search_recipe_update AFTER UPDATE OF title ON recipes BEGIN UPDATE recipe_search SET title = new.title WHERE recipe_id = new.id;END',
+    'recipe_search_recipe_update',
+  );
+  late final Trigger recipeSearchRecipeDelete = Trigger(
+    'CREATE TRIGGER recipe_search_recipe_delete AFTER DELETE ON recipes BEGIN DELETE FROM recipe_search WHERE recipe_id = old.id;END',
+    'recipe_search_recipe_delete',
+  );
+  late final Trigger recipeSearchLineInsert = Trigger(
+    'CREATE TRIGGER recipe_search_line_insert AFTER INSERT ON ingredient_lines BEGIN UPDATE recipe_search SET ingredients = (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), \' \'), \'\') FROM ingredient_lines AS l WHERE l.recipe_id = new.recipe_id) WHERE recipe_id = new.recipe_id;END',
+    'recipe_search_line_insert',
+  );
+  late final Trigger recipeSearchLineUpdate = Trigger(
+    'CREATE TRIGGER recipe_search_line_update AFTER UPDATE OF name, raw_text ON ingredient_lines BEGIN UPDATE recipe_search SET ingredients = (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), \' \'), \'\') FROM ingredient_lines AS l WHERE l.recipe_id = new.recipe_id) WHERE recipe_id = new.recipe_id;END',
+    'recipe_search_line_update',
+  );
+  late final Trigger recipeSearchLineDelete = Trigger(
+    'CREATE TRIGGER recipe_search_line_delete AFTER DELETE ON ingredient_lines BEGIN UPDATE recipe_search SET ingredients = (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), \' \'), \'\') FROM ingredient_lines AS l WHERE l.recipe_id = old.recipe_id) WHERE recipe_id = old.recipe_id;END',
+    'recipe_search_line_delete',
+  );
+  late final Trigger recipeSearchEntryInsert = Trigger(
+    'CREATE TRIGGER recipe_search_entry_insert AFTER INSERT ON folder_entries BEGIN UPDATE recipe_search SET folders = (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = new.recipe_id) WHERE recipe_id = new.recipe_id;END',
+    'recipe_search_entry_insert',
+  );
+  late final Trigger recipeSearchEntryDelete = Trigger(
+    'CREATE TRIGGER recipe_search_entry_delete AFTER DELETE ON folder_entries BEGIN UPDATE recipe_search SET folders = (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = old.recipe_id) WHERE recipe_id = old.recipe_id;END',
+    'recipe_search_entry_delete',
+  );
+  late final Trigger recipeSearchFolderInsert = Trigger(
+    'CREATE TRIGGER recipe_search_folder_insert AFTER INSERT ON folders BEGIN UPDATE recipe_search SET folders = (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = recipe_search.recipe_id) WHERE recipe_id IN (SELECT recipe_id FROM folder_entries WHERE folder_id = new.id);END',
+    'recipe_search_folder_insert',
+  );
+  late final Trigger recipeSearchFolderUpdate = Trigger(
+    'CREATE TRIGGER recipe_search_folder_update AFTER UPDATE OF name ON folders BEGIN UPDATE recipe_search SET folders = (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = recipe_search.recipe_id) WHERE recipe_id IN (SELECT recipe_id FROM folder_entries WHERE folder_id = new.id);END',
+    'recipe_search_folder_update',
+  );
+  late final Trigger recipeSearchFolderDelete = Trigger(
+    'CREATE TRIGGER recipe_search_folder_delete AFTER DELETE ON folders BEGIN UPDATE recipe_search SET folders = (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = recipe_search.recipe_id) WHERE recipe_id IN (SELECT recipe_id FROM folder_entries WHERE folder_id = old.id);END',
+    'recipe_search_folder_delete',
+  );
+  late final $IngredientSectionsTable ingredientSections =
+      $IngredientSectionsTable(this);
   late final $StepSectionsTable stepSections = $StepSectionsTable(this);
   late final $RecipeStepsTable recipeSteps = $RecipeStepsTable(this);
-  late final $FoldersTable folders = $FoldersTable(this);
-  late final $FolderEntriesTable folderEntries = $FolderEntriesTable(this);
-  late final $FoodsTable foods = $FoodsTable(this);
-  late final $FoodNutrientsTable foodNutrients = $FoodNutrientsTable(this);
-  late final $FoodPortionsTable foodPortions = $FoodPortionsTable(this);
-  late final $NutritionMatchesTable nutritionMatches = $NutritionMatchesTable(
-    this,
-  );
-  late final $RecipeVersionsTable recipeVersions = $RecipeVersionsTable(this);
-  late final $ExperimentsTable experiments = $ExperimentsTable(this);
-  late final $GroceryListsTable groceryLists = $GroceryListsTable(this);
-  late final $GroceryItemsTable groceryItems = $GroceryItemsTable(this);
-  late final $MeasuringToolsTable measuringTools = $MeasuringToolsTable(this);
-  late final $UserRecipePrefsTableTable userRecipePrefsTable =
-      $UserRecipePrefsTableTable(this);
-  late final $ChangeLogTable changeLog = $ChangeLogTable(this);
-  late final $SyncStateTable syncState = $SyncStateTable(this);
   late final Index ingredientSectionsRecipe = Index(
     'ingredient_sections_recipe',
     'CREATE INDEX ingredient_sections_recipe ON ingredient_sections (recipe_id)',
@@ -8202,6 +8767,22 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'folder_entries_recipe',
     'CREATE INDEX folder_entries_recipe ON folder_entries (recipe_id)',
   );
+  late final $FoodsTable foods = $FoodsTable(this);
+  late final $FoodNutrientsTable foodNutrients = $FoodNutrientsTable(this);
+  late final $FoodPortionsTable foodPortions = $FoodPortionsTable(this);
+  late final $NutritionMatchesTable nutritionMatches = $NutritionMatchesTable(
+    this,
+  );
+  late final $RecipeVersionsTable recipeVersions = $RecipeVersionsTable(this);
+  late final $ExperimentsTable experiments = $ExperimentsTable(this);
+  late final $GroceryListsTable groceryLists = $GroceryListsTable(this);
+  late final $GroceryItemsTable groceryItems = $GroceryItemsTable(this);
+  late final $MeasuringToolsTable measuringTools = $MeasuringToolsTable(this);
+  late final $UserRecipePrefsTableTable userRecipePrefsTable =
+      $UserRecipePrefsTableTable(this);
+  late final $ChangeLogTable changeLog = $ChangeLogTable(this);
+  late final $SyncStateTable syncState = $SyncStateTable(this);
+  late final $LocalValuesTable localValues = $LocalValuesTable(this);
   late final Index foodsSourceExternal = Index(
     'foods_source_external',
     'CREATE UNIQUE INDEX foods_source_external ON foods (source, external_id)',
@@ -8246,18 +8827,43 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final SyncDao syncDao = SyncDao(this as AppDatabase);
+  Future<int> rebuildRecipeSearch() {
+    return customInsert(
+      'INSERT INTO recipe_search (recipe_id, title, ingredients, folders) SELECT r.id, r.title, (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), \' \'), \'\') FROM ingredient_lines AS l WHERE l.recipe_id = r.id), (SELECT coalesce(group_concat(f.name, \' \'), \'\') FROM folder_entries AS e INNER JOIN folders AS f ON f.id = e.folder_id WHERE e.recipe_id = r.id) FROM recipes AS r',
+      variables: [],
+      updates: {this.recipeSearch},
+    );
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    recipeSearch,
     recipes,
-    ingredientSections,
     ingredientLines,
+    folderEntries,
+    folders,
+    recipeSearchRecipeInsert,
+    recipeSearchRecipeUpdate,
+    recipeSearchRecipeDelete,
+    recipeSearchLineInsert,
+    recipeSearchLineUpdate,
+    recipeSearchLineDelete,
+    recipeSearchEntryInsert,
+    recipeSearchEntryDelete,
+    recipeSearchFolderInsert,
+    recipeSearchFolderUpdate,
+    recipeSearchFolderDelete,
+    ingredientSections,
     stepSections,
     recipeSteps,
-    folders,
-    folderEntries,
+    ingredientSectionsRecipe,
+    ingredientLinesRecipe,
+    stepSectionsRecipe,
+    recipeStepsRecipe,
+    folderEntriesRecipe,
     foods,
     foodNutrients,
     foodPortions,
@@ -8270,11 +8876,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     userRecipePrefsTable,
     changeLog,
     syncState,
-    ingredientSectionsRecipe,
-    ingredientLinesRecipe,
-    stepSectionsRecipe,
-    recipeStepsRecipe,
-    folderEntriesRecipe,
+    localValues,
     foodsSourceExternal,
     foodPortionsFood,
     nutritionMatchesLine,
@@ -8285,10 +8887,283 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     changeLogHlc,
   ];
   @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'recipes',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [
+        TableUpdate('recipe_search', kind: UpdateKind.delete),
+        TableUpdate('recipe_search', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'recipes',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'recipes',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'ingredient_lines',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'ingredient_lines',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'ingredient_lines',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'folder_entries',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'folder_entries',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'folders',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'folders',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'folders',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('recipe_search', kind: UpdateKind.update)],
+    ),
+  ]);
+  @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
+typedef $RecipeSearchCreateCompanionBuilder = RecipeSearchCompanion Function({
+  required String recipeId,
+  required String title,
+  required String ingredients,
+  required String folders,
+  Value<int> rowid,
+});
+typedef $RecipeSearchUpdateCompanionBuilder = RecipeSearchCompanion Function({
+  Value<String> recipeId,
+  Value<String> title,
+  Value<String> ingredients,
+  Value<String> folders,
+  Value<int> rowid,
+});
+
+class $RecipeSearchFilterComposer
+    extends Composer<_$AppDatabase, RecipeSearch> {
+  $RecipeSearchFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get recipeId => $composableBuilder(
+    column: $table.recipeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ingredients => $composableBuilder(
+    column: $table.ingredients,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get folders => $composableBuilder(
+    column: $table.folders,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $RecipeSearchOrderingComposer
+    extends Composer<_$AppDatabase, RecipeSearch> {
+  $RecipeSearchOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get recipeId => $composableBuilder(
+    column: $table.recipeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ingredients => $composableBuilder(
+    column: $table.ingredients,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get folders => $composableBuilder(
+    column: $table.folders,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $RecipeSearchAnnotationComposer
+    extends Composer<_$AppDatabase, RecipeSearch> {
+  $RecipeSearchAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get recipeId =>
+      $composableBuilder(column: $table.recipeId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get ingredients => $composableBuilder(
+    column: $table.ingredients,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get folders =>
+      $composableBuilder(column: $table.folders, builder: (column) => column);
+}
+
+class $RecipeSearchTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          RecipeSearch,
+          RecipeSearchData,
+          $RecipeSearchFilterComposer,
+          $RecipeSearchOrderingComposer,
+          $RecipeSearchAnnotationComposer,
+          $RecipeSearchCreateCompanionBuilder,
+          $RecipeSearchUpdateCompanionBuilder,
+          (
+            RecipeSearchData,
+            BaseReferences<_$AppDatabase, RecipeSearch, RecipeSearchData>,
+          ),
+          RecipeSearchData,
+          PrefetchHooks Function()
+        > {
+  $RecipeSearchTableManager(_$AppDatabase db, RecipeSearch table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $RecipeSearchFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $RecipeSearchOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $RecipeSearchAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> recipeId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> ingredients = const Value.absent(),
+                Value<String> folders = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecipeSearchCompanion(
+                recipeId: recipeId,
+                title: title,
+                ingredients: ingredients,
+                folders: folders,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String recipeId,
+                required String title,
+                required String ingredients,
+                required String folders,
+                Value<int> rowid = const Value.absent(),
+              }) => RecipeSearchCompanion.insert(
+                recipeId: recipeId,
+                title: title,
+                ingredients: ingredients,
+                folders: folders,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<RecipeSearch, RecipeSearchData>(table),
+                  BaseReferences<_$AppDatabase, RecipeSearch, RecipeSearchData>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $RecipeSearchProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      RecipeSearch,
+      RecipeSearchData,
+      $RecipeSearchFilterComposer,
+      $RecipeSearchOrderingComposer,
+      $RecipeSearchAnnotationComposer,
+      $RecipeSearchCreateCompanionBuilder,
+      $RecipeSearchUpdateCompanionBuilder,
+      (
+        RecipeSearchData,
+        BaseReferences<_$AppDatabase, RecipeSearch, RecipeSearchData>,
+      ),
+      RecipeSearchData,
+      PrefetchHooks Function()
+    >;
 typedef $$RecipesTableCreateCompanionBuilder = RecipesCompanion Function({
   required String id,
   required String title,
@@ -8652,211 +9527,6 @@ typedef $$RecipesTableProcessedTableManager =
       $$RecipesTableUpdateCompanionBuilder,
       (RecipeRow, BaseReferences<_$AppDatabase, $RecipesTable, RecipeRow>),
       RecipeRow,
-      PrefetchHooks Function()
-    >;
-typedef $$IngredientSectionsTableCreateCompanionBuilder =
-    IngredientSectionsCompanion Function({
-      required String id,
-      required String recipeId,
-      required String name,
-      required String sortKey,
-      Value<int> rowid,
-    });
-typedef $$IngredientSectionsTableUpdateCompanionBuilder =
-    IngredientSectionsCompanion Function({
-      Value<String> id,
-      Value<String> recipeId,
-      Value<String> name,
-      Value<String> sortKey,
-      Value<int> rowid,
-    });
-
-class $$IngredientSectionsTableFilterComposer
-    extends Composer<_$AppDatabase, $IngredientSectionsTable> {
-  $$IngredientSectionsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get recipeId => $composableBuilder(
-    column: $table.recipeId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get sortKey => $composableBuilder(
-    column: $table.sortKey,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$IngredientSectionsTableOrderingComposer
-    extends Composer<_$AppDatabase, $IngredientSectionsTable> {
-  $$IngredientSectionsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get recipeId => $composableBuilder(
-    column: $table.recipeId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get sortKey => $composableBuilder(
-    column: $table.sortKey,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$IngredientSectionsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $IngredientSectionsTable> {
-  $$IngredientSectionsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get recipeId =>
-      $composableBuilder(column: $table.recipeId, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get sortKey =>
-      $composableBuilder(column: $table.sortKey, builder: (column) => column);
-}
-
-class $$IngredientSectionsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $IngredientSectionsTable,
-          IngredientSectionRow,
-          $$IngredientSectionsTableFilterComposer,
-          $$IngredientSectionsTableOrderingComposer,
-          $$IngredientSectionsTableAnnotationComposer,
-          $$IngredientSectionsTableCreateCompanionBuilder,
-          $$IngredientSectionsTableUpdateCompanionBuilder,
-          (
-            IngredientSectionRow,
-            BaseReferences<
-              _$AppDatabase,
-              $IngredientSectionsTable,
-              IngredientSectionRow
-            >,
-          ),
-          IngredientSectionRow,
-          PrefetchHooks Function()
-        > {
-  $$IngredientSectionsTableTableManager(
-    _$AppDatabase db,
-    $IngredientSectionsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$IngredientSectionsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$IngredientSectionsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$IngredientSectionsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> recipeId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> sortKey = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => IngredientSectionsCompanion(
-                id: id,
-                recipeId: recipeId,
-                name: name,
-                sortKey: sortKey,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String recipeId,
-                required String name,
-                required String sortKey,
-                Value<int> rowid = const Value.absent(),
-              }) => IngredientSectionsCompanion.insert(
-                id: id,
-                recipeId: recipeId,
-                name: name,
-                sortKey: sortKey,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<$IngredientSectionsTable, IngredientSectionRow>(
-                    table,
-                  ),
-                  BaseReferences<
-                    _$AppDatabase,
-                    $IngredientSectionsTable,
-                    IngredientSectionRow
-                  >(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$IngredientSectionsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $IngredientSectionsTable,
-      IngredientSectionRow,
-      $$IngredientSectionsTableFilterComposer,
-      $$IngredientSectionsTableOrderingComposer,
-      $$IngredientSectionsTableAnnotationComposer,
-      $$IngredientSectionsTableCreateCompanionBuilder,
-      $$IngredientSectionsTableUpdateCompanionBuilder,
-      (
-        IngredientSectionRow,
-        BaseReferences<
-          _$AppDatabase,
-          $IngredientSectionsTable,
-          IngredientSectionRow
-        >,
-      ),
-      IngredientSectionRow,
       PrefetchHooks Function()
     >;
 typedef $$IngredientLinesTableCreateCompanionBuilder =
@@ -9235,6 +9905,545 @@ typedef $$IngredientLinesTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $IngredientLinesTable, IngredientLineRow>,
       ),
       IngredientLineRow,
+      PrefetchHooks Function()
+    >;
+typedef $$FolderEntriesTableCreateCompanionBuilder =
+    FolderEntriesCompanion Function({
+      required String folderId,
+      required String recipeId,
+      required DateTime addedAt,
+      Value<int> rowid,
+    });
+typedef $$FolderEntriesTableUpdateCompanionBuilder =
+    FolderEntriesCompanion Function({
+      Value<String> folderId,
+      Value<String> recipeId,
+      Value<DateTime> addedAt,
+      Value<int> rowid,
+    });
+
+class $$FolderEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $FolderEntriesTable> {
+  $$FolderEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get folderId => $composableBuilder(
+    column: $table.folderId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recipeId => $composableBuilder(
+    column: $table.recipeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FolderEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FolderEntriesTable> {
+  $$FolderEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get folderId => $composableBuilder(
+    column: $table.folderId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recipeId => $composableBuilder(
+    column: $table.recipeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FolderEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FolderEntriesTable> {
+  $$FolderEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get folderId =>
+      $composableBuilder(column: $table.folderId, builder: (column) => column);
+
+  GeneratedColumn<String> get recipeId =>
+      $composableBuilder(column: $table.recipeId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get addedAt =>
+      $composableBuilder(column: $table.addedAt, builder: (column) => column);
+}
+
+class $$FolderEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FolderEntriesTable,
+          FolderEntryRow,
+          $$FolderEntriesTableFilterComposer,
+          $$FolderEntriesTableOrderingComposer,
+          $$FolderEntriesTableAnnotationComposer,
+          $$FolderEntriesTableCreateCompanionBuilder,
+          $$FolderEntriesTableUpdateCompanionBuilder,
+          (
+            FolderEntryRow,
+            BaseReferences<_$AppDatabase, $FolderEntriesTable, FolderEntryRow>,
+          ),
+          FolderEntryRow,
+          PrefetchHooks Function()
+        > {
+  $$FolderEntriesTableTableManager(_$AppDatabase db, $FolderEntriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FolderEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FolderEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FolderEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> folderId = const Value.absent(),
+                Value<String> recipeId = const Value.absent(),
+                Value<DateTime> addedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FolderEntriesCompanion(
+                folderId: folderId,
+                recipeId: recipeId,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String folderId,
+                required String recipeId,
+                required DateTime addedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => FolderEntriesCompanion.insert(
+                folderId: folderId,
+                recipeId: recipeId,
+                addedAt: addedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FolderEntriesTable, FolderEntryRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FolderEntriesTable,
+                    FolderEntryRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FolderEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FolderEntriesTable,
+      FolderEntryRow,
+      $$FolderEntriesTableFilterComposer,
+      $$FolderEntriesTableOrderingComposer,
+      $$FolderEntriesTableAnnotationComposer,
+      $$FolderEntriesTableCreateCompanionBuilder,
+      $$FolderEntriesTableUpdateCompanionBuilder,
+      (
+        FolderEntryRow,
+        BaseReferences<_$AppDatabase, $FolderEntriesTable, FolderEntryRow>,
+      ),
+      FolderEntryRow,
+      PrefetchHooks Function()
+    >;
+typedef $$FoldersTableCreateCompanionBuilder = FoldersCompanion Function({
+  required String id,
+  required String name,
+  required DateTime createdAt,
+  Value<int> rowid,
+});
+typedef $$FoldersTableUpdateCompanionBuilder = FoldersCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$FoldersTableFilterComposer
+    extends Composer<_$AppDatabase, $FoldersTable> {
+  $$FoldersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FoldersTableOrderingComposer
+    extends Composer<_$AppDatabase, $FoldersTable> {
+  $$FoldersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FoldersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FoldersTable> {
+  $$FoldersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$FoldersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FoldersTable,
+          FolderRow,
+          $$FoldersTableFilterComposer,
+          $$FoldersTableOrderingComposer,
+          $$FoldersTableAnnotationComposer,
+          $$FoldersTableCreateCompanionBuilder,
+          $$FoldersTableUpdateCompanionBuilder,
+          (FolderRow, BaseReferences<_$AppDatabase, $FoldersTable, FolderRow>),
+          FolderRow,
+          PrefetchHooks Function()
+        > {
+  $$FoldersTableTableManager(_$AppDatabase db, $FoldersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FoldersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FoldersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FoldersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FoldersCompanion(
+                id: id,
+                name: name,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => FoldersCompanion.insert(
+                id: id,
+                name: name,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FoldersTable, FolderRow>(table),
+                  BaseReferences<_$AppDatabase, $FoldersTable, FolderRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FoldersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FoldersTable,
+      FolderRow,
+      $$FoldersTableFilterComposer,
+      $$FoldersTableOrderingComposer,
+      $$FoldersTableAnnotationComposer,
+      $$FoldersTableCreateCompanionBuilder,
+      $$FoldersTableUpdateCompanionBuilder,
+      (FolderRow, BaseReferences<_$AppDatabase, $FoldersTable, FolderRow>),
+      FolderRow,
+      PrefetchHooks Function()
+    >;
+typedef $$IngredientSectionsTableCreateCompanionBuilder =
+    IngredientSectionsCompanion Function({
+      required String id,
+      required String recipeId,
+      required String name,
+      required String sortKey,
+      Value<int> rowid,
+    });
+typedef $$IngredientSectionsTableUpdateCompanionBuilder =
+    IngredientSectionsCompanion Function({
+      Value<String> id,
+      Value<String> recipeId,
+      Value<String> name,
+      Value<String> sortKey,
+      Value<int> rowid,
+    });
+
+class $$IngredientSectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $IngredientSectionsTable> {
+  $$IngredientSectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recipeId => $composableBuilder(
+    column: $table.recipeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sortKey => $composableBuilder(
+    column: $table.sortKey,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$IngredientSectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $IngredientSectionsTable> {
+  $$IngredientSectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recipeId => $composableBuilder(
+    column: $table.recipeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sortKey => $composableBuilder(
+    column: $table.sortKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$IngredientSectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $IngredientSectionsTable> {
+  $$IngredientSectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get recipeId =>
+      $composableBuilder(column: $table.recipeId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get sortKey =>
+      $composableBuilder(column: $table.sortKey, builder: (column) => column);
+}
+
+class $$IngredientSectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $IngredientSectionsTable,
+          IngredientSectionRow,
+          $$IngredientSectionsTableFilterComposer,
+          $$IngredientSectionsTableOrderingComposer,
+          $$IngredientSectionsTableAnnotationComposer,
+          $$IngredientSectionsTableCreateCompanionBuilder,
+          $$IngredientSectionsTableUpdateCompanionBuilder,
+          (
+            IngredientSectionRow,
+            BaseReferences<
+              _$AppDatabase,
+              $IngredientSectionsTable,
+              IngredientSectionRow
+            >,
+          ),
+          IngredientSectionRow,
+          PrefetchHooks Function()
+        > {
+  $$IngredientSectionsTableTableManager(
+    _$AppDatabase db,
+    $IngredientSectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IngredientSectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IngredientSectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$IngredientSectionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> recipeId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> sortKey = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => IngredientSectionsCompanion(
+                id: id,
+                recipeId: recipeId,
+                name: name,
+                sortKey: sortKey,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String recipeId,
+                required String name,
+                required String sortKey,
+                Value<int> rowid = const Value.absent(),
+              }) => IngredientSectionsCompanion.insert(
+                id: id,
+                recipeId: recipeId,
+                name: name,
+                sortKey: sortKey,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$IngredientSectionsTable, IngredientSectionRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $IngredientSectionsTable,
+                    IngredientSectionRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$IngredientSectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $IngredientSectionsTable,
+      IngredientSectionRow,
+      $$IngredientSectionsTableFilterComposer,
+      $$IngredientSectionsTableOrderingComposer,
+      $$IngredientSectionsTableAnnotationComposer,
+      $$IngredientSectionsTableCreateCompanionBuilder,
+      $$IngredientSectionsTableUpdateCompanionBuilder,
+      (
+        IngredientSectionRow,
+        BaseReferences<
+          _$AppDatabase,
+          $IngredientSectionsTable,
+          IngredientSectionRow
+        >,
+      ),
+      IngredientSectionRow,
       PrefetchHooks Function()
     >;
 typedef $$StepSectionsTableCreateCompanionBuilder =
@@ -9634,340 +10843,6 @@ typedef $$RecipeStepsTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $RecipeStepsTable, RecipeStepRow>,
       ),
       RecipeStepRow,
-      PrefetchHooks Function()
-    >;
-typedef $$FoldersTableCreateCompanionBuilder = FoldersCompanion Function({
-  required String id,
-  required String name,
-  required DateTime createdAt,
-  Value<int> rowid,
-});
-typedef $$FoldersTableUpdateCompanionBuilder = FoldersCompanion Function({
-  Value<String> id,
-  Value<String> name,
-  Value<DateTime> createdAt,
-  Value<int> rowid,
-});
-
-class $$FoldersTableFilterComposer
-    extends Composer<_$AppDatabase, $FoldersTable> {
-  $$FoldersTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$FoldersTableOrderingComposer
-    extends Composer<_$AppDatabase, $FoldersTable> {
-  $$FoldersTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$FoldersTableAnnotationComposer
-    extends Composer<_$AppDatabase, $FoldersTable> {
-  $$FoldersTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-}
-
-class $$FoldersTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $FoldersTable,
-          FolderRow,
-          $$FoldersTableFilterComposer,
-          $$FoldersTableOrderingComposer,
-          $$FoldersTableAnnotationComposer,
-          $$FoldersTableCreateCompanionBuilder,
-          $$FoldersTableUpdateCompanionBuilder,
-          (FolderRow, BaseReferences<_$AppDatabase, $FoldersTable, FolderRow>),
-          FolderRow,
-          PrefetchHooks Function()
-        > {
-  $$FoldersTableTableManager(_$AppDatabase db, $FoldersTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$FoldersTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$FoldersTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$FoldersTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => FoldersCompanion(
-                id: id,
-                name: name,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String name,
-                required DateTime createdAt,
-                Value<int> rowid = const Value.absent(),
-              }) => FoldersCompanion.insert(
-                id: id,
-                name: name,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<$FoldersTable, FolderRow>(table),
-                  BaseReferences<_$AppDatabase, $FoldersTable, FolderRow>(
-                    db,
-                    table,
-                    e,
-                  ),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$FoldersTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $FoldersTable,
-      FolderRow,
-      $$FoldersTableFilterComposer,
-      $$FoldersTableOrderingComposer,
-      $$FoldersTableAnnotationComposer,
-      $$FoldersTableCreateCompanionBuilder,
-      $$FoldersTableUpdateCompanionBuilder,
-      (FolderRow, BaseReferences<_$AppDatabase, $FoldersTable, FolderRow>),
-      FolderRow,
-      PrefetchHooks Function()
-    >;
-typedef $$FolderEntriesTableCreateCompanionBuilder =
-    FolderEntriesCompanion Function({
-      required String folderId,
-      required String recipeId,
-      required DateTime addedAt,
-      Value<int> rowid,
-    });
-typedef $$FolderEntriesTableUpdateCompanionBuilder =
-    FolderEntriesCompanion Function({
-      Value<String> folderId,
-      Value<String> recipeId,
-      Value<DateTime> addedAt,
-      Value<int> rowid,
-    });
-
-class $$FolderEntriesTableFilterComposer
-    extends Composer<_$AppDatabase, $FolderEntriesTable> {
-  $$FolderEntriesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get folderId => $composableBuilder(
-    column: $table.folderId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get recipeId => $composableBuilder(
-    column: $table.recipeId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get addedAt => $composableBuilder(
-    column: $table.addedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$FolderEntriesTableOrderingComposer
-    extends Composer<_$AppDatabase, $FolderEntriesTable> {
-  $$FolderEntriesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get folderId => $composableBuilder(
-    column: $table.folderId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get recipeId => $composableBuilder(
-    column: $table.recipeId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get addedAt => $composableBuilder(
-    column: $table.addedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$FolderEntriesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $FolderEntriesTable> {
-  $$FolderEntriesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get folderId =>
-      $composableBuilder(column: $table.folderId, builder: (column) => column);
-
-  GeneratedColumn<String> get recipeId =>
-      $composableBuilder(column: $table.recipeId, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get addedAt =>
-      $composableBuilder(column: $table.addedAt, builder: (column) => column);
-}
-
-class $$FolderEntriesTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $FolderEntriesTable,
-          FolderEntryRow,
-          $$FolderEntriesTableFilterComposer,
-          $$FolderEntriesTableOrderingComposer,
-          $$FolderEntriesTableAnnotationComposer,
-          $$FolderEntriesTableCreateCompanionBuilder,
-          $$FolderEntriesTableUpdateCompanionBuilder,
-          (
-            FolderEntryRow,
-            BaseReferences<_$AppDatabase, $FolderEntriesTable, FolderEntryRow>,
-          ),
-          FolderEntryRow,
-          PrefetchHooks Function()
-        > {
-  $$FolderEntriesTableTableManager(_$AppDatabase db, $FolderEntriesTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$FolderEntriesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$FolderEntriesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$FolderEntriesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> folderId = const Value.absent(),
-                Value<String> recipeId = const Value.absent(),
-                Value<DateTime> addedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => FolderEntriesCompanion(
-                folderId: folderId,
-                recipeId: recipeId,
-                addedAt: addedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String folderId,
-                required String recipeId,
-                required DateTime addedAt,
-                Value<int> rowid = const Value.absent(),
-              }) => FolderEntriesCompanion.insert(
-                folderId: folderId,
-                recipeId: recipeId,
-                addedAt: addedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<$FolderEntriesTable, FolderEntryRow>(table),
-                  BaseReferences<
-                    _$AppDatabase,
-                    $FolderEntriesTable,
-                    FolderEntryRow
-                  >(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$FolderEntriesTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $FolderEntriesTable,
-      FolderEntryRow,
-      $$FolderEntriesTableFilterComposer,
-      $$FolderEntriesTableOrderingComposer,
-      $$FolderEntriesTableAnnotationComposer,
-      $$FolderEntriesTableCreateCompanionBuilder,
-      $$FolderEntriesTableUpdateCompanionBuilder,
-      (
-        FolderEntryRow,
-        BaseReferences<_$AppDatabase, $FolderEntriesTable, FolderEntryRow>,
-      ),
-      FolderEntryRow,
       PrefetchHooks Function()
     >;
 typedef $$FoodsTableCreateCompanionBuilder = FoodsCompanion Function({
@@ -12758,24 +13633,173 @@ typedef $$SyncStateTableProcessedTableManager =
       SyncStateRow,
       PrefetchHooks Function()
     >;
+typedef $$LocalValuesTableCreateCompanionBuilder =
+    LocalValuesCompanion Function({
+      required String key,
+      required String value,
+      Value<int> rowid,
+    });
+typedef $$LocalValuesTableUpdateCompanionBuilder =
+    LocalValuesCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<int> rowid,
+    });
+
+class $$LocalValuesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalValuesTable> {
+  $$LocalValuesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalValuesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalValuesTable> {
+  $$LocalValuesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalValuesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalValuesTable> {
+  $$LocalValuesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+}
+
+class $$LocalValuesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalValuesTable,
+          LocalValueRow,
+          $$LocalValuesTableFilterComposer,
+          $$LocalValuesTableOrderingComposer,
+          $$LocalValuesTableAnnotationComposer,
+          $$LocalValuesTableCreateCompanionBuilder,
+          $$LocalValuesTableUpdateCompanionBuilder,
+          (
+            LocalValueRow,
+            BaseReferences<_$AppDatabase, $LocalValuesTable, LocalValueRow>,
+          ),
+          LocalValueRow,
+          PrefetchHooks Function()
+        > {
+  $$LocalValuesTableTableManager(_$AppDatabase db, $LocalValuesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalValuesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalValuesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalValuesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> key = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) => LocalValuesCompanion(key: key, value: value, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalValuesCompanion.insert(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalValuesTable, LocalValueRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalValuesTable,
+                    LocalValueRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalValuesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalValuesTable,
+      LocalValueRow,
+      $$LocalValuesTableFilterComposer,
+      $$LocalValuesTableOrderingComposer,
+      $$LocalValuesTableAnnotationComposer,
+      $$LocalValuesTableCreateCompanionBuilder,
+      $$LocalValuesTableUpdateCompanionBuilder,
+      (
+        LocalValueRow,
+        BaseReferences<_$AppDatabase, $LocalValuesTable, LocalValueRow>,
+      ),
+      LocalValueRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $RecipeSearchTableManager get recipeSearch =>
+      $RecipeSearchTableManager(_db, _db.recipeSearch);
   $$RecipesTableTableManager get recipes =>
       $$RecipesTableTableManager(_db, _db.recipes);
-  $$IngredientSectionsTableTableManager get ingredientSections =>
-      $$IngredientSectionsTableTableManager(_db, _db.ingredientSections);
   $$IngredientLinesTableTableManager get ingredientLines =>
       $$IngredientLinesTableTableManager(_db, _db.ingredientLines);
+  $$FolderEntriesTableTableManager get folderEntries =>
+      $$FolderEntriesTableTableManager(_db, _db.folderEntries);
+  $$FoldersTableTableManager get folders =>
+      $$FoldersTableTableManager(_db, _db.folders);
+  $$IngredientSectionsTableTableManager get ingredientSections =>
+      $$IngredientSectionsTableTableManager(_db, _db.ingredientSections);
   $$StepSectionsTableTableManager get stepSections =>
       $$StepSectionsTableTableManager(_db, _db.stepSections);
   $$RecipeStepsTableTableManager get recipeSteps =>
       $$RecipeStepsTableTableManager(_db, _db.recipeSteps);
-  $$FoldersTableTableManager get folders =>
-      $$FoldersTableTableManager(_db, _db.folders);
-  $$FolderEntriesTableTableManager get folderEntries =>
-      $$FolderEntriesTableTableManager(_db, _db.folderEntries);
   $$FoodsTableTableManager get foods =>
       $$FoodsTableTableManager(_db, _db.foods);
   $$FoodNutrientsTableTableManager get foodNutrients =>
@@ -12800,4 +13824,6 @@ class $AppDatabaseManager {
       $$ChangeLogTableTableManager(_db, _db.changeLog);
   $$SyncStateTableTableManager get syncState =>
       $$SyncStateTableTableManager(_db, _db.syncState);
+  $$LocalValuesTableTableManager get localValues =>
+      $$LocalValuesTableTableManager(_db, _db.localValues);
 }

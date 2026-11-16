@@ -1,0 +1,288 @@
+import 'package:collection/collection.dart';
+import 'package:data/src/app_database.dart';
+import 'package:data/src/change_log/change_recorder.dart';
+import 'package:data/src/change_log/change_set.dart';
+import 'package:data/src/change_log/entity_applier.dart';
+import 'package:data/src/change_log/materializing_applier.dart';
+import 'package:data/src/daos/recipe_dao.dart';
+import 'package:data/src/recipes/recipe_codecs.dart';
+import 'package:data/src/recipes/recipe_rows.dart';
+import 'package:data/src/recipes/recipe_search_query.dart';
+import 'package:domain/domain.dart';
+
+/// [RecipeRepository] over the local database.
+///
+/// Every write goes through [recorder], so it lands in the change log in
+/// the same transaction, recording only the fields that changed. Watch
+/// streams skip values equal to the last one, so widgets rebuild only when
+/// their data changes (ENGINEERING.md §5).
+final class DriftRecipeRepository(
+  /// The database the recipes and the change log live in.
+  final AppDatabase database, {
+
+  /// Records each write's changes for sync.
+  required final ChangeRecorder recorder,
+}) implements RecipeRepository {
+  RecipeDao get _dao => database.recipeDao;
+
+  static final _recipes = RecipeCodec();
+  static final _ingredientSections = IngredientSectionCodec();
+  static final _ingredientLines = IngredientLineCodec();
+  static final _stepSections = StepSectionCodec();
+  static final _steps = RecipeStepCodec();
+
+  /// Writes remote changes for recipes and their parts, by entity kind,
+  /// for `DriftLocalStore`.
+  Map<String, EntityApplier> get appliers => {
+    _recipes.entity: MaterializingApplier(
+      database,
+      codec: _recipes,
+      write: (recipe) => _dao.upsert(_dao.recipes, recipe.toCompanion()),
+      remove: _dao.deleteRecipe,
+    ),
+    _ingredientSections.entity: MaterializingApplier(
+      database,
+      codec: _ingredientSections,
+      write: (section) =>
+          _dao.upsert(_dao.ingredientSections, section.toCompanion()),
+      remove: _dao.deleteIngredientSection,
+    ),
+    _ingredientLines.entity: MaterializingApplier(
+      database,
+      codec: _ingredientLines,
+      write: (line) => _dao.upsert(_dao.ingredientLines, line.toCompanion()),
+      remove: _dao.deleteIngredientLine,
+    ),
+    _stepSections.entity: MaterializingApplier(
+      database,
+      codec: _stepSections,
+      write: (section) => _dao.upsert(_dao.stepSections, section.toCompanion()),
+      remove: _dao.deleteStepSection,
+    ),
+    _steps.entity: MaterializingApplier(
+      database,
+      codec: _steps,
+      write: (step) => _dao.upsert(_dao.recipeSteps, step.toCompanion()),
+      remove: _dao.deleteStep,
+    ),
+  };
+
+  // Reads.
+
+  @override
+  Stream<List<RecipeId>> watchRecipeIds() => _dao
+      .watchRecipeIds()
+      .map((ids) => [for (final id in ids) RecipeId(id)])
+      .distinct(_listEquals);
+
+  @override
+  Stream<List<RecipeId>> watchSearch(String query) {
+    final match = recipeSearchMatch(query);
+    if (match == null) return watchRecipeIds();
+    return _dao
+        .watchSearch(match)
+        .map((ids) => [for (final id in ids) RecipeId(id)])
+        .distinct(_listEquals);
+  }
+
+  @override
+  Stream<Recipe?> watchRecipe(RecipeId id) => _dao
+      .recipe(id.value)
+      .watchSingleOrNull()
+      .map((row) => row?.toEntity())
+      .distinct();
+
+  @override
+  Stream<List<IngredientSection>> watchIngredientSections(RecipeId recipeId) =>
+      _dao
+          .ingredientSectionsOf(recipeId.value)
+          .watch()
+          .map((rows) => [for (final row in rows) row.toEntity()])
+          .distinct(_listEquals);
+
+  @override
+  Stream<List<IngredientLine>> watchIngredientLines(RecipeId recipeId) => _dao
+      .ingredientLinesOf(recipeId.value)
+      .watch()
+      .map((rows) => [for (final row in rows) row.toEntity()])
+      .distinct(_listEquals);
+
+  @override
+  Stream<List<StepSection>> watchStepSections(RecipeId recipeId) => _dao
+      .stepSectionsOf(recipeId.value)
+      .watch()
+      .map((rows) => [for (final row in rows) row.toEntity()])
+      .distinct(_listEquals);
+
+  @override
+  Stream<List<RecipeStep>> watchSteps(RecipeId recipeId) => _dao
+      .stepsOf(recipeId.value)
+      .watch()
+      .map((rows) => [for (final row in rows) row.toEntity()])
+      .distinct(_listEquals);
+
+  @override
+  Future<Recipe?> getRecipe(RecipeId id) async =>
+      (await _dao.recipe(id.value).getSingleOrNull())?.toEntity();
+
+  // Writes.
+
+  @override
+  Future<void> saveRecipe(Recipe recipe) =>
+      recorder.write((changes) => _saveRecipe(changes, recipe));
+
+  @override
+  Future<void> saveIngredientSection(IngredientSection section) =>
+      recorder.write((changes) => _saveIngredientSection(changes, section));
+
+  @override
+  Future<void> saveIngredientLine(IngredientLine line) =>
+      recorder.write((changes) => _saveIngredientLine(changes, line));
+
+  @override
+  Future<void> saveStepSection(StepSection section) =>
+      recorder.write((changes) => _saveStepSection(changes, section));
+
+  @override
+  Future<void> saveStep(RecipeStep step) =>
+      recorder.write((changes) => _saveStep(changes, step));
+
+  @override
+  Future<void> saveSnapshot(RecipeSnapshot snapshot) =>
+      recorder.write((changes) async {
+        await _saveRecipe(changes, snapshot.recipe);
+        for (final section in snapshot.ingredientSections) {
+          await _saveIngredientSection(changes, section);
+        }
+        for (final line in snapshot.ingredientLines) {
+          await _saveIngredientLine(changes, line);
+        }
+        for (final section in snapshot.stepSections) {
+          await _saveStepSection(changes, section);
+        }
+        for (final step in snapshot.steps) {
+          await _saveStep(changes, step);
+        }
+      });
+
+  @override
+  Future<void> deleteRecipe(RecipeId id) => recorder.write((changes) async {
+    final recipeId = id.value;
+    for (final row in await _dao.ingredientLinesOf(recipeId).get()) {
+      await _deleteIngredientLine(changes, row.id);
+    }
+    for (final row in await _dao.ingredientSectionsOf(recipeId).get()) {
+      await _deleteIngredientSection(changes, row.id);
+    }
+    for (final row in await _dao.stepsOf(recipeId).get()) {
+      await _deleteStep(changes, row.id);
+    }
+    for (final row in await _dao.stepSectionsOf(recipeId).get()) {
+      await _deleteStepSection(changes, row.id);
+    }
+    await _dao.deleteRecipe(recipeId);
+    changes.delete(_recipes.entity, recipeId);
+  });
+
+  /// Deletes the section with the lines in it, as the editor does.
+  @override
+  Future<void> deleteIngredientSection(
+    IngredientSectionId id,
+  ) => recorder.write((changes) async {
+    final section = await _dao.ingredientSection(id.value).getSingleOrNull();
+    if (section == null) return;
+    for (final line in await _dao.ingredientLinesOf(section.recipeId).get()) {
+      if (line.sectionId == id.value) {
+        await _deleteIngredientLine(changes, line.id);
+      }
+    }
+    await _deleteIngredientSection(changes, id.value);
+  });
+
+  @override
+  Future<void> deleteIngredientLine(IngredientLineId id) =>
+      recorder.write((changes) => _deleteIngredientLine(changes, id.value));
+
+  /// Deletes the section with the steps in it, as the editor does.
+  @override
+  Future<void> deleteStepSection(StepSectionId id) =>
+      recorder.write((changes) async {
+        final section = await _dao.stepSection(id.value).getSingleOrNull();
+        if (section == null) return;
+        for (final step in await _dao.stepsOf(section.recipeId).get()) {
+          if (step.sectionId == id.value) await _deleteStep(changes, step.id);
+        }
+        await _deleteStepSection(changes, id.value);
+      });
+
+  @override
+  Future<void> deleteStep(RecipeStepId id) =>
+      recorder.write((changes) => _deleteStep(changes, id.value));
+
+  // One entity at a time, inside a write.
+
+  Future<void> _saveRecipe(ChangeSet changes, Recipe recipe) async {
+    final before = await _dao.recipe(recipe.id.value).getSingleOrNull();
+    changes.setChanged(_recipes, recipe, before: before?.toEntity());
+    await _dao.upsert(_dao.recipes, recipe.toCompanion());
+  }
+
+  Future<void> _saveIngredientSection(
+    ChangeSet changes,
+    IngredientSection section,
+  ) async {
+    final before = await _dao
+        .ingredientSection(section.id.value)
+        .getSingleOrNull();
+    changes.setChanged(
+      _ingredientSections,
+      section,
+      before: before?.toEntity(),
+    );
+    await _dao.upsert(_dao.ingredientSections, section.toCompanion());
+  }
+
+  Future<void> _saveIngredientLine(
+    ChangeSet changes,
+    IngredientLine line,
+  ) async {
+    final before = await _dao.ingredientLine(line.id.value).getSingleOrNull();
+    changes.setChanged(_ingredientLines, line, before: before?.toEntity());
+    await _dao.upsert(_dao.ingredientLines, line.toCompanion());
+  }
+
+  Future<void> _saveStepSection(ChangeSet changes, StepSection section) async {
+    final before = await _dao.stepSection(section.id.value).getSingleOrNull();
+    changes.setChanged(_stepSections, section, before: before?.toEntity());
+    await _dao.upsert(_dao.stepSections, section.toCompanion());
+  }
+
+  Future<void> _saveStep(ChangeSet changes, RecipeStep step) async {
+    final before = await _dao.step(step.id.value).getSingleOrNull();
+    changes.setChanged(_steps, step, before: before?.toEntity());
+    await _dao.upsert(_dao.recipeSteps, step.toCompanion());
+  }
+
+  Future<void> _deleteIngredientSection(ChangeSet changes, String id) async {
+    await _dao.deleteIngredientSection(id);
+    changes.delete(_ingredientSections.entity, id);
+  }
+
+  Future<void> _deleteIngredientLine(ChangeSet changes, String id) async {
+    await _dao.deleteIngredientLine(id);
+    changes.delete(_ingredientLines.entity, id);
+  }
+
+  Future<void> _deleteStepSection(ChangeSet changes, String id) async {
+    await _dao.deleteStepSection(id);
+    changes.delete(_stepSections.entity, id);
+  }
+
+  Future<void> _deleteStep(ChangeSet changes, String id) async {
+    await _dao.deleteStep(id);
+    changes.delete(_steps.entity, id);
+  }
+
+  static bool _listEquals<T>(List<T> a, List<T> b) =>
+      const ListEquality<Object?>().equals(a, b);
+}

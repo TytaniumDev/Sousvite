@@ -10,6 +10,8 @@ mixin _$RecipeDaoMixin on DatabaseAccessor<AppDatabase> {
   $IngredientLinesTable get ingredientLines => attachedDatabase.ingredientLines;
   $StepSectionsTable get stepSections => attachedDatabase.stepSections;
   $RecipeStepsTable get recipeSteps => attachedDatabase.recipeSteps;
+  $FoldersTable get folders => attachedDatabase.folders;
+  $FolderEntriesTable get folderEntries => attachedDatabase.folderEntries;
   RecipeDaoManager get managers => RecipeDaoManager(this);
 }
 
@@ -32,4 +34,8 @@ class RecipeDaoManager {
       $$StepSectionsTableTableManager(_db.attachedDatabase, _db.stepSections);
   $$RecipeStepsTableTableManager get recipeSteps =>
       $$RecipeStepsTableTableManager(_db.attachedDatabase, _db.recipeSteps);
+  $$FoldersTableTableManager get folders =>
+      $$FoldersTableTableManager(_db.attachedDatabase, _db.folders);
+  $$FolderEntriesTableTableManager get folderEntries =>
+      $$FolderEntriesTableTableManager(_db.attachedDatabase, _db.folderEntries);
 }
