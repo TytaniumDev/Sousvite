@@ -131,6 +131,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library_addRecipe => 'Add recipe';
 
   @override
+  String get library_importRecipe => 'Import from a link';
+
+  @override
+  String get library_writeRecipe => 'Write a recipe';
+
+  @override
   String get library_emptyTitle => 'No recipes yet';
 
   @override
@@ -279,6 +285,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editor_title => 'Edit recipe';
+
+  @override
+  String get editor_newTitle => 'New recipe';
+
+  @override
+  String get editor_save => 'Save';
+
+  @override
+  String get editor_nameRequired => 'Give the recipe a name first';
+
+  @override
+  String get editor_name => 'Recipe name';
+
+  @override
+  String get editor_servings => 'Servings';
+
+  @override
+  String get editor_totalMinutes => 'Total time in minutes';
+
+  @override
+  String editor_importedFrom(String source) {
+    return 'Imported from $source. Check the ingredients and steps, then save.';
+  }
+
+  @override
+  String get editor_ingredients => 'Ingredients';
+
+  @override
+  String get editor_ingredientHint => '1 ½ cups rolled oats';
+
+  @override
+  String get editor_addIngredient => 'Add ingredient';
+
+  @override
+  String get editor_removeIngredient => 'Remove ingredient';
+
+  @override
+  String get editor_addSection => 'Add section';
+
+  @override
+  String get editor_sectionName => 'Section name';
+
+  @override
+  String get editor_removeSection => 'Remove section';
+
+  @override
+  String editor_reorderSection(String section) {
+    return 'Reorder $section';
+  }
+
+  @override
+  String get editor_amount => 'Amount';
+
+  @override
+  String get editor_ingredient => 'Ingredient';
+
+  @override
+  String get editor_preparation => 'Preparation';
+
+  @override
+  String get editor_steps => 'Steps';
+
+  @override
+  String get editor_stepHint => 'Describe this step';
+
+  @override
+  String get editor_addStep => 'Add step';
+
+  @override
+  String get editor_removeStep => 'Remove step';
+
+  @override
+  String get editor_notes => 'Notes';
+
+  @override
+  String get editor_moreOptions => 'More options';
+
+  @override
+  String get editor_duplicate => 'Duplicate';
+
+  @override
+  String editor_copyTitle(String title) {
+    return '$title (copy)';
+  }
+
+  @override
+  String get editor_delete => 'Delete recipe';
+
+  @override
+  String get editor_deleted => 'Recipe deleted';
+
+  @override
+  String get editor_undo => 'Undo';
+
+  @override
+  String get editor_discardTitle => 'Discard changes?';
+
+  @override
+  String get editor_discardMessage =>
+      'Your changes to this recipe haven\'t been saved.';
+
+  @override
+  String get editor_discard => 'Discard';
+
+  @override
+  String get editor_keepEditing => 'Keep editing';
 
   @override
   String get import_title => 'Import recipe';

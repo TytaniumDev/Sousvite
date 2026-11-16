@@ -1,8 +1,12 @@
 import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/providers/repositories.dart';
+import 'package:sousvite/features/editor/editor.dart';
+import 'package:sousvite/features/import/import.dart';
+import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/features/library/presentation/folder_chips.dart';
 import 'package:sousvite/features/library/presentation/library_recipe_card.dart';
 import 'package:sousvite/features/library/presentation/library_screen.dart';
@@ -245,6 +249,46 @@ void main() {
       final first = tester.getTopLeft(find.byType(RecipeCard).first);
       final second = tester.getTopLeft(find.byType(RecipeCard).last);
       expect(first.dy, second.dy);
+    });
+
+    testWidgets('the add button opens import or a new recipe', (tester) async {
+      final router = GoRouter(
+        initialLocation: LibraryRoutes.path,
+        routes: [
+          ...LibraryRoutes.routes,
+          GoRoute(
+            path: ImportRoutes.path,
+            builder: (_, _) => const Text('Import'),
+          ),
+          GoRoute(
+            path: EditorRoutes.path,
+            builder: (_, _) => const Text('Editor'),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpRouterApp(
+        router,
+        overrides: [
+          recipeRepositoryProvider.overrideWithValue(recipes),
+          folderRepositoryProvider.overrideWithValue(folders),
+        ],
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(AddRecipeButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Write a recipe'));
+      await tester.pumpAndSettle();
+      expect(find.text('Editor'), findsOneWidget);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(AddRecipeButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Import from a link'));
+      await tester.pumpAndSettle();
+      expect(find.text('Import'), findsOneWidget);
     });
   });
 }
