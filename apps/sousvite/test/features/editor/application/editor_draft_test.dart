@@ -1,11 +1,9 @@
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ingredient_parser/ingredient_parser.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/application/editor_outline.dart';
-import 'package:sousvite/features/editor/application/ingredient_line_parser.dart';
 import 'package:sousvite/features/editor/application/recipe_copies.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
@@ -146,18 +144,12 @@ void main() {
     },
   );
 
-  group('ParsedLineParts', () {
-    const parse = parseIngredientLine;
-
-    test('keeps the size in the name, but not the count word', () {
-      expect(parse('1 large egg').storedName, 'large egg');
-      expect(parse('3 cloves garlic').storedName, 'garlic');
-    });
-
-    test('keeps the whole text when there is no name', () {
-      expect(parse('For the sauce:').storedName, 'sauce');
-      expect(parse('   ').storedName, isNull);
-    });
+  test('keeps a size in the name', () async {
+    (await load()).setLineText(flour, '1 large egg');
+    expect(
+      container.read(editorLineProvider(recipeId, flour))?.name,
+      'large egg',
+    );
   });
 
   test('adds, renames, and removes ingredient sections', () async {

@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ingredient_parser/ingredient_parser.dart';
+import 'package:recipe_import/recipe_import.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/editor/application/ingredient_line_parser.dart';
@@ -97,19 +98,13 @@ class EditorDraft() extends _$EditorDraft {
     );
   }
 
+  /// [line] with [text] and the parts the parser read in it, filled in
+  /// the same way as imported lines.
   static IngredientLine _withParsed(
     IngredientLine line,
     String text,
     ParsedLine parsed,
-  ) => line.copyWith(
-    rawText: text,
-    quantity: parsed.quantity,
-    quantityMax: parsed.quantityMax,
-    unit: parsed.unit,
-    countWord: parsed.countWord,
-    name: parsed.storedName,
-    preparation: parsed.preparation,
-  );
+  ) => withParsedParts(line.copyWith(rawText: text), parsed);
 
   /// Adds lines for [texts] after [afterLineId] in its section, or at the
   /// end of [sectionId]. Pasting several lines adds one line each, and a
