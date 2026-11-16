@@ -319,7 +319,7 @@ final class LineAmountProvider
   }
 }
 
-String _$lineAmountHash() => r'81e58aa0955ec6448ba7464f28fb29936236da90';
+String _$lineAmountHash() => r'6f08e8ba241f38b80c57674bdcb12f1cdc5b4be0';
 
 /// One line's amount at the current scale, in this recipe's unit system
 /// (PRD 7.6). Null while loading, once the line is gone, or when the line

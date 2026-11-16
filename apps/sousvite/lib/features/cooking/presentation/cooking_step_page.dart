@@ -6,8 +6,11 @@ import 'package:measuring/measuring.dart';
 import 'package:sousvite/features/cooking/application/checked_ingredients.dart';
 import 'package:sousvite/features/cooking/application/cooking_timers.dart';
 import 'package:sousvite/features/cooking/application/step_ingredients.dart';
+import 'package:sousvite/features/cooking/application/step_parts.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
+import 'package:sousvite/features/settings/settings.dart';
 import 'package:sousvite/l10n/l10n.dart';
+import 'package:sousvite/shared/units/unit_words.dart';
 
 /// One step: its text, its timers, and the ingredients it uses. On medium
 /// and expanded windows in landscape the ingredients sit in a side pane
@@ -27,6 +30,8 @@ class const CookingStepPage({
         MediaQuery.orientationOf(context) == .landscape;
     final step = [
       CookingStepText(recipeId: recipeId, stepId: stepId),
+      const SizedBox(height: AppSpacing.space4),
+      StepMeasuringGuides(recipeId: recipeId, stepId: stepId),
       const SizedBox(height: AppSpacing.space4),
       StepTimers(recipeId: recipeId, stepId: stepId),
     ];
@@ -56,8 +61,9 @@ class const CookingStepPage({
   }
 }
 
-/// The step's words in the large cooking style. Read out when the step
-/// changes.
+/// The step's words in the large cooking style, with each ingredient's
+/// amount placed inline, scaled and converted like the ingredient list.
+/// Read out when the step changes.
 class const CookingStepText({
   /// The recipe being cooked.
   required final RecipeId recipeId,
@@ -68,18 +74,134 @@ class const CookingStepText({
 }) extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final text = ref.watch(
-      recipeStepProvider(recipeId, stepId).select((step) => step?.text ?? ''),
-    );
+    final parts = ref.watch(stepPartsProvider(recipeId, stepId));
+    final factor = ref.watch(recipeScaleProvider(recipeId));
+    final system = ref.watch(recipeUnitSystemProvider(recipeId));
+    final l10n = context.l10n;
+
+    StepAmountSegment inline(Amount written) {
+      final shown = shownAmount(written, factor: factor, system: system);
+      return StepAmountSegment(
+        quantity: shown.quantity,
+        unit: l10n.unitWord(shown.unit, shown.quantity),
+      );
+    }
+
+    final segments = <StepSegment>[
+      for (final part in parts)
+        ...switch (part) {
+          StepWords(:final text) => [StepTextSegment(text)],
+          StepMention(:final amount, :final amountMax, :final name) => [
+            if (amountMax == null)
+              inline(amount)
+            else ...[
+              inline(Amount(amount.quantity, null)),
+              const StepTextSegment('–'),
+              inline(Amount(amountMax, amount.unit)),
+            ],
+            StepTextSegment(' $name'),
+          ],
+        },
+    ];
     final large = WindowSizeClass.of(context) != .compact;
     final styles = context.appText;
     return Semantics(
       liveRegion: true,
       child: StepText(
-        segments: [StepTextSegment(text)],
+        segments: segments,
         style: large ? styles.cookingStepLarge : styles.cookingStep,
         amountStyle: large ? styles.cookingAmountLarge : styles.cookingAmount,
       ),
+    );
+  }
+}
+
+/// Which of your cups and spoons measure each amount in the step:
+/// "¾ cup flour: ½ cup + ¼ cup" (DESIGN_SYSTEM.md §10.3).
+class const StepMeasuringGuides({
+  /// The recipe being cooked.
+  required final RecipeId recipeId,
+
+  /// The step whose amounts these are.
+  required final RecipeStepId stepId,
+  super.key,
+}) extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mentions = ref
+        .watch(stepPartsProvider(recipeId, stepId))
+        .mentions
+        .toList();
+    final owned = ref.watch(ownedMeasuringToolsProvider).value;
+    if (mentions.isEmpty || owned == null) return const SizedBox.shrink();
+    final factor = ref.watch(recipeScaleProvider(recipeId));
+    final system = ref.watch(recipeUnitSystemProvider(recipeId));
+    final tools = [for (final tool in owned) Amount(tool.capacity, tool.unit)];
+    return Column(
+      crossAxisAlignment: .start,
+      spacing: AppSpacing.space3,
+      children: [
+        for (final mention in mentions)
+          if (_plan(
+                shownAmount(mention.amount, factor: factor, system: system),
+                tools,
+              )
+              case final plan?)
+            _MeasuringGuideRow(
+              amount: shownAmount(
+                mention.amount,
+                factor: factor,
+                system: system,
+              ),
+              name: mention.name,
+              plan: plan,
+            ),
+      ],
+    );
+  }
+
+  /// The tools for [amount], or null when it can't be measured with cups
+  /// and spoons or is exactly one tool already.
+  static List<ToolUse>? _plan(Amount amount, List<Amount> tools) {
+    final plan = decompose(amount, tools: tools);
+    if (plan == null) return null;
+    if (plan case [ToolUse(count: 1, :final tool)] when tool == amount) {
+      return null;
+    }
+    return plan;
+  }
+}
+
+class const _MeasuringGuideRow({
+  required final Amount amount,
+  required final String name,
+  required final List<ToolUse> plan,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final style = context.appText.cookingIngredient;
+    final unit = l10n.unitWord(amount.unit, amount.quantity);
+    return Column(
+      crossAxisAlignment: .start,
+      spacing: AppSpacing.space1,
+      children: [
+        Text(
+          '${AmountText.textFor(amount.quantity, unit)} $name',
+          style: style,
+        ),
+        MeasuringGuide(
+          style: style,
+          tools: [
+            for (final use in plan)
+              for (var i = 0; i < use.count; i++)
+                (
+                  quantity: use.tool.quantity,
+                  unit: l10n.unitWord(use.tool.unit, use.tool.quantity) ?? '',
+                ),
+          ],
+        ),
+      ],
     );
   }
 }

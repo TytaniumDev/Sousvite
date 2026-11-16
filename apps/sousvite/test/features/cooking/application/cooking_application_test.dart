@@ -23,8 +23,18 @@ void main() {
       ..seed(
         recipe: RecipeFixtures.recipe(),
         lines: [
-          RecipeFixtures.line('flour', name: 'Flour'),
-          RecipeFixtures.line('milk', name: 'milk'),
+          RecipeFixtures.line(
+            'flour',
+            quantity: Quantity(2),
+            unit: Unit.cup,
+            name: 'flour',
+          ),
+          RecipeFixtures.line(
+            'milk',
+            quantity: Quantity.one,
+            unit: Unit.cup,
+            name: 'milk',
+          ),
           RecipeFixtures.line('note', rawText: 'Salt to taste'),
         ],
         stepSections: [RecipeFixtures.stepSection('prep', name: 'Prep')],
@@ -85,7 +95,7 @@ void main() {
     );
   });
 
-  test('a step uses the lines it names', () async {
+  test('a step uses the lines whose amounts it places', () async {
     container
       ..listen(
         stepIngredientIdsProvider(recipeId, const RecipeStepId('whisk')),
