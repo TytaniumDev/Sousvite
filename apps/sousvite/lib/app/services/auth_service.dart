@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/services/firebase.dart';
 import 'package:sousvite/app/services/firebase_auth_service.dart';
+import 'package:sousvite/firebase_options.dart';
 
 part 'auth_service.g.dart';
 
@@ -108,6 +109,7 @@ AuthService authService(Ref ref) {
     functions: FirebaseFunctions.instanceFor(app: app, region: 'us-central1'),
     google: GoogleSignIn.instance,
     googleClientId: app.options.iosClientId,
+    googleServerClientId: DefaultFirebaseOptions.googleServerClientId,
     isWeb: kIsWeb,
     platform: defaultTargetPlatform,
   );

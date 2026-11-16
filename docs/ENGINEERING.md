@@ -249,7 +249,7 @@ Because both carry the same change log, **switching transports** means replaying
 | Cloud Functions | Fetch proxy for web URL import, USDA API proxy (hides the API key), send-a-copy, share links, subscription webhooks |
 | Cloud Storage | Recipe photos for Pro users and shares |
 | Hosting | Flutter web app and view-only recipe pages |
-| App Check | Limits the proxies to our apps |
+| App Check | Limits the proxies to our apps. Release builds attest with App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web); debug builds use the debug provider (`lib/app/services/app_check.dart`) |
 
 - **Security rules** are the access boundary. They're written alongside the schema and tested with the Firestore emulator.
 - **Functions toolchain** *(Default)*: TypeScript on Node.js 24 (the newest Cloud Functions runtime), ES modules, `firebase-functions` v2 APIs, region `us-central1` (next to Cloud Storage) with a `maxInstances` cap set globally in `functions/src/index.ts`. Each function is a folder under `functions/src/<name>/`, exported from `index.ts` with one line. Tests mirror `src/` under `functions/test/` and use Vitest with a 90% coverage gate; rules tests live in `functions/test/rules/` and use `@firebase/rules-unit-testing`. Lints follow the Dart side's approach (§16): ESLint with `typescript-eslint`'s strict type-checked rules, snake_case file names, sorted imports, and Prettier formatting with single quotes. TypeScript stays on 6.0 until `typescript-eslint` supports 7.
