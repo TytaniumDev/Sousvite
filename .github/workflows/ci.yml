@@ -78,6 +78,8 @@ jobs:
             min_coverage: 90
           - package: packages/domain
             min_coverage: 90
+          - package: packages/ingredient_parser
+            min_coverage: 90
           - package: packages/measuring
             min_coverage: 90
           - package: packages/nutrition
