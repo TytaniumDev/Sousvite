@@ -9,12 +9,21 @@ import 'package:sousvite/shared/units/unit_words.dart';
 
 /// One ingredient line, scaled and in the chosen units. Rebuilds only
 /// when this line or its shown amount changes.
+///
+/// Cooking mode sets [onChanged] to check lines off.
 class const RecipeIngredientRow({
   /// The recipe the line belongs to.
   required final RecipeId recipeId,
 
   /// The line to show.
   required final IngredientLineId lineId,
+
+  /// Whether the line is checked off. Shown when [onChanged] is set.
+  final bool checked = false,
+
+  /// Called with the new value when the row is tapped. Null for a
+  /// read-only row.
+  final ValueChanged<bool>? onChanged,
   super.key,
 }) extends ConsumerWidget {
   @override
@@ -48,6 +57,8 @@ class const RecipeIngredientRow({
       return IngredientRow(
         name: '$from–$to ${text.name}',
         preparation: text.preparation,
+        checked: checked,
+        onChanged: onChanged,
       );
     }
     return IngredientRow(
@@ -55,6 +66,8 @@ class const RecipeIngredientRow({
       quantity: amount?.quantity,
       unit: amount == null ? null : l10n.unitWord(amount.unit, amount.quantity),
       preparation: text.preparation,
+      checked: checked,
+      onChanged: onChanged,
     );
   }
 }
