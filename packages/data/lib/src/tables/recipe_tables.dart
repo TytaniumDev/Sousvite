@@ -53,6 +53,7 @@ class IngredientLines() extends Table {
   IntColumn get quantityMaxNumerator => integer().nullable()();
   IntColumn get quantityMaxDenominator => integer().nullable()();
   TextColumn get unit => textEnum<Unit>().nullable()();
+  TextColumn get countWord => text().nullable()();
   TextColumn get name => text().nullable()();
   TextColumn get preparation => text().nullable()();
 

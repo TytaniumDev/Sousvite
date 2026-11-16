@@ -95,10 +95,11 @@ jobs:
       working_directory: ${{ matrix.package }}
       flutter_version_file: .fvmrc
       min_coverage: ${{ matrix.min_coverage }}
-      # Generated code is excluded, and so are Drift table classes: they are
-      # declarations that never run, covered by the schema snapshot check.
+      # Generated code (including Drift migration steps) is excluded, and so
+      # are Drift table classes: they are declarations that never run,
+      # covered by the schema snapshot check.
       coverage_excludes: >-
-        **/*.g.dart **/*.freezed.dart lib/src/tables/** lib/l10n/gen/**
+        **/*.g.dart **/*.freezed.dart **/*.steps.dart lib/src/tables/** lib/l10n/gen/**
 
   # The web build catches problems that tests can't, such as a dependency
   # that doesn't compile for the web.

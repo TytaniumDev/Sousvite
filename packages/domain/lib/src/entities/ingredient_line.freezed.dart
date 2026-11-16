@@ -16,7 +16,11 @@ T _$identity<T>(T value) => value;
 mixin _$IngredientLine {
 
  IngredientLineId get id; RecipeId get recipeId; String get rawText; SortKey get sortKey; IngredientSectionId? get sectionId; Quantity? get quantity;/// The upper end of a range such as "2–3". Null when not a range.
- Quantity? get quantityMax; Unit? get unit; String? get name; String? get preparation;
+ Quantity? get quantityMax; Unit? get unit;/// A count word used as the unit when [unit] has none, singular and
+/// lowercase: "clove" in "3 cloves garlic", "can" in "1 can beans".
+/// Kept as text so any word works (ENGINEERING.md §12). Null when
+/// [unit] is set or the line has neither.
+ String? get countWord; String? get name; String? get preparation;
 /// Create a copy of IngredientLine
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +32,20 @@ $IngredientLineCopyWith<IngredientLine> get copyWith => _$IngredientLineCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as IngredientLine;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngredientLine&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.recipeId, _this.recipeId) || other.recipeId == _this.recipeId)&&(identical(other.rawText, _this.rawText) || other.rawText == _this.rawText)&&(identical(other.sortKey, _this.sortKey) || other.sortKey == _this.sortKey)&&(identical(other.sectionId, _this.sectionId) || other.sectionId == _this.sectionId)&&(identical(other.quantity, _this.quantity) || other.quantity == _this.quantity)&&(identical(other.quantityMax, _this.quantityMax) || other.quantityMax == _this.quantityMax)&&(identical(other.unit, _this.unit) || other.unit == _this.unit)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.preparation, _this.preparation) || other.preparation == _this.preparation));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngredientLine&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.recipeId, _this.recipeId) || other.recipeId == _this.recipeId)&&(identical(other.rawText, _this.rawText) || other.rawText == _this.rawText)&&(identical(other.sortKey, _this.sortKey) || other.sortKey == _this.sortKey)&&(identical(other.sectionId, _this.sectionId) || other.sectionId == _this.sectionId)&&(identical(other.quantity, _this.quantity) || other.quantity == _this.quantity)&&(identical(other.quantityMax, _this.quantityMax) || other.quantityMax == _this.quantityMax)&&(identical(other.unit, _this.unit) || other.unit == _this.unit)&&(identical(other.countWord, _this.countWord) || other.countWord == _this.countWord)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.preparation, _this.preparation) || other.preparation == _this.preparation));
 }
 
 
 @override
 int get hashCode {
   final _this = this as IngredientLine;
-  return Object.hash(runtimeType,_this.id,_this.recipeId,_this.rawText,_this.sortKey,_this.sectionId,_this.quantity,_this.quantityMax,_this.unit,_this.name,_this.preparation);
+  return Object.hash(runtimeType,_this.id,_this.recipeId,_this.rawText,_this.sortKey,_this.sectionId,_this.quantity,_this.quantityMax,_this.unit,_this.countWord,_this.name,_this.preparation);
 }
 
 @override
 String toString() {
   final _this = this as IngredientLine;
-  return 'IngredientLine(id: ${_this.id}, recipeId: ${_this.recipeId}, rawText: ${_this.rawText}, sortKey: ${_this.sortKey}, sectionId: ${_this.sectionId}, quantity: ${_this.quantity}, quantityMax: ${_this.quantityMax}, unit: ${_this.unit}, name: ${_this.name}, preparation: ${_this.preparation})';
+  return 'IngredientLine(id: ${_this.id}, recipeId: ${_this.recipeId}, rawText: ${_this.rawText}, sortKey: ${_this.sortKey}, sectionId: ${_this.sectionId}, quantity: ${_this.quantity}, quantityMax: ${_this.quantityMax}, unit: ${_this.unit}, countWord: ${_this.countWord}, name: ${_this.name}, preparation: ${_this.preparation})';
 }
 
 
@@ -52,7 +56,7 @@ abstract mixin class $IngredientLineCopyWith<$Res>  {
   factory $IngredientLineCopyWith(IngredientLine value, $Res Function(IngredientLine) _then) = _$IngredientLineCopyWithImpl;
 @useResult
 $Res call({
- IngredientLineId id, RecipeId recipeId, String rawText, SortKey sortKey, IngredientSectionId? sectionId, Quantity? quantity, Quantity? quantityMax, Unit? unit, String? name, String? preparation
+ IngredientLineId id, RecipeId recipeId, String rawText, SortKey sortKey, IngredientSectionId? sectionId, Quantity? quantity, Quantity? quantityMax, Unit? unit, String? countWord, String? name, String? preparation
 });
 
 
@@ -69,7 +73,7 @@ class _$IngredientLineCopyWithImpl<$Res>
 
 /// Create a copy of IngredientLine
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? recipeId = null,Object? rawText = null,Object? sortKey = null,Object? sectionId = freezed,Object? quantity = freezed,Object? quantityMax = freezed,Object? unit = freezed,Object? name = freezed,Object? preparation = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? recipeId = null,Object? rawText = null,Object? sortKey = null,Object? sectionId = freezed,Object? quantity = freezed,Object? quantityMax = freezed,Object? unit = freezed,Object? countWord = freezed,Object? name = freezed,Object? preparation = freezed,}) {
   return _then(IngredientLine(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as IngredientLineId,recipeId: null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
@@ -79,7 +83,8 @@ as SortKey,sectionId: freezed == sectionId ? _self.sectionId : sectionId // igno
 as IngredientSectionId?,quantity: freezed == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as Quantity?,quantityMax: freezed == quantityMax ? _self.quantityMax : quantityMax // ignore: cast_nullable_to_non_nullable
 as Quantity?,unit: freezed == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as Unit?,countWord: freezed == countWord ? _self.countWord : countWord // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,preparation: freezed == preparation ? _self.preparation : preparation // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -166,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IngredientLineId id,  RecipeId recipeId,  String rawText,  SortKey sortKey,  IngredientSectionId? sectionId,  Quantity? quantity,  Quantity? quantityMax,  Unit? unit,  String? name,  String? preparation)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IngredientLineId id,  RecipeId recipeId,  String rawText,  SortKey sortKey,  IngredientSectionId? sectionId,  Quantity? quantity,  Quantity? quantityMax,  Unit? unit,  String? countWord,  String? name,  String? preparation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _IngredientLine() when $default != null:
-return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectionId,_that.quantity,_that.quantityMax,_that.unit,_that.name,_that.preparation);case _:
+return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectionId,_that.quantity,_that.quantityMax,_that.unit,_that.countWord,_that.name,_that.preparation);case _:
   return orElse();
 
 }
@@ -187,10 +192,10 @@ return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectio
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IngredientLineId id,  RecipeId recipeId,  String rawText,  SortKey sortKey,  IngredientSectionId? sectionId,  Quantity? quantity,  Quantity? quantityMax,  Unit? unit,  String? name,  String? preparation)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IngredientLineId id,  RecipeId recipeId,  String rawText,  SortKey sortKey,  IngredientSectionId? sectionId,  Quantity? quantity,  Quantity? quantityMax,  Unit? unit,  String? countWord,  String? name,  String? preparation)  $default,) {final _that = this;
 switch (_that) {
 case _IngredientLine():
-return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectionId,_that.quantity,_that.quantityMax,_that.unit,_that.name,_that.preparation);case _:
+return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectionId,_that.quantity,_that.quantityMax,_that.unit,_that.countWord,_that.name,_that.preparation);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +212,10 @@ return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectio
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IngredientLineId id,  RecipeId recipeId,  String rawText,  SortKey sortKey,  IngredientSectionId? sectionId,  Quantity? quantity,  Quantity? quantityMax,  Unit? unit,  String? name,  String? preparation)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IngredientLineId id,  RecipeId recipeId,  String rawText,  SortKey sortKey,  IngredientSectionId? sectionId,  Quantity? quantity,  Quantity? quantityMax,  Unit? unit,  String? countWord,  String? name,  String? preparation)?  $default,) {final _that = this;
 switch (_that) {
 case _IngredientLine() when $default != null:
-return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectionId,_that.quantity,_that.quantityMax,_that.unit,_that.name,_that.preparation);case _:
+return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectionId,_that.quantity,_that.quantityMax,_that.unit,_that.countWord,_that.name,_that.preparation);case _:
   return null;
 
 }
@@ -222,7 +227,7 @@ return $default(_that.id,_that.recipeId,_that.rawText,_that.sortKey,_that.sectio
 
 
 class _IngredientLine implements IngredientLine {
-  const _IngredientLine({required this.id, required this.recipeId, required this.rawText, required this.sortKey, this.sectionId, this.quantity, this.quantityMax, this.unit, this.name, this.preparation});
+  const _IngredientLine({required this.id, required this.recipeId, required this.rawText, required this.sortKey, this.sectionId, this.quantity, this.quantityMax, this.unit, this.countWord, this.name, this.preparation});
   
 
 @override final  IngredientLineId id;
@@ -234,6 +239,11 @@ class _IngredientLine implements IngredientLine {
 /// The upper end of a range such as "2–3". Null when not a range.
 @override final  Quantity? quantityMax;
 @override final  Unit? unit;
+/// A count word used as the unit when [unit] has none, singular and
+/// lowercase: "clove" in "3 cloves garlic", "can" in "1 can beans".
+/// Kept as text so any word works (ENGINEERING.md §12). Null when
+/// [unit] is set or the line has neither.
+@override final  String? countWord;
 @override final  String? name;
 @override final  String? preparation;
 
@@ -247,18 +257,18 @@ _$IngredientLineCopyWith<_IngredientLine> get copyWith => __$IngredientLineCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngredientLine&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.rawText, rawText) || other.rawText == rawText)&&(identical(other.sortKey, sortKey) || other.sortKey == sortKey)&&(identical(other.sectionId, sectionId) || other.sectionId == sectionId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.quantityMax, quantityMax) || other.quantityMax == quantityMax)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.name, name) || other.name == name)&&(identical(other.preparation, preparation) || other.preparation == preparation));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngredientLine&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.rawText, rawText) || other.rawText == rawText)&&(identical(other.sortKey, sortKey) || other.sortKey == sortKey)&&(identical(other.sectionId, sectionId) || other.sectionId == sectionId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.quantityMax, quantityMax) || other.quantityMax == quantityMax)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.countWord, countWord) || other.countWord == countWord)&&(identical(other.name, name) || other.name == name)&&(identical(other.preparation, preparation) || other.preparation == preparation));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,recipeId,rawText,sortKey,sectionId,quantity,quantityMax,unit,name,preparation);
+    return Object.hash(runtimeType,id,recipeId,rawText,sortKey,sectionId,quantity,quantityMax,unit,countWord,name,preparation);
 }
 
 @override
 String toString() {
-    return 'IngredientLine(id: $id, recipeId: $recipeId, rawText: $rawText, sortKey: $sortKey, sectionId: $sectionId, quantity: $quantity, quantityMax: $quantityMax, unit: $unit, name: $name, preparation: $preparation)';
+    return 'IngredientLine(id: $id, recipeId: $recipeId, rawText: $rawText, sortKey: $sortKey, sectionId: $sectionId, quantity: $quantity, quantityMax: $quantityMax, unit: $unit, countWord: $countWord, name: $name, preparation: $preparation)';
 }
 
 
@@ -269,7 +279,7 @@ abstract mixin class _$IngredientLineCopyWith<$Res> implements $IngredientLineCo
   factory _$IngredientLineCopyWith(_IngredientLine value, $Res Function(_IngredientLine) _then) = __$IngredientLineCopyWithImpl;
 @override @useResult
 $Res call({
- IngredientLineId id, RecipeId recipeId, String rawText, SortKey sortKey, IngredientSectionId? sectionId, Quantity? quantity, Quantity? quantityMax, Unit? unit, String? name, String? preparation
+ IngredientLineId id, RecipeId recipeId, String rawText, SortKey sortKey, IngredientSectionId? sectionId, Quantity? quantity, Quantity? quantityMax, Unit? unit, String? countWord, String? name, String? preparation
 });
 
 
@@ -286,7 +296,7 @@ class __$IngredientLineCopyWithImpl<$Res>
 
 /// Create a copy of IngredientLine
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? recipeId = null,Object? rawText = null,Object? sortKey = null,Object? sectionId = freezed,Object? quantity = freezed,Object? quantityMax = freezed,Object? unit = freezed,Object? name = freezed,Object? preparation = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? recipeId = null,Object? rawText = null,Object? sortKey = null,Object? sectionId = freezed,Object? quantity = freezed,Object? quantityMax = freezed,Object? unit = freezed,Object? countWord = freezed,Object? name = freezed,Object? preparation = freezed,}) {
   return _then(_IngredientLine(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as IngredientLineId,recipeId: null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
@@ -296,7 +306,8 @@ as SortKey,sectionId: freezed == sectionId ? _self.sectionId : sectionId // igno
 as IngredientSectionId?,quantity: freezed == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as Quantity?,quantityMax: freezed == quantityMax ? _self.quantityMax : quantityMax // ignore: cast_nullable_to_non_nullable
 as Quantity?,unit: freezed == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as Unit?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as Unit?,countWord: freezed == countWord ? _self.countWord : countWord // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,preparation: freezed == preparation ? _self.preparation : preparation // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
