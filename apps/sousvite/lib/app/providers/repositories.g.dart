@@ -147,7 +147,7 @@ final class FolderRepositoryProvider
   }
 }
 
-String _$folderRepositoryHash() => r'e3b95c295d64265da7a6af8b1f6890d820b76fe2';
+String _$folderRepositoryHash() => r'1917fd283236d45c8ca2425a7fa0221032d2fc42';
 
 @ProviderFor(foodRepository)
 final foodRepositoryProvider = FoodRepositoryProvider._();
@@ -283,7 +283,7 @@ final class GroceryRepositoryProvider
   }
 }
 
-String _$groceryRepositoryHash() => r'60b731b7d3595b92ec6a8baefb80affccc1ca65a';
+String _$groceryRepositoryHash() => r'2330bd65c9dbed13b72ceaf276ddfeb755232336';
 
 @ProviderFor(measuringToolRepository)
 final measuringToolRepositoryProvider = MeasuringToolRepositoryProvider._();
