@@ -113,7 +113,7 @@ functions/                 Firebase Cloud Functions (TypeScript)
 Rules:
 
 - `units` depends on nothing in the repo. It is the shared vocabulary for amounts, so the UI and the domain use the same `Quantity` type *(Decided: Tyler, 2026-11-14)*.
-- `domain` depends only on `units`, and re-exports it, so `package:domain/domain.dart` still gives every unit type. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain`.
+- `domain` depends only on `units`, and re-exports it, so `package:domain/domain.dart` still gives every unit type. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain` within the repo. Outside it they take pure Dart libraries only, and only when the alternative is writing a parser by hand: `recipe_import` uses `package:html` to read recipe pages. Anything that does I/O (HTTP, files) is passed in as a function, so the packages stay testable without a network.
 - `design_system` may depend on `units` (never on `domain`), so widgets such as `AmountText` take a `Quantity` directly.
 - `sync` depends only on `domain` and never on Drift. `data` depends on `sync` for the change model and clock (its `ChangeRecorder` writes the change log), and implements the local store the sync engine defines, so the engine is tested without a database.
 - Only `apps/sousvite` depends on Flutter, except for `design_system`.
