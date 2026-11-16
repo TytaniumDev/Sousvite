@@ -5,8 +5,10 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
 import 'package:sousvite/features/import/application/url_import.dart';
+import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/page_url_importer.dart';
 
+import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../fakes.dart';
@@ -80,8 +82,21 @@ void main() {
       expect(container.read(urlImporterProvider), isA<PageUrlImporter>());
     });
 
-    test('stand-ins say they are not available', () async {
-      final container = ProviderContainer.test();
+    test('move the library through the file picker for Umami', () {
+      final container = ProviderContainer.test(
+        overrides: [
+          recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
+          folderRepositoryProvider.overrideWithValue(FakeFolderRepository()),
+        ],
+      );
+
+      expect(
+        container.read(umamiTransferProvider),
+        isA<LibraryUmamiTransfer>(),
+      );
+    });
+
+    test('the web stand-in says it is not available', () async {
       await expectLater(
         const UnavailableUrlImporter().importUrl(Uri.parse('https://a.com')),
         throwsA(
@@ -94,9 +109,6 @@ void main() {
               .having((f) => f.site, 'site', 'a.com'),
         ),
       );
-      final umami = container.read(umamiTransferProvider);
-      await expectLater(umami.importLibrary(), throwsA(isA<ImportFailure>()));
-      await expectLater(umami.exportLibrary(), throwsA(isA<ImportFailure>()));
       expect(
         const ImportFailure(.noRecipe, site: 'a.com').toString(),
         contains('noRecipe'),

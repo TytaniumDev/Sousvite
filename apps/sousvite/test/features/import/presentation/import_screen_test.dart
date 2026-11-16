@@ -155,7 +155,10 @@ void main() {
       umami.outcome = () => throw const ImportFailure(.invalidFile);
       await tester.tap(find.text('Import from Umami'));
       await tester.pumpAndSettle();
-      expect(find.text("That file isn't an Umami export."), findsOneWidget);
+      expect(
+        find.textContaining("That file isn't an Umami HTML export."),
+        findsOneWidget,
+      );
 
       ScaffoldMessenger.of(tester.element(find.byType(ListView)))
           .removeCurrentSnackBar();

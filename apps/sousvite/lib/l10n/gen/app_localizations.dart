@@ -757,7 +757,7 @@ abstract class AppLocalizations {
   /// Shown when the picked file can't be read as an Umami export.
   ///
   /// In en, this message translates to:
-  /// **'That file isn\'t an Umami export.'**
+  /// **'That file isn\'t an Umami HTML export. In Umami, export your recipes as HTML, then pick the zip file.'**
   String get import_invalidFile;
 
   /// Shown while an importer is still being built.

@@ -228,7 +228,7 @@
   "@import_unreachable": {"description": "Shown when the site can't be reached.", "placeholders": {"site": {"type": "String", "example": "seriouseats.com"}}},
   "import_noRecipe": "Couldn't find a recipe on {site}. You can add it by hand instead.",
   "@import_noRecipe": {"description": "Shown when the page has no recipe the app can read.", "placeholders": {"site": {"type": "String", "example": "seriouseats.com"}}},
-  "import_invalidFile": "That file isn't an Umami export.",
+  "import_invalidFile": "That file isn't an Umami HTML export. In Umami, export your recipes as HTML, then pick the zip file.",
   "@import_invalidFile": {"description": "Shown when the picked file can't be read as an Umami export."},
   "import_notAvailable": "This kind of import isn't ready yet.",
   "@import_notAvailable": {"description": "Shown while an importer is still being built."},
