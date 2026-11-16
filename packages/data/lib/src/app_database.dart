@@ -1,3 +1,4 @@
+import 'package:data/src/app_database.steps.dart';
 import 'package:data/src/daos/folder_dao.dart';
 import 'package:data/src/daos/food_dao.dart';
 import 'package:data/src/daos/grocery_dao.dart';
@@ -61,9 +62,15 @@ class AppDatabase(super.e) extends _$AppDatabase {
   /// Bump this with every schema change, add the step to [migration], and
   /// run `dart run drift_dev make-migrations` to snapshot the new schema.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration =>
-      MigrationStrategy(onCreate: (m) => m.createAll());
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: stepByStep(
+      // v2: ingredient lines keep a count word ("clove") as text.
+      from1To2: (m, schema) =>
+          m.addColumn(schema.ingredientLines, schema.ingredientLines.countWord),
+    ),
+  );
 }

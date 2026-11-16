@@ -40,7 +40,7 @@ dart run build_runner build --workspace          # at the root, after changing f
 dart format lib test                             # in a package
 flutter analyze lib test                         # in a package
 very_good test --coverage --min-coverage 90 \
-  --exclude-coverage "**/*.g.dart **/*.freezed.dart lib/src/tables/** lib/l10n/gen/**"
+  --exclude-coverage "**/*.g.dart **/*.freezed.dart **/*.steps.dart lib/src/tables/** lib/l10n/gen/**"
                                                  # in a package; 70 for apps/sousvite
 ```
 

@@ -23,6 +23,12 @@ abstract class IngredientLine with _$IngredientLine {
     /// The upper end of a range such as "2–3". Null when not a range.
     Quantity? quantityMax,
     Unit? unit,
+
+    /// A count word used as the unit when [unit] has none, singular and
+    /// lowercase: "clove" in "3 cloves garlic", "can" in "1 can beans".
+    /// Kept as text so any word works (ENGINEERING.md §12). Null when
+    /// [unit] is set or the line has neither.
+    String? countWord,
     String? name,
     String? preparation,
   }) = _IngredientLine;

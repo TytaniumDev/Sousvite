@@ -1208,6 +1208,17 @@ class $IngredientLinesTable extends IngredientLines
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       ).withConverter<Unit?>($IngredientLinesTable.$converterunitn);
+  static const VerificationMeta _countWordMeta = const VerificationMeta(
+    'countWord',
+  );
+  @override
+  late final GeneratedColumn<String> countWord = GeneratedColumn<String>(
+    'count_word',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -1240,6 +1251,7 @@ class $IngredientLinesTable extends IngredientLines
     quantityMaxNumerator,
     quantityMaxDenominator,
     unit,
+    countWord,
     name,
     preparation,
   ];
@@ -1326,6 +1338,12 @@ class $IngredientLinesTable extends IngredientLines
         ),
       );
     }
+    if (data.containsKey('count_word')) {
+      context.handle(
+        _countWordMeta,
+        countWord.isAcceptableOrUnknown(data['count_word']!, _countWordMeta),
+      );
+    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -1392,6 +1410,10 @@ class $IngredientLinesTable extends IngredientLines
           data['${effectivePrefix}unit'],
         ),
       ),
+      countWord: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}count_word'],
+      ),
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -1426,6 +1448,7 @@ class IngredientLineRow extends DataClass
   final int? quantityMaxNumerator;
   final int? quantityMaxDenominator;
   final Unit? unit;
+  final String? countWord;
   final String? name;
   final String? preparation;
   const IngredientLineRow({
@@ -1439,6 +1462,7 @@ class IngredientLineRow extends DataClass
     this.quantityMaxNumerator,
     this.quantityMaxDenominator,
     this.unit,
+    this.countWord,
     this.name,
     this.preparation,
   });
@@ -1468,6 +1492,9 @@ class IngredientLineRow extends DataClass
       map['unit'] = Variable<String>(
         $IngredientLinesTable.$converterunitn.toSql(unit),
       );
+    }
+    if (!nullToAbsent || countWord != null) {
+      map['count_word'] = Variable<String>(countWord);
     }
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
@@ -1500,6 +1527,9 @@ class IngredientLineRow extends DataClass
           ? const Value.absent()
           : Value(quantityMaxDenominator),
       unit: unit == null && nullToAbsent ? const Value.absent() : Value(unit),
+      countWord: countWord == null && nullToAbsent
+          ? const Value.absent()
+          : Value(countWord),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       preparation: preparation == null && nullToAbsent
           ? const Value.absent()
@@ -1531,6 +1561,7 @@ class IngredientLineRow extends DataClass
       unit: $IngredientLinesTable.$converterunitn.fromJson(
         serializer.fromJson<String?>(json['unit']),
       ),
+      countWord: serializer.fromJson<String?>(json['countWord']),
       name: serializer.fromJson<String?>(json['name']),
       preparation: serializer.fromJson<String?>(json['preparation']),
     );
@@ -1551,6 +1582,7 @@ class IngredientLineRow extends DataClass
       'unit': serializer.toJson<String?>(
         $IngredientLinesTable.$converterunitn.toJson(unit),
       ),
+      'countWord': serializer.toJson<String?>(countWord),
       'name': serializer.toJson<String?>(name),
       'preparation': serializer.toJson<String?>(preparation),
     };
@@ -1567,6 +1599,7 @@ class IngredientLineRow extends DataClass
     Value<int?> quantityMaxNumerator = const Value.absent(),
     Value<int?> quantityMaxDenominator = const Value.absent(),
     Value<Unit?> unit = const Value.absent(),
+    Value<String?> countWord = const Value.absent(),
     Value<String?> name = const Value.absent(),
     Value<String?> preparation = const Value.absent(),
   }) => IngredientLineRow(
@@ -1588,6 +1621,7 @@ class IngredientLineRow extends DataClass
         ? quantityMaxDenominator.value
         : this.quantityMaxDenominator,
     unit: unit.present ? unit.value : this.unit,
+    countWord: countWord.present ? countWord.value : this.countWord,
     name: name.present ? name.value : this.name,
     preparation: preparation.present ? preparation.value : this.preparation,
   );
@@ -1611,6 +1645,7 @@ class IngredientLineRow extends DataClass
           ? data.quantityMaxDenominator.value
           : this.quantityMaxDenominator,
       unit: data.unit.present ? data.unit.value : this.unit,
+      countWord: data.countWord.present ? data.countWord.value : this.countWord,
       name: data.name.present ? data.name.value : this.name,
       preparation: data.preparation.present
           ? data.preparation.value
@@ -1631,6 +1666,7 @@ class IngredientLineRow extends DataClass
           ..write('quantityMaxNumerator: $quantityMaxNumerator, ')
           ..write('quantityMaxDenominator: $quantityMaxDenominator, ')
           ..write('unit: $unit, ')
+          ..write('countWord: $countWord, ')
           ..write('name: $name, ')
           ..write('preparation: $preparation')
           ..write(')'))
@@ -1649,6 +1685,7 @@ class IngredientLineRow extends DataClass
     quantityMaxNumerator,
     quantityMaxDenominator,
     unit,
+    countWord,
     name,
     preparation,
   );
@@ -1666,6 +1703,7 @@ class IngredientLineRow extends DataClass
           other.quantityMaxNumerator == this.quantityMaxNumerator &&
           other.quantityMaxDenominator == this.quantityMaxDenominator &&
           other.unit == this.unit &&
+          other.countWord == this.countWord &&
           other.name == this.name &&
           other.preparation == this.preparation);
 }
@@ -1681,6 +1719,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
   final Value<int?> quantityMaxNumerator;
   final Value<int?> quantityMaxDenominator;
   final Value<Unit?> unit;
+  final Value<String?> countWord;
   final Value<String?> name;
   final Value<String?> preparation;
   final Value<int> rowid;
@@ -1695,6 +1734,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
     this.quantityMaxNumerator = const Value.absent(),
     this.quantityMaxDenominator = const Value.absent(),
     this.unit = const Value.absent(),
+    this.countWord = const Value.absent(),
     this.name = const Value.absent(),
     this.preparation = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1710,6 +1750,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
     this.quantityMaxNumerator = const Value.absent(),
     this.quantityMaxDenominator = const Value.absent(),
     this.unit = const Value.absent(),
+    this.countWord = const Value.absent(),
     this.name = const Value.absent(),
     this.preparation = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1728,6 +1769,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
     Expression<int>? quantityMaxNumerator,
     Expression<int>? quantityMaxDenominator,
     Expression<String>? unit,
+    Expression<String>? countWord,
     Expression<String>? name,
     Expression<String>? preparation,
     Expression<int>? rowid,
@@ -1746,6 +1788,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
       if (quantityMaxDenominator != null)
         'quantity_max_denominator': quantityMaxDenominator,
       if (unit != null) 'unit': unit,
+      if (countWord != null) 'count_word': countWord,
       if (name != null) 'name': name,
       if (preparation != null) 'preparation': preparation,
       if (rowid != null) 'rowid': rowid,
@@ -1763,6 +1806,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
     Value<int?>? quantityMaxNumerator,
     Value<int?>? quantityMaxDenominator,
     Value<Unit?>? unit,
+    Value<String?>? countWord,
     Value<String?>? name,
     Value<String?>? preparation,
     Value<int>? rowid,
@@ -1779,6 +1823,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
       quantityMaxDenominator:
           quantityMaxDenominator ?? this.quantityMaxDenominator,
       unit: unit ?? this.unit,
+      countWord: countWord ?? this.countWord,
       name: name ?? this.name,
       preparation: preparation ?? this.preparation,
       rowid: rowid ?? this.rowid,
@@ -1822,6 +1867,9 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
         $IngredientLinesTable.$converterunitn.toSql(unit.value),
       );
     }
+    if (countWord.present) {
+      map['count_word'] = Variable<String>(countWord.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -1847,6 +1895,7 @@ class IngredientLinesCompanion extends UpdateCompanion<IngredientLineRow> {
           ..write('quantityMaxNumerator: $quantityMaxNumerator, ')
           ..write('quantityMaxDenominator: $quantityMaxDenominator, ')
           ..write('unit: $unit, ')
+          ..write('countWord: $countWord, ')
           ..write('name: $name, ')
           ..write('preparation: $preparation, ')
           ..write('rowid: $rowid')
@@ -8773,6 +8822,7 @@ typedef $$IngredientLinesTableCreateCompanionBuilder =
       Value<int?> quantityMaxNumerator,
       Value<int?> quantityMaxDenominator,
       Value<Unit?> unit,
+      Value<String?> countWord,
       Value<String?> name,
       Value<String?> preparation,
       Value<int> rowid,
@@ -8789,6 +8839,7 @@ typedef $$IngredientLinesTableUpdateCompanionBuilder =
       Value<int?> quantityMaxNumerator,
       Value<int?> quantityMaxDenominator,
       Value<Unit?> unit,
+      Value<String?> countWord,
       Value<String?> name,
       Value<String?> preparation,
       Value<int> rowid,
@@ -8853,6 +8904,11 @@ class $$IngredientLinesTableFilterComposer
         column: $table.unit,
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
+
+  ColumnFilters<String> get countWord => $composableBuilder(
+    column: $table.countWord,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
@@ -8924,6 +8980,11 @@ class $$IngredientLinesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get countWord => $composableBuilder(
+    column: $table.countWord,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -8982,6 +9043,9 @@ class $$IngredientLinesTableAnnotationComposer
   GeneratedColumnWithTypeConverter<Unit?, String> get unit =>
       $composableBuilder(column: $table.unit, builder: (column) => column);
 
+  GeneratedColumn<String> get countWord =>
+      $composableBuilder(column: $table.countWord, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -9038,6 +9102,7 @@ class $$IngredientLinesTableTableManager
                 Value<int?> quantityMaxNumerator = const Value.absent(),
                 Value<int?> quantityMaxDenominator = const Value.absent(),
                 Value<Unit?> unit = const Value.absent(),
+                Value<String?> countWord = const Value.absent(),
                 Value<String?> name = const Value.absent(),
                 Value<String?> preparation = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -9052,6 +9117,7 @@ class $$IngredientLinesTableTableManager
                 quantityMaxNumerator: quantityMaxNumerator,
                 quantityMaxDenominator: quantityMaxDenominator,
                 unit: unit,
+                countWord: countWord,
                 name: name,
                 preparation: preparation,
                 rowid: rowid,
@@ -9068,6 +9134,7 @@ class $$IngredientLinesTableTableManager
                 Value<int?> quantityMaxNumerator = const Value.absent(),
                 Value<int?> quantityMaxDenominator = const Value.absent(),
                 Value<Unit?> unit = const Value.absent(),
+                Value<String?> countWord = const Value.absent(),
                 Value<String?> name = const Value.absent(),
                 Value<String?> preparation = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -9082,6 +9149,7 @@ class $$IngredientLinesTableTableManager
                 quantityMaxNumerator: quantityMaxNumerator,
                 quantityMaxDenominator: quantityMaxDenominator,
                 unit: unit,
+                countWord: countWord,
                 name: name,
                 preparation: preparation,
                 rowid: rowid,
