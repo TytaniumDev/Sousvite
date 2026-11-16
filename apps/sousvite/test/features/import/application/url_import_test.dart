@@ -5,6 +5,7 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
 import 'package:sousvite/features/import/application/url_import.dart';
+import 'package:sousvite/features/import/data/page_url_importer.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
@@ -72,13 +73,17 @@ void main() {
     });
   });
 
-  group('stand-in importers', () {
-    test('say they are not available yet', () async {
+  group('importers', () {
+    test('fetch pages straight from the site off the web', () {
+      final container = ProviderContainer.test();
+
+      expect(container.read(urlImporterProvider), isA<PageUrlImporter>());
+    });
+
+    test('stand-ins say they are not available', () async {
       final container = ProviderContainer.test();
       await expectLater(
-        container
-            .read(urlImporterProvider)
-            .importUrl(Uri.parse('https://a.com')),
+        const UnavailableUrlImporter().importUrl(Uri.parse('https://a.com')),
         throwsA(
           isA<ImportFailure>()
               .having(

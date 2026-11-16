@@ -84,6 +84,8 @@ jobs:
             min_coverage: 90
           - package: packages/nutrition
             min_coverage: 90
+          - package: packages/recipe_import
+            min_coverage: 90
           - package: packages/sync
             min_coverage: 90
           - package: packages/units

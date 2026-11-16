@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   domain: any
+  html: ^0.15.7
+  ingredient_parser: any
 
 dev_dependencies:
   test: ^1.30.0

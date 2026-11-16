@@ -113,7 +113,7 @@ functions/                 Firebase Cloud Functions (TypeScript)
 Rules:
 
 - `units` depends on nothing in the repo. It is the shared vocabulary for amounts, so the UI and the domain use the same `Quantity` type *(Decided: Tyler, 2026-11-14)*.
-- `domain` depends only on `units`, and re-exports it, so `package:domain/domain.dart` still gives every unit type. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain`.
+- `domain` depends only on `units`, and re-exports it, so `package:domain/domain.dart` still gives every unit type. Pure packages (`ingredient_parser`, `recipe_import`, `nutrition`, `measuring`) depend only on `domain` within the repo, except that `recipe_import` uses `ingredient_parser` to split the lines it imports. Outside it they take pure Dart libraries only, and only when the alternative is writing a parser by hand: `recipe_import` uses `package:html` to read recipe pages. Anything that does I/O (HTTP, files) is passed in as a function, so the packages stay testable without a network.
 - `design_system` may depend on `units` (never on `domain`), so widgets such as `AmountText` take a `Quantity` directly.
 - `sync` depends only on `domain` and never on Drift. `data` depends on `sync` for the change model and clock (its `ChangeRecorder` writes the change log), and implements the local store the sync engine defines, so the engine is tested without a database.
 - Only `apps/sousvite` depends on Flutter, except for `design_system`.
@@ -304,6 +304,8 @@ Because both carry the same change log, **switching transports** means replaying
 ## 14. Recipe import *(Decided)*
 
 - **URL import** runs on the device in `packages/recipe_import`. It reads schema.org `Recipe` JSON-LD first, microdata second, and falls back to simple heuristics, then runs each ingredient line through the parser.
+- `readRecipePage` returns an unsaved `RecipeSnapshot`. A heading line among the ingredients ("For the sauce:") starts an ingredient section. An ingredient line has no field for the parser's count word or size, so the name keeps them as written ("cloves garlic", "large egg"), and the raw text keeps the rest. Cost notes ("($0.20)") are dropped.
+- On iOS and Android the app fetches the page itself, with the same `Sousvite/1.0` User-Agent as the proxy.
 - On **web**, browsers block cross-site requests, so the page is fetched through a Cloud Function proxy that returns the HTML. Parsing still happens on the client.
 - The proxy is the `fetchProxy` callable function (`functions/src/fetch_proxy/`). App Check is enforced. It fetches only public addresses (every redirect hop and every DNS answer is checked, so it can't reach private or metadata addresses), follows at most 5 redirects, allows 10 seconds, and returns only HTML up to 5 MB as `{url, contentType, body}`, where `url` is the final URL after redirects. A failure is an `HttpsError` whose `details.reason` says why (`invalidUrl`, `blockedAddress`, `tooManyRedirects`, `upstreamStatus` with `details.status`, `unsupportedContentType`, `tooLarge`, `timeout`, `network`), so import can report failures by site. It identifies itself with a `Sousvite/1.0` User-Agent that links to the repo.
 - Results always open in a review screen before saving, and failures are reported by site so we can see which sites need work (PRD 10).
