@@ -2,6 +2,7 @@ import 'package:sync/src/core/change.dart';
 import 'package:sync/src/core/hlc.dart';
 import 'package:sync/src/core/merge.dart';
 import 'package:sync/src/engine/local_store.dart';
+import 'package:sync/src/engine/sync_progress.dart';
 import 'package:sync/src/transport/sync_transport.dart';
 
 /// What one [SyncEngine.sync] did.
@@ -88,14 +89,45 @@ final class SyncEngine({
   }
 
   /// Writes the space's current state as a snapshot, so new devices start
-  /// from it and the transport can prune older changes. The app calls this
-  /// now and then, such as once a day.
+  /// from it instead of replaying the whole log. The log itself is kept
+  /// forever (ENGINEERING.md §8.1).
   Future<void> writeSnapshot() async {
+    final progress = await store.progress(transportKey);
     final winners = await store.allWinners(spaceId: spaceId);
     await transport.writeSnapshot(
-      Snapshot(changes: winners, through: clock.latest),
+      Snapshot(
+        changes: winners,
+        through: clock.latest,
+        pulledThrough: progress.pullCursor,
+      ),
+    );
+    await store.saveProgress(
+      _snapshotKey,
+      SyncProgress(pushedThrough: Hlc(clock.wallClock(), 0, clock.nodeId)),
     );
   }
+
+  /// Writes a snapshot when this device has made [afterChanges] changes
+  /// since its last one, or [after] has passed, or it never wrote one
+  /// (ENGINEERING.md §8.1). Returns whether it wrote one. The app calls
+  /// this after each sync.
+  Future<bool> snapshotIfDue({
+    int afterChanges = 200,
+    Duration after = const Duration(days: 1),
+  }) async {
+    final last = (await store.progress(_snapshotKey)).pushedThrough;
+    if (last != null &&
+        clock.wallClock() - last.millis < after.inMilliseconds) {
+      final since = await store.ownChangesAfter(last, spaceId: spaceId);
+      if (since.length < afterChanges) return false;
+    }
+    await writeSnapshot();
+    return true;
+  }
+
+  /// Where this engine remembers when it last wrote a snapshot: a progress
+  /// entry of its own, whose `pushedThrough` holds the wall time.
+  String get _snapshotKey => '$transportKey#snapshot';
 
   /// Copies the space's whole state into this engine's transport, for
   /// switching transports (PRD 7.8): the same change log, nothing to

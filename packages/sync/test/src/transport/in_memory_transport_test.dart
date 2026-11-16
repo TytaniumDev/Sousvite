@@ -45,39 +45,36 @@ void main() {
       expect(space.changes, [title]);
     });
 
-    test('a snapshot prunes the oldest changes it covers', () async {
+    test('a snapshot keeps every change', () async {
       final first = _change('a', 1000);
-      final notes = _change('b', 1500, field: 'notes');
-      final second = _change('c', 2000);
-      await transport.push([first, notes, second]);
+      final second = _change('b', 2000);
+      await transport.push([first, second]);
 
       await transport.writeSnapshot(
         Snapshot(changes: [second], through: second.hlc),
       );
 
-      // `first` is covered by `second`; `notes` is not, so pruning stops.
-      expect(space.changes, [notes, second]);
+      expect(space.changes, [first, second]);
       expect(space.snapshot?.changes, [second]);
     });
 
-    test(
-      'a cursor from before the pruned part restarts at the snapshot',
-      () async {
-        final first = _change('a', 1000);
-        await transport.push([first]);
-        final oldCursor = (await transport.pull().toList()).last.cursor;
-        final second = _change('b', 2000);
-        final third = _change('c', 3000);
-        await transport.push([second, third]);
-        await transport.writeSnapshot(
-          Snapshot(changes: [third], through: third.hlc),
-        );
+    test('a pull from the start skips the log the snapshot covers', () async {
+      final first = _change('a', 1000);
+      await transport.push([first]);
+      final cursor = (await transport.pull().toList()).last.cursor;
+      await transport.writeSnapshot(
+        Snapshot(changes: [first], through: first.hlc, pulledThrough: cursor),
+      );
+      final second = _change('b', 2000);
+      await transport.push([second]);
 
-        final batches = await transport.pull(since: oldCursor).toList();
+      final batches = await transport.pull().toList();
 
-        expect(batches.first.changes, [third]);
-        expect(batches.last.cursor, const SyncCursor('3'));
-      },
-    );
+      expect(batches.map((batch) => batch.changes), [
+        [first],
+        [second],
+      ]);
+      expect(batches.last.cursor, const SyncCursor('2'));
+    });
   });
 }
