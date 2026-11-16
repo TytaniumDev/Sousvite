@@ -65,7 +65,7 @@ final class EditorDraftProvider
   }
 }
 
-String _$editorDraftHash() => r'7902ccbac73d75a0a933ae801dc794e42bb6cf26';
+String _$editorDraftHash() => r'2eccd5102aaa776a0ebf42e270962f422f23f30e';
 
 /// The recipe being edited. Changes stay in this draft until [save]
 /// writes them in one transaction; leaving without saving drops them.

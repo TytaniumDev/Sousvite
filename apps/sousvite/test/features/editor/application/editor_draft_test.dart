@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ingredient_parser/ingredient_parser.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/application/editor_outline.dart';
@@ -117,10 +118,48 @@ void main() {
     expect(container.read(editorLineProvider(recipeId, flour)), isNull);
   });
 
-  test('the stand-in parser keeps the whole line as the name', () {
-    final parse = container.read(ingredientLineParserProvider);
-    expect(parse('2 eggs').name, '2 eggs');
-    expect(parse('   ').name, isNull);
+  test('splits a line into amount, unit, name, and preparation', () async {
+    (await load()).setLineText(flour, '1 ½ cups rye flour, sifted');
+    final line = container.read(editorLineProvider(recipeId, flour))!;
+    expect(line.quantity, Quantity(3, 2));
+    expect(line.unit, Unit.cup);
+    expect(line.name, 'rye flour');
+    expect(line.preparation, 'sifted');
+  });
+
+  test(
+    'a pasted heading starts a new section for the lines after it',
+    () async {
+      final editor = await load();
+      editor.addLines(['eggs', 'For the glaze:', 'sugar'], afterLineId: flour);
+
+      final glaze = draft().ingredientSections.last;
+      expect(glaze.name, 'Glaze');
+      expect(
+        container.read(editorLineIdsProvider(recipeId, null)),
+        hasLength(3),
+      );
+      final glazeLines = draft().ingredientLines.where(
+        (l) => l.sectionId == glaze.id,
+      );
+      expect(glazeLines.single.name, 'sugar');
+    },
+  );
+
+  group('ParsedLineParts', () {
+    const parse = parseIngredientLine;
+
+    test('keeps the count word and size in the name', () {
+      expect(parse('3 cloves garlic').storedName, 'cloves garlic');
+      expect(parse('1 clove garlic').storedName, 'clove garlic');
+      expect(parse('2 bunches kale').storedName, 'bunches kale');
+      expect(parse('1 large egg').storedName, 'large egg');
+    });
+
+    test('keeps the whole text when there is no name', () {
+      expect(parse('For the sauce:').storedName, 'sauce');
+      expect(parse('   ').storedName, isNull);
+    });
   });
 
   test('adds, renames, and removes ingredient sections', () async {

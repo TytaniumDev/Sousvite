@@ -8,20 +8,14 @@ part of 'ingredient_line_parser.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The parser the editor uses.
-///
-/// Until the ingredient parser (PAR-1) lands, the whole line is the name,
-/// so nothing is lost. PAR-1 replaces this body with
-/// `package:ingredient_parser`; nothing else changes.
+/// The parser the editor uses: `package:ingredient_parser`. A provider, so
+/// tests can swap it.
 
 @ProviderFor(ingredientLineParser)
 final ingredientLineParserProvider = IngredientLineParserProvider._();
 
-/// The parser the editor uses.
-///
-/// Until the ingredient parser (PAR-1) lands, the whole line is the name,
-/// so nothing is lost. PAR-1 replaces this body with
-/// `package:ingredient_parser`; nothing else changes.
+/// The parser the editor uses: `package:ingredient_parser`. A provider, so
+/// tests can swap it.
 
 final class IngredientLineParserProvider
     extends
@@ -31,11 +25,8 @@ final class IngredientLineParserProvider
           IngredientLineParser
         >
     with $Provider<IngredientLineParser> {
-  /// The parser the editor uses.
-  ///
-  /// Until the ingredient parser (PAR-1) lands, the whole line is the name,
-  /// so nothing is lost. PAR-1 replaces this body with
-  /// `package:ingredient_parser`; nothing else changes.
+  /// The parser the editor uses: `package:ingredient_parser`. A provider, so
+  /// tests can swap it.
   IngredientLineParserProvider._()
     : super(
         from: null,
@@ -71,4 +62,4 @@ final class IngredientLineParserProvider
 }
 
 String _$ingredientLineParserHash() =>
-    r'37dec9bda5821b100a92a2498e89b4d62921ae65';
+    r'ba72444c67fdd843ab45808b87b45a5e5e778bf2';
