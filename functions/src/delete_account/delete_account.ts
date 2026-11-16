@@ -20,7 +20,7 @@ export interface AccountStores extends SharingStores {
 /**
  * Every Firestore document tree that belongs to one user. Tasks that store
  * per-user data on the server (SYN-5 private spaces, PRO-1 entitlements,
- * SHR-1 inboxes) add their paths here, so deleting an account always
+ * SHR-1 shares) add their paths here, so deleting an account always
  * removes it (PRD 7.9).
  */
 export const userDocumentPaths = (uid: string): readonly string[] => [

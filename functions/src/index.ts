@@ -10,6 +10,7 @@ export { deleteAccount } from './delete_account/delete_account.js';
 export { fetchProxy } from './fetch_proxy/fetch_proxy.js';
 export { acceptInvite } from './sharing/accept_invite.js';
 export { leaveShare } from './sharing/leave_share.js';
+export { previewInvite } from './sharing/preview_invite.js';
 export { sendCopy } from './sharing/send_copy.js';
 export { shareJointly } from './sharing/share_jointly.js';
 export { shareLinkPage } from './sharing/share_link_page.js';

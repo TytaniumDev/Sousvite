@@ -5,7 +5,7 @@ import {
   onCall,
 } from 'firebase-functions/v2/https';
 
-import type { Invite } from './invites.js';
+import { readInvite } from './invites.js';
 import {
   callerName,
   requireObject,
@@ -17,19 +17,21 @@ import { isSharedSpace } from './spaces.js';
 
 /**
  * What accepting gives the app: the space to start syncing for a joint
- * share, or the inbox item holding a copy to import.
+ * share, or the copied entities to import with new ids.
  */
 export type AcceptInviteResult =
   | { readonly kind: 'joint'; readonly spaceId: string; readonly title: string }
-  | { readonly kind: 'copy'; readonly itemId: string; readonly title: string };
-
-const notFound = (reason: 'inviteNotFound' | 'shareEnded'): HttpsError =>
-  new HttpsError('not-found', 'This invite no longer works', { reason });
+  | {
+      readonly kind: 'copy';
+      readonly title: string;
+      readonly entities: readonly unknown[];
+    };
 
 /**
  * Accepts an invite link. A joint invite adds the caller to the share's
- * members; accepting twice is harmless. A copy invite puts the copy in the
- * caller's inbox (`inbox/{uid}/items`), which the app imports and deletes.
+ * members; accepting twice is harmless. A copy invite returns the copy,
+ * which the app saves into the user's own library, from where it syncs to
+ * their other devices like any recipe.
  */
 export const handleAcceptInvite =
   (stores: () => SharingStores) =>
@@ -37,17 +39,7 @@ export const handleAcceptInvite =
     const uid = requireUid(request);
     const inviteId = requireString(requireObject(request.data), 'inviteId');
     const { firestore, now } = stores();
-
-    const invite = (await firestore.doc(`invites/${inviteId}`).get()).data() as
-      Invite | undefined;
-    if (invite === undefined) {
-      throw notFound('inviteNotFound');
-    }
-    if (invite.expiresAt.toMillis() <= now().getTime()) {
-      throw new HttpsError('failed-precondition', 'This invite has expired', {
-        reason: 'expired',
-      });
-    }
+    const invite = await readInvite(firestore, inviteId, now());
 
     switch (invite.kind) {
       case 'joint': {
@@ -55,7 +47,9 @@ export const handleAcceptInvite =
         await firestore.runTransaction(async (transaction) => {
           const space = (await transaction.get(spaceRef)).data();
           if (!isSharedSpace(space)) {
-            throw notFound('shareEnded');
+            throw new HttpsError('not-found', 'This share has ended', {
+              reason: 'shareEnded',
+            });
           }
           if (space.memberUids.includes(uid)) {
             return;
@@ -67,16 +61,8 @@ export const handleAcceptInvite =
         });
         return { kind: 'joint', spaceId: invite.spaceId, title: invite.title };
       }
-      case 'copy': {
-        const item = firestore.collection(`inbox/${uid}/items`).doc();
-        await item.set({
-          title: invite.title,
-          fromName: invite.fromName,
-          entities: invite.entities,
-          receivedAt: FieldValue.serverTimestamp(),
-        });
-        return { kind: 'copy', itemId: item.id, title: invite.title };
-      }
+      case 'copy':
+        return { kind: 'copy', title: invite.title, entities: invite.entities };
     }
   };
 

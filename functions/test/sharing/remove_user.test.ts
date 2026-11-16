@@ -29,7 +29,6 @@ describe('removeUserFromSharing', () => {
     const copy = await handleSendCopy(() => stores)(
       callFrom('bob', { title: 'Pie', entities: [{}] }),
     );
-    await acceptInvite(callFrom('alice', { inviteId: copy.inviteId }));
     const link = await handlePublishLink(() => stores)(
       callFrom('alice', {
         recipe: { title: 'Soup', ingredients: [], steps: [] },
@@ -50,9 +49,6 @@ describe('removeUserFromSharing', () => {
     expect((await doc(`invites/${shared.inviteId}`)).exists).toBe(false);
     expect((await doc(`invites/${copy.inviteId}`)).exists).toBe(true);
     expect((await doc(`shareLinks/${link.linkId}`)).exists).toBe(false);
-    expect(
-      (await stores.firestore.collection('inbox/alice/items').get()).size,
-    ).toBe(0);
     // Private spaces are removed with the account, not by sharing.
     expect((await doc('spaces/u_alice')).exists).toBe(true);
   });

@@ -1,5 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { HttpsError } from 'firebase-functions/v2/https';
 
 /** How long an invite link works after it's made. */
 export const inviteLifetimeDays = 14;
@@ -61,4 +62,28 @@ export const createInvite = async (
     ),
   });
   return ref.id;
+};
+
+/**
+ * The live invite [inviteId], or a `not-found` error when there is none and
+ * a `failed-precondition` error when it has expired.
+ */
+export const readInvite = async (
+  firestore: Firestore,
+  inviteId: string,
+  now: Date,
+): Promise<Invite> => {
+  const invite = (await firestore.doc(`invites/${inviteId}`).get()).data() as
+    Invite | undefined;
+  if (invite === undefined) {
+    throw new HttpsError('not-found', 'This invite no longer works', {
+      reason: 'inviteNotFound',
+    });
+  }
+  if (invite.expiresAt.toMillis() <= now.getTime()) {
+    throw new HttpsError('failed-precondition', 'This invite has expired', {
+      reason: 'expired',
+    });
+  }
+  return invite;
 };

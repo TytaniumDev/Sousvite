@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { handleAcceptInvite } from '../../src/sharing/accept_invite.js';
+import { handlePreviewInvite } from '../../src/sharing/preview_invite.js';
 import { handleSendCopy } from '../../src/sharing/send_copy.js';
 import {
   callFrom,
@@ -25,30 +26,26 @@ describe('send a copy', () => {
     acceptInvite = handleAcceptInvite(() => stores);
   });
 
-  it('puts the copy in the inbox of each person who opens the link', async () => {
+  it('gives the copy to each person who opens the link', async () => {
     const { inviteId } = await sendCopy(
       callFrom('alice', { title: 'Lasagna', entities }, 'Alice'),
     );
 
-    const bob = await acceptInvite(callFrom('bob', { inviteId }));
-    const carol = await acceptInvite(callFrom('carol', { inviteId }));
+    const expected = { kind: 'copy', title: 'Lasagna', entities };
+    expect(await acceptInvite(callFrom('bob', { inviteId }))).toEqual(expected);
+    expect(await acceptInvite(callFrom('carol', { inviteId }))).toEqual(
+      expected,
+    );
+  });
 
-    expect(bob).toMatchObject({ kind: 'copy', title: 'Lasagna' });
-    expect(carol.kind).toBe('copy');
-    const item = (
-      await stores.firestore
-        .doc(`inbox/bob/items/${bob.kind === 'copy' ? bob.itemId : ''}`)
-        .get()
-    ).data();
-    expect(item).toMatchObject({
-      title: 'Lasagna',
-      fromName: 'Alice',
-      entities,
-    });
-    expect(item?.receivedAt).toBeDefined();
-    expect(
-      (await stores.firestore.collection('inbox/carol/items').get()).size,
-    ).toBe(1);
+  it('says what the link offers before accepting', async () => {
+    const { inviteId } = await sendCopy(
+      callFrom('alice', { title: 'Lasagna', entities }, 'Alice'),
+    );
+
+    await expect(
+      handlePreviewInvite(() => stores)(callFrom('bob', { inviteId })),
+    ).resolves.toEqual({ kind: 'copy', title: 'Lasagna', fromName: 'Alice' });
   });
 
   it.each([

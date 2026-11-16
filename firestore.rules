@@ -10,18 +10,10 @@ service cloud.firestore {
     }
 
     // Sharing (SHR-1). ENGINEERING.md §8.4 and §9.1. Shared spaces, their
-    // members, invites, inbox items, and view-only links are written only by
-    // the sharing functions, which check membership themselves.
-
-    // Anyone signed in who has an invite link can see what it offers before
-    // accepting. Ids are random, so invites can't be listed or guessed.
-    match /invites/{inviteId} {
-      allow get: if request.auth != null;
-    }
-
-    // Copies sent to a user wait here until their app imports and deletes them.
-    match /inbox/{uid}/items/{itemId} {
-      allow read, delete: if request.auth != null && request.auth.uid == uid;
-    }
+    // members, invites, and view-only links are written only by the sharing
+    // functions, which check membership themselves. Members read their shared
+    // space through the space rules (SYN-5). Invites and links are never read
+    // by clients: the app previews and accepts invites through functions, and
+    // link pages are rendered by a function. So nothing here allows access.
   }
 }

@@ -4,7 +4,7 @@ import type { SharingStores } from './sharing_stores.js';
 /**
  * Removes everything sharing stores for [uid], for account deletion
  * (PRD 7.9): leaves every joint share (the others keep it), and deletes the
- * user's inbox, invites, and view-only links.
+ * user's invites and view-only links.
  */
 export const removeUserFromSharing = async (
   stores: SharingStores,
@@ -29,5 +29,4 @@ export const removeUserFromSharing = async (
   await Promise.all(
     [...invites.docs, ...links.docs].map((document) => document.ref.delete()),
   );
-  await firestore.recursiveDelete(firestore.doc(`inbox/${uid}`));
 };

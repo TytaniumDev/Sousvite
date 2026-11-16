@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { handleAcceptInvite } from '../../src/sharing/accept_invite.js';
 import { inviteLifetimeDays } from '../../src/sharing/invites.js';
 import { handleLeaveShare } from '../../src/sharing/leave_share.js';
+import { handlePreviewInvite } from '../../src/sharing/preview_invite.js';
 import { handleShareJointly } from '../../src/sharing/share_jointly.js';
 import {
   callFrom,
@@ -115,6 +116,21 @@ describe('joint shares', () => {
         memberUids: ['alice', 'bob'],
         members: { alice: { name: 'Alice' }, bob: { name: 'Bob' } },
       });
+    });
+
+    it('is previewed as a joint share', async () => {
+      const { inviteId } = await startShare();
+
+      await expect(
+        handlePreviewInvite(() => stores)(callFrom('bob', { inviteId })),
+      ).resolves.toEqual({
+        kind: 'joint',
+        title: 'Lasagna',
+        fromName: 'Alice',
+      });
+      await expect(
+        handlePreviewInvite(() => stores)(callFrom(undefined, { inviteId })),
+      ).rejects.toMatchObject({ code: 'unauthenticated' });
     });
 
     it('stores no name when the sign-in has none', async () => {
