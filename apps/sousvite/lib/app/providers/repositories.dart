@@ -1,5 +1,7 @@
+import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/providers/database.dart';
 
 part 'repositories.g.dart';
 
@@ -12,8 +14,10 @@ AppSettingsRepository appSettingsRepository(Ref ref) =>
     throw UnimplementedError('AppSettingsRepository is not implemented yet.');
 
 @Riverpod(keepAlive: true)
-RecipeRepository recipeRepository(Ref ref) =>
-    throw UnimplementedError('RecipeRepository is not implemented yet.');
+RecipeRepository recipeRepository(Ref ref) => DriftRecipeRepository(
+  ref.watch(appDatabaseProvider),
+  recorder: ref.watch(changeRecorderProvider).requireValue,
+);
 
 @Riverpod(keepAlive: true)
 FolderRepository folderRepository(Ref ref) =>

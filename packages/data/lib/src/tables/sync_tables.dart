@@ -46,3 +46,13 @@ class SyncState() extends Table {
   @override
   Set<Column<Object>> get primaryKey => {transportKey};
 }
+
+/// Values that stay on this device and never sync, such as its device id.
+@DataClassName('LocalValueRow')
+class LocalValues() extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}

@@ -46,7 +46,9 @@ part 'app_database.g.dart';
     UserRecipePrefsTable,
     ChangeLog,
     SyncState,
+    LocalValues,
   ],
+  include: {'recipes/recipe_search.drift'},
   daos: [
     RecipeDao,
     FolderDao,
@@ -62,7 +64,7 @@ class AppDatabase(super.e) extends _$AppDatabase {
   /// Bump this with every schema change, add the step to [migration], and
   /// run `dart run drift_dev make-migrations` to snapshot the new schema.
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +76,18 @@ class AppDatabase(super.e) extends _$AppDatabase {
       // v3: grocery items keep the count word of the line they came from.
       from2To3: (m, schema) =>
           m.addColumn(schema.groceryItems, schema.groceryItems.countWord),
+      // v4: this device's own values, and the recipe search index, filled
+      // from the recipes already saved.
+      from3To4: (m, schema) async {
+        await m.createTable(schema.localValues);
+        await m.createTable(schema.recipeSearch);
+        // Schema snapshots leave triggers out, so they come from the
+        // current schema.
+        for (final trigger in allSchemaEntities.whereType<Trigger>()) {
+          await m.create(trigger);
+        }
+        await rebuildRecipeSearch();
+      },
     ),
   );
 }

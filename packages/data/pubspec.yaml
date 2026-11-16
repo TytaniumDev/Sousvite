@@ -10,6 +10,7 @@ environment:
   sdk: ^3.14.0
 
 dependencies:
+  collection: any
   domain: any
   drift: ^2.35.4
   sync: any

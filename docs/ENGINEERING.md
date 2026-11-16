@@ -150,7 +150,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 
 - SQLite on iOS and Android. On web, SQLite compiled to WebAssembly, stored in the Origin Private File System (falling back to IndexedDB).
 - The database is the single source of truth. The UI reads only from it.
-- **Full-text search** (FTS5) indexes recipe titles, ingredient names, and folder names (PRD 7.1).
+- **Full-text search** (FTS5) indexes recipe titles, ingredient names, and folder names (PRD 7.1). Triggers keep the `recipe_search` table current on every write, local or synced, and each typed word matches the start of a word, ignoring accents.
 - **Amounts** are exact rational numbers (numerator and denominator), not floats, so ⅓ cup × 3 is exactly 1 cup.
 - **Units** (`packages/units/`): each unit belongs to a family (US volume, metric volume, US mass, metric mass, count) and counts a whole number of the family's smallest unit, so conversion within a family is exact. US to metric is approximate and always ends in **measurable rounding**: friendly cup fractions (¼, ⅓, ½, ⅔, ¾), tablespoons to ½, teaspoons to ⅛, metric to 0.5, 1, or 5 depending on size, ounces and pounds to ¼, counts to ¼ or ½. A friendly amount may be at most 5% off before rounding falls back to a smaller unit. Rounding applies only to scaled or converted amounts; unscaled amounts show as written.
 - **Ordering** of sections, steps, and ingredients uses fractional index keys, so moving one item changes one row and merges cleanly during sync.
@@ -173,6 +173,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 | `MeasuringTool` | Tools the user owns (PRD 7.5) |
 | `UserRecipePrefs` | Per-user serving size and units, kept separate from the recipe so joint shares don't overwrite them |
 | `ChangeLog`, `SyncState` | See §8 |
+| `LocalValues` | Values that stay on this device and never sync, such as its device id |
 
 The bundled USDA database ships as a separate, read-only SQLite file attached to the main database, so app updates can replace it without migrations.
 
@@ -200,6 +201,7 @@ Change {
 - **Deletes** are tombstones (`_deleted = true`), so a delete and an offline edit resolve predictably.
 - **Never silently discard.** When a concurrent edit loses on a long text field (notes, step text), the losing value is kept in the recipe's history, so it can be recovered. This addresses the PRD's sync-conflict risk.
 - Applying remote changes is idempotent, and the same changes arriving twice is harmless.
+- **In `packages/data`:** each entity kind has an `EntityCodec` that maps it to its change log fields. Repositories write through `ChangeRecorder` and record only the fields that differ from the stored row (`ChangeSet.setChanged`), so saving a whole entity never overwrites another device's edit to a field it did not touch. Remote changes reach the tables through a `MaterializingApplier` per entity kind, which rebuilds the row from the winning value of each field and writes it once every required field has arrived.
 - **Compaction:** periodically, a snapshot of current state is written and older changes are pruned, so new devices don't replay the full history.
 
 ### 8.2 Transports

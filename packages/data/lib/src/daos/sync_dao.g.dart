@@ -6,6 +6,7 @@ part of 'sync_dao.dart';
 mixin _$SyncDaoMixin on DatabaseAccessor<AppDatabase> {
   $ChangeLogTable get changeLog => attachedDatabase.changeLog;
   $SyncStateTable get syncState => attachedDatabase.syncState;
+  $LocalValuesTable get localValues => attachedDatabase.localValues;
   SyncDaoManager get managers => SyncDaoManager(this);
 }
 
@@ -16,4 +17,6 @@ class SyncDaoManager {
       $$ChangeLogTableTableManager(_db.attachedDatabase, _db.changeLog);
   $$SyncStateTableTableManager get syncState =>
       $$SyncStateTableTableManager(_db.attachedDatabase, _db.syncState);
+  $$LocalValuesTableTableManager get localValues =>
+      $$LocalValuesTableTableManager(_db.attachedDatabase, _db.localValues);
 }

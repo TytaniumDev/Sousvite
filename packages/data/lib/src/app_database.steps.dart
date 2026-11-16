@@ -1632,9 +1632,468 @@ class Shape17 extends i0.VersionedTable {
       columnsByName['source_recipe_id']! as i1.GeneratedColumn<String>;
 }
 
+final class Schema4 extends i0.VersionedSchema {
+  Schema4({required super.database}) : super(version: 4);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    recipeSearch,
+    recipes,
+    ingredientLines,
+    folderEntries,
+    folders,
+    ingredientSections,
+    stepSections,
+    recipeSteps,
+    ingredientSectionsRecipe,
+    ingredientLinesRecipe,
+    stepSectionsRecipe,
+    recipeStepsRecipe,
+    folderEntriesRecipe,
+    foods,
+    foodNutrients,
+    foodPortions,
+    nutritionMatches,
+    recipeVersions,
+    experiments,
+    groceryLists,
+    groceryItems,
+    measuringTools,
+    userRecipePrefs,
+    changeLog,
+    syncState,
+    localValues,
+    foodsSourceExternal,
+    foodPortionsFood,
+    nutritionMatchesLine,
+    recipeVersionsRecipe,
+    experimentsRecipe,
+    groceryItemsList,
+    changeLogField,
+    changeLogHlc,
+  ];
+  late final Shape18 recipeSearch = Shape18(
+    source: i0.VersionedVirtualTable(
+      entityName: 'recipe_search',
+      moduleAndArgs: 'fts5(recipe_id UNINDEXED, title, ingredients, folders, tokenize = \'unicode61 remove_diacritics 2\')',
+      columns: [_column_68, _column_69, _column_70, _column_71],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape0 recipes = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'recipes',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 ingredientLines = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'ingredient_lines',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_13,
+        _column_16,
+        _column_17,
+        _column_15,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 folderEntries = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'folder_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(folder_id, recipe_id)'],
+      columns: [_column_27, _column_13, _column_28],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 folders = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'folders',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_14, _column_4],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 ingredientSections = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'ingredient_sections',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_13, _column_14, _column_15],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 stepSections = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'step_sections',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_13, _column_14, _column_15],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 recipeSteps = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'recipe_steps',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_13, _column_16, _column_26, _column_15],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index ingredientSectionsRecipe = i1.Index(
+    'ingredient_sections_recipe',
+    'CREATE INDEX ingredient_sections_recipe ON ingredient_sections (recipe_id)',
+  );
+  final i1.Index ingredientLinesRecipe = i1.Index(
+    'ingredient_lines_recipe',
+    'CREATE INDEX ingredient_lines_recipe ON ingredient_lines (recipe_id)',
+  );
+  final i1.Index stepSectionsRecipe = i1.Index(
+    'step_sections_recipe',
+    'CREATE INDEX step_sections_recipe ON step_sections (recipe_id)',
+  );
+  final i1.Index recipeStepsRecipe = i1.Index(
+    'recipe_steps_recipe',
+    'CREATE INDEX recipe_steps_recipe ON recipe_steps (recipe_id)',
+  );
+  final i1.Index folderEntriesRecipe = i1.Index(
+    'folder_entries_recipe',
+    'CREATE INDEX folder_entries_recipe ON folder_entries (recipe_id)',
+  );
+  late final Shape6 foods = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'foods',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_29, _column_30, _column_14, _column_31],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 foodNutrients = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'food_nutrients',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(food_id, nutrient_code)'],
+      columns: [_column_32, _column_33, _column_34],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 foodPortions = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'food_portions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_32,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_22,
+        _column_38,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 nutritionMatches = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'nutrition_matches',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_39,
+        _column_32,
+        _column_29,
+        _column_37,
+        _column_40,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 recipeVersions = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'recipe_versions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_13, _column_4, _column_41, _column_42],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 experiments = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'experiments',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_13,
+        _column_43,
+        _column_44,
+        _column_4,
+        _column_45,
+        _column_10,
+        _column_46,
+        _column_47,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 groceryLists = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'grocery_lists',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_14, _column_4],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape17 groceryItems = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'grocery_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_48,
+        _column_14,
+        _column_15,
+        _column_18,
+        _column_19,
+        _column_22,
+        _column_23,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 measuringTools = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'measuring_tools',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_0, _column_53, _column_54, _column_55],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 userRecipePrefs = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'user_recipe_prefs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(recipe_id)'],
+      columns: [_column_13, _column_2, _column_3, _column_56],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape15 changeLog = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'change_log',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_60,
+        _column_61,
+        _column_62,
+        _column_63,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape16 syncState = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'sync_state',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(transport_key)'],
+      columns: [_column_64, _column_65, _column_66, _column_67],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape19 localValues = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'local_values',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_72, _column_60],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index foodsSourceExternal = i1.Index(
+    'foods_source_external',
+    'CREATE UNIQUE INDEX foods_source_external ON foods (source, external_id)',
+  );
+  final i1.Index foodPortionsFood = i1.Index(
+    'food_portions_food',
+    'CREATE INDEX food_portions_food ON food_portions (food_id)',
+  );
+  final i1.Index nutritionMatchesLine = i1.Index(
+    'nutrition_matches_line',
+    'CREATE UNIQUE INDEX nutrition_matches_line ON nutrition_matches (ingredient_line_id)',
+  );
+  final i1.Index recipeVersionsRecipe = i1.Index(
+    'recipe_versions_recipe',
+    'CREATE INDEX recipe_versions_recipe ON recipe_versions (recipe_id)',
+  );
+  final i1.Index experimentsRecipe = i1.Index(
+    'experiments_recipe',
+    'CREATE INDEX experiments_recipe ON experiments (recipe_id)',
+  );
+  final i1.Index groceryItemsList = i1.Index(
+    'grocery_items_list',
+    'CREATE INDEX grocery_items_list ON grocery_items (list_id)',
+  );
+  final i1.Index changeLogField = i1.Index(
+    'change_log_field',
+    'CREATE INDEX change_log_field ON change_log (entity, entity_id, field)',
+  );
+  final i1.Index changeLogHlc = i1.Index(
+    'change_log_hlc',
+    'CREATE INDEX change_log_hlc ON change_log (hlc)',
+  );
+}
+
+class Shape18 extends i0.VersionedVirtualTable {
+  Shape18({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get recipeId =>
+      columnsByName['recipe_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get title =>
+      columnsByName['title']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get ingredients =>
+      columnsByName['ingredients']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get folders =>
+      columnsByName['folders']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_68(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'recipe_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_69(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'title',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_70(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'ingredients',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_71(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'folders',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+
+class Shape19 extends i0.VersionedTable {
+  Shape19({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get key =>
+      columnsByName['key']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get value =>
+      columnsByName['value']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_72(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'key',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
+  required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -1648,6 +2107,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from2To3(migrator, schema);
         return 3;
+      case 3:
+        final schema = Schema4(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from3To4(migrator, schema);
+        return 4;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -1657,6 +2121,11 @@ i0.MigrationStepWithVersion migrationSteps({
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
+  required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from1To2: from1To2, from2To3: from2To3),
+  step: migrationSteps(
+    from1To2: from1To2,
+    from2To3: from2To3,
+    from3To4: from3To4,
+  ),
 );

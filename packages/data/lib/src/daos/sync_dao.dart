@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:data/src/app_database.dart';
 import 'package:data/src/tables/sync_tables.dart';
 import 'package:drift/drift.dart';
 
 part 'sync_dao.g.dart';
 
-/// Queries for the change log and sync state.
-@DriftAccessor(tables: [ChangeLog, SyncState])
+/// Queries for the change log, sync state, and this device's own values.
+@DriftAccessor(tables: [ChangeLog, SyncState, LocalValues])
 class SyncDao(super.attachedDatabase)
     extends DatabaseAccessor<AppDatabase>
     with _$SyncDaoMixin {
@@ -90,4 +92,37 @@ class SyncDao(super.attachedDatabase)
   /// Saves how far a transport has synced.
   Future<void> saveSyncState(SyncStateCompanion state) =>
       into(syncState).insertOnConflictUpdate(state);
+
+  /// The winning value of every field of one entity, decoded from JSON:
+  /// its current state as the change log sees it.
+  Future<Map<String, Object?>> winningFields({
+    required String entity,
+    required String entityId,
+  }) async {
+    final rows =
+        await (select(changeLog)
+              ..where(
+                (row) =>
+                    row.entity.equals(entity) & row.entityId.equals(entityId),
+              )
+              ..orderBy([(row) => OrderingTerm.asc(row.hlc)]))
+            .get();
+    return {for (final row in rows) row.field: jsonDecode(row.value)};
+  }
+
+  /// This device's id, made with [newId] and stored the first time it is
+  /// asked for. It never syncs, so each install has its own.
+  Future<String> deviceId({required String Function() newId}) =>
+      transaction(() async {
+        final stored = await (select(
+          localValues,
+        )..where((row) => row.key.equals(_deviceIdKey))).getSingleOrNull();
+        if (stored != null) return stored.value;
+        final id = newId();
+        await into(localValues)
+            .insert(LocalValuesCompanion.insert(key: _deviceIdKey, value: id));
+        return id;
+      });
+
+  static const _deviceIdKey = 'device_id';
 }

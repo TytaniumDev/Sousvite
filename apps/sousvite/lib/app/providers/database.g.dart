@@ -65,3 +65,59 @@ final class AppDatabaseProvider
 }
 
 String _$appDatabaseHash() => r'b27e6488255b8a71afd4522f9b8014f1d365c563';
+
+/// Records every local write in the change log for sync.
+///
+/// Loads this device's id and moves the clock past the last change, so it
+/// is async. `bootstrap` waits for it before the first frame, so
+/// repositories read it with `requireValue`.
+
+@ProviderFor(changeRecorder)
+final changeRecorderProvider = ChangeRecorderProvider._();
+
+/// Records every local write in the change log for sync.
+///
+/// Loads this device's id and moves the clock past the last change, so it
+/// is async. `bootstrap` waits for it before the first frame, so
+/// repositories read it with `requireValue`.
+
+final class ChangeRecorderProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ChangeRecorder>,
+          ChangeRecorder,
+          FutureOr<ChangeRecorder>
+        >
+    with $FutureModifier<ChangeRecorder>, $FutureProvider<ChangeRecorder> {
+  /// Records every local write in the change log for sync.
+  ///
+  /// Loads this device's id and moves the clock past the last change, so it
+  /// is async. `bootstrap` waits for it before the first frame, so
+  /// repositories read it with `requireValue`.
+  ChangeRecorderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'changeRecorderProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$changeRecorderHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<ChangeRecorder> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ChangeRecorder> create(Ref ref) {
+    return changeRecorder(ref);
+  }
+}
+
+String _$changeRecorderHash() => r'6942fe5361e077aa4afed89c14e9c6907be1836b';

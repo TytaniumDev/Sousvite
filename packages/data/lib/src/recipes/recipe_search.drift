@@ -1,0 +1,108 @@
+import '../tables/folder_tables.dart';
+import '../tables/recipe_tables.dart';
+
+-- Full-text index for library search (PRD 7.1): one row per recipe with its
+-- title, ingredient names, and folder names. The triggers below keep it up
+-- to date on every write, local or synced, so no repository has to.
+CREATE VIRTUAL TABLE recipe_search USING fts5(
+  recipe_id UNINDEXED,
+  title,
+  ingredients,
+  folders,
+  tokenize = 'unicode61 remove_diacritics 2'
+);
+
+CREATE TRIGGER recipe_search_recipe_insert AFTER INSERT ON recipes BEGIN
+  DELETE FROM recipe_search WHERE recipe_id = new.id;
+  INSERT INTO recipe_search (recipe_id, title, ingredients, folders)
+    SELECT r.id, r.title,
+      (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), ' '), '')
+        FROM ingredient_lines l WHERE l.recipe_id = r.id),
+      (SELECT coalesce(group_concat(f.name, ' '), '')
+        FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+        WHERE e.recipe_id = r.id)
+    FROM recipes r WHERE r.id = new.id;
+END;
+
+CREATE TRIGGER recipe_search_recipe_update AFTER UPDATE OF title ON recipes BEGIN
+  UPDATE recipe_search SET title = new.title WHERE recipe_id = new.id;
+END;
+
+CREATE TRIGGER recipe_search_recipe_delete AFTER DELETE ON recipes BEGIN
+  DELETE FROM recipe_search WHERE recipe_id = old.id;
+END;
+
+CREATE TRIGGER recipe_search_line_insert AFTER INSERT ON ingredient_lines BEGIN
+  UPDATE recipe_search SET ingredients =
+    (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), ' '), '')
+      FROM ingredient_lines l WHERE l.recipe_id = new.recipe_id)
+  WHERE recipe_id = new.recipe_id;
+END;
+
+CREATE TRIGGER recipe_search_line_update
+AFTER UPDATE OF name, raw_text ON ingredient_lines BEGIN
+  UPDATE recipe_search SET ingredients =
+    (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), ' '), '')
+      FROM ingredient_lines l WHERE l.recipe_id = new.recipe_id)
+  WHERE recipe_id = new.recipe_id;
+END;
+
+CREATE TRIGGER recipe_search_line_delete AFTER DELETE ON ingredient_lines BEGIN
+  UPDATE recipe_search SET ingredients =
+    (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), ' '), '')
+      FROM ingredient_lines l WHERE l.recipe_id = old.recipe_id)
+  WHERE recipe_id = old.recipe_id;
+END;
+
+CREATE TRIGGER recipe_search_entry_insert AFTER INSERT ON folder_entries BEGIN
+  UPDATE recipe_search SET folders =
+    (SELECT coalesce(group_concat(f.name, ' '), '')
+      FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+      WHERE e.recipe_id = new.recipe_id)
+  WHERE recipe_id = new.recipe_id;
+END;
+
+CREATE TRIGGER recipe_search_entry_delete AFTER DELETE ON folder_entries BEGIN
+  UPDATE recipe_search SET folders =
+    (SELECT coalesce(group_concat(f.name, ' '), '')
+      FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+      WHERE e.recipe_id = old.recipe_id)
+  WHERE recipe_id = old.recipe_id;
+END;
+
+CREATE TRIGGER recipe_search_folder_insert AFTER INSERT ON folders BEGIN
+  UPDATE recipe_search SET folders =
+    (SELECT coalesce(group_concat(f.name, ' '), '')
+      FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+      WHERE e.recipe_id = recipe_search.recipe_id)
+  WHERE recipe_id IN
+    (SELECT recipe_id FROM folder_entries WHERE folder_id = new.id);
+END;
+
+CREATE TRIGGER recipe_search_folder_update AFTER UPDATE OF name ON folders BEGIN
+  UPDATE recipe_search SET folders =
+    (SELECT coalesce(group_concat(f.name, ' '), '')
+      FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+      WHERE e.recipe_id = recipe_search.recipe_id)
+  WHERE recipe_id IN
+    (SELECT recipe_id FROM folder_entries WHERE folder_id = new.id);
+END;
+
+CREATE TRIGGER recipe_search_folder_delete AFTER DELETE ON folders BEGIN
+  UPDATE recipe_search SET folders =
+    (SELECT coalesce(group_concat(f.name, ' '), '')
+      FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+      WHERE e.recipe_id = recipe_search.recipe_id)
+  WHERE recipe_id IN
+    (SELECT recipe_id FROM folder_entries WHERE folder_id = old.id);
+END;
+
+-- Fills the index for recipes saved before it existed (schema v4).
+rebuildRecipeSearch: INSERT INTO recipe_search (recipe_id, title, ingredients, folders)
+  SELECT r.id, r.title,
+    (SELECT coalesce(group_concat(coalesce(l.name, l.raw_text), ' '), '')
+      FROM ingredient_lines l WHERE l.recipe_id = r.id),
+    (SELECT coalesce(group_concat(f.name, ' '), '')
+      FROM folder_entries e INNER JOIN folders f ON f.id = e.folder_id
+      WHERE e.recipe_id = r.id)
+  FROM recipes r;
