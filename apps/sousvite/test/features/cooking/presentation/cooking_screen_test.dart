@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -12,11 +13,13 @@ import 'package:sousvite/features/cooking/presentation/cooking_header.dart';
 import 'package:sousvite/features/cooking/presentation/cooking_screen.dart';
 import 'package:sousvite/features/cooking/presentation/cooking_step_page.dart';
 import 'package:sousvite/features/cooking/presentation/timer_tray.dart';
+import 'package:sousvite/features/recipe/recipe.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/fake_user_recipe_prefs_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
+import '../../settings/fakes.dart' show FakeMeasuringToolRepository;
 import '../fake_screen_awake.dart';
 
 void main() {
@@ -30,17 +33,28 @@ void main() {
     unit: Unit.cup,
     name: 'flour',
   );
-  final milk = RecipeFixtures.line('milk', name: 'milk');
+  final milk = RecipeFixtures.line(
+    'milk',
+    quantity: Quantity.one,
+    unit: Unit.cup,
+    name: 'milk',
+  );
+  final sugar = RecipeFixtures.line(
+    'sugar',
+    quantity: Quantity(5),
+    unit: Unit.teaspoon,
+    name: 'sugar',
+  );
 
   setUp(() {
     screen = FakeScreenAwake();
     recipes = FakeRecipeRepository()
       ..seed(
         recipe: RecipeFixtures.recipe(),
-        lines: [flour, milk],
+        lines: [flour, milk, sugar],
         stepSections: [RecipeFixtures.stepSection('bake', name: 'Bake')],
         steps: [
-          RecipeFixtures.step('mix', text: 'Whisk the flour and milk.'),
+          RecipeFixtures.step('mix', text: 'Whisk the flour, sugar, and milk.'),
           RecipeFixtures.step(
             'oven',
             sectionId: 'bake',
@@ -56,6 +70,9 @@ void main() {
       FakeUserRecipePrefsRepository(),
     ),
     screenAwakeProvider.overrideWithValue(screen),
+    measuringToolRepositoryProvider.overrideWithValue(
+      FakeMeasuringToolRepository(),
+    ),
   ];
 
   Future<void> pumpCooking(WidgetTester tester) async {
@@ -70,7 +87,7 @@ void main() {
     await pumpCooking(tester);
 
     expect(find.text('Step 1 of 2'), findsOneWidget);
-    expect(find.text('Whisk the flour and milk.'), findsOneWidget);
+    expect(find.textContaining('Whisk', findRichText: true), findsOneWidget);
     expect(find.text('Bake for 20 minutes.'), findsNothing);
     final theme = Theme.of(tester.element(find.byType(CookingStepText)));
     expect(theme.colorScheme, AppColorSchemes.cookingLight);
@@ -78,6 +95,32 @@ void main() {
 
     await tester.pumpWidget(const SizedBox());
     expect(screen.isOn, isFalse);
+  });
+
+  testWidgets('places amounts in the step, scaled, with measuring guides', (
+    tester,
+  ) async {
+    await pumpCooking(tester);
+
+    expect(
+      find.text(
+        'Whisk ¾\u00a0cup flour, 5\u00a0tsp sugar, and 1\u00a0cup milk.',
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
+    // ¾ cup is one of your cups, so only the sugar needs a guide.
+    expect(find.byType(MeasuringGuide), findsOneWidget);
+    expect(find.text('5\u00a0tsp sugar'), findsOneWidget);
+
+    ProviderScope.containerOf(tester.element(find.byType(CookingScreen)))
+        .read(recipeScaleProvider(recipeId).notifier)
+        .scaleBy(Quantity(2));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Whisk 1 ½\u00a0cups flour', findRichText: true),
+      findsOneWidget,
+    );
   });
 
   testWidgets('moves with Next and Back, and by swiping', (tester) async {
@@ -173,7 +216,9 @@ void main() {
     addTearDown(tester.view.reset);
     await pumpCooking(tester);
 
-    final step = tester.getTopLeft(find.text('Whisk the flour and milk.'));
+    final step = tester.getTopLeft(
+      find.textContaining('Whisk', findRichText: true),
+    );
     final ingredients = tester.getTopLeft(
       find.text('Ingredients for this step'),
     );

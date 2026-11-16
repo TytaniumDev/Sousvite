@@ -8,9 +8,12 @@ export 'application/recipe_data.dart'
         ingredientLinesProvider,
         recipeProvider,
         recipeStepProvider,
+        recipeStepsProvider,
         stepSectionNameProvider;
 export 'application/recipe_outline.dart'
     show StepOutline, StepOutlineSteps, stepOutlineProvider;
-export 'application/recipe_scale.dart' show LineAmount, lineAmountProvider;
+export 'application/recipe_scale.dart'
+    show LineAmount, lineAmountProvider, recipeScaleProvider, shownAmount;
+export 'application/recipe_units.dart' show recipeUnitSystemProvider;
 export 'presentation/recipe_ingredient_row.dart';
 export 'recipe_routes.dart';

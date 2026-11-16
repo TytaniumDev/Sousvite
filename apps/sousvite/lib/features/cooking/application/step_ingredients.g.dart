@@ -8,30 +8,21 @@ part of 'step_ingredients.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The ingredient lines a step uses, in recipe order, for its checklist
-/// (DESIGN_SYSTEM.md §10.3).
-///
-/// For now a line belongs to a step when the step mentions the line's
-/// name. Smart step text (MEA-2) replaces this body with its ingredient
-/// matching; nothing else changes.
+/// The ingredient lines a step uses, in the order it mentions them, for
+/// its checklist (DESIGN_SYSTEM.md §10.3). A line belongs to the step
+/// where smart step text places its amount.
 
 @ProviderFor(StepIngredientIds)
 final stepIngredientIdsProvider = StepIngredientIdsFamily._();
 
-/// The ingredient lines a step uses, in recipe order, for its checklist
-/// (DESIGN_SYSTEM.md §10.3).
-///
-/// For now a line belongs to a step when the step mentions the line's
-/// name. Smart step text (MEA-2) replaces this body with its ingredient
-/// matching; nothing else changes.
+/// The ingredient lines a step uses, in the order it mentions them, for
+/// its checklist (DESIGN_SYSTEM.md §10.3). A line belongs to the step
+/// where smart step text places its amount.
 final class StepIngredientIdsProvider
     extends $NotifierProvider<StepIngredientIds, List<IngredientLineId>> {
-  /// The ingredient lines a step uses, in recipe order, for its checklist
-  /// (DESIGN_SYSTEM.md §10.3).
-  ///
-  /// For now a line belongs to a step when the step mentions the line's
-  /// name. Smart step text (MEA-2) replaces this body with its ingredient
-  /// matching; nothing else changes.
+  /// The ingredient lines a step uses, in the order it mentions them, for
+  /// its checklist (DESIGN_SYSTEM.md §10.3). A line belongs to the step
+  /// where smart step text places its amount.
   StepIngredientIdsProvider._({
     required StepIngredientIdsFamily super.from,
     required (RecipeId, RecipeStepId) super.argument,
@@ -76,14 +67,11 @@ final class StepIngredientIdsProvider
   }
 }
 
-String _$stepIngredientIdsHash() => r'3870b65dd0c1df83292ddc909758fabe6a0d833f';
+String _$stepIngredientIdsHash() => r'6f4c238722e8e5e8d329a2280aeb645c2b59fd42';
 
-/// The ingredient lines a step uses, in recipe order, for its checklist
-/// (DESIGN_SYSTEM.md §10.3).
-///
-/// For now a line belongs to a step when the step mentions the line's
-/// name. Smart step text (MEA-2) replaces this body with its ingredient
-/// matching; nothing else changes.
+/// The ingredient lines a step uses, in the order it mentions them, for
+/// its checklist (DESIGN_SYSTEM.md §10.3). A line belongs to the step
+/// where smart step text places its amount.
 
 final class StepIngredientIdsFamily extends $Family
     with
@@ -103,12 +91,9 @@ final class StepIngredientIdsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The ingredient lines a step uses, in recipe order, for its checklist
-  /// (DESIGN_SYSTEM.md §10.3).
-  ///
-  /// For now a line belongs to a step when the step mentions the line's
-  /// name. Smart step text (MEA-2) replaces this body with its ingredient
-  /// matching; nothing else changes.
+  /// The ingredient lines a step uses, in the order it mentions them, for
+  /// its checklist (DESIGN_SYSTEM.md §10.3). A line belongs to the step
+  /// where smart step text places its amount.
 
   StepIngredientIdsProvider call(RecipeId recipeId, RecipeStepId stepId) =>
       StepIngredientIdsProvider._(argument: (recipeId, stepId), from: this);
@@ -117,12 +102,9 @@ final class StepIngredientIdsFamily extends $Family
   String toString() => r'stepIngredientIdsProvider';
 }
 
-/// The ingredient lines a step uses, in recipe order, for its checklist
-/// (DESIGN_SYSTEM.md §10.3).
-///
-/// For now a line belongs to a step when the step mentions the line's
-/// name. Smart step text (MEA-2) replaces this body with its ingredient
-/// matching; nothing else changes.
+/// The ingredient lines a step uses, in the order it mentions them, for
+/// its checklist (DESIGN_SYSTEM.md §10.3). A line belongs to the step
+/// where smart step text places its amount.
 
 abstract class _$StepIngredientIds extends $Notifier<List<IngredientLineId>> {
   late final _$args = ref.$arg as (RecipeId, RecipeStepId);
