@@ -92,7 +92,6 @@ void main() {
         appSettingsRepositoryProvider,
         foodRepositoryProvider,
         experimentRepositoryProvider,
-        groceryRepositoryProvider,
         measuringToolRepositoryProvider,
         userRecipePrefsRepositoryProvider,
       ]) {

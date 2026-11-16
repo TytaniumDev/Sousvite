@@ -70,4 +70,22 @@ void main() {
       expect(await repository.getFolder(folder.id), folder);
     });
   });
+
+  group('groceryRepositoryProvider', () {
+    test('saves lists to the database once the recorder loads', () async {
+      final providers = container();
+      await providers.read(changeRecorderProvider.future);
+      final repository = providers.read(groceryRepositoryProvider);
+      final list = GroceryList(
+        id: const GroceryListId('g1'),
+        name: 'Weekly',
+        createdAt: DateTime.utc(2026, 11, 16),
+      );
+
+      await repository.saveList(list);
+
+      expect(repository, isA<DriftGroceryRepository>());
+      expect(await repository.watchLists().first, [list]);
+    });
+  });
 }
