@@ -1,6 +1,7 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { type Auth, getAuth } from 'firebase-admin/auth';
-import { type Firestore, getFirestore } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import { logger } from 'firebase-functions/v2';
 import {
   type CallableRequest,
@@ -8,16 +9,18 @@ import {
   onCall,
 } from 'firebase-functions/v2/https';
 
+import { removeUserFromSharing } from '../sharing/remove_user.js';
+import type { SharingStores } from '../sharing/sharing_stores.js';
+
 /** Where the account's data lives on the server. */
-export interface AccountStores {
+export interface AccountStores extends SharingStores {
   readonly auth: Auth;
-  readonly firestore: Firestore;
 }
 
 /**
  * Every Firestore document tree that belongs to one user. Tasks that store
  * per-user data on the server (SYN-5 private spaces, PRO-1 entitlements,
- * SHR-1 memberships) add their paths here, so deleting an account always
+ * SHR-1 shares) add their paths here, so deleting an account always
  * removes it (PRD 7.9).
  */
 export const userDocumentPaths = (uid: string): readonly string[] => [
@@ -36,7 +39,9 @@ export const handleDeleteAccount =
     if (uid === undefined) {
       throw new HttpsError('unauthenticated', 'Sign in to delete your account');
     }
-    const { auth, firestore } = stores();
+    const resolved = stores();
+    const { auth, firestore } = resolved;
+    await removeUserFromSharing(resolved, uid);
     for (const path of userDocumentPaths(uid)) {
       await firestore.recursiveDelete(firestore.doc(path));
     }
@@ -64,6 +69,12 @@ export const deleteAccount = onCall(
     // The emulators point the Admin SDK at themselves through the
     // environment, so this needs no options.
     const app = getApps()[0] ?? initializeApp();
-    return { auth: getAuth(app), firestore: getFirestore(app) };
+    return {
+      auth: getAuth(app),
+      firestore: getFirestore(app),
+      deleteFiles: (prefix: string) =>
+        getStorage(app).bucket().deleteFiles({ prefix, force: true }),
+      now: () => new Date(),
+    };
   }),
 );

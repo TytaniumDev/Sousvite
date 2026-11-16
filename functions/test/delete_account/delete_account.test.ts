@@ -47,7 +47,12 @@ describe('deleteAccount', () => {
       () => false,
     );
 
-  const handle = handleDeleteAccount(() => ({ auth, firestore }));
+  const handle = handleDeleteAccount(() => ({
+    auth,
+    firestore,
+    deleteFiles: () => Promise.resolve(),
+    now: () => new Date(),
+  }));
 
   it('deletes the user and their data, and leaves other users alone', async () => {
     await createUserWithData('alice');
@@ -90,9 +95,12 @@ describe('deleteAccount', () => {
     } as unknown as Auth;
 
     await expect(
-      handleDeleteAccount(() => ({ auth: failingAuth, firestore }))(
-        requestFrom('dave'),
-      ),
+      handleDeleteAccount(() => ({
+        auth: failingAuth,
+        firestore,
+        deleteFiles: () => Promise.resolve(),
+        now: () => new Date(),
+      }))(requestFrom('dave')),
     ).rejects.toThrow('Auth is down');
   });
 
