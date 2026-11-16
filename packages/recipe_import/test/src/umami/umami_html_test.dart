@@ -74,10 +74,16 @@ void main() {
         'Heat the oil in a skillet.',
         'Brown the chicken, 5 minutes a side.',
         'Rice: stir in the rice and broth, then bake for 40 minutes.',
+        'Spoon the pan juices over the top.',
       ]);
-      expect(snapshot.stepSections.single.name, 'Finish');
+      final [finish, serve] = snapshot.stepSections;
+      expect(finish.name, 'Finish');
+      // Bold with a plain colon after it is still a heading, and the
+      // "Method:" heading right under it doesn't replace it.
+      expect(serve.name, 'Serve');
       expect(snapshot.steps[1].sectionId, isNull);
-      expect(snapshot.steps[2].sectionId, snapshot.stepSections.single.id);
+      expect(snapshot.steps[2].sectionId, finish.id);
+      expect(snapshot.steps[3].sectionId, serve.id);
     });
 
     test('reads a recipe with only a name and a book', () {
