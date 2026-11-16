@@ -161,7 +161,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 | Entity | Notes |
 |---|---|
 | `Recipe` | Title, photo ref, servings, times, notes, source URL and attribution |
-| `IngredientLine` | Raw text plus parsed quantity, unit, name, preparation; sort key; optional section |
+| `IngredientLine` | Raw text plus parsed quantity, unit or count word, name, preparation; sort key; optional section |
 | `StepSection` | Named section ("Prep"), sort key |
 | `Step` | Text, sort key, section |
 | `Folder`, `FolderEntry` | Many-to-many (a recipe can be in several folders) |
@@ -290,7 +290,7 @@ Because both carry the same change log, **switching transports** means replaying
 
 - Handles Unicode and ASCII fractions, mixed numbers, ranges ("2–3"), metric and US units with aliases ("tbsp", "T", "Tbsp."), sizes ("1 large egg"), parentheticals ("1 (15 oz) can"), and "to taste" lines with no amount.
 - Output keeps the original text, and users can correct any field (PRD 7.3).
-- `parseIngredientLine(String)` returns a `ParsedLine`. Besides quantity, range end, unit, name, and preparation it reports a `countWord` ("clove", "can", "bunch") for count units the `Unit` enum doesn't have, kept as text so any word works (Tyler's decision), plus `size`, a container `package` size, and an `alternate` amount in another unit. A count word with nothing after it is the ingredient ("5 cloves").
+- `parseIngredientLine(String)` returns a `ParsedLine`. Besides quantity, range end, unit, name, and preparation it reports a `countWord` ("clove", "can", "bunch") for count units the `Unit` enum doesn't have, kept as text so any word works (Tyler's decision) and stored as `IngredientLine.countWord`, singular and lowercase, plus `size`, a container `package` size, and an `alternate` amount in another unit. A count word with nothing after it is the ingredient ("5 cloves").
 - **Corpus testing:** `packages/ingredient_parser/test/fixtures/` holds real lines and hand-written cases with expected results; its README defines the format and how results are compared. CI prints the pass rate and fails below the floor in `corpus_test.dart` (98%, raised as the parser improves). Every parsing bug becomes a new fixture.
 
 ## 13. Smart step text and measuring guidance

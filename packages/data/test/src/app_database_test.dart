@@ -63,6 +63,7 @@ void main() {
               rawText: '1 ½ cups rolled oats',
               sortKey: 'a0',
               unit: const Value(Unit.cup),
+              countWord: const Value('clove'),
             ),
           );
 
@@ -73,6 +74,7 @@ void main() {
       expect(recipe.notes, isEmpty);
       expect(recipe.createdAt, created);
       expect(line.unit, Unit.cup);
+      expect(line.countWord, 'clove');
     });
   });
 }
