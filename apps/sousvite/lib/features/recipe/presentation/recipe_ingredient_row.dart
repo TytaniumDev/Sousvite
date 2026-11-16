@@ -32,7 +32,11 @@ class const RecipeIngredientRow({
       ingredientLineProvider(recipeId, lineId).select(
         (line) => line == null
             ? null
-            : (name: line.name ?? line.rawText, preparation: line.preparation),
+            : (
+                name: line.name ?? line.rawText,
+                countWord: line.countWord,
+                preparation: line.preparation,
+              ),
       ),
     );
     if (text == null) return const SizedBox.shrink();
@@ -48,11 +52,11 @@ class const RecipeIngredientRow({
         amount.quantity,
         amount.unit == upTo.unit
             ? null
-            : l10n.unitWord(amount.unit, amount.quantity),
+            : l10n.amountWord(amount.unit, text.countWord, amount.quantity),
       );
       final to = AmountText.textFor(
         upTo.quantity,
-        l10n.unitWord(upTo.unit, upTo.quantity),
+        l10n.amountWord(upTo.unit, text.countWord, upTo.quantity),
       );
       return IngredientRow(
         name: '$from–$to ${text.name}',
@@ -64,7 +68,9 @@ class const RecipeIngredientRow({
     return IngredientRow(
       name: text.name,
       quantity: amount?.quantity,
-      unit: amount == null ? null : l10n.unitWord(amount.unit, amount.quantity),
+      unit: amount == null
+          ? null
+          : l10n.amountWord(amount.unit, text.countWord, amount.quantity),
       preparation: text.preparation,
       checked: checked,
       onChanged: onChanged,

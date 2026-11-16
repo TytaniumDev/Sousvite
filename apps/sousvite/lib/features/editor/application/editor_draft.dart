@@ -106,6 +106,7 @@ class EditorDraft() extends _$EditorDraft {
     quantity: parsed.quantity,
     quantityMax: parsed.quantityMax,
     unit: parsed.unit,
+    countWord: parsed.countWord,
     name: parsed.storedName,
     preparation: parsed.preparation,
   );

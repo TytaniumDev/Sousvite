@@ -123,6 +123,28 @@ void main() {
     );
   });
 
+  testWidgets('a count word reads as the unit', (tester) async {
+    recipes = FakeRecipeRepository()
+      ..seed(
+        recipe: RecipeFixtures.recipe(),
+        lines: [
+          RecipeFixtures.line(
+            'garlic',
+            quantity: Quantity(3),
+            countWord: 'clove',
+            name: 'garlic',
+          ),
+        ],
+        steps: [RecipeFixtures.step('fry', text: 'Fry the garlic.')],
+      );
+    await pumpCooking(tester);
+
+    expect(
+      find.text('Fry 3\u00a0cloves garlic.', findRichText: true),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('moves with Next and Back, and by swiping', (tester) async {
     final builds = BuildCounter.start();
     await pumpCooking(tester);

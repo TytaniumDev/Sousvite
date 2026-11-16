@@ -13,4 +13,19 @@ extension UnitWords on AppLocalizations {
         ? common_unitOther(unit.name)
         : common_unitOne(unit.name);
   }
+
+  /// The word after [quantity] on an ingredient line: its [unit]'s word,
+  /// else its [countWord] ("clove" in "3 cloves garlic"), made plural the
+  /// way English count words are ("cloves", "bunches"). Null for neither.
+  String? amountWord(Unit? unit, String? countWord, Quantity quantity) =>
+      unitWord(unit, quantity) ??
+      (countWord == null ? null : pluralCountWord(countWord, quantity));
+}
+
+/// [word] as it reads after [quantity]: "clove" after 1 or ½, "cloves"
+/// after 3, "bunches" after 2. Count words are the recipe's own text, so
+/// they follow English rules rather than the app's translations.
+String pluralCountWord(String word, Quantity quantity) {
+  if (quantity <= Quantity.one) return word;
+  return RegExp(r'(s|sh|ch|x|z)$').hasMatch(word) ? '${word}es' : '${word}s';
 }

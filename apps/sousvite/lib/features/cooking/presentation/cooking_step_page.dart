@@ -79,11 +79,16 @@ class const CookingStepText({
     final system = ref.watch(recipeUnitSystemProvider(recipeId));
     final l10n = context.l10n;
 
-    StepAmountSegment inline(Amount written) {
+    // "6 cloves garlic": a line's count word reads as its unit.
+    String? countWordOf(IngredientLineId lineId) => ref.watch(
+      ingredientLineProvider(recipeId, lineId).select((l) => l?.countWord),
+    );
+
+    StepAmountSegment inline(Amount written, [String? countWord]) {
       final shown = shownAmount(written, factor: factor, system: system);
       return StepAmountSegment(
         quantity: shown.quantity,
-        unit: l10n.unitWord(shown.unit, shown.quantity),
+        unit: l10n.amountWord(shown.unit, countWord, shown.quantity),
       );
     }
 
@@ -91,16 +96,22 @@ class const CookingStepText({
       for (final part in parts)
         ...switch (part) {
           StepWords(:final text) => [StepTextSegment(text)],
-          StepMention(:final amount, :final amountMax, :final name) => [
-            if (amountMax == null)
-              inline(amount)
-            else ...[
-              inline(Amount(amount.quantity, null)),
-              const StepTextSegment('–'),
-              inline(Amount(amountMax, amount.unit)),
+          StepMention(
+            :final lineId,
+            :final amount,
+            :final amountMax,
+            :final name,
+          ) =>
+            [
+              if (amountMax == null)
+                inline(amount, countWordOf(lineId))
+              else ...[
+                inline(Amount(amount.quantity, null)),
+                const StepTextSegment('–'),
+                inline(Amount(amountMax, amount.unit), countWordOf(lineId)),
+              ],
+              StepTextSegment(' $name'),
             ],
-            StepTextSegment(' $name'),
-          ],
         },
     ];
     final large = WindowSizeClass.of(context) != .compact;

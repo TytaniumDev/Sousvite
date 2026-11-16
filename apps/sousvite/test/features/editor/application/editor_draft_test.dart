@@ -149,11 +149,9 @@ void main() {
   group('ParsedLineParts', () {
     const parse = parseIngredientLine;
 
-    test('keeps the count word and size in the name', () {
-      expect(parse('3 cloves garlic').storedName, 'cloves garlic');
-      expect(parse('1 clove garlic').storedName, 'clove garlic');
-      expect(parse('2 bunches kale').storedName, 'bunches kale');
+    test('keeps the size in the name, but not the count word', () {
       expect(parse('1 large egg').storedName, 'large egg');
+      expect(parse('3 cloves garlic').storedName, 'garlic');
     });
 
     test('keeps the whole text when there is no name', () {
