@@ -13,8 +13,8 @@ import 'package:recipe_import/src/umami/umami_recipe.dart';
 ///
 /// The page lists details as `<p>Label: <strong>value</strong></p>`, then
 /// `Ingredients` and `Directions` lists and `Notes` paragraphs, each under
-/// an `<h2>`. A list item that is all bold or underlined is a section
-/// heading. Umami's "Active Time" becomes the prep time.
+/// an `<h2>`. A list item whose words are all bold or underlined is a
+/// section heading. Umami's "Active Time" becomes the prep time.
 UmamiRecipe? readUmamiHtml(
   String page, {
   required String Function() newId,
@@ -149,27 +149,37 @@ Iterable<String> _listItems(
 String _item(String text) => '<li><p><span>${_text(text)}</span></p></li>';
 
 /// A list's items, with the section each sits in. A heading item names the
-/// section of the items after it.
+/// section of the items after it. A heading right after another, like
+/// "Method:" under "Slaw:", is a sub-heading, so the first one names the
+/// section.
 List<SectionedText> _items(Element list) {
   final items = <SectionedText>[];
   String? section;
+  var afterHeading = false;
   for (final item in list.children.where((e) => e.localName == 'li')) {
     final text = cleanText(item.text);
     if (text.isEmpty) continue;
-    if (_isHeading(item)) {
+    final isHeading = _isHeading(item);
+    if (isHeading && !afterHeading) {
       section = text.replaceFirst(RegExp(r'\s*:$'), '');
-    } else {
+    } else if (!isHeading) {
       items.add((section: section, text: text));
     }
+    afterHeading = isHeading;
   }
   return items;
 }
 
-/// Whether every word of [item] is bold or underlined.
-bool _isHeading(Element item) =>
-    _textNodes(item)
-        .where((node) => node.text.trim().isNotEmpty)
-        .every((node) => _emphasized(node.parent, within: item));
+/// Whether every word of [item] is bold or underlined. Punctuation outside
+/// the emphasis, like the colon in `<strong>Potatoes</strong>:`, doesn't
+/// count.
+bool _isHeading(Element item) {
+  final words = _textNodes(item)
+      .where((node) => node.text.contains(_wordCharacter))
+      .toList();
+  return words.isNotEmpty &&
+      words.every((node) => _emphasized(node.parent, within: item));
+}
 
 bool _emphasized(Element? element, {required Element within}) {
   for (var e = element; e != null && e != within; e = e.parent) {
@@ -200,6 +210,9 @@ String _attribute(String text) =>
 
 /// "Servings: 4 servings" → label and value.
 final _detail = RegExp(r'^([A-Za-z ]+):\s*(.*)$');
+
+/// A letter or digit, in any script.
+final _wordCharacter = RegExp(r'[\p{L}\p{N}]', unicode: true);
 
 /// A step number some recipes type at the start of each step: "1. ".
 final _stepNumber = RegExp(r'^\d+\.\s*');
