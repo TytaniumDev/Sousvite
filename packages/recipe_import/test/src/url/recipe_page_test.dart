@@ -136,9 +136,11 @@ void main() {
       expect(lines[0].name, 'olive oil');
       expect(lines[1].name, 'large onion');
       expect(lines[1].preparation, 'diced');
-      expect(lines[2].name, 'cloves garlic');
+      expect(lines[2].name, 'garlic');
+      expect(lines[2].countWord, 'clove');
       expect(lines[3].quantity, Quantity(3, 2));
-      expect(lines[4].name, 'cans kidney beans');
+      expect(lines[4].name, 'kidney beans');
+      expect(lines[4].countWord, 'can');
     });
 
     test('starts a section at a heading line', () {
