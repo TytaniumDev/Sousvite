@@ -36,8 +36,10 @@ ExperimentRepository experimentRepository(Ref ref) =>
     throw UnimplementedError('ExperimentRepository is not implemented yet.');
 
 @Riverpod(keepAlive: true)
-GroceryRepository groceryRepository(Ref ref) =>
-    throw UnimplementedError('GroceryRepository is not implemented yet.');
+GroceryRepository groceryRepository(Ref ref) => DriftGroceryRepository(
+  ref.watch(appDatabaseProvider),
+  recorder: ref.watch(changeRecorderProvider).requireValue,
+);
 
 @Riverpod(keepAlive: true)
 MeasuringToolRepository measuringToolRepository(Ref ref) =>

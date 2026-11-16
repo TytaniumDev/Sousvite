@@ -46,8 +46,12 @@ void main() {
     callable = _MockCallable();
     google = _MockGoogle();
     credential = _MockCredential();
-    when(() => google.initialize(clientId: any(named: 'clientId')))
-        .thenAnswer((_) async {});
+    when(
+      () => google.initialize(
+        clientId: any(named: 'clientId'),
+        serverClientId: any(named: 'serverClientId'),
+      ),
+    ).thenAnswer((_) async {});
     when(() => google.signOut()).thenAnswer((_) async {});
     when(() => google.disconnect()).thenAnswer((_) async {});
     when(() => auth.signOut()).thenAnswer((_) async {});
@@ -69,6 +73,7 @@ void main() {
     functions: functions,
     google: google,
     googleClientId: 'ios-client',
+    googleServerClientId: 'web-client',
     isWeb: isWeb,
     platform: platform,
   );
@@ -123,7 +128,12 @@ void main() {
 
       expect(await service().signInWithGoogle(), AuthOutcome.completed);
 
-      verify(() => google.initialize(clientId: 'ios-client')).called(1);
+      verify(
+        () => google.initialize(
+          clientId: 'ios-client',
+          serverClientId: 'web-client',
+        ),
+      ).called(1);
       final signedInWith =
           verify(() => auth.signInWithCredential(captureAny())).captured.single
               as AuthCredential;
