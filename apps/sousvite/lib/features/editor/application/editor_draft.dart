@@ -2,6 +2,8 @@ import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ingredient_parser/ingredient_parser.dart';
+import 'package:recipe_import/recipe_import.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/editor/application/ingredient_line_parser.dart';
@@ -96,22 +98,18 @@ class EditorDraft() extends _$EditorDraft {
     );
   }
 
+  /// [line] with [text] and the parts the parser read in it, filled in
+  /// the same way as imported lines.
   static IngredientLine _withParsed(
     IngredientLine line,
     String text,
-    ParsedIngredient parsed,
-  ) => line.copyWith(
-    rawText: text,
-    quantity: parsed.quantity,
-    quantityMax: parsed.quantityMax,
-    unit: parsed.unit,
-    name: parsed.name,
-    preparation: parsed.preparation,
-  );
+    ParsedLine parsed,
+  ) => withParsedParts(line.copyWith(rawText: text), parsed);
 
   /// Adds lines for [texts] after [afterLineId] in its section, or at the
-  /// end of [sectionId]. Pasting several lines adds one line each.
-  /// Returns the new lines' ids.
+  /// end of [sectionId]. Pasting several lines adds one line each, and a
+  /// pasted heading ("For the sauce:") starts a new section at the end
+  /// for the lines after it. Returns the new lines' ids.
   List<IngredientLineId> addLines(
     List<String> texts, {
     IngredientSectionId? sectionId,
@@ -130,9 +128,28 @@ class EditorDraft() extends _$EditorDraft {
     ];
     final index = after == null ? group.length : group.indexOf(after) + 1;
     var before = index == 0 ? null : group[index - 1].sortKey;
-    final next = index < group.length ? group[index].sortKey : null;
+    var next = index < group.length ? group[index].sortKey : null;
+    var lineSection = section;
+    var lastSectionKey = draft.ingredientSections.lastOrNull?.sortKey;
+    final sections = <IngredientSection>[];
     final added = <IngredientLine>[];
     for (final text in texts) {
+      final parsed = parse(text);
+      if (parsed.heading case final heading? when texts.length > 1) {
+        // A new section goes last, so its lines start a fresh group.
+        lastSectionKey = SortKey.between(lastSectionKey, null);
+        final newSection = IngredientSection(
+          id: IngredientSectionId(_newId()),
+          recipeId: draft.recipe.id,
+          name: _capitalized(heading),
+          sortKey: lastSectionKey,
+        );
+        sections.add(newSection);
+        lineSection = newSection.id;
+        before = null;
+        next = null;
+        continue;
+      }
       final key = SortKey.between(before, next);
       before = key;
       added.add(
@@ -142,15 +159,16 @@ class EditorDraft() extends _$EditorDraft {
             recipeId: draft.recipe.id,
             rawText: text,
             sortKey: key,
-            sectionId: section,
+            sectionId: lineSection,
           ),
           text,
-          parse(text),
+          parsed,
         ),
       );
     }
     _edit(
       (d) => d.copyWith(
+        ingredientSections: [...d.ingredientSections, ...sections],
         ingredientLines: [
           ...d.ingredientLines,
           ...added,
@@ -159,6 +177,9 @@ class EditorDraft() extends _$EditorDraft {
     );
     return [for (final line in added) line.id];
   }
+
+  static String _capitalized(String text) =>
+      text.isEmpty ? text : text[0].toUpperCase() + text.substring(1);
 
   void removeLine(IngredientLineId lineId) => _edit(
     (d) => d.copyWith(

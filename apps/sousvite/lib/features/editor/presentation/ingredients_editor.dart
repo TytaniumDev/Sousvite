@@ -223,6 +223,7 @@ class const _SplitPreview({
             : (
                 quantity: line.quantity,
                 unit: line.unit,
+                countWord: line.countWord,
                 name: line.name,
                 preparation: line.preparation,
               ),
@@ -237,7 +238,9 @@ class const _SplitPreview({
       child: IngredientSplitPreview(
         name: name,
         quantity: quantity,
-        unit: quantity == null ? null : l10n.unitWord(split.unit, quantity),
+        unit: quantity == null
+            ? null
+            : l10n.unitWord(split.unit, quantity, countWord: split.countWord),
         preparation: split.preparation,
         amountLabel: l10n.editor_amount,
         nameLabel: l10n.editor_ingredient,

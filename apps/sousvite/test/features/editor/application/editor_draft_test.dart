@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/application/editor_outline.dart';
-import 'package:sousvite/features/editor/application/ingredient_line_parser.dart';
 import 'package:sousvite/features/editor/application/recipe_copies.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
@@ -117,10 +116,40 @@ void main() {
     expect(container.read(editorLineProvider(recipeId, flour)), isNull);
   });
 
-  test('the stand-in parser keeps the whole line as the name', () {
-    final parse = container.read(ingredientLineParserProvider);
-    expect(parse('2 eggs').name, '2 eggs');
-    expect(parse('   ').name, isNull);
+  test('splits a line into amount, unit, name, and preparation', () async {
+    (await load()).setLineText(flour, '1 ½ cups rye flour, sifted');
+    final line = container.read(editorLineProvider(recipeId, flour))!;
+    expect(line.quantity, Quantity(3, 2));
+    expect(line.unit, Unit.cup);
+    expect(line.name, 'rye flour');
+    expect(line.preparation, 'sifted');
+  });
+
+  test(
+    'a pasted heading starts a new section for the lines after it',
+    () async {
+      final editor = await load();
+      editor.addLines(['eggs', 'For the glaze:', 'sugar'], afterLineId: flour);
+
+      final glaze = draft().ingredientSections.last;
+      expect(glaze.name, 'Glaze');
+      expect(
+        container.read(editorLineIdsProvider(recipeId, null)),
+        hasLength(3),
+      );
+      final glazeLines = draft().ingredientLines.where(
+        (l) => l.sectionId == glaze.id,
+      );
+      expect(glazeLines.single.name, 'sugar');
+    },
+  );
+
+  test('keeps a size in the name', () async {
+    (await load()).setLineText(flour, '1 large egg');
+    expect(
+      container.read(editorLineProvider(recipeId, flour))?.name,
+      'large egg',
+    );
   });
 
   test('adds, renames, and removes ingredient sections', () async {
