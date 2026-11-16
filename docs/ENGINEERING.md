@@ -308,7 +308,7 @@ Everything Pro-only is still built and tested with the gate both on and off, so 
 - **Signing in later** attaches the existing local data to the account and uploads it through the chosen transport (PRD 7.9).
 - **Apple users** can use only Sousvite cloud sync, since Drive needs a Google account.
 - **Sign-in callout:** while signed out, the library shows a dismissible card, and Settings shows a row, saying that signing in with Google gives free backup and sync through the user's own Google Drive. Dismissing the card hides it for 30 days.
-- **Default transport during the beta:** Sousvite cloud for everyone. Google users can switch to Drive in Settings (APP-SYN).
+- **Default transport during the beta:** Sousvite cloud for everyone. A **Sync source** setting in Settings (marked Beta) lets Google users switch to Drive and back (APP-SYN). Switching runs `replay()` into the new transport (§8.2), so nothing is lost. The app picks the transport in one provider, `syncTransportProvider`, so the rest of the app never knows which one is active.
 
 ## 11. Nutrition *(Decided)*
 
