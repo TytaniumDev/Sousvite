@@ -6,6 +6,8 @@
 	<string>Sousvite uses the camera when you take a photo of a recipe.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Sousvite opens your photos when you choose a photo for a recipe.</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -35,6 +37,17 @@
 			<array>
 				<!-- Google sign-in returns here: the iOS OAuth client's REVERSED_CLIENT_ID. -->
 				<string>com.googleusercontent.apps.761600243200-aokb4f0elf457vareepn1aaajha5qssr</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.tytaniumdev.sousvite</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- sousvite://open/import?shared=… from the share extension. -->
+				<string>sousvite</string>
 			</array>
 		</dict>
 	</array>

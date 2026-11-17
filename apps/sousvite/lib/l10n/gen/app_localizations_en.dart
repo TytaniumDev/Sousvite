@@ -415,6 +415,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get import_title => 'Import recipe';
 
   @override
+  String get import_close => 'Close';
+
+  @override
   String get import_fromWeb => 'From a web page';
 
   @override

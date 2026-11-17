@@ -736,6 +736,12 @@ abstract class AppLocalizations {
   /// **'Import recipe'**
   String get import_title;
 
+  /// Tooltip of the button that closes the import screen when it was opened from the share sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get import_close;
+
   /// Import screen section heading for importing from a URL.
   ///
   /// In en, this message translates to:

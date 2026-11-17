@@ -8,19 +8,37 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/editor/editor.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
+import 'package:sousvite/features/import/application/recipe_url.dart';
 import 'package:sousvite/features/import/application/url_import.dart';
 import 'package:sousvite/features/import/presentation/import_failure_text.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
 /// A field for a recipe's web address and an Import button. A recipe that
 /// imports opens in the editor for review (PRD 7.2).
-class const UrlImportForm({super.key}) extends ConsumerStatefulWidget {
+class const UrlImportForm({
+  /// Text shared from another app. Its link fills the field and starts
+  /// importing.
+  final String? sharedText,
+  super.key,
+}) extends ConsumerStatefulWidget {
   @override
   ConsumerState<UrlImportForm> createState() => _UrlImportFormState();
 }
 
 class _UrlImportFormState() extends ConsumerState<UrlImportForm> {
   final _url = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final shared = widget.sharedText;
+    if (shared == null) return;
+    _url.text = parseRecipeUrl(shared)?.toString() ?? shared.trim();
+    // Providers can't change while the tree builds.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_import());
+    });
+  }
 
   @override
   void dispose() {

@@ -21,11 +21,20 @@ void main() {
       expect(parseRecipeUrl('http://a.com'), Uri.parse('http://a.com'));
     });
 
+    test('finds the link in shared text', () {
+      expect(
+        parseRecipeUrl('Best chili ever\nhttps://a.com/chili via @friend'),
+        Uri.parse('https://a.com/chili'),
+      );
+      expect(parseRecipeUrl('see https://localhost/x'), isNull);
+    });
+
     test('rejects text that is not a web address', () {
       for (final text in [
         '',
         'chili',
         'best chili recipe',
+        'chili at a.com',
         'ftp://a.com/x',
         'https://localhost/x',
         'https://a./x',
