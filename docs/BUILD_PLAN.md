@@ -362,12 +362,12 @@ Costs $25 once.
 
 - [x] Create an organization and one **Flutter** project at [sentry.io](https://sentry.io). The free Developer plan is enough for the beta. Created 2026-11-13: org `tytaniumdev`, project `sousvite`.
 - [x] Give an agent the project **DSN** (safe to ship in the app): `https://b2a333b66dcd479d1087e98242605f93@o4510951154712576.ingest.us.sentry.io/4512426129686528`. `OBS-1` passes it with `--dart-define=SENTRY_DSN=...`.
-- [ ] Create an **auth token** for uploading debug symbols and web source maps, and store it as the `SENTRY_AUTH_TOKEN` GitHub Actions secret.
+- [x] Create an **auth token** for uploading debug symbols and web source maps, and store it as the `SENTRY_AUTH_TOKEN` GitHub Actions secret. Done 2026-11-17: organization token `sousvite-ci` (scope `org:ci`).
 
 ### 8.9 GitHub repository settings
 
 - [ ] Branch protection on `main` with the CI checks required (set up by the scaffold thread; confirm it is on).
-- [ ] Add the secrets from §8.1, §8.4, §8.5, and §8.8 under Settings → Secrets and variables → Actions. `tools/secrets/set_github_secrets.sh` sets them from files in `~/Sousvite-secrets/` and hidden prompts, so no value is pasted anywhere else. Run it again whenever a new key file arrives. As of 2026-11-14 the Android keystore and App Store Connect secrets are set; `PLAY_SERVICE_ACCOUNT_JSON`, `FIREBASE_SERVICE_ACCOUNT`, and `SENTRY_AUTH_TOKEN` are not. `REL-1` reads these names:
+- [ ] Add the secrets from §8.1, §8.4, §8.5, and §8.8 under Settings → Secrets and variables → Actions. `tools/secrets/set_github_secrets.sh` sets them from files in `~/Sousvite-secrets/` and hidden prompts, so no value is pasted anywhere else. Run it again whenever a new key file arrives. As of 2026-11-14 the Android keystore and App Store Connect secrets are set; `SENTRY_AUTH_TOKEN` followed on 2026-11-17. `PLAY_SERVICE_ACCOUNT_JSON` and `FIREBASE_SERVICE_ACCOUNT` were not set as of 2026-11-14. `REL-1` reads these names:
 
   | Secret | From |
   |---|---|
