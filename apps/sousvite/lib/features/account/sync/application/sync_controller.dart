@@ -5,15 +5,27 @@ import 'package:drift/drift.dart' show TableUpdateQuery;
 import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/database.dart';
+import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/app/services/error_reporter.dart';
+import 'package:sousvite/features/account/sync/application/photo_sync.dart';
 import 'package:sousvite/features/account/sync/application/sync_source.dart';
 import 'package:sousvite/features/account/sync/application/sync_source_controller.dart';
 import 'package:sousvite/features/account/sync/application/sync_state.dart';
 import 'package:sousvite/features/account/sync/application/sync_transport.dart';
 import 'package:sousvite/features/account/sync/data/drive_access.dart';
+import 'package:sousvite/shared/photos/photos.dart';
 import 'package:sync/sync.dart';
 
 part 'sync_controller.g.dart';
+
+/// Syncs recipe photos after each space syncs.
+@Riverpod(keepAlive: true)
+PhotoSync photoSync(Ref ref) => PhotoSync(
+  recipes: ref.watch(recipeRepositoryProvider),
+  spaces: ref.watch(recipeSpaceRepositoryProvider),
+  photos: ref.watch(photoStoreProvider),
+  settings: ref.watch(appDatabaseProvider).settingsDao,
+);
 
 /// Keeps the library in sync with the chosen cloud while the app runs
 /// (ENGINEERING.md §8.2 and §10).
@@ -34,8 +46,9 @@ class SyncController() extends _$SyncController {
   /// How often a transport without a listener is polled.
   static const pollEvery = Duration(minutes: 3);
 
-  /// The private library's engine first, then one per joint share.
-  var _engines = <SyncEngine>[];
+  /// The private library's engine first, then one per joint share, each
+  /// with its space.
+  var _engines = <(SyncEngine, SpaceTransport)>[];
   Future<void>? _running;
   var _replayNext = false;
   var _again = false;
@@ -53,12 +66,15 @@ class SyncController() extends _$SyncController {
     final store = ref.watch(syncLocalStoreProvider);
     _engines = [
       for (final space in spaces)
-        SyncEngine(
-          store: store,
-          transport: space.transport,
-          clock: recorder.clock,
-          transportKey: space.key,
-          spaceId: space.spaceId,
+        (
+          SyncEngine(
+            store: store,
+            transport: space.transport,
+            clock: recorder.clock,
+            transportKey: space.key,
+            spaceId: space.spaceId,
+          ),
+          space,
         ),
     ];
     final database = ref.watch(appDatabaseProvider);
@@ -115,7 +131,8 @@ class SyncController() extends _$SyncController {
     state = state.to(.syncing);
     try {
       final store = ref.read(syncLocalStoreProvider);
-      for (final (index, engine) in engines.indexed) {
+      final photos = ref.read(photoSyncProvider);
+      for (final (index, (engine, space)) in engines.indexed) {
         final fresh =
             await store.progress(engine.transportKey) == const SyncProgress();
         final switched = index == 0 && _replayNext;
@@ -128,6 +145,11 @@ class SyncController() extends _$SyncController {
         }
         await engine.sync();
         await engine.snapshotIfDue();
+        await photos.run(
+          spaceId: space.spaceId,
+          key: space.key,
+          store: space.photos,
+        );
       }
       if (ref.mounted) state = state.to(.synced, lastSyncedAt: clock.now());
     } on DriveSignInRequired {
