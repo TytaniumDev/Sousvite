@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:sync/src/core/change.dart';
 import 'package:sync/src/drive/drive_app_folder.dart';
+import 'package:sync/src/drive/drive_retry.dart';
 import 'package:sync/src/transport/snapshot_codec.dart';
 import 'package:sync/src/transport/sync_transport.dart';
 
@@ -32,14 +33,12 @@ final class DriveTransport(
   /// Drive lists late.
   final Duration listingMargin = const Duration(minutes: 10),
 
-  /// How many times a rate-limited call is tried before giving up.
-  final int maxAttempts = 6,
-
-  /// Waits between rate-limited attempts. Tests pass one that returns at
-  /// once.
-  final Future<void> Function(Duration) wait = _wait,
+  /// Retries calls while Drive is rate limiting.
+  final DriveRetry retry = const DriveRetry(),
 }) implements SyncTransport {
   int? _nextSeq;
+
+  Future<T> _retry<T>(Future<T> Function() call) => retry(call);
 
   @override
   Future<void> push(List<Change> changes) async {
@@ -163,19 +162,6 @@ final class DriveTransport(
     );
   }
 
-  /// Runs [call], waiting and trying again with exponential backoff while
-  /// Drive is rate limiting.
-  Future<T> _retry<T>(Future<T> Function() call) async {
-    for (var attempt = 1; ; attempt++) {
-      try {
-        return await call();
-      } on DriveRateLimited {
-        if (attempt >= maxAttempts) rethrow;
-        await wait(Duration(seconds: 1 << (attempt - 1)));
-      }
-    }
-  }
-
   static const _latestName = 'latest.json';
 
   static String _changeFileName(String deviceId, int seq) =>
@@ -189,9 +175,6 @@ final class DriveTransport(
     for (final json in jsonDecode(utf8.decode(bytes)) as List<Object?>)
       Change.fromJson(json! as Map<String, Object?>),
   ];
-
-  static Future<void> _wait(Duration duration) =>
-      Future<void>.delayed(duration);
 }
 
 /// A change file's place in its device's sequence.

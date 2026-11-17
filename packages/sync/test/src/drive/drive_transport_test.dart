@@ -46,8 +46,10 @@ void main() {
         DriveTransport(
           FakeDriveAppFolder(drive),
           deviceId: deviceId,
-          maxAttempts: maxAttempts,
-          wait: (duration) async => waits.add(duration),
+          retry: DriveRetry(
+            maxAttempts: maxAttempts,
+            wait: (duration) async => waits.add(duration),
+          ),
         );
 
     setUp(() {
