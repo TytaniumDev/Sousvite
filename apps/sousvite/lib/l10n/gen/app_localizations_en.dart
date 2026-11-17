@@ -837,6 +837,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get experiments_restored => 'Version restored';
 
   @override
+  String get experiments_shareWithOthers => 'Share with others';
+
+  @override
+  String get experiments_shareWithOthersBody =>
+      'Everyone you share this recipe with can see, edit, and cook this experiment.';
+
+  @override
   String get experiments_ingredients => 'Ingredients';
 
   @override

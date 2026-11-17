@@ -3,12 +3,14 @@ import 'package:data/src/app_database.dart';
 import 'package:data/src/change_log/change_recorder.dart';
 import 'package:data/src/change_log/change_set.dart';
 import 'package:data/src/change_log/entity_applier.dart';
+import 'package:data/src/change_log/entity_codec.dart';
 import 'package:data/src/change_log/materializing_applier.dart';
 import 'package:data/src/daos/history_dao.dart';
 import 'package:data/src/history/history_codecs.dart';
 import 'package:data/src/history/history_rows.dart';
 import 'package:data/src/history/recipe_snapshot_json.dart';
 import 'package:data/src/recipes/drift_recipe_repository.dart';
+import 'package:data/src/recipes/drift_recipe_space_repository.dart';
 import 'package:data/src/recipes/recipe_codecs.dart';
 import 'package:domain/domain.dart';
 import 'package:sync/sync.dart';
@@ -18,6 +20,10 @@ import 'package:sync/sync.dart';
 ///
 /// Start, promote, and restore each run in one transaction, writing the
 /// recipe through [recipes] so its changes are recorded like any edit.
+///
+/// Experiments and versions stay in the user's own library. An experiment
+/// on a jointly shared recipe with `sharedWithOthers` on syncs in the
+/// share instead, with its working recipe and base version (PRD 7.10).
 final class DriftExperimentRepository(
   /// The database the history and the change log live in.
   final AppDatabase database, {
@@ -32,6 +38,8 @@ final class DriftExperimentRepository(
   final DateTime Function() now = DateTime.now,
 }) implements ExperimentRepository {
   HistoryDao get _dao => database.historyDao;
+
+  late final _spaces = DriftRecipeSpaceRepository(database, recorder: recorder);
 
   /// The current time in UTC, as the database returns it.
   DateTime _now() => now().toUtc();
@@ -231,9 +239,48 @@ final class DriftExperimentRepository(
   }
 
   Future<void> _saveExperiment(ChangeSet changes, Experiment experiment) async {
-    final before = await _dao.experiment(experiment.id.value).getSingleOrNull();
-    changes.setChanged(_experiments, experiment, before: before?.toEntity());
+    final before =
+        (await _dao.experiment(experiment.id.value).getSingleOrNull())
+            ?.toEntity();
+    final spaceId = experiment.sharedWithOthers
+        ? await _spaces.sharedSpaceOf(experiment.recipeId)
+        : null;
+    if (before != null &&
+        before.sharedWithOthers != experiment.sharedWithOthers) {
+      await _moveExperiment(changes, experiment, spaceId);
+    } else {
+      changes.setChanged(
+        _experiments,
+        experiment,
+        before: before,
+        spaceId: spaceId,
+      );
+    }
     await _dao.upsertExperiment(experiment.toCompanion());
+  }
+
+  /// Records all of [experiment], its base version, and its working recipe
+  /// in [spaceId] (null for the user's own library), so a share gets the
+  /// whole experiment, or the user keeps it when it leaves the share.
+  Future<void> _moveExperiment(
+    ChangeSet changes,
+    Experiment experiment,
+    String? spaceId,
+  ) async {
+    void record<T>(EntityCodec<T> codec, T entity) => changes.set(
+      codec.entity,
+      codec.idOf(entity),
+      codec.encode(entity),
+      spaceId: spaceId,
+    );
+    record(_experiments, experiment);
+    final base = await getVersion(experiment.baseVersionId);
+    if (base != null) record(_versions, base);
+    if (spaceId == null) {
+      await _spaces.moveToOwnLibrary(experiment.workingRecipeId);
+    } else {
+      await _spaces.moveToSharedSpace(experiment.workingRecipeId, spaceId);
+    }
   }
 
   /// The current recipe that [change] lost on, with the losing value put

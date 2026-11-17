@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/experiments/experiments.dart';
 
+import '../../../helpers/fakes/fake_recipe_space_repository.dart';
 import '../fakes.dart';
 import 'pump_history.dart';
 
@@ -16,11 +17,16 @@ void main() {
   late FakeExperimentRepository repository;
   late Experiment experiment;
 
-  Future<GoRouter> pump(WidgetTester tester, {bool fromHistory = true}) async {
+  Future<GoRouter> pump(
+    WidgetTester tester, {
+    bool fromHistory = true,
+    FakeRecipeSpaceRepository? spaces,
+  }) async {
     final router = await pumpHistory(
       tester,
       ExperimentsRoutes.location(_F.recipeId),
       overrides: [experimentRepositoryProvider.overrideWithValue(repository)],
+      spaces: spaces,
     );
     if (fromHistory) {
       unawaited(
@@ -80,6 +86,29 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(repository.experiments[experiment.id]!.notes, 'Too salty');
+    });
+
+    testWidgets('offers sharing only in a joint share', (tester) async {
+      await arrange();
+      await pump(tester);
+
+      expect(find.text('Share with others'), findsNothing);
+    });
+
+    testWidgets('shares the experiment with others', (tester) async {
+      await arrange();
+      final spaces = FakeRecipeSpaceRepository()..seed(_F.recipeId, 's_1');
+      await pump(tester, spaces: spaces);
+
+      expect(find.text('Share with others'), findsOneWidget);
+      await tester.tap(find.text('Share with others'));
+      await tester.pumpAndSettle();
+
+      expect(repository.experiments[experiment.id]!.sharedWithOthers, isTrue);
+      expect(
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+        isTrue,
+      );
     });
 
     testWidgets('makes the experiment the recipe', (tester) async {
