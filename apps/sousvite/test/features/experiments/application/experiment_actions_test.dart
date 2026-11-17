@@ -51,6 +51,31 @@ void main() {
       expect(saves, 1);
     });
 
+    test('shares with others and takes it back', () async {
+      final experiment = await actions.start(HistoryFixtures.recipeId);
+
+      await actions.shareWithOthers(experiment.id, shared: true);
+      expect(repository.experiments[experiment.id]!.sharedWithOthers, isTrue);
+
+      await actions.shareWithOthers(experiment.id, shared: false);
+      expect(repository.experiments[experiment.id]!.sharedWithOthers, isFalse);
+    });
+
+    test('saves no share change when unchanged or deleted', () async {
+      final experiment = await actions.start(HistoryFixtures.recipeId);
+      var saves = 0;
+      repository
+          .watchExperiments(HistoryFixtures.recipeId)
+          .listen((_) => saves++);
+      await pumpEventQueue();
+
+      await actions.shareWithOthers(experiment.id, shared: false);
+      await actions.shareWithOthers(const ExperimentId('gone'), shared: true);
+      await pumpEventQueue();
+
+      expect(saves, 1);
+    });
+
     test('promotes, keeps, and restores', () async {
       final experiment = await actions.start(HistoryFixtures.recipeId);
 

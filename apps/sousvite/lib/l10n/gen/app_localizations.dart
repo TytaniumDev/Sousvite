@@ -1474,6 +1474,18 @@ abstract class AppLocalizations {
   /// **'Version restored'**
   String get experiments_restored;
 
+  /// Switch that shares an experiment with everyone in the recipe's joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with others'**
+  String get experiments_shareWithOthers;
+
+  /// What sharing an experiment with others does.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone you share this recipe with can see, edit, and cook this experiment.'**
+  String get experiments_shareWithOthersBody;
+
   /// Heading of a past version's ingredients.
   ///
   /// In en, this message translates to:

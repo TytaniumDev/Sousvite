@@ -33,6 +33,16 @@ class const ExperimentActions(final ExperimentRepository _repository) {
     await _repository.saveExperiment(updated);
   }
 
+  /// Shares the experiment with everyone in its recipe's joint share, or
+  /// takes it back so only the user has it.
+  Future<void> shareWithOthers(ExperimentId id, {required bool shared}) async {
+    final experiment = await _repository.getExperiment(id);
+    if (experiment == null || experiment.sharedWithOthers == shared) return;
+    await _repository.saveExperiment(
+      experiment.copyWith(sharedWithOthers: shared),
+    );
+  }
+
   /// Makes the experiment the recipe.
   Future<void> promote(ExperimentId id) => _repository.promoteExperiment(id);
 

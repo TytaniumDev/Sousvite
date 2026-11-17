@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ import 'package:sousvite/features/experiments/application/experiment_actions.dar
 import 'package:sousvite/features/experiments/application/history_providers.dart';
 import 'package:sousvite/features/experiments/presentation/experiment_text_field.dart';
 import 'package:sousvite/features/experiments/presentation/outcome_label.dart';
+import 'package:sousvite/features/sharing/sharing.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
@@ -48,6 +51,7 @@ class const ExperimentScreen({
                     experimentId: experimentId,
                     field: .notes,
                   ),
+                  _ShareWithOthers(recipeId: recipeId, provider: provider),
                   const SizedBox(height: AppSpacing.space6),
                   _WorkingCopyActions(provider: provider),
                   const SizedBox(height: AppSpacing.space6),
@@ -74,6 +78,41 @@ class const _Outcome({required final HistoryExperimentProvider provider})
         const SizedBox(width: AppSpacing.space2),
         Text(outcomeLabel(l10n, outcome), style: context.textStyles.bodyMedium),
       ],
+    );
+  }
+}
+
+/// "Share with others", only for a recipe in a joint share. Experiments
+/// are private until it's on (PRD 7.10).
+class const _ShareWithOthers({
+  required final RecipeId recipeId,
+  required final HistoryExperimentProvider provider,
+}) extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final inShare = ref.watch(
+      recipeSharedSpaceProvider(recipeId).select((s) => s.value != null),
+    );
+    final shared = ref.watch(provider.select((e) => e.value?.sharedWithOthers));
+    if (!inShare || shared == null) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.space4),
+      child: SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(l10n.experiments_shareWithOthers),
+        subtitle: Text(l10n.experiments_shareWithOthersBody),
+        value: shared,
+        onChanged: (value) {
+          final id = ref.read(provider).value?.id;
+          if (id == null) return;
+          unawaited(
+            ref
+                .read(experimentActionsProvider)
+                .shareWithOthers(id, shared: value),
+          );
+        },
+      ),
     );
   }
 }
