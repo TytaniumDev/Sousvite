@@ -124,7 +124,12 @@ service cloud.firestore {
     }
 
     // ---- Sharing (SHR-1) --------------------------------------------------
-    // Creating, joining, and leaving shared spaces, inbox/{uid}/items, and
-    // shareLinks go here.
+    // Creating, joining, and leaving shared spaces, invites, and shareLinks
+    // are done only by the sharing functions, so clients get no rules for
+    // them. Clients may list the spaces they're a member of (a query on
+    // memberUids array-contains their uid), to know which shares to sync.
+    match /spaces/{spaceId} {
+      allow list: if isSignedIn() && request.auth.uid in resource.data.memberUids;
+    }
   }
 }

@@ -1,8 +1,17 @@
 import {
   assertFails,
+  assertSucceeds,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 import { rulesTestEnvironment } from '../helpers/rules_test_environment.js';
@@ -59,6 +68,29 @@ describe('firestore.rules: sharing', () => {
         doc(as('bob'), 'spaces/s_1'),
         { memberUids: ['alice', 'bob'] },
         { merge: true },
+      ),
+    );
+  });
+
+  it('lets users list only the spaces they are a member of', async () => {
+    const spaces = (uid: string) => collection(as(uid), 'spaces');
+    await assertSucceeds(
+      getDocs(
+        query(spaces('alice'), where('memberUids', 'array-contains', 'alice')),
+      ),
+    );
+    await assertFails(
+      getDocs(
+        query(spaces('bob'), where('memberUids', 'array-contains', 'alice')),
+      ),
+    );
+    await assertFails(getDocs(spaces('alice')));
+    await assertFails(
+      getDocs(
+        query(
+          collection(testEnv.unauthenticatedContext().firestore(), 'spaces'),
+          where('memberUids', 'array-contains', 'alice'),
+        ),
       ),
     );
   });
