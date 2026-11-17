@@ -1121,4 +1121,59 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get account_error =>
       'Couldn\'t reach your account. Check your connection and try again.';
+
+  @override
+  String get account_syncSynced => 'Synced';
+
+  @override
+  String get account_syncSyncing => 'Syncing';
+
+  @override
+  String get account_syncOffline =>
+      'Offline. Changes are saved on this device.';
+
+  @override
+  String get account_syncError => 'Couldn\'t sync. It will try again.';
+
+  @override
+  String get account_syncSignInAgain =>
+      'Sign in again to sync with Google Drive';
+
+  @override
+  String get account_syncSource => 'Sync source';
+
+  @override
+  String get account_syncSourceBeta => 'Beta';
+
+  @override
+  String get account_syncSourceCloud => 'Sousvite cloud';
+
+  @override
+  String get account_syncSourceDrive => 'Google Drive';
+
+  @override
+  String get account_syncSourceDriveNeedsGoogle =>
+      'Google Drive needs a Google account';
+
+  @override
+  String get account_syncSourceSwitchFailed =>
+      'Couldn\'t switch. Your recipes are still syncing where they were.';
+
+  @override
+  String account_lastSynced(String time) {
+    return 'Last synced $time';
+  }
+
+  @override
+  String get account_signInCalloutTitle => 'Back up your recipes for free';
+
+  @override
+  String get account_signInCalloutBody =>
+      'Sign in with Google for free backup and sync through your Google Drive.';
+
+  @override
+  String get account_signInCalloutAction => 'Sign in';
+
+  @override
+  String get account_signInCalloutDismiss => 'Not now';
 }

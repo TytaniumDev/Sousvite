@@ -48,4 +48,4 @@ final class EntitlementsProvider
   }
 }
 
-String _$entitlementsHash() => r'7623c5703894c12d80973bf5b06dc6e361c987ea';
+String _$entitlementsHash() => r'4c284af93786b38dc96d0527bdff3993ab8fd311';
