@@ -2,6 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/providers/bundled_foods.dart';
 import 'package:sousvite/app/providers/database.dart';
 
 part 'repositories.g.dart';
@@ -38,8 +39,11 @@ FolderRepository folderRepository(Ref ref) => DriftFolderRepository(
 );
 
 @Riverpod(keepAlive: true)
-FoodRepository foodRepository(Ref ref) =>
-    throw UnimplementedError('FoodRepository is not implemented yet.');
+FoodRepository foodRepository(Ref ref) => DriftFoodRepository(
+  ref.watch(appDatabaseProvider),
+  recorder: ref.watch(changeRecorderProvider).requireValue,
+  bundled: ref.watch(bundledFoodsProvider).value,
+);
 
 @Riverpod(keepAlive: true)
 ExperimentRepository experimentRepository(Ref ref) {

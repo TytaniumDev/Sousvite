@@ -3,10 +3,14 @@ import 'package:domain/domain.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sousvite/app/providers/bundled_foods.dart';
 import 'package:sousvite/app/providers/database.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 
 void main() {
+  // The bundled foods load from the app's assets.
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late AppDatabase database;
 
   setUp(() => database = AppDatabase(NativeDatabase.memory()));
@@ -148,6 +152,33 @@ void main() {
       );
       expect(await tools.watchTools().first, [tool]);
       expect(await prefs.watchPrefs(recipePrefs.recipeId).first, recipePrefs);
+    });
+  });
+
+  group('foodRepositoryProvider', () {
+    test('reads cached and bundled foods', () async {
+      final providers = container();
+      await providers.read(changeRecorderProvider.future);
+      const cached = Food(
+        id: FoodId('off:1'),
+        source: NutritionSource.openFoodFacts,
+        externalId: '1',
+        name: 'Butter, cultured',
+        brand: 'Acme',
+      );
+      await providers
+          .read(foodRepositoryProvider)
+          .saveFood(cached, nutrients: const [], portions: const []);
+      await providers.read(bundledFoodsProvider.future);
+      final foods = await providers
+          .read(foodRepositoryProvider)
+          .searchFoods('butter');
+
+      expect(foods, contains(cached));
+      expect(
+        foods.where((food) => food.source == NutritionSource.usda),
+        isNotEmpty,
+      );
     });
   });
 }

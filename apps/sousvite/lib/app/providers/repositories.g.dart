@@ -236,7 +236,7 @@ final class FoodRepositoryProvider
   }
 }
 
-String _$foodRepositoryHash() => r'ada751c9064e53c9f7a6a40437307ff0a5b1535d';
+String _$foodRepositoryHash() => r'10669e35323ce446846a47997c63d794575ad555';
 
 @ProviderFor(experimentRepository)
 final experimentRepositoryProvider = ExperimentRepositoryProvider._();
