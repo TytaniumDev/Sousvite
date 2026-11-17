@@ -8,6 +8,52 @@ part of 'sync_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Syncs recipe photos after each space syncs.
+
+@ProviderFor(photoSync)
+final photoSyncProvider = PhotoSyncProvider._();
+
+/// Syncs recipe photos after each space syncs.
+
+final class PhotoSyncProvider
+    extends $FunctionalProvider<PhotoSync, PhotoSync, PhotoSync>
+    with $Provider<PhotoSync> {
+  /// Syncs recipe photos after each space syncs.
+  PhotoSyncProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'photoSyncProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$photoSyncHash();
+
+  @$internal
+  @override
+  $ProviderElement<PhotoSync> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  PhotoSync create(Ref ref) {
+    return photoSync(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PhotoSync value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PhotoSync>(value),
+    );
+  }
+}
+
+String _$photoSyncHash() => r'2d410f9891de626bd163d55bd28471c4b85c993f';
+
 /// Keeps the library in sync with the chosen cloud while the app runs
 /// (ENGINEERING.md §8.2 and §10).
 ///
@@ -71,7 +117,7 @@ final class SyncControllerProvider
   }
 }
 
-String _$syncControllerHash() => r'accb8c4dba779d33aa3ace79714a859cc3a1c7b0';
+String _$syncControllerHash() => r'0c7bc8d1d21ef9c6b5420904657d979503af8615';
 
 /// Keeps the library in sync with the chosen cloud while the app runs
 /// (ENGINEERING.md §8.2 and §10).

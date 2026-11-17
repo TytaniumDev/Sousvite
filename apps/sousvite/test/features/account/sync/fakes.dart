@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sousvite/app/services/error_reporter.dart';
+import 'package:sousvite/features/account/sync/application/sync_transport.dart';
 import 'package:sousvite/features/account/sync/data/drive_access.dart';
 import 'package:sync/sync.dart';
 
@@ -55,8 +56,17 @@ class FakeFirebaseApp() extends Fake implements FirebaseApp;
 /// A cloud space that is only ever handed to a transport.
 class FakeCloudSpace() extends Fake implements FirestoreSpace;
 
+/// A bucket that is only ever handed to a photo store.
+class FakeCloudFiles() extends Fake implements CloudFiles;
+
 /// Makes [FakeCloudSpace]s.
 FirestoreSpace fakeCloudSpaces({
   required String uid,
   required String spaceId,
 }) => FakeCloudSpace();
+
+/// Sousvite cloud made of fakes.
+final CloudBackend fakeCloud = (
+  spaces: fakeCloudSpaces,
+  files: FakeCloudFiles(),
+);
