@@ -1,0 +1,83 @@
+name: End-to-end
+
+# Runs the end-to-end flows in apps/sousvite/integration_test (ENGINEERING.md
+# §15) against the real app with an in-memory cloud, so no Firebase project
+# or credentials are needed. ci.yml calls this workflow: the web run gates
+# every pull request, and the Android run, which needs an emulator and takes
+# much longer, runs on pushes to main and by hand.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: End-to-end (web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      - name: 🚗 Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: 🧪 Run the flows in Chrome
+        working-directory: apps/sousvite
+        run: |
+          chromedriver --port=4444 &
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart \
+            -d web-server --browser-name=chrome \
+            --web-browser-flag=--headless=new
+
+  android:
+    name: End-to-end (Android)
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ⚡ Enable KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      - name: 🧪 Run the flows on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          working-directory: apps/sousvite
+          script: flutter test integration_test/app_test.dart

@@ -29,12 +29,17 @@ def profile_name(identifier)
   "match AppStore #{identifier}"
 end
 
-# The App ID capabilities each bundle id needs. Keep this in step with
+# The App ID capabilities each bundle id needs, by App Store Connect API
+# name (Sign in with Apple is APPLE_ID_AUTH). Keep this in step with
 # ios/Runner/Runner.entitlements: a profile only grants the entitlements its
 # App ID has turned on, and the archive fails on any it lacks.
 # The share extension has no entitlements, so it needs none.
+#
+# The API can't turn on App Attest, so it is on by hand in the developer
+# portal (Identifiers, com.tytaniumdev.sousvite). After turning a capability
+# on there, run `certs` with MATCH_FORCE=true to remake the profiles.
 CAPABILITIES = {
-  APP_IDENTIFIER => %w[SIGN_IN_WITH_APPLE APP_ATTEST]
+  APP_IDENTIFIER => %w[APPLE_ID_AUTH]
 }.freeze
 
 # Turns on any capability from CAPABILITIES that an App ID is missing.
