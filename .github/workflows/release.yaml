@@ -26,6 +26,9 @@ on:
       - .github/workflows/release.yaml
       - apps/sousvite/Gemfile
       - apps/sousvite/Gemfile.lock
+      # Plugin versions decide the native dependencies (Swift packages, Gradle).
+      - apps/sousvite/pubspec.yaml
+      - pubspec.lock
       - apps/sousvite/android/**
       - apps/sousvite/ios/**
 
