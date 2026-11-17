@@ -20,10 +20,12 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "storage": {
-    "bucket": "sousvite.firebasestorage.app",
-    "rules": "storage.rules"
-  },
+  "storage": [
+    {
+      "target": "main",
+      "rules": "storage.rules"
+    }
+  ],
   "hosting": {
     "public": "apps/sousvite/build/web",
     "ignore": [

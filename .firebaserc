@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "sousvite"
+  },
+  "targets": {
+    "sousvite": {
+      "storage": {
+        "main": [
+          "sousvite.firebasestorage.app"
+        ]
+      }
+    }
   }
 }
