@@ -110,4 +110,60 @@ describe('storage.rules', () => {
       await assertFails(deleteObject(ref(as('alice'), snapshot)));
     });
   });
+
+  describe('spaces/{spaceId}/photos', () => {
+    const photo = 'spaces/s1/photos/p1';
+    const jpeg = { contentType: 'image/jpeg' };
+
+    it('lets members add and read photos', async () => {
+      await assertSucceeds(
+        uploadBytes(ref(as('alice'), photo), new Uint8Array([1]), jpeg),
+      );
+      await assertSucceeds(getBytes(ref(as('bob'), photo)));
+    });
+
+    it('denies non-members', async () => {
+      await assertFails(
+        uploadBytes(ref(as('carol'), photo), new Uint8Array([1]), jpeg),
+      );
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await uploadBytes(
+          ref(context.storage(), photo),
+          new Uint8Array([1]),
+          jpeg,
+        );
+      });
+      await assertFails(getBytes(ref(as('carol'), photo)));
+    });
+
+    it('accepts only images with safe names', async () => {
+      await assertFails(
+        uploadBytes(ref(as('alice'), photo), new Uint8Array([1]), {
+          contentType: 'application/pdf',
+        }),
+      );
+      await assertFails(
+        uploadBytes(
+          ref(as('alice'), 'spaces/s1/photos/.hidden'),
+          new Uint8Array([1]),
+          jpeg,
+        ),
+      );
+    });
+
+    it('refuses photos of 10 MB or more', async () => {
+      await assertFails(
+        uploadBytes(
+          ref(as('alice'), photo),
+          new Uint8Array(10 * 1024 * 1024),
+          jpeg,
+        ),
+      );
+    });
+
+    it('never lets a photo be deleted', async () => {
+      await uploadBytes(ref(as('alice'), photo), new Uint8Array([1]), jpeg);
+      await assertFails(deleteObject(ref(as('alice'), photo)));
+    });
+  });
 });

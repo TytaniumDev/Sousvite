@@ -56,6 +56,16 @@ describe('rules with the Pro gate on', () => {
       { contentType: 'application/gzip' },
     );
 
+  const uploadPhoto = (uid: string) =>
+    uploadBytes(
+      ref(
+        testEnv.authenticatedContext(uid).storage(),
+        `spaces/u_${uid}/photos/p1`,
+      ),
+      new Uint8Array([1]),
+      { contentType: 'image/jpeg' },
+    );
+
   beforeAll(async () => {
     testEnv = await rulesTestEnvironment({ proRequired: true });
   });
@@ -88,15 +98,18 @@ describe('rules with the Pro gate on', () => {
   it('lets a Pro user sync', async () => {
     await assertSucceeds(push('alice'));
     await assertSucceeds(uploadSnapshot('alice'));
+    await assertSucceeds(uploadPhoto('alice'));
   });
 
   it('denies a user whose Pro expired', async () => {
     await assertFails(push('bob'));
     await assertFails(uploadSnapshot('bob'));
+    await assertFails(uploadPhoto('bob'));
   });
 
   it('denies a user who never had Pro', async () => {
     await assertFails(push('carol'));
     await assertFails(uploadSnapshot('carol'));
+    await assertFails(uploadPhoto('carol'));
   });
 });

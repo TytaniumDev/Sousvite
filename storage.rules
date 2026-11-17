@@ -36,5 +36,16 @@ service firebase.storage {
         && request.resource.size < 50 * 1024 * 1024
         && request.resource.contentType == 'application/gzip';
     }
+
+    // Recipe photos, by photo id: images only, written once and never
+    // changed (a new photo gets a new id), and kept, since recipe history
+    // can still show them.
+    match /spaces/{spaceId}/photos/{photoId} {
+      allow read: if maySync(spaceId);
+      allow create: if maySync(spaceId)
+        && photoId.matches('[A-Za-z0-9_-][A-Za-z0-9_.-]{0,127}')
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.+');
+    }
   }
 }
