@@ -40,6 +40,7 @@ export 'src/prefs/drift_measuring_tool_repository.dart';
 export 'src/prefs/drift_user_recipe_prefs_repository.dart';
 export 'src/prefs/prefs_codecs.dart';
 export 'src/recipes/drift_recipe_repository.dart';
+export 'src/recipes/drift_recipe_space_repository.dart';
 export 'src/recipes/recipe_codecs.dart';
 export 'src/recipes/recipe_rows.dart';
 export 'src/recipes/recipe_search_query.dart';

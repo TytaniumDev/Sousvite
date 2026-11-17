@@ -57,6 +57,17 @@ void main() {
     });
   });
 
+  group('recipeSpaceRepositoryProvider', () {
+    test('reads recipe spaces from the database', () async {
+      final providers = container();
+      await providers.read(changeRecorderProvider.future);
+      final repository = providers.read(recipeSpaceRepositoryProvider);
+
+      expect(repository, isA<DriftRecipeSpaceRepository>());
+      expect(await repository.sharedSpaceOf(const RecipeId('r1')), isNull);
+    });
+  });
+
   group('folderRepositoryProvider', () {
     test('saves folders to the database once the recorder loads', () async {
       final providers = container();

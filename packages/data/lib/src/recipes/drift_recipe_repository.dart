@@ -8,12 +8,15 @@ import 'package:data/src/daos/recipe_dao.dart';
 import 'package:data/src/recipes/recipe_codecs.dart';
 import 'package:data/src/recipes/recipe_rows.dart';
 import 'package:data/src/recipes/recipe_search_query.dart';
+import 'package:data/src/recipes/recipe_spaces.dart';
 import 'package:domain/domain.dart';
 
 /// [RecipeRepository] over the local database.
 ///
 /// Every write goes through [recorder], so it lands in the change log in
-/// the same transaction, recording only the fields that changed. Watch
+/// the same transaction, recording only the fields that changed. Changes to
+/// a recipe and its parts go to the recipe's space ([RecipeSpaces]), so
+/// edits to a jointly shared recipe reach everyone in the share. Watch
 /// streams skip values equal to the last one, so widgets rebuild only when
 /// their data changes (ENGINEERING.md §5).
 final class DriftRecipeRepository(
@@ -24,6 +27,8 @@ final class DriftRecipeRepository(
   required final ChangeRecorder recorder,
 }) implements RecipeRepository {
   RecipeDao get _dao => database.recipeDao;
+
+  late final _spaces = RecipeSpaces(database);
 
   static final _recipes = RecipeCodec();
   static final _ingredientSections = IngredientSectionCodec();
@@ -230,7 +235,11 @@ final class DriftRecipeRepository(
       await _deleteStepSection(changes, row.id);
     }
     await _dao.deleteRecipe(recipeId);
-    changes.delete(_recipes.entity, recipeId);
+    changes.delete(
+      _recipes.entity,
+      recipeId,
+      spaceId: await _spaces.sharedSpaceOf(recipeId),
+    );
   });
 
   /// Deletes the section with the lines in it, as the editor does.
@@ -288,7 +297,12 @@ final class DriftRecipeRepository(
 
   Future<void> _saveRecipe(ChangeSet changes, Recipe recipe) async {
     final before = await _dao.recipe(recipe.id.value).getSingleOrNull();
-    changes.setChanged(_recipes, recipe, before: before?.toEntity());
+    changes.setChanged(
+      _recipes,
+      recipe,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(recipe.id.value),
+    );
     await _dao.upsert(_dao.recipes, recipe.toCompanion());
   }
 
@@ -303,6 +317,7 @@ final class DriftRecipeRepository(
       _ingredientSections,
       section,
       before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(section.recipeId.value),
     );
     await _dao.upsert(_dao.ingredientSections, section.toCompanion());
   }
@@ -312,41 +327,81 @@ final class DriftRecipeRepository(
     IngredientLine line,
   ) async {
     final before = await _dao.ingredientLine(line.id.value).getSingleOrNull();
-    changes.setChanged(_ingredientLines, line, before: before?.toEntity());
+    changes.setChanged(
+      _ingredientLines,
+      line,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(line.recipeId.value),
+    );
     await _dao.upsert(_dao.ingredientLines, line.toCompanion());
   }
 
   Future<void> _saveStepSection(ChangeSet changes, StepSection section) async {
     final before = await _dao.stepSection(section.id.value).getSingleOrNull();
-    changes.setChanged(_stepSections, section, before: before?.toEntity());
+    changes.setChanged(
+      _stepSections,
+      section,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(section.recipeId.value),
+    );
     await _dao.upsert(_dao.stepSections, section.toCompanion());
   }
 
   Future<void> _saveStep(ChangeSet changes, RecipeStep step) async {
     final before = await _dao.step(step.id.value).getSingleOrNull();
-    changes.setChanged(_steps, step, before: before?.toEntity());
+    changes.setChanged(
+      _steps,
+      step,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(step.recipeId.value),
+    );
     await _dao.upsert(_dao.recipeSteps, step.toCompanion());
   }
 
   Future<void> _deleteIngredientSection(ChangeSet changes, String id) async {
+    final row = await _dao.ingredientSection(id).getSingleOrNull();
     await _dao.deleteIngredientSection(id);
-    changes.delete(_ingredientSections.entity, id);
+    changes.delete(
+      _ingredientSections.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
 
   Future<void> _deleteIngredientLine(ChangeSet changes, String id) async {
+    final row = await _dao.ingredientLine(id).getSingleOrNull();
     await _dao.deleteIngredientLine(id);
-    changes.delete(_ingredientLines.entity, id);
+    changes.delete(
+      _ingredientLines.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
 
   Future<void> _deleteStepSection(ChangeSet changes, String id) async {
+    final row = await _dao.stepSection(id).getSingleOrNull();
     await _dao.deleteStepSection(id);
-    changes.delete(_stepSections.entity, id);
+    changes.delete(
+      _stepSections.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
 
   Future<void> _deleteStep(ChangeSet changes, String id) async {
+    final row = await _dao.step(id).getSingleOrNull();
     await _dao.deleteStep(id);
-    changes.delete(_steps.entity, id);
+    changes.delete(
+      _steps.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
+
+  /// The space of a part's recipe, or the user's own library when the part
+  /// is already gone.
+  Future<String?> _spaceOfPart(String? recipeId) async =>
+      recipeId == null ? null : await _spaces.sharedSpaceOf(recipeId);
 
   static bool _listEquals<T>(List<T> a, List<T> b) =>
       const ListEquality<Object?>().equals(a, b);
