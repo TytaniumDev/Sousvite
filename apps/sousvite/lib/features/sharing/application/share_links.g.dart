@@ -112,6 +112,110 @@ abstract class _$CopyLink extends $AsyncNotifier<Uri?> {
   }
 }
 
+/// The joint-share invite link made for [recipeId] on the share screen:
+/// null until made, loading while it's made, or the error.
+
+@ProviderFor(JointLink)
+final jointLinkProvider = JointLinkFamily._();
+
+/// The joint-share invite link made for [recipeId] on the share screen:
+/// null until made, loading while it's made, or the error.
+final class JointLinkProvider extends $AsyncNotifierProvider<JointLink, Uri?> {
+  /// The joint-share invite link made for [recipeId] on the share screen:
+  /// null until made, loading while it's made, or the error.
+  JointLinkProvider._({
+    required JointLinkFamily super.from,
+    required RecipeId super.argument,
+  }) : super(
+         retry: null,
+         name: r'jointLinkProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$jointLinkHash();
+
+  @override
+  String toString() {
+    return r'jointLinkProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  JointLink create() => JointLink();
+
+  @override
+  bool operator ==(Object other) {
+    return other is JointLinkProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$jointLinkHash() => r'0d9441e07569cadf374a22d1622011de15243d51';
+
+/// The joint-share invite link made for [recipeId] on the share screen:
+/// null until made, loading while it's made, or the error.
+
+final class JointLinkFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          JointLink,
+          AsyncValue<Uri?>,
+          Uri?,
+          FutureOr<Uri?>,
+          RecipeId
+        > {
+  JointLinkFamily._()
+    : super(
+        retry: null,
+        name: r'jointLinkProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The joint-share invite link made for [recipeId] on the share screen:
+  /// null until made, loading while it's made, or the error.
+
+  JointLinkProvider call(RecipeId recipeId) =>
+      JointLinkProvider._(argument: recipeId, from: this);
+
+  @override
+  String toString() => r'jointLinkProvider';
+}
+
+/// The joint-share invite link made for [recipeId] on the share screen:
+/// null until made, loading while it's made, or the error.
+
+abstract class _$JointLink extends $AsyncNotifier<Uri?> {
+  late final _$args = ref.$arg as RecipeId;
+  RecipeId get recipeId => _$args;
+
+  FutureOr<Uri?> build(RecipeId recipeId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<Uri?>, Uri?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Uri?>, Uri?>,
+              AsyncValue<Uri?>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
+}
+
 /// The view-only link id published for [recipeId] on the share screen, null
 /// until published or after it's turned off.
 

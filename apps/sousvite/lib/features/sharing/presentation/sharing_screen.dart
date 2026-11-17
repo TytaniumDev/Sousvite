@@ -5,12 +5,14 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/account/account.dart';
 import 'package:sousvite/features/sharing/application/share_links.dart';
 import 'package:sousvite/features/sharing/presentation/copy_link_option.dart';
+import 'package:sousvite/features/sharing/presentation/joint_share_option.dart';
 import 'package:sousvite/features/sharing/presentation/sign_in_prompt.dart';
 import 'package:sousvite/features/sharing/presentation/view_only_link_option.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
-/// Share a recipe: send a copy or publish a link for anyone (PRD 7.10).
+/// Share a recipe: edit it together, send a copy, or publish a link for
+/// anyone (PRD 7.10).
 /// Sharing needs sign-in, so signed-out users are asked to sign in first.
 class const SharingScreen({required final RecipeId recipeId, super.key})
     extends ConsumerWidget {
@@ -24,6 +26,7 @@ class const SharingScreen({required final RecipeId recipeId, super.key})
     }
 
     ref
+      ..listen(jointLinkProvider(recipeId), showFailure)
       ..listen(copyLinkProvider(recipeId), showFailure)
       ..listen(viewOnlyLinkProvider(recipeId), showFailure);
     return Scaffold(
@@ -46,6 +49,8 @@ class const _Options({required final RecipeId recipeId})
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(AppSpacing.space4),
     children: [
+      JointShareOption(recipeId: recipeId),
+      const SizedBox(height: AppSpacing.space4),
       CopyLinkOption(recipeId: recipeId),
       const SizedBox(height: AppSpacing.space4),
       ViewOnlyLinkOption(recipeId: recipeId),

@@ -20,14 +20,15 @@ class InviteAcceptance() extends _$InviteAcceptance {
   @override
   FutureOr<RecipeId?> build(String inviteId) => null;
 
-  /// Accepts and returns the saved copy's id, or null when it failed.
-  Future<RecipeId?> accept() async {
+  /// Accepts, and returns the outcome: the saved copy's id, null after
+  /// joining a joint share, or the error.
+  Future<AsyncValue<RecipeId?>> accept() async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(
       () => ref.read(recipeSharingProvider).accept(inviteId),
     );
     if (ref.mounted) state = result;
-    return result.value;
+    return result;
   }
 }
 

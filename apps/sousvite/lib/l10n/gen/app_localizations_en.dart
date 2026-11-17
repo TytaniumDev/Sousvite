@@ -896,6 +896,41 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t share. Check your connection and try again.';
 
   @override
+  String get sharing_jointTitle => 'Share together';
+
+  @override
+  String get sharing_jointBody =>
+      'Everyone you invite can edit this recipe, and you all see each other\'s changes.';
+
+  @override
+  String get sharing_jointSharedBody =>
+      'You\'re editing this recipe together. Invite more people, or leave to keep your own copy.';
+
+  @override
+  String get sharing_jointCreate => 'Create invite link';
+
+  @override
+  String get sharing_jointExpiry =>
+      'Anyone who opens this link in the next 14 days can join.';
+
+  @override
+  String get sharing_jointLeave => 'Leave share';
+
+  @override
+  String get sharing_jointLeaveTitle => 'Leave this share?';
+
+  @override
+  String get sharing_jointLeaveBody =>
+      'You keep the recipe as it is now, and the others keep theirs. You won\'t see each other\'s changes anymore.';
+
+  @override
+  String get sharing_jointLeaveConfirm => 'Leave';
+
+  @override
+  String get sharing_jointLeft =>
+      'You left the share. The recipe stays in your library.';
+
+  @override
   String get sharing_inviteTitle => 'Shared recipe';
 
   @override
@@ -927,7 +962,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sharing_inviteJointBody =>
-      'Recipes shared together aren\'t ready in this version yet. Ask them to send a copy for now.';
+      'You\'ll all edit the same recipe and see each other\'s changes.';
+
+  @override
+  String get sharing_inviteJoin => 'Join';
+
+  @override
+  String get sharing_inviteJoined =>
+      'Joined. The recipe shows up in your library once it syncs.';
 
   @override
   String get sharing_inviteSignIn =>

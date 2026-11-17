@@ -145,7 +145,7 @@ final class InviteAcceptanceProvider
   }
 }
 
-String _$inviteAcceptanceHash() => r'17d173e51ccd2cfd15d4ba741928763420a7f4e5';
+String _$inviteAcceptanceHash() => r'02fa35925d5513324b5cb49c1e36efb40a531b40';
 
 /// Accepts the invite [inviteId]: loading while it runs, then the saved
 /// copy's id (null before accepting or for a joint share), or the error.

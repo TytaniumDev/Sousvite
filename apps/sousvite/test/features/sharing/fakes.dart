@@ -10,6 +10,13 @@ class FakeSharingService() implements SharingService {
   /// The last page published.
   SharedRecipePage? publishedPage;
 
+  /// The space ids [shareJointly] was asked to invite to, in order (null
+  /// to start a new share).
+  final jointSpaceIds = <String?>[];
+
+  /// Joint shares left, in order.
+  final left = <String>[];
+
   /// Links turned off, in order.
   final unpublished = <String>[];
 
@@ -40,7 +47,8 @@ class FakeSharingService() implements SharingService {
     String? spaceId,
   }) async {
     await _act();
-    return (spaceId: 's_1', invite: SharingLinks.invite('joint1'));
+    jointSpaceIds.add(spaceId);
+    return (spaceId: spaceId ?? 's_1', invite: SharingLinks.invite('joint1'));
   }
 
   @override
@@ -66,7 +74,10 @@ class FakeSharingService() implements SharingService {
   }
 
   @override
-  Future<void> leaveShare(String spaceId) => _act();
+  Future<void> leaveShare(String spaceId) async {
+    await _act();
+    left.add(spaceId);
+  }
 
   @override
   Future<String> publishLink(SharedRecipePage page, {String? linkId}) async {

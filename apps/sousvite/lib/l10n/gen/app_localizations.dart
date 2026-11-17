@@ -1582,6 +1582,66 @@ abstract class AppLocalizations {
   /// **'Couldn\'t share. Check your connection and try again.'**
   String get sharing_failed;
 
+  /// Heading of the option to edit a recipe jointly with others.
+  ///
+  /// In en, this message translates to:
+  /// **'Share together'**
+  String get sharing_jointTitle;
+
+  /// What sharing together does, before the recipe is shared.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone you invite can edit this recipe, and you all see each other\'s changes.'**
+  String get sharing_jointBody;
+
+  /// What the joint option offers once the recipe is shared.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re editing this recipe together. Invite more people, or leave to keep your own copy.'**
+  String get sharing_jointSharedBody;
+
+  /// Button that makes an invite link to edit the recipe together.
+  ///
+  /// In en, this message translates to:
+  /// **'Create invite link'**
+  String get sharing_jointCreate;
+
+  /// Below a joint share invite link: how long it works.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who opens this link in the next 14 days can join.'**
+  String get sharing_jointExpiry;
+
+  /// Button to stop editing a recipe jointly.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave share'**
+  String get sharing_jointLeave;
+
+  /// Title of the dialog that confirms leaving a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this share?'**
+  String get sharing_jointLeaveTitle;
+
+  /// What leaving a joint share does.
+  ///
+  /// In en, this message translates to:
+  /// **'You keep the recipe as it is now, and the others keep theirs. You won\'t see each other\'s changes anymore.'**
+  String get sharing_jointLeaveBody;
+
+  /// Confirms leaving a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get sharing_jointLeaveConfirm;
+
+  /// Snackbar after leaving a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the share. The recipe stays in your library.'**
+  String get sharing_jointLeft;
+
   /// Title of the screen that opens an invite link.
   ///
   /// In en, this message translates to:
@@ -1624,11 +1684,23 @@ abstract class AppLocalizations {
   /// **'You were invited to share {title}'**
   String sharing_inviteJoint(String title);
 
-  /// Shown for a joint invite until joint shares are supported.
+  /// What joining a joint share means, on its invite.
   ///
   /// In en, this message translates to:
-  /// **'Recipes shared together aren\'t ready in this version yet. Ask them to send a copy for now.'**
+  /// **'You\'ll all edit the same recipe and see each other\'s changes.'**
   String get sharing_inviteJointBody;
+
+  /// Button that joins a joint share from its invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get sharing_inviteJoin;
+
+  /// Snackbar after joining a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined. The recipe shows up in your library once it syncs.'**
+  String get sharing_inviteJoined;
 
   /// Shown on an invite when signed out.
   ///

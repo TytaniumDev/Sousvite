@@ -178,6 +178,22 @@ void main() {
       expect(await alice.spaces.sharedSpaceOf(_recipeId), _shareId);
     });
 
+    test('deletes only your own copy of a shared recipe', () async {
+      await alice.recipes.saveSnapshot(_soup());
+      await alice.spaces.moveToSharedSpace(_recipeId, _shareId);
+      await alice.syncAll();
+      await bob.syncAll();
+
+      await bob.recipes.deleteRecipe(_recipeId);
+      await bob.syncAll();
+      await alice.syncAll();
+
+      expect(await bob.recipes.getRecipe(_recipeId), isNull);
+      expect(await bob.spaces.sharedSpaceOf(_recipeId), isNull);
+      expect(await alice.recipes.getSnapshot(_recipeId), _soup());
+      expect(share.changes.where((change) => change.isTombstone), isEmpty);
+    });
+
     test('keeps the moved-back recipe as it was', () async {
       await alice.recipes.saveSnapshot(_soup());
       await alice.spaces.moveToSharedSpace(_recipeId, _shareId);
