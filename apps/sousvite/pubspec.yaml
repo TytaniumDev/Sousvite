@@ -11,7 +11,7 @@ environment:
 dependencies:
   clock: any
   cloud_firestore: ^7.2.0
-  cloud_functions: ^7.0.1
+  cloud_functions: ^7.1.0
   collection: any
   data: any
   design_system: any
@@ -20,8 +20,8 @@ dependencies:
   drift_flutter: ^0.3.1
   file_picker: ^13.3.3
   firebase_app_check: ^0.5.2
-  firebase_auth: ^7.0.1
-  firebase_core: ^5.1.0
+  firebase_auth: ^7.1.0
+  firebase_core: ^5.2.0
   firebase_storage: ^14.1.0
   flutter:
     sdk: flutter
