@@ -13,16 +13,19 @@ import 'package:sousvite/features/account/sync/application/sync_source_controlle
 import 'package:sousvite/features/account/sync/data/cloud_firestore_space.dart';
 import 'package:sousvite/features/account/sync/data/drive_access.dart';
 import 'package:sousvite/features/account/sync/data/drive_rest_folder.dart';
+import 'package:sousvite/features/account/sync/data/firebase_cloud_files.dart';
 import 'package:sync/sync.dart';
 
 part 'sync_transport.g.dart';
 
 /// One space and the transport it syncs through: its local space id, the
-/// transport, and the name its progress is saved under.
+/// transport, the name its progress is saved under, and where its photos
+/// go.
 typedef SpaceTransport = ({
   String spaceId,
   SyncTransport transport,
   String key,
+  BlobStore photos,
 });
 
 /// Access tokens for the user's Drive app folder.
@@ -35,19 +38,25 @@ typedef CloudSpaceFactory = FirestoreSpace Function({
   required String spaceId,
 });
 
-/// Sousvite cloud spaces over Firestore and Cloud Storage, or null in
-/// builds without Firebase.
+/// Sousvite cloud: its spaces, and the bucket that holds their photos.
+typedef CloudBackend = ({CloudSpaceFactory spaces, CloudFiles files});
+
+/// Sousvite cloud over Firestore and Cloud Storage, or null in builds
+/// without Firebase.
 @Riverpod(keepAlive: true)
-CloudSpaceFactory? cloudSpaces(Ref ref) {
+CloudBackend? cloudSpaces(Ref ref) {
   final app = ref.watch(firebaseAppProvider);
   if (app == null) return null;
   final firestore = FirebaseFirestore.instanceFor(app: app);
   final storage = FirebaseStorage.instanceFor(app: app);
-  return ({required uid, required spaceId}) => CloudFirestoreSpace(
-    firestore: firestore,
-    storage: storage,
-    uid: uid,
-    spaceId: spaceId,
+  return (
+    spaces: ({required uid, required spaceId}) => CloudFirestoreSpace(
+      firestore: firestore,
+      storage: storage,
+      uid: uid,
+      spaceId: spaceId,
+    ),
+    files: FirebaseCloudFiles(storage),
   );
 }
 
@@ -75,16 +84,18 @@ SpaceTransport? syncTransport(Ref ref) {
       if (user.method != SignInMethod.google) return null;
       final client = http.Client();
       ref.onDispose(client.close);
+      final folder = DriveRestFolder(
+        client: client,
+        access: ref.watch(driveAccessProvider),
+      );
       return (
         spaceId: privateSpaceId,
         transport: DriveTransport(
-          DriveRestFolder(
-            client: client,
-            access: ref.watch(driveAccessProvider),
-          ),
+          folder,
           deviceId: ref.watch(changeRecorderProvider).requireValue.clock.nodeId,
         ),
         key: 'drive:${user.id}',
+        photos: DriveBlobStore(folder),
       );
   }
 }
@@ -103,14 +114,15 @@ List<SpaceTransport> sharedSyncTransports(Ref ref) {
 }
 
 SpaceTransport _cloud(
-  CloudSpaceFactory spaces, {
+  CloudBackend cloud, {
   required String uid,
   required String spaceId,
   required String serverId,
 }) => (
   spaceId: spaceId,
-  transport: FirestoreTransport(spaces(uid: uid, spaceId: serverId)),
+  transport: FirestoreTransport(cloud.spaces(uid: uid, spaceId: serverId)),
   key: 'firestore:$serverId',
+  photos: CloudBlobStore(cloud.files, spaceId: serverId),
 );
 
 /// The device's database as the sync engine sees it, with an applier for

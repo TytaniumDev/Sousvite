@@ -54,25 +54,20 @@ final class DriveAccessProvider
 
 String _$driveAccessHash() => r'44fb6dfe182e910a9686558bcb1a2fb2eef85c2e';
 
-/// Sousvite cloud spaces over Firestore and Cloud Storage, or null in
-/// builds without Firebase.
+/// Sousvite cloud over Firestore and Cloud Storage, or null in builds
+/// without Firebase.
 
 @ProviderFor(cloudSpaces)
 final cloudSpacesProvider = CloudSpacesProvider._();
 
-/// Sousvite cloud spaces over Firestore and Cloud Storage, or null in
-/// builds without Firebase.
+/// Sousvite cloud over Firestore and Cloud Storage, or null in builds
+/// without Firebase.
 
 final class CloudSpacesProvider
-    extends
-        $FunctionalProvider<
-          CloudSpaceFactory?,
-          CloudSpaceFactory?,
-          CloudSpaceFactory?
-        >
-    with $Provider<CloudSpaceFactory?> {
-  /// Sousvite cloud spaces over Firestore and Cloud Storage, or null in
-  /// builds without Firebase.
+    extends $FunctionalProvider<CloudBackend?, CloudBackend?, CloudBackend?>
+    with $Provider<CloudBackend?> {
+  /// Sousvite cloud over Firestore and Cloud Storage, or null in builds
+  /// without Firebase.
   CloudSpacesProvider._()
     : super(
         from: null,
@@ -89,25 +84,24 @@ final class CloudSpacesProvider
 
   @$internal
   @override
-  $ProviderElement<CloudSpaceFactory?> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  $ProviderElement<CloudBackend?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  CloudSpaceFactory? create(Ref ref) {
+  CloudBackend? create(Ref ref) {
     return cloudSpaces(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CloudSpaceFactory? value) {
+  Override overrideWithValue(CloudBackend? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<CloudSpaceFactory?>(value),
+      providerOverride: $SyncValueProvider<CloudBackend?>(value),
     );
   }
 }
 
-String _$cloudSpacesHash() => r'5a94dff4de668fe2b33f2b4023ba923bfdb99346';
+String _$cloudSpacesHash() => r'cac30b7abec6ce0ac14bd06392771a7552cf1f48';
 
 /// The one place the app picks how the library syncs (ENGINEERING.md §10):
 /// Sousvite cloud or the user's Google Drive, from the Sync source setting.
@@ -166,7 +160,7 @@ final class SyncTransportProvider
   }
 }
 
-String _$syncTransportHash() => r'ee6122f43f9e53cd18666a54e97bb6ffe5050fcb';
+String _$syncTransportHash() => r'496e3ae98244e9a074687e157437a748da7d2342';
 
 /// The joint shares, each syncing through Sousvite cloud whatever the Sync
 /// source is. Empty while signed out or in builds without Firebase.

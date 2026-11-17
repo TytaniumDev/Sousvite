@@ -40,9 +40,7 @@ void main() {
         firebaseAppProvider.overrideWithValue(
           firebase ? FakeFirebaseApp() : null,
         ),
-        cloudSpacesProvider.overrideWithValue(
-          firebase ? fakeCloudSpaces : null,
-        ),
+        cloudSpacesProvider.overrideWithValue(firebase ? fakeCloud : null),
         authServiceProvider.overrideWithValue(FakeAuthService(user)),
         sharedSpaceIdsProvider.overrideWithValue(sharedIds),
       ],

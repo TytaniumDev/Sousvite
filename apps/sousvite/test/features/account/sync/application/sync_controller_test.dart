@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:drift/native.dart';
@@ -12,8 +14,10 @@ import 'package:sousvite/features/account/sync/application/sync_source_controlle
 import 'package:sousvite/features/account/sync/application/sync_state.dart';
 import 'package:sousvite/features/account/sync/application/sync_transport.dart';
 import 'package:sousvite/features/account/sync/data/drive_access.dart';
+import 'package:sousvite/shared/photos/photos.dart';
 import 'package:sync/sync.dart';
 
+import '../../../../helpers/fakes/fake_photo_store.dart';
 import '../fakes.dart';
 
 /// One simulated device: its own database and providers, syncing through
@@ -21,8 +25,10 @@ import '../fakes.dart';
 final class _Device(
   final SyncTransport? transport, {
   final List<SpaceTransport> shared = const [],
+  final BlobStore? cloudPhotos,
 }) {
   final database = AppDatabase(NativeDatabase.memory());
+  final photos = FakePhotoStore();
   final reporter = RecordingReporter();
   final access = FakeDriveAccess();
   late final container = ProviderContainer(
@@ -35,10 +41,12 @@ final class _Device(
           spaceId: privateSpaceId,
           transport: transport,
           key: 'memory',
+          photos: cloudPhotos ?? InMemoryBlobStore(),
         ),
         null => null,
       }),
       sharedSyncTransportsProvider.overrideWithValue(shared),
+      photoStoreProvider.overrideWithValue(photos),
     ],
   );
 
@@ -70,15 +78,22 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late InMemorySyncSpace space;
+  late InMemoryBlobStore cloudPhotos;
   final devices = <_Device>[];
 
   _Device device([SyncTransport? transport]) {
-    final created = _Device(transport ?? InMemoryTransport(space));
+    final created = _Device(
+      transport ?? InMemoryTransport(space),
+      cloudPhotos: cloudPhotos,
+    );
     devices.add(created);
     return created;
   }
 
-  setUp(() => space = InMemorySyncSpace());
+  setUp(() {
+    space = InMemorySyncSpace();
+    cloudPhotos = InMemoryBlobStore();
+  });
 
   tearDown(() async {
     for (final device in devices) {
@@ -121,6 +136,56 @@ void main() {
       },
     );
 
+    test("brings a recipe's photo to the other device", () async {
+      final photo = Uint8List.fromList([1, 2, 3]);
+      final phone = device();
+      await phone.container.read(changeRecorderProvider.future);
+      phone.photos.photos['p1'] = photo;
+      await phone.container
+          .read(recipeRepositoryProvider)
+          .saveRecipe(_recipe('r1', 'Soup').copyWith(photoRef: 'p1'));
+      await phone.start();
+      expect(await cloudPhotos.get('p1'), photo);
+
+      final laptop = device();
+      await laptop.start();
+
+      expect(laptop.photos.photos['p1'], photo);
+    });
+
+    test('leaves photos still on the web alone', () async {
+      final phone = device();
+      await phone.container.read(changeRecorderProvider.future);
+      await phone.container
+          .read(recipeRepositoryProvider)
+          .saveRecipe(
+            _recipe('r1', 'Soup').copyWith(photoRef: 'https://x.test/p.jpg'),
+          );
+
+      await phone.start();
+
+      expect(phone.state.phase, SyncPhase.synced);
+    });
+
+    test('tries a photo again until its device uploads it', () async {
+      final laptop = device();
+      await laptop.container.read(changeRecorderProvider.future);
+      await laptop.container
+          .read(recipeRepositoryProvider)
+          .saveRecipe(_recipe('r1', 'Soup').copyWith(photoRef: 'p1'));
+      final controller = await laptop.start();
+      expect(laptop.photos.photos, isEmpty);
+
+      await cloudPhotos.put(
+        'p1',
+        Uint8List.fromList([7]),
+        contentType: 'image/jpeg',
+      );
+      await controller.sync();
+
+      expect(laptop.photos.photos['p1'], [7]);
+    });
+
     test('syncs each joint share through its own transport', () async {
       final share = InMemorySyncSpace();
       final phone = _Device(
@@ -130,6 +195,7 @@ void main() {
             spaceId: 's_1',
             transport: InMemoryTransport(share),
             key: 'firestore:s_1',
+            photos: InMemoryBlobStore(),
           ),
         ],
       );
