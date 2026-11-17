@@ -5,6 +5,7 @@ import 'package:data/src/daos/grocery_dao.dart';
 import 'package:data/src/daos/history_dao.dart';
 import 'package:data/src/daos/measuring_tool_dao.dart';
 import 'package:data/src/daos/recipe_dao.dart';
+import 'package:data/src/daos/settings_dao.dart';
 import 'package:data/src/daos/sync_dao.dart';
 import 'package:data/src/daos/user_recipe_prefs_dao.dart';
 import 'package:data/src/tables/folder_tables.dart';
@@ -57,6 +58,7 @@ part 'app_database.g.dart';
     GroceryDao,
     MeasuringToolDao,
     UserRecipePrefsDao,
+    SettingsDao,
     SyncDao,
   ],
 )

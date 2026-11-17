@@ -290,6 +290,19 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
 - [x] Turn on **Firestore** (production mode, region close to you, for example `us-central1`), **Cloud Storage**, and **Hosting**. Done 2026-11-14 with deny-all rules; Storage is in `us-central1` for the no-cost tier.
 - [x] **App Check:** register App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web). Done 2026-11-16; the app activates it in `lib/app/services/app_check.dart`. Debug builds use the debug provider: register a debug token under App Check → Apps → Manage debug tokens and pass it with `--dart-define=APP_CHECK_DEBUG_TOKEN=...` (or register the token each debug install logs).
 - [ ] For CI deploys (`deploy_web.yaml` now, `REL-1` later): in [Google Cloud → IAM → Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts?project=sousvite), create `github-deploy` with the roles **Firebase Hosting Admin**, **API Keys Viewer**, and **Cloud Run Viewer**. Under its Keys tab, add a JSON key, save it as `~/Sousvite-secrets/firebase-deploy.json`, and run `tools/secrets/set_github_secrets.sh` (it sets `FIREBASE_SERVICE_ACCOUNT`).
+- [ ] For the backend deploy (`deploy_functions.yaml`, Tyler chose deploy-on-merge 2026-11-16), give the same `github-deploy` account the roles that deploying functions and rules needs. In [Cloud Shell](https://shell.cloud.google.com/?show=terminal), run:
+
+  ```sh
+  SA=github-deploy@sousvite.iam.gserviceaccount.com
+  for role in cloudfunctions.admin run.admin iam.serviceAccountUser \
+      artifactregistry.admin secretmanager.admin serviceusage.serviceUsageAdmin \
+      firebaserules.admin datastore.indexAdmin firebaseextensions.viewer; do
+    gcloud projects add-iam-policy-binding sousvite \
+      --member="serviceAccount:$SA" --role="roles/$role" --condition=None --quiet
+  done
+  ```
+
+  Then run the **Deploy backend** workflow by hand from the Actions tab (or ask an agent to). Without the roles, the workflow fails after merge; it never blocks CI.
 - [x] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets). Done 2026-11-16: `apps/sousvite/lib/firebase_options.dart` holds the registered apps' config, read with the Firebase CLI. The app ships no `google-services.json` or `GoogleService-Info.plist`; Android Google sign-in gets the web OAuth client as its server client id instead, and iOS has the reversed client id as a URL scheme plus the Sign in with Apple and App Attest entitlements.
 
 ### 8.2 Apple Developer Program (needed by Apple sign-in, iOS builds, TestFlight, iOS purchases)

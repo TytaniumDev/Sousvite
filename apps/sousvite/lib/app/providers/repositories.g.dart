@@ -55,7 +55,7 @@ final class AppSettingsRepositoryProvider
 }
 
 String _$appSettingsRepositoryHash() =>
-    r'71c66ccacdcc75ceb29bce99448481ee4f979023';
+    r'5c69754c6257cfccf447b9223c1aec54f00339e6';
 
 @ProviderFor(recipeRepository)
 final recipeRepositoryProvider = RecipeRepositoryProvider._();
@@ -331,7 +331,7 @@ final class MeasuringToolRepositoryProvider
 }
 
 String _$measuringToolRepositoryHash() =>
-    r'fef1887df6df9c0d758b56af13bdc0b7d8628d20';
+    r'2ab83cd1b8b8f73d81158a30ed6a73f23184660a';
 
 @ProviderFor(userRecipePrefsRepository)
 final userRecipePrefsRepositoryProvider = UserRecipePrefsRepositoryProvider._();
@@ -379,4 +379,4 @@ final class UserRecipePrefsRepositoryProvider
 }
 
 String _$userRecipePrefsRepositoryHash() =>
-    r'441c7cd799d618e338ec74a9728387bf753b9cf4';
+    r'7602afefe56a8b5017d2576c33905478d0e9b2cd';
