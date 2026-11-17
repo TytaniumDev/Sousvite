@@ -17,6 +17,31 @@ APP_IDENTIFIER = "com.tytaniumdev.sousvite"
 TEAM_ID = "F2HXQGU2CC"
 PROFILE_NAME = "match AppStore #{APP_IDENTIFIER}"
 
+# The App ID capabilities each bundle id needs. Keep this in step with
+# ios/Runner/Runner.entitlements: a profile only grants the entitlements its
+# App ID has turned on, and the archive fails on any it lacks.
+CAPABILITIES = {
+  APP_IDENTIFIER => %w[SIGN_IN_WITH_APPLE APP_ATTEST]
+}.freeze
+
+# Turns on any capability from CAPABILITIES that an App ID is missing.
+# Returns true when it changed something, because existing profiles then
+# lack the new entitlement and have to be made again.
+def ensure_capabilities
+  changed = false
+  CAPABILITIES.each do |identifier, types|
+    bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier)
+    UI.user_error!("#{identifier} is not registered with Apple") unless bundle_id
+    enabled = bundle_id.get_capabilities.map(&:capability_type)
+    (types - enabled).each do |type|
+      UI.message("Turning on #{type} for #{identifier}")
+      bundle_id.create_capability(type)
+      changed = true
+    end
+  end
+  changed
+end
+
 # The API key every Apple-facing action below accepts.
 def asc_api_key
   app_store_connect_api_key(
@@ -27,12 +52,15 @@ def asc_api_key
 end
 
 platform :ios do
-  desc "Create the App Store profile in the certificates repo if it is missing"
-  desc "(needs write access to that repo). Safe to run again: it changes nothing"
-  desc "once the profile exists."
+  desc "Turn on the App ID capabilities in CAPABILITIES, then create the App"
+  desc "Store profile in the certificates repo (needs write access to it)."
+  desc "Safe to run again: it changes nothing once both are in place. Profiles"
+  desc "are made again when a capability was turned on, or with MATCH_FORCE=true."
   lane :certs do
     setup_ci
-    match(api_key: asc_api_key, readonly: false)
+    api_key = asc_api_key
+    changed = ensure_capabilities
+    match(api_key: api_key, readonly: false, force: changed || ENV["MATCH_FORCE"] == "true")
   end
 
   desc "Build a signed release and upload it to TestFlight"
