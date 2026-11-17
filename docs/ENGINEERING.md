@@ -202,7 +202,8 @@ Change {
 - **Never silently discard.** When a concurrent edit loses on a long text field (notes, step text), the losing value is kept in the recipe's history, so it can be recovered. This addresses the PRD's sync-conflict risk.
 - Applying remote changes is idempotent, and the same changes arriving twice is harmless.
 - **In `packages/data`:** each entity kind has an `EntityCodec` that maps it to its change log fields. Repositories write through `ChangeRecorder` and record only the fields that differ from the stored row (`ChangeSet.setChanged`), so saving a whole entity never overwrites another device's edit to a field it did not touch. Remote changes reach the tables through a `MaterializingApplier` per entity kind, which rebuilds the row from the winning value of each field and writes it once every required field has arrived.
-- **Compaction:** periodically, a snapshot of current state is written and older changes are pruned, so new devices don't replay the full history.
+- **Full backup, never pruned.** The cloud always holds everything needed to rebuild the whole library: a recipe's first changes carry every field, and later changes carry each edit. Changes are **kept forever**, so the log is a complete edit-by-edit backup. Recipe data is small (a few MB for a large library), so this costs almost nothing.
+- **Snapshots** of the current state are written after every 200 pushed changes or once a day, whichever comes first. They only let new devices start fast; they never replace the log. A new device reads the latest snapshot, then the changes after it.
 
 ### 8.2 Transports
 
@@ -218,18 +219,25 @@ abstract interface class SyncTransport {
 }
 ```
 
-The engine (`packages/sync/lib/src/engine/`) talks to the database through a `LocalStore` interface that `packages/data` implements. It pushes only this device's own changes, merges each pulled batch in one local transaction, and saves the cursor in that transaction, so an interrupted sync resumes without loss. The app writes a snapshot now and then (for example daily), and switching transports is `replay()`: a snapshot of the current state into the new transport.
+The engine (`packages/sync/lib/src/engine/`) talks to the database through a `LocalStore` interface that `packages/data` implements. It pushes only this device's own changes, merges each pulled batch in one local transaction, and saves the cursor in that transaction, so an interrupted sync resumes without loss. The app writes a snapshot after every 200 pushed changes or daily (§8.1), and switching transports is `replay()`: a snapshot of the current state into the new transport.
 
-| | Google Drive (free) | Sousvite cloud (Pro) |
+| | Google Drive (free) | Sousvite cloud (Pro at launch; everyone in the beta) |
 |---|---|---|
-| Storage | Hidden `appDataFolder` in the user's Drive (`drive.appdata` scope) | Firestore |
-| Layout | Append-only change files per device, plus periodic snapshot files | `spaces/{spaceId}/changes/{changeId}`, plus snapshots |
+| Storage | Hidden `appDataFolder` in the user's Drive (`drive.appdata` scope). Counts against the user's own Google storage (15 GB free); recipe data is a few MB | Firestore, with snapshot files in Cloud Storage (§9.1) |
+| Layout | `changes/{deviceId}/{seq}.json`: append-only, one file per push, never deleted. `snapshots/{hlc}.json.gz`, plus `latest.json` pointing at the newest | `spaces/{spaceId}/batches/{batchId}`: one document per push (§9.1) |
 | Freshness | Poll on app open, on resume, and every few minutes while active | Realtime listener |
 | Sign-in | Google only | Google or Apple |
 
+- **Drive limits:** Drive API calls are free to us, and Google's per-user rate limits are far above what polling uses. Going over returns a retryable 403 or 429 and is never billed, so the transport backs off exponentially.
+- **Drive on web:** the browser gets a Google access token that expires after about an hour, with no refresh token. The web app asks Google Identity Services for a new token silently when it expires. If Google needs the user to click, sync pauses and `SyncStatusIcon` shows "Sign in again" instead of interrupting with a popup. Web syncs only while a tab is open.
+
 Because both carry the same change log, **switching transports** means replaying the local state into the new transport, with nothing to convert (PRD 7.8). Both transports run against the same shared test suite (§15).
 
-### 8.3 Spaces and sharing
+### 8.3 Recipe history
+
+Each **Save** in the recipe editor writes one `RecipeVersion` (§7.1) in the same transaction: the full recipe as it was saved, with its time and device. The history timeline lists these versions, and restoring one is a normal edit that sets every field back, so it syncs like any other change and is itself undoable. Versions are entities, so they sync and are backed up like recipes. The losing side of a concurrent long-text edit (§8.1) appears in the same timeline. Because the change log is never pruned, finer history can be rebuilt from it later if versions per Save turn out too coarse.
+
+### 8.4 Spaces and sharing
 
 - A **space** is a set of entities that sync together. Each user has a private space, and each joint share is its own space with members.
 - Joint shares always live in Firestore, even for Drive-sync users (PRD 7.12).
@@ -240,16 +248,16 @@ Because both carry the same change log, **switching transports** means replaying
 - **Leaving or deleting** a joint share removes the user from the space and keeps a local copy for the others (PRD 7.10). The leaver's app moves the share's recipes back to their own library first (`moveToOwnLibrary`); deleting then removes their copy only.
 - **Experiments in shared recipes** stay in the creator's private space unless "Share with others" is on, and then they move into the shared space.
 - **View-only links:** the app publishes the recipe as plain text (`shareLinks/{linkId}`), and the `shareLinkPage` function renders it at `/r/{linkId}` on Firebase Hosting, with the source credited and `noindex`. Publishing again replaces it, and the owner can turn a link off.
-- **Pro check:** a share syncs only while at least one member has Pro. The entitlement is stored server-side and enforced by rules (§9).
+- **Pro check:** at launch, a share syncs only while at least one member has Pro. The entitlement is stored server-side and enforced by rules and the sharing functions (§9.2). **During the beta the gate is off**, so sharing works for everyone.
 
 ## 9. Backend: Firebase *(Decided)*
 
 | Service | Use |
 |---|---|
 | Firebase Auth | Google and Apple sign-in. Signed-out users have no account at all. |
-| Firestore | Pro change logs and snapshots, shared spaces, membership, invites, view-only links |
+| Firestore | Change logs for Sousvite cloud sync, shared spaces, membership, invites, view-only links (§9.1) |
 | Cloud Functions | Fetch proxy for web URL import, USDA API proxy (hides the API key), send-a-copy, share links, subscription webhooks |
-| Cloud Storage | Recipe photos for Pro users and shares |
+| Cloud Storage | Recipe photos for Sousvite cloud users and shares; sync snapshot files |
 | Hosting | Flutter web app and view-only recipe pages |
 | App Check | Limits the proxies to our apps. Release builds attest with App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web); debug builds use the debug provider (`lib/app/services/app_check.dart`) |
 
@@ -260,12 +268,51 @@ Because both carry the same change log, **switching transports** means replaying
 - **Cost control:** batched change writes, snapshots so devices don't read full histories, and listeners scoped to the spaces a user belongs to.
 - Photos for Drive-sync users are stored in their Drive app folder.
 
+### 9.1 Server data layout
+
+Recipes are never stored as recipe documents on the server. Each space's change log is the source of truth, and devices rebuild recipes from it (§8.1). This keeps writes to one per push and keeps the server out of the merge.
+
+```
+users/{uid}                          Profile: privateSpaceId, chosen transport, createdAt.
+                                     The owner reads and writes it.
+users/{uid}/private/entitlement      { pro: bool, expiresAt } written only by the
+                                     subscription webhook (PRO-1). Clients read their own.
+spaces/{spaceId}                     { kind: "private" | "shared", ownerUid, memberUids[],
+                                       latestSnapshot: { path, hlc, batchId }, createdAt }
+spaces/{spaceId}/batches/{batchId}   One push: { deviceId, uid, pushedAt (server time),
+                                       hlcMax, changes: [Change...] }. Never updated or
+                                     deleted. Pull orders by pushedAt, then batchId.
+invites/{inviteId}                   Invite links for a joint share or a copy (§8.4).
+                                     Written and read only by the sharing functions.
+shareLinks/{linkId}                  View-only link: the recipe as plain text, owner, on/off.
+                                     Written by functions only; shareLinkPage renders it.
+usdaCache/{key}                      USDA proxy cache (§11.1). Functions only.
+```
+
+Cloud Storage holds `spaces/{spaceId}/snapshots/{hlc}.json.gz` (a snapshot can pass Firestore's 1 MiB document limit) and `spaces/{spaceId}/photos/{photoId}`.
+
+- A user's private space id on the server is `u_{uid}`, so a device can find it without a query. On the device it stays `private` (DATA-2), and the Firestore transport maps between the two, so signing in never rewrites local changes.
+- A push with more changes than fit in one document (about 500 or 900 KB) splits into several batches.
+- **Rules:** a member of `memberUids` can read the space, create batches with their own `uid` and a server `pushedAt`, and never update or delete a batch. Only the owner of a private space is a member. Shared-space membership changes go through the sharing functions.
+- **Delete account** removes `users/{uid}`, the private space with its batches and snapshots, their invites and share links, and the user from every shared space's `memberUids` (PRD 7.9).
+
+### 9.2 Beta: no Pro gate
+
+During the beta, Sousvite cloud sync and sharing work for **everyone**, so real server costs can be measured before the Pro price is set (PRD 7.12). The gate is one switch on each side:
+
+- `firestore.rules` has `function proRequired() { return false; }`, and every Pro check is written as `!proRequired() || hasPro(...)`. Turning the gate on is a rules deploy.
+- The app's `entitlements` provider returns `BetaEntitlements`, which reports Pro for everyone. PRO-1 replaces it with the RevenueCat implementation when the gate turns on.
+
+Everything Pro-only is still built and tested with the gate both on and off, so turning it on is a one-line change on each side.
+
 ## 10. Accounts and auth
 
 - Signing in is optional. Signed out, the app runs entirely on Drift with a local device id.
 - Google sign-in requests the `drive.appdata` scope only when Drive sync is turned on.
 - **Signing in later** attaches the existing local data to the account and uploads it through the chosen transport (PRD 7.9).
 - **Apple users** can use only Sousvite cloud sync, since Drive needs a Google account.
+- **Sign-in callout:** while signed out, the library shows a dismissible card, and Settings shows a row, saying that signing in with Google gives free backup and sync through the user's own Google Drive. Dismissing the card hides it for 30 days.
+- **Default transport during the beta:** Sousvite cloud for everyone. A **Sync source** setting in Settings (marked Beta) lets Google users switch to Drive and back (APP-SYN). Switching runs `replay()` into the new transport (§8.2), so nothing is lost. The app picks the transport in one provider, `syncTransportProvider`, so the rest of the app never knows which one is active.
 
 ## 11. Nutrition *(Decided)*
 
