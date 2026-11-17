@@ -5,6 +5,12 @@ targets:
         options:
           # ISO 8601 text keeps the time zone and reads well in sync payloads.
           store_date_time_values_as_text: true
+          sql:
+            dialect: sqlite
+            options:
+              # Recipe search is an FTS5 table (recipes/recipe_search.drift).
+              modules:
+                - fts5
           databases:
             app: lib/src/app_database.dart
           schema_dir: drift_schemas/

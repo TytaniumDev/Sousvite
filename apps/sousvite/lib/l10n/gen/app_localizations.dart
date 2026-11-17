@@ -634,6 +634,42 @@ abstract class AppLocalizations {
   /// **'Notes'**
   String get editor_notes;
 
+  /// Button in the editor that adds a photo to a recipe without one.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get editor_addPhoto;
+
+  /// Button in the editor that replaces or removes the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get editor_changePhoto;
+
+  /// Option that opens the camera to take the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get editor_takePhoto;
+
+  /// Option that opens the photo library or a file picker to choose the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo'**
+  String get editor_choosePhoto;
+
+  /// Option that removes the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get editor_removePhoto;
+
+  /// Shown when a picked file isn't an image the app can read.
+  ///
+  /// In en, this message translates to:
+  /// **'That photo couldn\'t be opened. Try another one.'**
+  String get editor_photoFailed;
+
   /// Tooltip of the editor's overflow menu.
   ///
   /// In en, this message translates to:
@@ -1474,6 +1510,18 @@ abstract class AppLocalizations {
   /// **'Version restored'**
   String get experiments_restored;
 
+  /// Switch that shares an experiment with everyone in the recipe's joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with others'**
+  String get experiments_shareWithOthers;
+
+  /// What sharing an experiment with others does.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone you share this recipe with can see, edit, and cook this experiment.'**
+  String get experiments_shareWithOthersBody;
+
   /// Heading of a past version's ingredients.
   ///
   /// In en, this message translates to:
@@ -1491,6 +1539,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share'**
   String get sharing_title;
+
+  /// Heading on the share screen when signed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to share'**
+  String get sharing_signInTitle;
+
+  /// Why sharing needs sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing goes through Sousvite, so it needs a Google or Apple sign-in.'**
+  String get sharing_signInBody;
+
+  /// Button that opens the account screen to sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get sharing_signIn;
+
+  /// Heading of the send-a-copy option.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a copy'**
+  String get sharing_copyTitle;
+
+  /// Explains what sending a copy does.
+  ///
+  /// In en, this message translates to:
+  /// **'They get their own version to change as they like. Your recipe stays as it is.'**
+  String get sharing_copyBody;
+
+  /// Button that makes an invite link for a copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Create copy link'**
+  String get sharing_copyCreate;
+
+  /// Shown under a new copy link.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who opens this link in the next 14 days gets a copy.'**
+  String get sharing_copyExpiry;
+
+  /// Heading of the view-only link option.
+  ///
+  /// In en, this message translates to:
+  /// **'Link for anyone'**
+  String get sharing_linkTitle;
+
+  /// Explains what a view-only link does.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone with the link can read this recipe, even without the app.'**
+  String get sharing_linkBody;
+
+  /// Button that publishes a view-only link.
+  ///
+  /// In en, this message translates to:
+  /// **'Create view-only link'**
+  String get sharing_linkCreate;
+
+  /// Button that unpublishes a view-only link.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off link'**
+  String get sharing_linkTurnOff;
+
+  /// Snackbar after a view-only link is turned off.
+  ///
+  /// In en, this message translates to:
+  /// **'Link turned off'**
+  String get sharing_linkTurnedOff;
+
+  /// Button that copies a link to the clipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get sharing_copyLink;
+
+  /// Snackbar after a link is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get sharing_linkCopied;
+
+  /// Snackbar when making a share link fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share. Check your connection and try again.'**
+  String get sharing_failed;
+
+  /// Heading of the option to edit a recipe jointly with others.
+  ///
+  /// In en, this message translates to:
+  /// **'Share together'**
+  String get sharing_jointTitle;
+
+  /// What sharing together does, before the recipe is shared.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone you invite can edit this recipe, and you all see each other\'s changes.'**
+  String get sharing_jointBody;
+
+  /// What the joint option offers once the recipe is shared.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re editing this recipe together. Invite more people, or leave to keep your own copy.'**
+  String get sharing_jointSharedBody;
+
+  /// Button that makes an invite link to edit the recipe together.
+  ///
+  /// In en, this message translates to:
+  /// **'Create invite link'**
+  String get sharing_jointCreate;
+
+  /// Below a joint share invite link: how long it works.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who opens this link in the next 14 days can join.'**
+  String get sharing_jointExpiry;
+
+  /// Button to stop editing a recipe jointly.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave share'**
+  String get sharing_jointLeave;
+
+  /// Title of the dialog that confirms leaving a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this share?'**
+  String get sharing_jointLeaveTitle;
+
+  /// What leaving a joint share does.
+  ///
+  /// In en, this message translates to:
+  /// **'You keep the recipe as it is now, and the others keep theirs. You won\'t see each other\'s changes anymore.'**
+  String get sharing_jointLeaveBody;
+
+  /// Confirms leaving a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get sharing_jointLeaveConfirm;
+
+  /// Snackbar after leaving a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the share. The recipe stays in your library.'**
+  String get sharing_jointLeft;
+
+  /// Title of the screen that opens an invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared recipe'**
+  String get sharing_inviteTitle;
+
+  /// Heading when someone sent a copy. name is the sender, title the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} sent you a copy of {title}'**
+  String sharing_inviteCopyFrom(String name, String title);
+
+  /// Heading when someone without a known name sent a copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You were sent a copy of {title}'**
+  String sharing_inviteCopy(String title);
+
+  /// Explains what accepting a copy does.
+  ///
+  /// In en, this message translates to:
+  /// **'It becomes your own recipe to change as you like. Theirs won\'t change.'**
+  String get sharing_inviteCopyBody;
+
+  /// Button that saves a sent copy into the library.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to my recipes'**
+  String get sharing_inviteAccept;
+
+  /// Heading of a joint share invite. name is the sender, title the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} invited you to share {title}'**
+  String sharing_inviteJointFrom(String name, String title);
+
+  /// Heading of a joint share invite without a known sender name.
+  ///
+  /// In en, this message translates to:
+  /// **'You were invited to share {title}'**
+  String sharing_inviteJoint(String title);
+
+  /// What joining a joint share means, on its invite.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll all edit the same recipe and see each other\'s changes.'**
+  String get sharing_inviteJointBody;
+
+  /// Button that joins a joint share from its invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get sharing_inviteJoin;
+
+  /// Snackbar after joining a joint share.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined. The recipe shows up in your library once it syncs.'**
+  String get sharing_inviteJoined;
+
+  /// Shown on an invite when signed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to add this recipe to your library.'**
+  String get sharing_inviteSignIn;
+
+  /// Heading when an invite is expired or missing.
+  ///
+  /// In en, this message translates to:
+  /// **'This link no longer works'**
+  String get sharing_inviteGone;
+
+  /// What to do about a link that no longer works.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the person who shared it for a new link.'**
+  String get sharing_inviteGoneBody;
+
+  /// Snackbar after a sent copy is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe added'**
+  String get sharing_inviteAdded;
 
   /// Title of the settings screen.
   ///
@@ -1737,6 +2019,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t reach your account. Check your connection and try again.'**
   String get account_error;
+
+  /// Sync status icon label when everything is saved to the cloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get account_syncSynced;
+
+  /// Sync status icon label while changes are sent or received.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing'**
+  String get account_syncSyncing;
+
+  /// Sync status icon label with no connection; not an error.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline. Changes are saved on this device.'**
+  String get account_syncOffline;
+
+  /// Sync status icon label when the last sync failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t sync. It will try again.'**
+  String get account_syncError;
+
+  /// Sync status label and button when Google needs the user to sign in again before Drive syncs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to sync with Google Drive'**
+  String get account_syncSignInAgain;
+
+  /// Settings row title for choosing where the library syncs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync source'**
+  String get account_syncSource;
+
+  /// Small label next to the Sync source setting, saying it is a beta feature.
+  ///
+  /// In en, this message translates to:
+  /// **'Beta'**
+  String get account_syncSourceBeta;
+
+  /// Sync source option: Sousvite's own service.
+  ///
+  /// In en, this message translates to:
+  /// **'Sousvite cloud'**
+  String get account_syncSourceCloud;
+
+  /// Sync source option: the user's own Google Drive.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive'**
+  String get account_syncSourceDrive;
+
+  /// Shown under the Sync source setting for users signed in with Apple.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive needs a Google account'**
+  String get account_syncSourceDriveNeedsGoogle;
+
+  /// Snack bar when switching the sync source failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t switch. Your recipes are still syncing where they were.'**
+  String get account_syncSourceSwitchFailed;
+
+  /// Under the Sync source setting: when the last sync finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced {time}'**
+  String account_lastSynced(String time);
+
+  /// Title of the card and settings row that invite signed-out users to sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up your recipes for free'**
+  String get account_signInCalloutTitle;
+
+  /// Body of the card and settings row that invite signed-out users to sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google for free backup and sync through your Google Drive.'**
+  String get account_signInCalloutBody;
+
+  /// Button on the sign-in invitation card.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get account_signInCalloutAction;
+
+  /// Button that hides the sign-in invitation card for 30 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get account_signInCalloutDismiss;
 }
 
 class _AppLocalizationsDelegate

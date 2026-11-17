@@ -10,7 +10,18 @@ import '../fakes.dart';
 void main() {
   group(ThemeModeController, () {
     test('follows the system until settings load', () {
-      final container = ProviderContainer.test();
+      final container = ProviderContainer.test(
+        overrides: [
+          appSettingsRepositoryProvider.overrideWithValue(
+            FakeAppSettingsRepository(
+              const AppSettings(
+                theme: ThemePreference.dark,
+                unitSystem: UnitSystem.metric,
+              ),
+            ),
+          ),
+        ],
+      );
 
       expect(container.read(themeModeControllerProvider), ThemeMode.system);
     });

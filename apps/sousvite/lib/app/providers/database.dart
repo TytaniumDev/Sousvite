@@ -1,6 +1,9 @@
+import 'package:clock/clock.dart';
 import 'package:data/data.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sync/sync.dart';
+import 'package:uuid/uuid.dart';
 
 part 'database.g.dart';
 
@@ -22,4 +25,30 @@ AppDatabase appDatabase(Ref ref) {
   );
   ref.onDispose(database.close);
   return database;
+}
+
+/// The space local writes belong to: this user's own library. Shared
+/// spaces get their own ids when sharing lands (ENGINEERING.md §8.4).
+const privateSpaceId = 'private';
+
+/// Records every local write in the change log for sync.
+///
+/// Loads this device's id and moves the clock past the last change, so it
+/// is async. `bootstrap` waits for it before the first frame, so
+/// repositories read it with `requireValue`.
+@Riverpod(keepAlive: true)
+Future<ChangeRecorder> changeRecorder(Ref ref) async {
+  final database = ref.watch(appDatabaseProvider);
+  String newId() => const Uuid().v4();
+  final recorder = ChangeRecorder(
+    database,
+    clock: HybridLogicalClock(
+      await database.syncDao.deviceId(newId: newId),
+      wallClock: () => clock.now().millisecondsSinceEpoch,
+    ),
+    spaceId: privateSpaceId,
+    newId: newId,
+  );
+  await recorder.resumeClock();
+  return recorder;
 }

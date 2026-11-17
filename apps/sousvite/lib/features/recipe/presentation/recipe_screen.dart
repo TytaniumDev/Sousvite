@@ -10,13 +10,13 @@ import 'package:sousvite/features/recipe/presentation/recipe_actions.dart';
 import 'package:sousvite/features/recipe/presentation/recipe_header.dart';
 import 'package:sousvite/features/recipe/presentation/recipe_menu.dart';
 import 'package:sousvite/features/recipe/presentation/recipe_notes.dart';
+import 'package:sousvite/features/recipe/presentation/recipe_photo.dart';
 import 'package:sousvite/features/recipe/presentation/steps_section.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
-/// The recipe page: name, actions, ingredients, steps, nutrition, and
-/// notes
-/// (DESIGN_SYSTEM.md §10.1).
+/// The recipe page: photo, name, actions, ingredients, steps, nutrition,
+/// and notes (DESIGN_SYSTEM.md §10.1).
 ///
 /// This widget only watches whether the recipe exists; each part below
 /// watches its own data.
@@ -55,33 +55,43 @@ class const _RecipeBody({required final RecipeId recipeId})
   Widget build(BuildContext context) {
     final sideBySide = WindowSizeClass.of(context) == .expanded;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.space4,
-        AppSpacing.space2,
-        AppSpacing.space4,
-        AppSpacing.space12,
-      ),
+      padding: const EdgeInsets.only(bottom: AppSpacing.space12),
       children: [
-        RecipeHeader(recipeId: recipeId),
-        const SizedBox(height: AppSpacing.space4),
-        RecipeActions(recipeId: recipeId),
-        const SizedBox(height: AppSpacing.space8),
-        if (sideBySide)
-          Row(
-            crossAxisAlignment: .start,
+        // Full width on phones, so it sits outside the page's side padding.
+        RecipePhoto(recipeId: recipeId),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.space4,
+            AppSpacing.space4,
+            AppSpacing.space4,
+            0,
+          ),
+          child: Column(
+            crossAxisAlignment: .stretch,
             children: [
-              Expanded(child: IngredientsSection(recipeId: recipeId)),
-              const SizedBox(width: AppSpacing.space8),
-              Expanded(child: StepsSection(recipeId: recipeId)),
+              RecipeHeader(recipeId: recipeId),
+              const SizedBox(height: AppSpacing.space4),
+              RecipeActions(recipeId: recipeId),
+              const SizedBox(height: AppSpacing.space8),
+              if (sideBySide)
+                Row(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Expanded(child: IngredientsSection(recipeId: recipeId)),
+                    const SizedBox(width: AppSpacing.space8),
+                    Expanded(child: StepsSection(recipeId: recipeId)),
+                  ],
+                )
+              else ...[
+                IngredientsSection(recipeId: recipeId),
+                const SizedBox(height: AppSpacing.space8),
+                StepsSection(recipeId: recipeId),
+              ],
+              NutritionSection(recipeId: recipeId),
+              RecipeNotes(recipeId: recipeId),
             ],
-          )
-        else ...[
-          IngredientsSection(recipeId: recipeId),
-          const SizedBox(height: AppSpacing.space8),
-          StepsSection(recipeId: recipeId),
-        ],
-        NutritionSection(recipeId: recipeId),
-        RecipeNotes(recipeId: recipeId),
+          ),
+        ),
       ],
     );
   }

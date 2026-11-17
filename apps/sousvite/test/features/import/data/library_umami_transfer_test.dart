@@ -28,22 +28,24 @@ class _FakeFiles() implements UmamiFiles {
   }
 }
 
-UmamiRecipe _umami(String id, String title, String? book) => (
-  snapshot: RecipeSnapshot(
-    recipe: RecipeFixtures.recipe(id: id, title: title),
-    ingredientLines: [
-      RecipeFixtures.line('$id-l', recipeId: id, rawText: '2 cups flour'),
-    ],
-  ),
-  book: book,
-  imageUrl: null,
-);
+UmamiRecipe _umami(String id, String title, String? book, {String? imageUrl}) =>
+    (
+      snapshot: RecipeSnapshot(
+        recipe: RecipeFixtures.recipe(id: id, title: title),
+        ingredientLines: [
+          RecipeFixtures.line('$id-l', recipeId: id, rawText: '2 cups flour'),
+        ],
+      ),
+      book: book,
+      imageUrl: imageUrl,
+    );
 
 void main() {
   late _FakeFiles files;
   late FakeRecipeRepository recipes;
   late FakeFolderRepository folders;
   late LibraryUmamiTransfer transfer;
+  late List<String?> photoUrls;
   final baking = Folder(
     id: const FolderId('baking'),
     name: 'Baking',
@@ -54,12 +56,17 @@ void main() {
     files = _FakeFiles();
     recipes = FakeRecipeRepository();
     folders = FakeFolderRepository();
+    photoUrls = [];
     var nextId = 0;
     transfer = LibraryUmamiTransfer(
       files: files,
       recipes: recipes,
       folders: folders,
       newId: () => 'new${nextId++}',
+      importPhoto: (url) async {
+        photoUrls.add(url);
+        return url == null ? null : 'saved:$url';
+      },
     );
   });
 
@@ -83,6 +90,26 @@ void main() {
       expect(folders.recipeIdsIn(folders.allFolders.last.id), [
         saved[1].recipe.id,
       ]);
+    });
+
+    test('saves each photo, a few at a time, in recipe order', () async {
+      files.picked = writeUmamiArchive([
+        for (var i = 0; i < LibraryUmamiTransfer.photoDownloads + 2; i++)
+          _umami(
+            'r$i',
+            'Recipe $i',
+            null,
+            imageUrl: i == 1 ? null : 'https://u.com/$i.jpg',
+          ),
+      ]);
+
+      await transfer.importLibrary();
+
+      final saved = recipes.writes.whereType<RecipeSnapshot>().toList();
+      expect(saved[0].recipe.photoRef, 'saved:https://u.com/0.jpg');
+      expect(saved[1].recipe.photoRef, isNull);
+      expect(saved.last.recipe.photoRef, 'saved:https://u.com/7.jpg');
+      expect(photoUrls, hasLength(LibraryUmamiTransfer.photoDownloads + 2));
     });
 
     test('does nothing when the user cancels', () async {
@@ -141,6 +168,35 @@ void main() {
       );
       final scones = exported.firstWhere((r) => r.book == 'Baking').snapshot;
       expect(scones.ingredientLines.single.rawText, '2 cups flour');
+    });
+
+    test('keeps photo addresses, not photos saved on the device', () async {
+      recipes
+        ..seed(
+          recipe: RecipeFixtures.recipe(title: 'Scones')
+              .copyWith(photoRef: 'https://u.com/scones.jpg'),
+        )
+        ..seed(
+          recipe: RecipeFixtures.recipe(
+            id: 'r2',
+            title: 'Toast',
+          ).copyWith(photoRef: 'a-photo-id'),
+        );
+
+      await transfer.exportLibrary();
+
+      final exported = readUmamiArchive(
+        files.saved[LibraryUmamiTransfer.exportFileName]!,
+        newId: () => 'x',
+        now: DateTime.utc(2026),
+      );
+      expect(
+        exported.map((r) => (r.snapshot.recipe.title, r.imageUrl)),
+        unorderedEquals([
+          ('Scones', 'https://u.com/scones.jpg'),
+          ('Toast', null),
+        ]),
+      );
     });
 
     test('reports a canceled save as null', () async {

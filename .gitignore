@@ -19,3 +19,8 @@ pubspec_overrides.yaml
 # Golden test failure images from flutter_test and alchemist.
 test/failures/
 **/test/**/failures/
+
+# fastlane run output (REL-1)
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/test_output/

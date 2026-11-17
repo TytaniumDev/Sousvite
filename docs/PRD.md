@@ -179,6 +179,9 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
   - **Google Drive sync (free):** The library is stored in the user's own Google Drive and syncs through it. It requires signing in with Google, and works on iOS, Android, and web.
   - **Sousvite cloud sync (Pro):** The library syncs through Sousvite's own service. It works with Google or Apple sign-in, and is the faster, more seamless option.
 - Users can switch between the two at any time without losing anything.
+- **Always backed up.** Once sync is on, the cloud holds the whole library and every saved edit, so a lost or wiped device loses nothing.
+- **Free Drive sync limits:** it uses the user's own Google storage (recipes take a few MB; photos take more), needs a Google account, and checks for changes every few minutes instead of instantly. On web it syncs while the app is open.
+- While signed out, the app tells users that signing in with Google gives them free backup and sync through their Google Drive.
 
 ### 7.9 Accounts
 - A simple sign-in so a user's library follows them across devices.
@@ -201,7 +204,7 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
 - **Cook it:** Experiments work everywhere a recipe does, including cooking mode, nutrition, and grocery lists.
 - **Record the results:** Add a short description of what changed ("swapped butter for olive oil") and notes on how it turned out.
 - **Decide what to keep:** Either **make it the new recipe**, so the experiment replaces the current version, or **keep it as an experiment**, so the recipe stays the same and the attempt is logged in its history.
-- **History:** Each recipe has a timeline of past versions and experiments, each with its changes and notes. Users can view any past version and restore it.
+- **History:** Each recipe has a timeline of past versions and experiments, each with its changes and notes. Every save is a version. Users can view any past version and restore it, and a restore can itself be undone.
 - **Experiments in joint shares:** Anyone in a joint share can start experiments, and anyone can make an experiment the new recipe for everyone. Each experiment has a **Share with others** option, off by default. Experiments stay private to their creator unless it's turned on. An experiment that becomes the new recipe is visible to everyone in its history.
 
 ### 7.12 Plans and pricing
@@ -219,7 +222,7 @@ The goal of Pro is to cover the cost of running the service, with a little extra
 - Sharing is Pro because it always needs Sousvite's service, even for Google Drive users. Jointly shared recipes are stored on Sousvite's service so everyone sees the same version.
 - **Who needs Pro:** Sharing requires Pro, but recipients don't need it. A joint share keeps working as long as at least one person in it has Pro. If nobody in a joint share has Pro anymore, it stops syncing between people and everyone keeps their own copy.
 - Pro is a low-priced subscription, with yearly billing as the default. The exact price is set once real service costs are known after implementation, before public release.
-- Beta testers don't get free Pro.
+- **Beta:** during the beta, Sousvite cloud sync and sharing are open to everyone, so real server costs can be measured before the Pro line and price are set. Pro features turn on before launch. After launch, beta testers don't get free Pro.
 - If cloud sync costs grow beyond what Pro covers, usage limits on Pro (such as photo storage) may be added. Free features stay as they are.
 
 ## 8. Success metrics

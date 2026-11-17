@@ -1,0 +1,214 @@
+name: Release
+
+# Signed iOS and Android builds for testers (BUILD_PLAN.md REL-1):
+# TestFlight for iOS, the Play internal testing track for Android.
+#
+# - Every push to main (Tyler, 2026-11-16), or "Run workflow" on the Actions
+#   tab, builds and uploads both.
+# - A pull request that touches the release setup builds both without
+#   signing or uploading, so a broken build shows up before it merges.
+#
+# Fastlane lanes: apps/sousvite/ios/fastlane and apps/sousvite/android/fastlane.
+# Secrets are listed in BUILD_PLAN.md §8.9.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - apps/widgetbook/**
+      - functions/**
+      - .github/workflows/deploy_web.yaml
+      - .github/workflows/functions.yaml
+      - .github/workflows/widgetbook.yaml
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/release.yaml
+      - apps/sousvite/Gemfile
+      - apps/sousvite/Gemfile.lock
+      # Plugin versions decide the native dependencies (Swift packages, Gradle).
+      - apps/sousvite/pubspec.yaml
+      - pubspec.lock
+      - apps/sousvite/android/**
+      - apps/sousvite/ios/**
+
+permissions:
+  contents: read
+
+# Pushes to main queue behind a running release instead of cancelling it,
+# so an upload is never cut off halfway.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Shared by both platforms, so an iOS and Android build from one run carry
+  # the same number. It only ever goes up, which both stores require.
+  BUILD_NUMBER: ${{ github.run_number }}
+  # Public by design (BUILD_PLAN.md §8.8): it only lets the app send events.
+  SENTRY_DSN: https://b2a333b66dcd479d1087e98242605f93@o4510951154712576.ingest.us.sentry.io/4512426129686528
+  IS_RELEASE: ${{ github.event_name != 'pull_request' }}
+
+jobs:
+  ios:
+    name: iOS
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      BUNDLE_GEMFILE: ${{ github.workspace }}/apps/sousvite/Gemfile
+      FASTLANE_SKIP_UPDATE_CHECK: "1"
+      FASTLANE_HIDE_CHANGELOG: "1"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get --enforce-lockfile
+
+      - name: 🧪 Build without signing
+        if: env.IS_RELEASE != 'true'
+        working-directory: apps/sousvite
+        run: flutter build ios --release --no-codesign --build-number="$BUILD_NUMBER"
+
+      - name: 🔑 Check release secrets
+        if: env.IS_RELEASE == 'true'
+        env:
+          MATCH_SSH_PRIVATE_KEY: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+        run: |
+          missing=()
+          for name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_API_KEY MATCH_PASSWORD MATCH_SSH_PRIVATE_KEY; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing secrets: ${missing[*]}. See BUILD_PLAN.md §8.9."
+            exit 1
+          fi
+
+      - name: 💎 Setup Ruby
+        if: env.IS_RELEASE == 'true'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: apps/sousvite
+
+      - name: 🔐 Certificates repo access
+        if: env.IS_RELEASE == 'true'
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+
+      - name: ⚙️ Write build settings
+        if: env.IS_RELEASE == 'true'
+        working-directory: apps/sousvite
+        # --no-codesign: Flutter only writes settings here, and fastlane signs
+        # later. Without it Flutter looks for a local signing certificate.
+        run: >-
+          flutter build ios --config-only --release --no-codesign
+          --build-number="$BUILD_NUMBER"
+          --dart-define=SENTRY_DSN="$SENTRY_DSN"
+
+      - name: 🚀 Build and upload to TestFlight
+        if: env.IS_RELEASE == 'true'
+        working-directory: apps/sousvite/ios
+        run: bundle exec fastlane beta
+
+      - name: 🐛 Upload debug symbols to Sentry
+        if: env.IS_RELEASE == 'true' && env.SENTRY_AUTH_TOKEN != ''
+        run: >-
+          npx --yes @sentry/cli@2 debug-files upload
+          --org tytaniumdev --project sousvite
+          apps/sousvite/build/ios/Sousvite.xcarchive/dSYMs
+
+      - name: ⚠️ Sentry token missing
+        if: env.IS_RELEASE == 'true' && env.SENTRY_AUTH_TOKEN == ''
+        run: echo "::warning::SENTRY_AUTH_TOKEN is not set, so iOS debug symbols were not uploaded. See BUILD_PLAN.md §8.8."
+
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+      BUNDLE_GEMFILE: ${{ github.workspace }}/apps/sousvite/Gemfile
+      FASTLANE_SKIP_UPDATE_CHECK: "1"
+      FASTLANE_HIDE_CHANGELOG: "1"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          # Android lint in the current Gradle plugin calls JDK 21 APIs
+          # (List.removeLast) and crashes on 17. The app still targets 17.
+          java-version: "21"
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get --enforce-lockfile
+
+      - name: 🔑 Upload keystore
+        if: env.IS_RELEASE == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is not set. See BUILD_PLAN.md §8.9."
+            exit 1
+          fi
+          keystore="$RUNNER_TEMP/upload-keystore.jks"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          echo "ANDROID_KEYSTORE_PATH=$keystore" >> "$GITHUB_ENV"
+
+      - name: 🤖 Build app bundle
+        working-directory: apps/sousvite
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: >-
+          flutter build appbundle --release
+          --build-number="$BUILD_NUMBER"
+          --dart-define=SENTRY_DSN="$SENTRY_DSN"
+
+      - name: 📤 Keep the bundle
+        if: env.IS_RELEASE == 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: sousvite-android-${{ env.BUILD_NUMBER }}
+          path: apps/sousvite/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: ⚠️ Play credential missing
+        if: env.IS_RELEASE == 'true' && env.PLAY_SERVICE_ACCOUNT_JSON == ''
+        run: echo "::warning::PLAY_SERVICE_ACCOUNT_JSON is not set, so the bundle was built and kept as a workflow artifact but not uploaded to Play. See BUILD_PLAN.md §8.4."
+
+      - name: 💎 Setup Ruby
+        if: env.IS_RELEASE == 'true' && env.PLAY_SERVICE_ACCOUNT_JSON != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: apps/sousvite
+
+      - name: 🚀 Upload to Play internal testing
+        if: env.IS_RELEASE == 'true' && env.PLAY_SERVICE_ACCOUNT_JSON != ''
+        working-directory: apps/sousvite/android
+        run: bundle exec fastlane internal

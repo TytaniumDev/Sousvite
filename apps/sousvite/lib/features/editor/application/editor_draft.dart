@@ -83,6 +83,10 @@ class EditorDraft() extends _$EditorDraft {
   void setNotes(String notes) =>
       _edit((d) => d.copyWith(recipe: d.recipe.copyWith(notes: notes)));
 
+  /// Sets the recipe's photo, or removes it with null.
+  void setPhotoRef(String? photoRef) =>
+      _edit((d) => d.copyWith(recipe: d.recipe.copyWith(photoRef: photoRef)));
+
   // Ingredients.
 
   /// Sets a line's text and splits it into parts with the parser.

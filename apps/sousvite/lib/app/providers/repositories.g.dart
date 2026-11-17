@@ -55,7 +55,7 @@ final class AppSettingsRepositoryProvider
 }
 
 String _$appSettingsRepositoryHash() =>
-    r'71c66ccacdcc75ceb29bce99448481ee4f979023';
+    r'5c69754c6257cfccf447b9223c1aec54f00339e6';
 
 @ProviderFor(recipeRepository)
 final recipeRepositoryProvider = RecipeRepositoryProvider._();
@@ -101,7 +101,55 @@ final class RecipeRepositoryProvider
   }
 }
 
-String _$recipeRepositoryHash() => r'ef066c291f330c61c74b1495d6fa86cbbc5df3c7';
+String _$recipeRepositoryHash() => r'206c74a5e3bc2fe75efbc3b866a61a4fe638b025';
+
+@ProviderFor(recipeSpaceRepository)
+final recipeSpaceRepositoryProvider = RecipeSpaceRepositoryProvider._();
+
+final class RecipeSpaceRepositoryProvider
+    extends
+        $FunctionalProvider<
+          RecipeSpaceRepository,
+          RecipeSpaceRepository,
+          RecipeSpaceRepository
+        >
+    with $Provider<RecipeSpaceRepository> {
+  RecipeSpaceRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recipeSpaceRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recipeSpaceRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<RecipeSpaceRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  RecipeSpaceRepository create(Ref ref) {
+    return recipeSpaceRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RecipeSpaceRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RecipeSpaceRepository>(value),
+    );
+  }
+}
+
+String _$recipeSpaceRepositoryHash() =>
+    r'd9c496138248186ff2ce42a080d6b4587a50968f';
 
 @ProviderFor(folderRepository)
 final folderRepositoryProvider = FolderRepositoryProvider._();
@@ -147,7 +195,7 @@ final class FolderRepositoryProvider
   }
 }
 
-String _$folderRepositoryHash() => r'e3b95c295d64265da7a6af8b1f6890d820b76fe2';
+String _$folderRepositoryHash() => r'1917fd283236d45c8ca2425a7fa0221032d2fc42';
 
 @ProviderFor(foodRepository)
 final foodRepositoryProvider = FoodRepositoryProvider._();
@@ -188,7 +236,7 @@ final class FoodRepositoryProvider
   }
 }
 
-String _$foodRepositoryHash() => r'ada751c9064e53c9f7a6a40437307ff0a5b1535d';
+String _$foodRepositoryHash() => r'10669e35323ce446846a47997c63d794575ad555';
 
 @ProviderFor(experimentRepository)
 final experimentRepositoryProvider = ExperimentRepositoryProvider._();
@@ -236,7 +284,7 @@ final class ExperimentRepositoryProvider
 }
 
 String _$experimentRepositoryHash() =>
-    r'291634bd73262f1b89f9837cae21db5a27535c3a';
+    r'9363a30dccc1aa8f892af1ab161923b52e594bb0';
 
 @ProviderFor(groceryRepository)
 final groceryRepositoryProvider = GroceryRepositoryProvider._();
@@ -283,7 +331,7 @@ final class GroceryRepositoryProvider
   }
 }
 
-String _$groceryRepositoryHash() => r'60b731b7d3595b92ec6a8baefb80affccc1ca65a';
+String _$groceryRepositoryHash() => r'2330bd65c9dbed13b72ceaf276ddfeb755232336';
 
 @ProviderFor(measuringToolRepository)
 final measuringToolRepositoryProvider = MeasuringToolRepositoryProvider._();
@@ -331,7 +379,7 @@ final class MeasuringToolRepositoryProvider
 }
 
 String _$measuringToolRepositoryHash() =>
-    r'fef1887df6df9c0d758b56af13bdc0b7d8628d20';
+    r'2ab83cd1b8b8f73d81158a30ed6a73f23184660a';
 
 @ProviderFor(userRecipePrefsRepository)
 final userRecipePrefsRepositoryProvider = UserRecipePrefsRepositoryProvider._();
@@ -379,4 +427,4 @@ final class UserRecipePrefsRepositoryProvider
 }
 
 String _$userRecipePrefsRepositoryHash() =>
-    r'441c7cd799d618e338ec74a9728387bf753b9cf4';
+    r'7602afefe56a8b5017d2576c33905478d0e9b2cd';

@@ -79,5 +79,27 @@ void main() {
 
       expect(await database.syncDao.latestHlc(), otherField.hlc.pack());
     });
+
+    test('reads the winning value of every field of one entity', () async {
+      await insert([late, early, middle, otherField]);
+
+      expect(
+        await database.syncDao.winningFields(entity: 'recipe', entityId: 'r1'),
+        {'title': 'c', 'notes': 'd'},
+      );
+      expect(
+        await database.syncDao.winningFields(entity: 'recipe', entityId: 'r2'),
+        isEmpty,
+      );
+    });
+
+    test('makes the device id once and keeps it', () async {
+      var made = 0;
+      String newId() => 'device-${made++}';
+
+      expect(await database.syncDao.deviceId(newId: newId), 'device-0');
+      expect(await database.syncDao.deviceId(newId: newId), 'device-0');
+      expect(made, 1);
+    });
   });
 }

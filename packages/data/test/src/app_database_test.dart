@@ -18,7 +18,9 @@ void main() {
       final rows = await database
           .customSelect(
             "SELECT name FROM sqlite_master WHERE type = 'table' "
-            "AND name NOT LIKE 'sqlite_%'",
+            "AND name NOT LIKE 'sqlite_%' "
+            // FTS5's own shadow tables behind recipe_search.
+            "AND name NOT LIKE 'recipe_search_%'",
           )
           .get();
       final names = rows.map((row) => row.read<String>('name')).toSet();
@@ -26,7 +28,7 @@ void main() {
       expect(names, {
         for (final table in database.allTables) table.actualTableName,
       });
-      expect(names, hasLength(19));
+      expect(names, hasLength(21));
     });
 
     test('registers one DAO per aggregate', () {
@@ -37,6 +39,7 @@ void main() {
       expect(database.groceryDao, isA<GroceryDao>());
       expect(database.measuringToolDao, isA<MeasuringToolDao>());
       expect(database.userRecipePrefsDao, isA<UserRecipePrefsDao>());
+      expect(database.settingsDao, isA<SettingsDao>());
       expect(database.syncDao, isA<SyncDao>());
     });
 

@@ -9,6 +9,7 @@ mixin _$FoodDaoMixin on DatabaseAccessor<AppDatabase> {
   $FoodPortionsTable get foodPortions => attachedDatabase.foodPortions;
   $NutritionMatchesTable get nutritionMatches =>
       attachedDatabase.nutritionMatches;
+  $IngredientLinesTable get ingredientLines => attachedDatabase.ingredientLines;
   FoodDaoManager get managers => FoodDaoManager(this);
 }
 
@@ -25,5 +26,10 @@ class FoodDaoManager {
       $$NutritionMatchesTableTableManager(
         _db.attachedDatabase,
         _db.nutritionMatches,
+      );
+  $$IngredientLinesTableTableManager get ingredientLines =>
+      $$IngredientLinesTableTableManager(
+        _db.attachedDatabase,
+        _db.ingredientLines,
       );
 }

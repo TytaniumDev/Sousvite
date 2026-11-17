@@ -93,7 +93,8 @@ final class FakeLocalStore(
 /// A shared change log held in memory, standing in for Drive or Firestore.
 ///
 /// Cursors are positions in the log. A pull without a cursor starts with
-/// the latest snapshot. Pulls come in batches of [batchSize].
+/// the latest snapshot, then the log after the snapshot's cursor. Pulls
+/// come in batches of [batchSize].
 final class FakeTransport({final int batchSize = 3}) implements SyncTransport {
   final log = <Change>[];
   Snapshot? snapshot;
@@ -110,11 +111,12 @@ final class FakeTransport({final int batchSize = 3}) implements SyncTransport {
   Stream<PulledBatch> pull({SyncCursor? since}) async* {
     var position = 0;
     if (since == null) {
+      position = int.parse(snapshot?.pulledThrough?.value ?? '0');
       final changes = snapshot?.changes ?? const <Change>[];
       for (var i = 0; i < changes.length; i += batchSize) {
         yield (
           changes: changes.skip(i).take(batchSize).toList(),
-          cursor: const SyncCursor('0'),
+          cursor: SyncCursor('$position'),
         );
       }
     } else {

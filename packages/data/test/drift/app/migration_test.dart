@@ -103,4 +103,40 @@ void main() {
       },
     );
   });
+
+  test('v3 to v4 indexes the recipes already saved for search', () async {
+    final schema = await verifier.schemaAt(3);
+    final old = v3.DatabaseAtV3(schema.newConnection());
+    await old
+        .into(old.recipes)
+        .insert(
+          v3.RecipesCompanion.insert(
+            id: 'r1',
+            title: 'Tomato soup',
+            servingsNumerator: 4,
+            servingsDenominator: 1,
+            createdAt: '2026-11-16T00:00:00.000Z',
+            updatedAt: '2026-11-16T00:00:00.000Z',
+          ),
+        );
+    await old
+        .into(old.ingredientLines)
+        .insert(
+          v3.IngredientLinesCompanion.insert(
+            id: 'l1',
+            recipeId: 'r1',
+            rawText: 'a handful of basil',
+            sortKey: 'a0',
+            name: const Value('basil'),
+          ),
+        );
+    await old.close();
+
+    final database = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(database, 4);
+
+    expect(await database.recipeDao.watchSearch('"basil"*').first, ['r1']);
+    expect(await database.recipeDao.watchSearch('"tomato"*').first, ['r1']);
+    await database.close();
+  });
 }

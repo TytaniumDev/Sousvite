@@ -137,12 +137,18 @@ jobs:
     name: Functions
     uses: ./.github/workflows/functions.yaml
 
+  # End-to-end flows through the whole app: web on every change, Android on
+  # pushes to main.
+  e2e:
+    name: End-to-end
+    uses: ./.github/workflows/e2e.yaml
+
   # The single required status check for branch protection. It passes only
   # when every job above passed, so new jobs never need new protection rules.
   ci-passed:
     name: CI passed
     if: ${{ always() }}
-    needs: [workspace, package, web, functions]
+    needs: [workspace, package, web, functions, e2e]
     runs-on: ubuntu-latest
     steps:
       - name: Check that every job passed

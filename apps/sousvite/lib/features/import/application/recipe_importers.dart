@@ -10,6 +10,7 @@ import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/page_fetchers.dart';
 import 'package:sousvite/features/import/data/page_url_importer.dart';
 import 'package:sousvite/features/import/data/umami_files.dart';
+import 'package:sousvite/shared/photos/photos.dart';
 import 'package:uuid/uuid.dart';
 
 part 'recipe_importers.g.dart';
@@ -53,11 +54,16 @@ UrlImporter urlImporter(Ref ref) {
         FirebaseFunctions.instanceFor(app: app, region: 'us-central1'),
       ),
       newId: const Uuid().v4,
+      importPhoto: ref.watch(recipePhotosProvider).importFrom,
     );
   }
   final client = http.Client();
   ref.onDispose(client.close);
-  return PageUrlImporter(directPageFetcher(client), newId: const Uuid().v4);
+  return PageUrlImporter(
+    directPageFetcher(client),
+    newId: const Uuid().v4,
+    importPhoto: ref.watch(recipePhotosProvider).importFrom,
+  );
 }
 
 /// The whole library, through the system file picker.
@@ -67,4 +73,5 @@ UmamiTransfer umamiTransfer(Ref ref) => LibraryUmamiTransfer(
   recipes: ref.watch(recipeRepositoryProvider),
   folders: ref.watch(folderRepositoryProvider),
   newId: const Uuid().v4,
+  importPhoto: ref.watch(recipePhotosProvider).importFrom,
 );

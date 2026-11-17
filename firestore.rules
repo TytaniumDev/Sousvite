@@ -1,12 +1,135 @@
 rules_version = '2';
 
-// Everything is denied until a task adds rules for its own collections:
-// private spaces (SYN-5) and sharing (SHR-1). ENGINEERING.md §9.
-// Rules are tested in functions/test/rules/ against the emulator.
+// Server data layout and access rules: ENGINEERING.md §9.1. Rules are tested
+// in functions/test/rules/ against the emulator. Anything not matched below
+// is denied.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+
+    // ---- Helpers ----------------------------------------------------------
+
+    // The Pro gate (ENGINEERING.md §9.2). Off during the beta, so sync and
+    // sharing work for everyone. Every Pro check is written as
+    // `!proRequired() || hasPro(...)`, so turning the gate on is this one line.
+    function proRequired() {
+      return false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Whether [uid] has an active Pro entitlement, written only by the
+    // subscription webhook (PRO-1).
+    function hasPro(uid) {
+      let path = /databases/$(database)/documents/users/$(uid)/private/entitlement;
+      return exists(path)
+        && get(path).data.pro == true
+        && get(path).data.expiresAt > request.time;
+    }
+
+    // A user's private space id on the server (ENGINEERING.md §9.1).
+    function privateSpaceId(uid) {
+      return 'u_' + uid;
+    }
+
+    function spacePath(spaceId) {
+      return /databases/$(database)/documents/spaces/$(spaceId);
+    }
+
+    // Whether the signed-in user is in the space's memberUids. Works for
+    // private spaces (the owner is the only member) and shared spaces alike.
+    function isMember(spaceId) {
+      return isSignedIn()
+        && exists(spacePath(spaceId))
+        && request.auth.uid in get(spacePath(spaceId)).data.memberUids;
+    }
+
+    // Whether the signed-in user may sync this space. During the beta,
+    // always. SHR-1 widens this for shared spaces ("at least one member has
+    // Pro") when the gate turns on.
+    function maySync(spaceId) {
+      return isMember(spaceId) && (!proRequired() || hasPro(request.auth.uid));
+    }
+
+    // ---- Users ------------------------------------------------------------
+
+    // Profile: privateSpaceId, chosen transport, createdAt.
+    match /users/{uid} {
+      allow get: if isUser(uid);
+      allow create: if isUser(uid)
+        && request.resource.data.keys().hasOnly(['privateSpaceId', 'transport', 'createdAt'])
+        && request.resource.data.keys().hasAll(['privateSpaceId', 'createdAt'])
+        && request.resource.data.privateSpaceId == privateSpaceId(uid)
+        && request.resource.data.createdAt == request.time
+        && validTransport(request.resource.data);
+      allow update: if isUser(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['transport'])
+        && validTransport(request.resource.data);
+      // Deleting an account goes through the deleteAccount function.
+
+      // The Pro entitlement, written only by the subscription webhook.
+      match /private/{document} {
+        allow get: if isUser(uid);
+      }
+    }
+
+    function validTransport(data) {
+      return !('transport' in data) || data.transport in ['firestore', 'drive'];
+    }
+
+    // ---- Spaces and their change logs -------------------------------------
+
+    match /spaces/{spaceId} {
+      // A user may look up their own private space before it exists.
+      allow get: if isSignedIn()
+        && (spaceId == privateSpaceId(request.auth.uid)
+          || request.auth.uid in resource.data.memberUids);
+
+      // Only a private space is created by the app. Shared spaces are made by
+      // the sharing functions (SHR-1).
+      allow create: if isSignedIn()
+        && spaceId == privateSpaceId(request.auth.uid)
+        && request.resource.data.keys().hasOnly(['kind', 'ownerUid', 'memberUids', 'createdAt'])
+        && request.resource.data.kind == 'private'
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.memberUids == [request.auth.uid]
+        && request.resource.data.createdAt == request.time;
+
+      // Members point the space at a new snapshot; nothing else changes.
+      allow update: if maySync(spaceId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['latestSnapshot'])
+        && request.resource.data.latestSnapshot.keys().hasOnly(['path', 'hlc'])
+        && request.resource.data.latestSnapshot.path is string
+        && request.resource.data.latestSnapshot.path.matches('spaces/' + spaceId + '/snapshots/[^/]+')
+        && request.resource.data.latestSnapshot.hlc is string;
+
+      // One document per push, never changed or deleted, so the log is a
+      // full backup (ENGINEERING.md §8.1).
+      match /batches/{batchId} {
+        allow read: if maySync(spaceId);
+        allow create: if maySync(spaceId)
+          && request.resource.data.keys().hasOnly(['deviceId', 'uid', 'pushedAt', 'hlcMax', 'changes'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.pushedAt == request.time
+          && request.resource.data.deviceId is string
+          && request.resource.data.hlcMax is string
+          && request.resource.data.changes is list
+          && request.resource.data.changes.size() > 0;
+      }
+    }
+
+    // ---- Sharing (SHR-1) --------------------------------------------------
+    // Creating, joining, and leaving shared spaces, invites, and shareLinks
+    // are done only by the sharing functions, so clients get no rules for
+    // them. Clients may list the spaces they're a member of (a query on
+    // memberUids array-contains their uid), to know which shares to sync.
+    match /spaces/{spaceId} {
+      allow list: if isSignedIn() && request.auth.uid in resource.data.memberUids;
     }
   }
 }

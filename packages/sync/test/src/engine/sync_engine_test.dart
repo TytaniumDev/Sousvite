@@ -154,14 +154,69 @@ void main() {
           ..write('servings', 4);
         await phone.engine.sync();
         await phone.engine.writeSnapshot();
-        transport.log.clear(); // As if the transport pruned what it covers.
 
         final tablet = _Device('tablet', transport);
-        await tablet.engine.sync();
+        final report = await tablet.engine.sync();
 
         expect(transport.snapshot?.changes, hasLength(2));
         expect(transport.snapshot?.through, phone.clock.latest);
+        expect(transport.snapshot?.pulledThrough, const SyncCursor('3'));
+        // The log before the snapshot's cursor is skipped, not re-read.
+        expect(report.applied, 2);
         expect(tablet.store.winners, phone.store.winners);
+      });
+
+      test('a snapshot never removes changes from the log', () async {
+        final phone = _Device('phone', transport);
+        phone.store
+          ..write('title', 'Soup')
+          ..write('title', 'Stew');
+        await phone.engine.sync();
+
+        await phone.engine.writeSnapshot();
+
+        expect(transport.log, hasLength(2));
+      });
+
+      group('snapshotIfDue', () {
+        late int now;
+        late _Device phone;
+
+        setUp(() {
+          now = 1731600000000;
+          phone = _Device('phone', transport, wallClock: () => now);
+        });
+
+        test('writes the first snapshot right away', () async {
+          expect(await phone.engine.snapshotIfDue(), isTrue);
+          expect(transport.snapshot, isNotNull);
+        });
+
+        test('waits until enough changes or time have passed', () async {
+          await phone.engine.snapshotIfDue();
+          transport.snapshot = null;
+
+          now += 1000;
+          phone.store
+            ..write('title', 'Soup')
+            ..write('servings', 4);
+          expect(await phone.engine.snapshotIfDue(afterChanges: 3), isFalse);
+          expect(transport.snapshot, isNull);
+
+          phone.store.write('notes', 'Salt');
+          expect(await phone.engine.snapshotIfDue(afterChanges: 3), isTrue);
+          expect(transport.snapshot?.changes, hasLength(3));
+        });
+
+        test('writes one a day even without changes', () async {
+          await phone.engine.snapshotIfDue();
+
+          now += const Duration(hours: 23).inMilliseconds;
+          expect(await phone.engine.snapshotIfDue(), isFalse);
+
+          now += const Duration(hours: 1).inMilliseconds;
+          expect(await phone.engine.snapshotIfDue(), isTrue);
+        });
       });
 
       test('replay copies everything into a new transport', () async {
