@@ -25,6 +25,16 @@ export interface AccountStores extends SharingStores {
  */
 export const userDocumentPaths = (uid: string): readonly string[] => [
   `users/${uid}`,
+  // The private space and its change log (SYN-5, ENGINEERING.md §9.1).
+  `spaces/u_${uid}`,
+];
+
+/**
+ * Every Cloud Storage prefix that belongs to one user: the private space's
+ * snapshots and photos (ENGINEERING.md §9.1).
+ */
+export const userStoragePrefixes = (uid: string): readonly string[] => [
+  `spaces/u_${uid}/`,
 ];
 
 /**
@@ -40,10 +50,13 @@ export const handleDeleteAccount =
       throw new HttpsError('unauthenticated', 'Sign in to delete your account');
     }
     const resolved = stores();
-    const { auth, firestore } = resolved;
+    const { auth, firestore, deleteFiles } = resolved;
     await removeUserFromSharing(resolved, uid);
     for (const path of userDocumentPaths(uid)) {
       await firestore.recursiveDelete(firestore.doc(path));
+    }
+    for (const prefix of userStoragePrefixes(uid)) {
+      await deleteFiles(prefix);
     }
     try {
       await auth.deleteUser(uid);

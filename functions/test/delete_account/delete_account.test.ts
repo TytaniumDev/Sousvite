@@ -1,6 +1,7 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { type Auth, getAuth } from 'firebase-admin/auth';
 import { type Firestore, getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import type { CallableRequest } from 'firebase-functions/v2/https';
 import { HttpsError } from 'firebase-functions/v2/https';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -22,15 +23,24 @@ const requestFrom = (uid?: string): CallableRequest<unknown> =>
 describe('deleteAccount', () => {
   let auth: Auth;
   let firestore: Firestore;
+  let bucket: ReturnType<ReturnType<typeof getStorage>['bucket']>;
 
   beforeAll(() => {
-    const app = getApps()[0] ?? initializeApp({ projectId: demoProjectId });
+    const app =
+      getApps()[0] ??
+      initializeApp({
+        projectId: demoProjectId,
+        storageBucket: `${demoProjectId}.appspot.com`,
+      });
     auth = getAuth(app);
     firestore = getFirestore(app);
+    bucket = getStorage(app).bucket();
   });
 
   beforeEach(async () => {
     await firestore.recursiveDelete(firestore.collection('users'));
+    await firestore.recursiveDelete(firestore.collection('spaces'));
+    await bucket.deleteFiles({ prefix: 'spaces/' });
     const { users } = await auth.listUsers();
     await auth.deleteUsers(users.map((user) => user.uid));
   });
@@ -39,6 +49,16 @@ describe('deleteAccount', () => {
     await auth.createUser({ uid });
     await firestore.doc(`users/${uid}`).set({ pro: false });
     await firestore.doc(`users/${uid}/devices/phone`).set({ name: 'Phone' });
+    await firestore.doc(`spaces/u_${uid}`).set({ memberUids: [uid] });
+    await firestore.doc(`spaces/u_${uid}/batches/b1`).set({ uid, changes: [] });
+    await bucket.file(`spaces/u_${uid}/snapshots/h.json.gz`).save('x');
+  };
+
+  const snapshotExists = async (uid: string): Promise<boolean> => {
+    const [exists] = await bucket
+      .file(`spaces/u_${uid}/snapshots/h.json.gz`)
+      .exists();
+    return exists;
   };
 
   const userExists = async (uid: string): Promise<boolean> =>
@@ -50,7 +70,7 @@ describe('deleteAccount', () => {
   const handle = handleDeleteAccount(() => ({
     auth,
     firestore,
-    deleteFiles: () => Promise.resolve(),
+    deleteFiles: (prefix: string) => bucket.deleteFiles({ prefix }),
     now: () => new Date(),
   }));
 
@@ -67,7 +87,15 @@ describe('deleteAccount', () => {
     expect(
       (await firestore.doc('users/alice/devices/phone').get()).exists,
     ).toBe(false);
+    expect(
+      (await firestore.doc('spaces/u_alice/batches/b1').get()).exists,
+    ).toBe(false);
+    expect(await snapshotExists('alice')).toBe(false);
     expect(await userExists('bob')).toBe(true);
+    expect(await snapshotExists('bob')).toBe(true);
+    expect((await firestore.doc('spaces/u_bob/batches/b1').get()).exists).toBe(
+      true,
+    );
     expect((await firestore.doc('users/bob/devices/phone').get()).exists).toBe(
       true,
     );

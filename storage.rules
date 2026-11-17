@@ -1,12 +1,40 @@
 rules_version = '2';
 
-// Everything is denied until photo sync (MEDIA-2) adds rules for its paths.
-// ENGINEERING.md §9. Rules are tested in functions/test/rules/ against the
-// emulator.
+// Cloud Storage layout: ENGINEERING.md §9.1. Rules are tested in
+// functions/test/rules/ against the emulator. Anything not matched below is
+// denied.
 service firebase.storage {
   match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if false;
+
+    // The Pro gate (ENGINEERING.md §9.2), kept in step with firestore.rules.
+    // Off during the beta.
+    function proRequired() {
+      return false;
+    }
+
+    function hasPro() {
+      let path = /databases/(default)/documents/users/$(request.auth.uid)/private/entitlement;
+      return firestore.exists(path)
+        && firestore.get(path).data.pro == true
+        && firestore.get(path).data.expiresAt > request.time;
+    }
+
+    // Membership lives on the space document in Firestore.
+    function maySync(spaceId) {
+      let path = /databases/(default)/documents/spaces/$(spaceId);
+      return request.auth != null
+        && firestore.exists(path)
+        && request.auth.uid in firestore.get(path).data.memberUids
+        && (!proRequired() || hasPro());
+    }
+
+    // Sync snapshots: gzipped JSON, written once and never changed.
+    match /spaces/{spaceId}/snapshots/{name} {
+      allow read: if maySync(spaceId);
+      allow create: if maySync(spaceId)
+        && name.matches('[^/]+[.]json[.]gz')
+        && request.resource.size < 50 * 1024 * 1024
+        && request.resource.contentType == 'application/gzip';
     }
   }
 }
