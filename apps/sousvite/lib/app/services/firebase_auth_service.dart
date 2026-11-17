@@ -25,9 +25,14 @@ class FirebaseAuthService({
   required final FirebaseFunctions _functions,
   required final GoogleSignIn _google,
 
-  /// The OAuth client for the native Google sheet on iOS. Android reads it
-  /// from `google-services.json`, and web doesn't use it.
+  /// The OAuth client for the native Google sheet on iOS. Android and web
+  /// don't use it.
   required final String? _googleClientId,
+
+  /// The web OAuth client the native Google sheet asks for an ID token for,
+  /// so Firebase Auth accepts the token. Android needs it; web doesn't use
+  /// it.
+  required final String? _googleServerClientId,
 
   /// Web signs in with popups instead of native sheets.
   required final bool _isWeb,
@@ -36,6 +41,7 @@ class FirebaseAuthService({
   // Google sign-in must be initialized exactly once before use.
   late final Future<void> _googleReady = _google.initialize(
     clientId: _googleClientId,
+    serverClientId: _googleServerClientId,
   );
 
   bool get _usesNativeGoogle => !_isWeb;

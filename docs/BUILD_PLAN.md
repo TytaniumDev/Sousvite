@@ -137,7 +137,6 @@ flowchart LR
   SYN3 --> SYN5[SYN-5 Firestore transport]
   BE0 --> SYN5
   SYN5 --> SHR1[SHR-1 Sharing backend]
-  PRO1[PRO-1 Subscriptions] --> SHR1
   SHR1 --> APPSHR[APP-SHR Sharing UI]
   SYN4 & SYN5 --> APPSYN[APP-SYN Sync settings]
   APPACC[APP-ACC Sign-in] --> APPSYN
@@ -213,7 +212,7 @@ Each `DATA-*` task implements one aggregate's repository interface, fills in its
 | DATA-2 | **Recipes.** Recipe, ingredient lines, sections, and steps; fractional sort keys; FTS5 over titles, ingredient names, and folder names (a schema PR, §3.3) | `packages/data/lib/src/recipes/`, the recipe DAO | DATA-1 | Watch queries are `distinct()`; search tested; migration snapshot added |
 | DATA-3 | **Folders.** Folders and many-to-many entries | `packages/data/lib/src/folders/`, the folder DAO | DATA-1 | |
 | DATA-4 | **Grocery lists.** Lists and items linked to source lines | `packages/data/lib/src/grocery/`, the grocery DAO | DATA-1 | |
-| DATA-5 | **Versions and experiments.** Snapshots, experiments, promote, restore, and the losing-edit history entries from `SYN-1` | `packages/data/lib/src/history/`, the history DAO | DATA-1 | Promote and restore are single transactions |
+| DATA-5 | **Versions and experiments.** One `RecipeVersion` per editor Save (ENGINEERING §8.3), experiments, promote, restore, and the losing-edit history entries from `SYN-1` | `packages/data/lib/src/history/`, the history DAO | DATA-1 | Promote and restore are single transactions |
 | DATA-6 | **Preferences and tools.** `UserRecipePrefs`, `MeasuringTool`, and app settings (theme mode, units, sync choice). The scaffold has no settings table, so adding one is a schema PR (§3.3); say in the PR which settings sync and which stay on the device | `packages/data/lib/src/prefs/`, `user_recipe_prefs_dao.dart`, `measuring_tool_dao.dart` | DATA-1 | |
 | DATA-7 | **Foods.** Attach the bundled USDA file read-only, cache branded and OFF foods, store `NutritionMatch` rows; web download-once of the bundled file | `packages/data/lib/src/foods/`, the food DAO | USDA-1 | Works on all three platforms; replacing the bundled file needs no migration |
 | BE-1 | **Fetch proxy** for web URL import, App Check enforced, with an allow-list of content types and a size limit | `functions/src/fetch_proxy/` | BE-0 | Emulator tests; rejects requests without App Check |
@@ -234,8 +233,8 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 | APP-GRO | `grocery` | Add to grocery list sheet with line-by-line include, several recipes per list, combined items by store section, check-off, manual items (7.7) | DS-3, GRO-1, DATA-4 |
 | APP-EXP | `experiments` | Start, edit, record what changed and how it went, promote or keep, history timeline, view and restore past versions (7.11) | DATA-5 |
 | APP-SET | `settings` | Theme mode, units, my measuring tools, about and licenses including Open Food Facts attribution (7.5, 7.6) | DATA-6 |
-| APP-ACC | `account`, plus `app/lib/app/services/auth_service.dart` | Optional sign-in with Google or Apple replacing the `AuthService` stub, attaching existing local data on first sign-in, sign-out (7.9), and **delete account**, which both stores require: a `delete_account` function (`functions/src/delete_account/`) deletes the Firebase user and their server data, and the device keeps a local copy | BE-0; Auth emulator for tests; §8.1 to §8.4 for real devices |
-| APP-SYN | `account/sync/` (subfolder) | Choose Drive or Sousvite cloud, switch between them, sync status in the shell via `SyncStatusIcon` (7.8) | APP-ACC, SYN-4, SYN-5 |
+| APP-ACC | `account`, plus `app/lib/app/services/auth_service.dart` | Optional sign-in with Google or Apple replacing the `AuthService` stub, the signed-out callout for free Google Drive backup and sync on the library and in Settings (ENGINEERING §10), attaching existing local data on first sign-in, sign-out (7.9), and **delete account**, which both stores require: a `delete_account` function (`functions/src/delete_account/`) deletes the Firebase user and their server data (ENGINEERING §9.1), and the device keeps a local copy | BE-0; Auth emulator for tests; §8.1 to §8.4 for real devices |
+| APP-SYN | `account/sync/` (subfolder) | A Beta "Sync source" setting: Sousvite cloud by default, switch to Drive and back via `replay()`, with the active transport chosen only in `syncTransportProvider` (ENGINEERING §10), sync status in the shell via `SyncStatusIcon` including "Sign in again" for web Drive (7.8). `BetaEntitlements` in `app/lib/app/services/entitlements.dart` replaces `FreeEntitlements` (ENGINEERING §9.2) | APP-ACC, SYN-4, SYN-5 |
 | APP-SHR | `sharing` | Share jointly or send a copy, recipient sees which, leave a joint share, view-only links, experiment "Share with others" toggle (7.10, 7.11) | SHR-1 |
 | PRO-1 | `account/pro/` (subfolder), `app/lib/app/services/entitlements.dart`, `functions/src/revenuecat_webhook/` | Paywall, RevenueCat SDK, `Entitlements` implementation replacing the scaffold stub, webhook that writes the entitlement to Firestore (7.12) | BE-0; §8.7 for real purchases |
 
@@ -245,9 +244,9 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 |---|---|---|---|---|
 | SYN-2 | **Sync engine.** Push and pull loop, apply remote changes to Drift idempotently, cursors, snapshots and compaction, replay into a new transport | `packages/sync/lib/src/engine/` | SYN-1, DATA-1 | Engine tests with an in-memory transport converge across simulated devices |
 | SYN-3 | **Transport contract.** The `SyncTransport` interface, an in-memory implementation, and the shared contract test suite both transports must pass | `packages/sync/lib/src/transport/`, `packages/sync/test/contract/` | SYN-2 | In-memory transport passes the suite |
-| SYN-4 | **Google Drive transport.** `appDataFolder`, per-device change files, snapshots, polling cadence | `packages/sync/lib/src/drive/` | SYN-3 | Passes the contract suite against a fake Drive API; one manual run against a real account (§8.3) |
-| SYN-5 | **Firestore transport and private-space rules.** `spaces/{spaceId}/changes`, snapshots, realtime listener, security rules for private spaces | `packages/sync/lib/src/firestore/`, the private-space section of `firestore.rules` | SYN-3, BE-0 | Passes the contract suite on the Firestore emulator; rules tests |
-| SHR-1 | **Sharing backend.** Shared spaces and membership rules, the "at least one member has Pro" check, send-a-copy function, view-only link pages on Hosting, leaving a share | `functions/src/sharing/`, the sharing section of `firestore.rules`, `hosting/` for share pages | SYN-5, PRO-1 | Emulator tests for every rule in ENGINEERING §8.3 |
+| SYN-4 | **Google Drive transport.** `appDataFolder` layout from ENGINEERING §8.2, per-device change files that are never deleted, snapshots, polling cadence, backoff on rate limits, silent token renewal on web. First removes pruning from the in-memory transport and the contract suite (changes are kept forever, ENGINEERING §8.1) | `packages/sync/lib/src/drive/`, plus the pruning in `packages/sync/lib/src/transport/` and `packages/sync/test/contract/` | SYN-3 | Passes the contract suite against a fake Drive API; one manual run against a real account (§8.3) |
+| SYN-5 | **Firestore transport and private-space rules.** The layout in ENGINEERING §9.1: `users/{uid}`, `spaces/{spaceId}/batches`, snapshot files in Cloud Storage, realtime listener, security rules for users and private spaces, and the `proRequired()` switch (off, ENGINEERING §9.2) | `packages/sync/lib/src/firestore/`, the users and private-space sections of `firestore.rules`, the snapshot section of `storage.rules` | SYN-3, BE-0 | Passes the contract suite on the Firestore emulator; rules tests |
+| SHR-1 | **Sharing backend.** Shared spaces and membership rules, the "at least one member has Pro" check behind `proRequired()` (ENGINEERING §9.2), send-a-copy and invite functions with `invites`, `shareLinks` and view-only link pages on Hosting, leaving a share | `functions/src/sharing/`, the sharing section of `firestore.rules`, `hosting/` for share pages | SYN-5 | Emulator tests for every rule in ENGINEERING §8.4, with the Pro gate both off and on |
 | MEDIA-1 | **Recipe photos on device.** Pick or take a photo, resize, store locally, show in `RecipeCard` and the recipe page | `app/lib/shared/photos/` | DATA-2 | Works offline on all platforms |
 | MEDIA-2 | **Photo sync.** Upload and download through Drive (free) or Cloud Storage (Pro and shares), with storage rules | `packages/sync/lib/src/blobs/`, `storage.rules` | MEDIA-1, SYN-4, SYN-5 | Emulator rules tests; contract tests for both blob stores |
 
@@ -255,7 +254,7 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 
 | ID | Task | Owns | Depends on | Done when |
 |---|---|---|---|---|
-| REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Sentry symbol and source-map upload. (The web deploy to Firebase Hosting already runs on every push to `main` from `.github/workflows/deploy_web.yaml`.) Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile` | §8 accounts, OBS-1 | A tagged commit produces builds testers can install |
+| REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Sentry symbol and source-map upload. (The web deploy to Firebase Hosting already runs on every push to `main` from `.github/workflows/deploy_web.yaml`.) Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile`, release signing in `app/android/app/build.gradle.kts` | §8 accounts, OBS-1 | Every push to `main` produces builds testers can install (Tyler, 2026-11-16) |
 | E2E-1 | **Integration tests.** Import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device (ENGINEERING §15) | `app/integration_test/**` | All features | Runs in CI on web and one mobile target |
 
 ## 7. Beta readiness
@@ -288,9 +287,22 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
 - [x] Upgrade it to the **Blaze** (pay as you go) plan, which Cloud Functions requires. Set a **budget alert** in Google Cloud Billing (for example $10 a month) so costs never surprise you.
 - [x] Add an iOS app, an Android app, and a web app to the project, using the app id from §8.0. Registered 2026-11-14 as `Sousvite iOS`, `Sousvite Android`, and `Sousvite Web`.
 - [x] Turn on **Firestore** (production mode, region close to you, for example `us-central1`), **Cloud Storage**, and **Hosting**. Done 2026-11-14 with deny-all rules; Storage is in `us-central1` for the no-cost tier.
-- [ ] **App Check:** register App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web).
+- [x] **App Check:** register App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web). Done 2026-11-16; the app activates it in `lib/app/services/app_check.dart`. Debug builds use the debug provider: register a debug token under App Check → Apps → Manage debug tokens and pass it with `--dart-define=APP_CHECK_DEBUG_TOKEN=...` (or register the token each debug install logs).
 - [ ] For CI deploys (`deploy_web.yaml` now, `REL-1` later): in [Google Cloud → IAM → Service accounts](https://console.cloud.google.com/iam-admin/serviceaccounts?project=sousvite), create `github-deploy` with the roles **Firebase Hosting Admin**, **API Keys Viewer**, and **Cloud Run Viewer**. Under its Keys tab, add a JSON key, save it as `~/Sousvite-secrets/firebase-deploy.json`, and run `tools/secrets/set_github_secrets.sh` (it sets `FIREBASE_SERVICE_ACCOUNT`).
-- [ ] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets).
+- [ ] For the backend deploy (`deploy_functions.yaml`, Tyler chose deploy-on-merge 2026-11-16), give the same `github-deploy` account the roles that deploying functions and rules needs. In [Cloud Shell](https://shell.cloud.google.com/?show=terminal), run:
+
+  ```sh
+  SA=github-deploy@sousvite.iam.gserviceaccount.com
+  for role in cloudfunctions.admin run.admin iam.serviceAccountUser \
+      artifactregistry.admin secretmanager.admin serviceusage.serviceUsageAdmin \
+      firebaserules.admin datastore.indexAdmin firebaseextensions.viewer; do
+    gcloud projects add-iam-policy-binding sousvite \
+      --member="serviceAccount:$SA" --role="roles/$role" --condition=None --quiet
+  done
+  ```
+
+  Then run the **Deploy backend** workflow by hand from the Actions tab (or ask an agent to). Without the roles, the workflow fails after merge; it never blocks CI.
+- [x] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets). Done 2026-11-16: `apps/sousvite/lib/firebase_options.dart` holds the registered apps' config, read with the Firebase CLI. The app ships no `google-services.json` or `GoogleService-Info.plist`; Android Google sign-in gets the web OAuth client as its server client id instead, and iOS has the reversed client id as a URL scheme plus the Sign in with Apple and App Attest entitlements.
 
 ### 8.2 Apple Developer Program (needed by Apple sign-in, iOS builds, TestFlight, iOS purchases)
 
@@ -328,7 +340,7 @@ Costs $25 once.
 ### 8.5 Signing keys (needed by `REL-1`)
 
 - [x] **Android upload key:** run `tools/secrets/set_github_secrets.sh` on your computer. It creates the keystore in `~/Sousvite-secrets/`, sets it as GitHub Actions secrets, and prints the SHA fingerprints for §8.3. Back up the keystore and its password file in your password manager. Use Play App Signing so Google holds the app signing key. Created 2026-11-14 (alias `upload`).
-- [ ] **iOS:** let the release pipeline manage certificates and profiles through the App Store Connect API key from §8.2 (an agent sets this up in `REL-1`).
+- [ ] **iOS:** fastlane `match` keeps the Apple Distribution certificate and the App Store profile, encrypted, in the private `TytaniumDev/TytaniumDev-certificates` repo that Tyler's other apps already use, so one certificate covers every app on the team. The release workflow reads it with a deploy key and talks to Apple with the App Store Connect API key from §8.2 (App Manager is enough, because signing is manual rather than Apple's cloud signing). Before the first iOS release: set `MATCH_PASSWORD` and `MATCH_SSH_PRIVATE_KEY` (§8.9; the script copies them from Doppler), and create the Sousvite profile once with `fastlane certs` in `apps/sousvite/ios`, on a computer that can push to the certificates repo.
 
 ### 8.6 Nutrition data (needed by `BE-2`, `NUT-3`)
 
@@ -337,7 +349,7 @@ Costs $25 once.
 
 ### 8.7 RevenueCat and Stripe (needed by `PRO-1`)
 
-**Deferred** (Tyler, 2026-11-14): all payment and billing setup waits until later. `PRO-1` can still be written and tested against fakes; it needs these accounts only for real purchases, and the app keeps the `FreeEntitlements` stub until then.
+**Deferred** (Tyler, 2026-11-14): all payment and billing setup waits until later. `PRO-1` can still be written and tested against fakes; it needs these accounts only for real purchases, and until then the app uses `BetaEntitlements`, which reports Pro for everyone during the beta (ENGINEERING §9.2; APP-SYN swaps it in).
 
 - [ ] Create a [RevenueCat](https://www.revenuecat.com) account and project. Its free tier covers a beta.
 - [ ] Add the **iOS app** (with the In-App Purchase key from §8.2), the **Android app** (with the Play service account from §8.4), and **Web Billing** (connect a Stripe account, below).
@@ -364,6 +376,7 @@ Costs $25 once.
   | `PLAY_SERVICE_ACCOUNT_JSON` | `play-service-account.json` (§8.4) |
   | `FIREBASE_SERVICE_ACCOUNT` | `firebase-deploy.json` (§8.1) |
   | `SENTRY_AUTH_TOKEN` | Sentry auth token (§8.8), typed at a hidden prompt |
+  | `MATCH_PASSWORD`, `MATCH_SSH_PRIVATE_KEY` | The fastlane match password and the certificates repo's deploy key (§8.5), copied from Doppler (project `blinkbreak`) |
 
 ### 8.10 Inputs only Tyler has (not accounts)
 
@@ -388,5 +401,5 @@ Costs $25 once.
 Decided by Tyler on 2026-11-13.
 
 1. **Bundled USDA file:** the generated SQLite file is committed to the repo as a normal file, without Git LFS. It is about 9 MB (under 2 MB compressed, which is what Git stores) and USDA updates it about twice a year, so the history grows slowly. Git LFS has a small free quota that every CI checkout uses, and building the file in CI would download hundreds of MB of CSVs on every build.
-2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses the App Store Connect API key from §8.2.
+2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses fastlane match with the shared certificates repo and the App Store Connect API key from §8.2 (§8.5). Every push to `main` ships a TestFlight and Play internal build (Tyler, 2026-11-16).
 3. **Firebase:** one project, with no dev and prod split (§8.1).

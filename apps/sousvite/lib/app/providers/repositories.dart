@@ -2,6 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/providers/bundled_foods.dart';
 import 'package:sousvite/app/providers/database.dart';
 
 part 'repositories.g.dart';
@@ -12,13 +13,23 @@ part 'repositories.g.dart';
 
 @Riverpod(keepAlive: true)
 AppSettingsRepository appSettingsRepository(Ref ref) =>
-    throw UnimplementedError('AppSettingsRepository is not implemented yet.');
+    DriftAppSettingsRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
+    );
 
 @Riverpod(keepAlive: true)
 RecipeRepository recipeRepository(Ref ref) => DriftRecipeRepository(
   ref.watch(appDatabaseProvider),
   recorder: ref.watch(changeRecorderProvider).requireValue,
 );
+
+@Riverpod(keepAlive: true)
+RecipeSpaceRepository recipeSpaceRepository(Ref ref) =>
+    DriftRecipeSpaceRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
+    );
 
 @Riverpod(keepAlive: true)
 FolderRepository folderRepository(Ref ref) => DriftFolderRepository(
@@ -28,12 +39,23 @@ FolderRepository folderRepository(Ref ref) => DriftFolderRepository(
 );
 
 @Riverpod(keepAlive: true)
-FoodRepository foodRepository(Ref ref) =>
-    throw UnimplementedError('FoodRepository is not implemented yet.');
+FoodRepository foodRepository(Ref ref) => DriftFoodRepository(
+  ref.watch(appDatabaseProvider),
+  recorder: ref.watch(changeRecorderProvider).requireValue,
+  bundled: ref.watch(bundledFoodsProvider).value,
+);
 
 @Riverpod(keepAlive: true)
-ExperimentRepository experimentRepository(Ref ref) =>
-    throw UnimplementedError('ExperimentRepository is not implemented yet.');
+ExperimentRepository experimentRepository(Ref ref) {
+  final database = ref.watch(appDatabaseProvider);
+  final recorder = ref.watch(changeRecorderProvider).requireValue;
+  return DriftExperimentRepository(
+    database,
+    recorder: recorder,
+    recipes: DriftRecipeRepository(database, recorder: recorder),
+    now: clock.now,
+  );
+}
 
 @Riverpod(keepAlive: true)
 GroceryRepository groceryRepository(Ref ref) => DriftGroceryRepository(
@@ -43,10 +65,14 @@ GroceryRepository groceryRepository(Ref ref) => DriftGroceryRepository(
 
 @Riverpod(keepAlive: true)
 MeasuringToolRepository measuringToolRepository(Ref ref) =>
-    throw UnimplementedError('MeasuringToolRepository is not implemented yet.');
+    DriftMeasuringToolRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
+    );
 
 @Riverpod(keepAlive: true)
 UserRecipePrefsRepository userRecipePrefsRepository(Ref ref) =>
-    throw UnimplementedError(
-      'UserRecipePrefsRepository is not implemented yet.',
+    DriftUserRecipePrefsRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
     );

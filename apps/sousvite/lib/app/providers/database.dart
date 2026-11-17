@@ -28,7 +28,7 @@ AppDatabase appDatabase(Ref ref) {
 }
 
 /// The space local writes belong to: this user's own library. Shared
-/// spaces get their own ids when sharing lands (ENGINEERING.md §8.3).
+/// spaces get their own ids when sharing lands (ENGINEERING.md §8.4).
 const privateSpaceId = 'private';
 
 /// Records every local write in the change log for sync.

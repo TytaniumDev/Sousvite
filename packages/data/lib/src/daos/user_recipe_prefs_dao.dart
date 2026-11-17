@@ -4,11 +4,22 @@ import 'package:drift/drift.dart';
 
 part 'user_recipe_prefs_dao.g.dart';
 
-/// Queries for per-user recipe settings.
-///
-/// Empty in the scaffold. The data task for this aggregate adds its queries
-/// (docs/BUILD_PLAN.md).
+/// Queries for each recipe's serving size and units.
 @DriftAccessor(tables: [UserRecipePrefsTable])
 class UserRecipePrefsDao(super.attachedDatabase)
     extends DatabaseAccessor<AppDatabase>
-    with _$UserRecipePrefsDaoMixin;
+    with _$UserRecipePrefsDaoMixin {
+  /// The prefs of [recipeId].
+  Selectable<UserRecipePrefsRow> prefsOf(String recipeId) =>
+      select(userRecipePrefsTable)
+        ..where((row) => row.recipeId.equals(recipeId));
+
+  /// Inserts or replaces a prefs row.
+  Future<void> upsert(UserRecipePrefsTableCompanion row) =>
+      into(userRecipePrefsTable).insertOnConflictUpdate(row);
+
+  /// Deletes the prefs of [recipeId].
+  Future<void> deletePrefs(String recipeId) => (delete(
+    userRecipePrefsTable,
+  )..where((row) => row.recipeId.equals(recipeId))).go();
+}

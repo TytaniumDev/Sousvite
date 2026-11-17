@@ -8,12 +8,15 @@ import 'package:data/src/daos/recipe_dao.dart';
 import 'package:data/src/recipes/recipe_codecs.dart';
 import 'package:data/src/recipes/recipe_rows.dart';
 import 'package:data/src/recipes/recipe_search_query.dart';
+import 'package:data/src/recipes/recipe_spaces.dart';
 import 'package:domain/domain.dart';
 
 /// [RecipeRepository] over the local database.
 ///
 /// Every write goes through [recorder], so it lands in the change log in
-/// the same transaction, recording only the fields that changed. Watch
+/// the same transaction, recording only the fields that changed. Changes to
+/// a recipe and its parts go to the recipe's space ([RecipeSpaces]), so
+/// edits to a jointly shared recipe reach everyone in the share. Watch
 /// streams skip values equal to the last one, so widgets rebuild only when
 /// their data changes (ENGINEERING.md §5).
 final class DriftRecipeRepository(
@@ -24,6 +27,8 @@ final class DriftRecipeRepository(
   required final ChangeRecorder recorder,
 }) implements RecipeRepository {
   RecipeDao get _dao => database.recipeDao;
+
+  late final _spaces = RecipeSpaces(database);
 
   static final _recipes = RecipeCodec();
   static final _ingredientSections = IngredientSectionCodec();
@@ -125,6 +130,69 @@ final class DriftRecipeRepository(
   Future<Recipe?> getRecipe(RecipeId id) async =>
       (await _dao.recipe(id.value).getSingleOrNull())?.toEntity();
 
+  /// The recipe [id] with every part, in sort order, or null when it does
+  /// not exist. Used to save versions and start experiments.
+  Future<RecipeSnapshot?> getSnapshot(RecipeId id) async {
+    final recipe = await getRecipe(id);
+    if (recipe == null) return null;
+    final recipeId = id.value;
+    return RecipeSnapshot(
+      recipe: recipe,
+      ingredientSections: [
+        for (final row in await _dao.ingredientSectionsOf(recipeId).get())
+          row.toEntity(),
+      ],
+      ingredientLines: [
+        for (final row in await _dao.ingredientLinesOf(recipeId).get())
+          row.toEntity(),
+      ],
+      stepSections: [
+        for (final row in await _dao.stepSectionsOf(recipeId).get())
+          row.toEntity(),
+      ],
+      steps: [
+        for (final row in await _dao.stepsOf(recipeId).get()) row.toEntity(),
+      ],
+    );
+  }
+
+  /// Makes the recipe in [contents] hold exactly its parts: parts not in
+  /// it are deleted and the rest saved, in one transaction. The recipe's
+  /// fields come from `contents.recipe`. Used by restore and promote.
+  Future<void> replaceContents(RecipeSnapshot contents) =>
+      recorder.write((changes) async {
+        final current = await getSnapshot(contents.recipe.id);
+        if (current != null) {
+          final keep = <String>{
+            for (final part in contents.ingredientSections) part.id.value,
+            for (final part in contents.ingredientLines) part.id.value,
+            for (final part in contents.stepSections) part.id.value,
+            for (final part in contents.steps) part.id.value,
+          };
+          for (final line in current.ingredientLines) {
+            if (!keep.contains(line.id.value)) {
+              await _deleteIngredientLine(changes, line.id.value);
+            }
+          }
+          for (final section in current.ingredientSections) {
+            if (!keep.contains(section.id.value)) {
+              await _deleteIngredientSection(changes, section.id.value);
+            }
+          }
+          for (final step in current.steps) {
+            if (!keep.contains(step.id.value)) {
+              await _deleteStep(changes, step.id.value);
+            }
+          }
+          for (final section in current.stepSections) {
+            if (!keep.contains(section.id.value)) {
+              await _deleteStepSection(changes, section.id.value);
+            }
+          }
+        }
+        await _saveSnapshot(changes, contents);
+      });
+
   // Writes.
 
   @override
@@ -149,25 +217,15 @@ final class DriftRecipeRepository(
 
   @override
   Future<void> saveSnapshot(RecipeSnapshot snapshot) =>
-      recorder.write((changes) async {
-        await _saveRecipe(changes, snapshot.recipe);
-        for (final section in snapshot.ingredientSections) {
-          await _saveIngredientSection(changes, section);
-        }
-        for (final line in snapshot.ingredientLines) {
-          await _saveIngredientLine(changes, line);
-        }
-        for (final section in snapshot.stepSections) {
-          await _saveStepSection(changes, section);
-        }
-        for (final step in snapshot.steps) {
-          await _saveStep(changes, step);
-        }
-      });
+      recorder.write((changes) => _saveSnapshot(changes, snapshot));
 
+  /// Deleting a jointly shared recipe deletes only the user's copy: it
+  /// moves back to the user's own library first, so the delete stays out
+  /// of the share and the others keep the recipe (PRD 7.10).
   @override
   Future<void> deleteRecipe(RecipeId id) => recorder.write((changes) async {
     final recipeId = id.value;
+    await _takeOutOfSharedSpace(recipeId);
     for (final row in await _dao.ingredientLinesOf(recipeId).get()) {
       await _deleteIngredientLine(changes, row.id);
     }
@@ -181,7 +239,11 @@ final class DriftRecipeRepository(
       await _deleteStepSection(changes, row.id);
     }
     await _dao.deleteRecipe(recipeId);
-    changes.delete(_recipes.entity, recipeId);
+    changes.delete(
+      _recipes.entity,
+      recipeId,
+      spaceId: await _spaces.sharedSpaceOf(recipeId),
+    );
   });
 
   /// Deletes the section with the lines in it, as the editor does.
@@ -221,9 +283,30 @@ final class DriftRecipeRepository(
 
   // One entity at a time, inside a write.
 
+  Future<void> _saveSnapshot(ChangeSet changes, RecipeSnapshot snapshot) async {
+    await _saveRecipe(changes, snapshot.recipe);
+    for (final section in snapshot.ingredientSections) {
+      await _saveIngredientSection(changes, section);
+    }
+    for (final line in snapshot.ingredientLines) {
+      await _saveIngredientLine(changes, line);
+    }
+    for (final section in snapshot.stepSections) {
+      await _saveStepSection(changes, section);
+    }
+    for (final step in snapshot.steps) {
+      await _saveStep(changes, step);
+    }
+  }
+
   Future<void> _saveRecipe(ChangeSet changes, Recipe recipe) async {
     final before = await _dao.recipe(recipe.id.value).getSingleOrNull();
-    changes.setChanged(_recipes, recipe, before: before?.toEntity());
+    changes.setChanged(
+      _recipes,
+      recipe,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(recipe.id.value),
+    );
     await _dao.upsert(_dao.recipes, recipe.toCompanion());
   }
 
@@ -238,6 +321,7 @@ final class DriftRecipeRepository(
       _ingredientSections,
       section,
       before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(section.recipeId.value),
     );
     await _dao.upsert(_dao.ingredientSections, section.toCompanion());
   }
@@ -247,41 +331,91 @@ final class DriftRecipeRepository(
     IngredientLine line,
   ) async {
     final before = await _dao.ingredientLine(line.id.value).getSingleOrNull();
-    changes.setChanged(_ingredientLines, line, before: before?.toEntity());
+    changes.setChanged(
+      _ingredientLines,
+      line,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(line.recipeId.value),
+    );
     await _dao.upsert(_dao.ingredientLines, line.toCompanion());
   }
 
   Future<void> _saveStepSection(ChangeSet changes, StepSection section) async {
     final before = await _dao.stepSection(section.id.value).getSingleOrNull();
-    changes.setChanged(_stepSections, section, before: before?.toEntity());
+    changes.setChanged(
+      _stepSections,
+      section,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(section.recipeId.value),
+    );
     await _dao.upsert(_dao.stepSections, section.toCompanion());
   }
 
   Future<void> _saveStep(ChangeSet changes, RecipeStep step) async {
     final before = await _dao.step(step.id.value).getSingleOrNull();
-    changes.setChanged(_steps, step, before: before?.toEntity());
+    changes.setChanged(
+      _steps,
+      step,
+      before: before?.toEntity(),
+      spaceId: await _spaces.sharedSpaceOf(step.recipeId.value),
+    );
     await _dao.upsert(_dao.recipeSteps, step.toCompanion());
   }
 
   Future<void> _deleteIngredientSection(ChangeSet changes, String id) async {
+    final row = await _dao.ingredientSection(id).getSingleOrNull();
     await _dao.deleteIngredientSection(id);
-    changes.delete(_ingredientSections.entity, id);
+    changes.delete(
+      _ingredientSections.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
 
   Future<void> _deleteIngredientLine(ChangeSet changes, String id) async {
+    final row = await _dao.ingredientLine(id).getSingleOrNull();
     await _dao.deleteIngredientLine(id);
-    changes.delete(_ingredientLines.entity, id);
+    changes.delete(
+      _ingredientLines.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
 
   Future<void> _deleteStepSection(ChangeSet changes, String id) async {
+    final row = await _dao.stepSection(id).getSingleOrNull();
     await _dao.deleteStepSection(id);
-    changes.delete(_stepSections.entity, id);
+    changes.delete(
+      _stepSections.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
 
   Future<void> _deleteStep(ChangeSet changes, String id) async {
+    final row = await _dao.step(id).getSingleOrNull();
     await _dao.deleteStep(id);
-    changes.delete(_steps.entity, id);
+    changes.delete(
+      _steps.entity,
+      id,
+      spaceId: await _spaceOfPart(row?.recipeId),
+    );
   }
+
+  /// Records that [recipeId] is in the user's own library, in its own
+  /// write so that every change after it is routed there too.
+  Future<void> _takeOutOfSharedSpace(String recipeId) async {
+    if (await _spaces.sharedSpaceOf(recipeId) == null) return;
+    await recorder.write(
+      (changes) async =>
+          changes.set(_recipes.entity, recipeId, {RecipeSpaces.field: null}),
+    );
+  }
+
+  /// The space of a part's recipe, or the user's own library when the part
+  /// is already gone.
+  Future<String?> _spaceOfPart(String? recipeId) async =>
+      recipeId == null ? null : await _spaces.sharedSpaceOf(recipeId);
 
   static bool _listEquals<T>(List<T> a, List<T> b) =>
       const ListEquality<Object?>().equals(a, b);

@@ -856,6 +856,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get experiments_restored => 'Version restored';
 
   @override
+  String get experiments_shareWithOthers => 'Share with others';
+
+  @override
+  String get experiments_shareWithOthersBody =>
+      'Everyone you share this recipe with can see, edit, and cook this experiment.';
+
+  @override
   String get experiments_ingredients => 'Ingredients';
 
   @override
@@ -863,6 +870,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sharing_title => 'Share';
+
+  @override
+  String get sharing_signInTitle => 'Sign in to share';
+
+  @override
+  String get sharing_signInBody =>
+      'Sharing goes through Sousvite, so it needs a Google or Apple sign-in.';
+
+  @override
+  String get sharing_signIn => 'Sign in';
+
+  @override
+  String get sharing_copyTitle => 'Send a copy';
+
+  @override
+  String get sharing_copyBody =>
+      'They get their own version to change as they like. Your recipe stays as it is.';
+
+  @override
+  String get sharing_copyCreate => 'Create copy link';
+
+  @override
+  String get sharing_copyExpiry =>
+      'Anyone who opens this link in the next 14 days gets a copy.';
+
+  @override
+  String get sharing_linkTitle => 'Link for anyone';
+
+  @override
+  String get sharing_linkBody =>
+      'Anyone with the link can read this recipe, even without the app.';
+
+  @override
+  String get sharing_linkCreate => 'Create view-only link';
+
+  @override
+  String get sharing_linkTurnOff => 'Turn off link';
+
+  @override
+  String get sharing_linkTurnedOff => 'Link turned off';
+
+  @override
+  String get sharing_copyLink => 'Copy link';
+
+  @override
+  String get sharing_linkCopied => 'Link copied';
+
+  @override
+  String get sharing_failed =>
+      'Couldn\'t share. Check your connection and try again.';
+
+  @override
+  String get sharing_jointTitle => 'Share together';
+
+  @override
+  String get sharing_jointBody =>
+      'Everyone you invite can edit this recipe, and you all see each other\'s changes.';
+
+  @override
+  String get sharing_jointSharedBody =>
+      'You\'re editing this recipe together. Invite more people, or leave to keep your own copy.';
+
+  @override
+  String get sharing_jointCreate => 'Create invite link';
+
+  @override
+  String get sharing_jointExpiry =>
+      'Anyone who opens this link in the next 14 days can join.';
+
+  @override
+  String get sharing_jointLeave => 'Leave share';
+
+  @override
+  String get sharing_jointLeaveTitle => 'Leave this share?';
+
+  @override
+  String get sharing_jointLeaveBody =>
+      'You keep the recipe as it is now, and the others keep theirs. You won\'t see each other\'s changes anymore.';
+
+  @override
+  String get sharing_jointLeaveConfirm => 'Leave';
+
+  @override
+  String get sharing_jointLeft =>
+      'You left the share. The recipe stays in your library.';
+
+  @override
+  String get sharing_inviteTitle => 'Shared recipe';
+
+  @override
+  String sharing_inviteCopyFrom(String name, String title) {
+    return '$name sent you a copy of $title';
+  }
+
+  @override
+  String sharing_inviteCopy(String title) {
+    return 'You were sent a copy of $title';
+  }
+
+  @override
+  String get sharing_inviteCopyBody =>
+      'It becomes your own recipe to change as you like. Theirs won\'t change.';
+
+  @override
+  String get sharing_inviteAccept => 'Add to my recipes';
+
+  @override
+  String sharing_inviteJointFrom(String name, String title) {
+    return '$name invited you to share $title';
+  }
+
+  @override
+  String sharing_inviteJoint(String title) {
+    return 'You were invited to share $title';
+  }
+
+  @override
+  String get sharing_inviteJointBody =>
+      'You\'ll all edit the same recipe and see each other\'s changes.';
+
+  @override
+  String get sharing_inviteJoin => 'Join';
+
+  @override
+  String get sharing_inviteJoined =>
+      'Joined. The recipe shows up in your library once it syncs.';
+
+  @override
+  String get sharing_inviteSignIn =>
+      'Sign in to add this recipe to your library.';
+
+  @override
+  String get sharing_inviteGone => 'This link no longer works';
+
+  @override
+  String get sharing_inviteGoneBody =>
+      'Ask the person who shared it for a new link.';
+
+  @override
+  String get sharing_inviteAdded => 'Recipe added';
 
   @override
   String get settings_title => 'Settings';
@@ -1000,4 +1147,59 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get account_error =>
       'Couldn\'t reach your account. Check your connection and try again.';
+
+  @override
+  String get account_syncSynced => 'Synced';
+
+  @override
+  String get account_syncSyncing => 'Syncing';
+
+  @override
+  String get account_syncOffline =>
+      'Offline. Changes are saved on this device.';
+
+  @override
+  String get account_syncError => 'Couldn\'t sync. It will try again.';
+
+  @override
+  String get account_syncSignInAgain =>
+      'Sign in again to sync with Google Drive';
+
+  @override
+  String get account_syncSource => 'Sync source';
+
+  @override
+  String get account_syncSourceBeta => 'Beta';
+
+  @override
+  String get account_syncSourceCloud => 'Sousvite cloud';
+
+  @override
+  String get account_syncSourceDrive => 'Google Drive';
+
+  @override
+  String get account_syncSourceDriveNeedsGoogle =>
+      'Google Drive needs a Google account';
+
+  @override
+  String get account_syncSourceSwitchFailed =>
+      'Couldn\'t switch. Your recipes are still syncing where they were.';
+
+  @override
+  String account_lastSynced(String time) {
+    return 'Last synced $time';
+  }
+
+  @override
+  String get account_signInCalloutTitle => 'Back up your recipes for free';
+
+  @override
+  String get account_signInCalloutBody =>
+      'Sign in with Google for free backup and sync through your Google Drive.';
+
+  @override
+  String get account_signInCalloutAction => 'Sign in';
+
+  @override
+  String get account_signInCalloutDismiss => 'Not now';
 }

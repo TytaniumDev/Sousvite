@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/app/services/auth_service.dart';
 import 'package:sousvite/app/services/entitlements.dart';
 import 'package:sousvite/app/services/error_reporter.dart';
@@ -24,11 +22,15 @@ void main() {
       expect(await auth.deleteAccount(), AuthOutcome.completed);
     });
 
-    test('entitlements are never Pro', () async {
+    test('everyone is Pro during the beta', () async {
       expect(
         await container.read(entitlementsProvider).watchIsPro().first,
-        isFalse,
+        isTrue,
       );
+    });
+
+    test('free entitlements are never Pro', () async {
+      expect(await const FreeEntitlements().watchIsPro().first, isFalse);
     });
 
     test('the offline nutrition API finds nothing', () async {
@@ -83,20 +85,6 @@ void main() {
 
     test('AuthFailure names its cause', () {
       expect('${AuthFailure(StateError('offline'))}', contains('offline'));
-    });
-  });
-
-  group('repository providers', () {
-    test('throw until a data task implements them', () {
-      for (final provider in <ProviderListenable<Object>>[
-        appSettingsRepositoryProvider,
-        foodRepositoryProvider,
-        experimentRepositoryProvider,
-        measuringToolRepositoryProvider,
-        userRecipePrefsRepositoryProvider,
-      ]) {
-        expect(() => container.read(provider), throwsA(anything));
-      }
     });
   });
 }

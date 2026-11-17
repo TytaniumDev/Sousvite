@@ -39,6 +39,7 @@ void main() {
       expect(database.groceryDao, isA<GroceryDao>());
       expect(database.measuringToolDao, isA<MeasuringToolDao>());
       expect(database.userRecipePrefsDao, isA<UserRecipePrefsDao>());
+      expect(database.settingsDao, isA<SettingsDao>());
       expect(database.syncDao, isA<SyncDao>());
     });
 

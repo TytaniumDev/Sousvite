@@ -47,7 +47,9 @@ class SyncState() extends Table {
   Set<Column<Object>> get primaryKey => {transportKey};
 }
 
-/// Values that stay on this device and never sync, such as its device id.
+/// Small values kept as text by key: this device's id and the app
+/// settings. The table never syncs; settings that sync are recorded in the
+/// change log by `DriftAppSettingsRepository`.
 @DataClassName('LocalValueRow')
 class LocalValues() extends Table {
   TextColumn get key => text()();

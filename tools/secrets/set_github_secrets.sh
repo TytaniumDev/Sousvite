@@ -136,6 +136,39 @@ json_file_secret() {
   fi
 }
 
+# iOS signing (REL-1) reuses the match certificates repo that Tyler's other
+# apps share. Its password and deploy key are already in Doppler (project
+# blinkbreak, config prd), so they are copied from there when the Doppler
+# CLI is signed in, and asked for at hidden prompts otherwise.
+match_secrets() {
+  local name value
+  say "iOS signing (fastlane match):"
+  for name in MATCH_PASSWORD MATCH_SSH_PRIVATE_KEY; do
+    if gh secret list --repo "$REPO" | grep -q "^${name}[[:space:]]"; then
+      say "  $name: already set, kept."
+      continue
+    fi
+    value=""
+    if command -v doppler >/dev/null 2>&1; then
+      value="$(doppler secrets get "$name" --plain --project blinkbreak --config prd 2>/dev/null || true)"
+    fi
+    if [[ -z "$value" && "$name" == MATCH_PASSWORD ]]; then
+      read -r -s -p "  match password (input hidden, Enter to skip): " value
+      say ""
+    fi
+    if [[ -z "$value" ]]; then
+      say "  $name: not found, skipped."
+      continue
+    fi
+    # An SSH key needs its final newline, which $(...) strips.
+    if [[ "$name" == MATCH_SSH_PRIVATE_KEY ]]; then
+      printf '%s\n' "$value" | set_secret "$name"
+    else
+      printf '%s' "$value" | set_secret "$name"
+    fi
+  done
+}
+
 sentry_token() {
   if gh secret list --repo "$REPO" | grep -q '^SENTRY_AUTH_TOKEN[[:space:]]'; then
     say "SENTRY_AUTH_TOKEN: already set, kept."
@@ -163,6 +196,7 @@ main() {
   app_store_connect_key
   json_file_secret PLAY_SERVICE_ACCOUNT_JSON play-service-account.json
   json_file_secret FIREBASE_SERVICE_ACCOUNT firebase-deploy.json
+  match_secrets
   sentry_token
 
   say ""

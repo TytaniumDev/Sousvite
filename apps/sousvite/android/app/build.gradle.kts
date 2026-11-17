@@ -4,6 +4,11 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release signing (BUILD_PLAN.md §8.5). The release workflow decodes the
+// upload keystore to a file and points ANDROID_KEYSTORE_PATH at it. Without
+// it, release builds use the debug key so `flutter run --release` works.
+val uploadKeystore: String? = System.getenv("ANDROID_KEYSTORE_PATH")
+
 android {
     namespace = "com.tytaniumdev.sousvite"
     compileSdk = flutter.compileSdkVersion
@@ -15,7 +20,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.tytaniumdev.sousvite"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -29,11 +33,22 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (uploadKeystore != null) {
+            create("release") {
+                storeFile = file(uploadKeystore)
+                // The keystore is PKCS12, so the key shares the store password.
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyPassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig =
+                signingConfigs.getByName(if (uploadKeystore != null) "release" else "debug")
         }
     }
 }

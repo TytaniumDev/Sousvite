@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:sousvite/app/providers/database.dart';
 import 'package:sousvite/app/services/error_reporter.dart';
 import 'package:sousvite/app/services/firebase.dart';
+import 'package:sousvite/features/account/account.dart';
 import 'package:sousvite/firebase_options.dart';
 
 /// Starts the app: sets up error reporting, then runs [builder] inside the
@@ -14,6 +16,10 @@ import 'package:sousvite/firebase_options.dart';
 /// Setup that must happen before the first frame (Sentry, Firebase,
 /// RevenueCat) goes here, behind the service interfaces in `app/services/`.
 Future<void> bootstrap(Widget Function() builder) async {
+  // Web addresses without a `#`, so links such as invite links
+  // (`/invite/<id>`) open the right screen. Hosting serves index.html for
+  // every path. Does nothing on other platforms.
+  usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
   final firebase = await initFirebase(DefaultFirebaseOptions.currentPlatform);
   final container = ProviderContainer(
@@ -25,6 +31,8 @@ Future<void> bootstrap(Widget Function() builder) async {
   installErrorHandlers(container.read(errorReporterProvider));
   // Repositories read the recorder synchronously once it has loaded.
   await container.read(changeRecorderProvider.future);
+  // Sync runs for the app's lifetime, whichever screen is open.
+  container.listen(syncControllerProvider, (_, _) {});
   runApp(UncontrolledProviderScope(container: container, child: builder()));
 }
 
