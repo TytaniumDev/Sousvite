@@ -295,10 +295,14 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
   SA=github-deploy@sousvite.iam.gserviceaccount.com
   for role in cloudfunctions.admin run.admin iam.serviceAccountUser \
       artifactregistry.admin secretmanager.admin serviceusage.serviceUsageAdmin \
-      firebaserules.admin datastore.indexAdmin firebaseextensions.viewer; do
+      firebaserules.admin firebasestorage.admin datastore.indexAdmin firebaseextensions.viewer; do
     gcloud projects add-iam-policy-binding sousvite \
       --member="serviceAccount:$SA" --role="roles/$role" --condition=None --quiet
   done
+  # Cloud Build builds functions as the default compute account.
+  gcloud projects add-iam-policy-binding sousvite \
+    --member="serviceAccount:761600243200-compute@developer.gserviceaccount.com" \
+    --role=roles/cloudbuild.builds.builder --condition=None --quiet
   ```
 
   Then run the **Deploy backend** workflow by hand from the Actions tab (or ask an agent to). Without the roles, the workflow fails after merge; it never blocks CI.

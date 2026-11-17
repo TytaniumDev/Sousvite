@@ -64,11 +64,20 @@ jobs:
       # firebase.json's predeploy hooks lint and build the functions first.
       # --force lets a non-interactive deploy set the Artifact Registry
       # cleanup policy and delete functions removed from the code.
-      - name: 🚀 Deploy
+      - name: 🚀 Deploy functions and Firestore
         if: env.FIREBASE_SERVICE_ACCOUNT != ''
         run: >-
           npx --yes firebase-tools@15 deploy
-          --only functions,firestore,storage
+          --only functions,firestore
           --project sousvite
           --non-interactive
           --force
+
+      # Separate, so a Storage problem never holds back the functions.
+      - name: 🗄️ Deploy Storage rules
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: >-
+          npx --yes firebase-tools@15 deploy
+          --only storage
+          --project sousvite
+          --non-interactive
