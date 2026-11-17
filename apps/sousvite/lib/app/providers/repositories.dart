@@ -24,6 +24,13 @@ RecipeRepository recipeRepository(Ref ref) => DriftRecipeRepository(
 );
 
 @Riverpod(keepAlive: true)
+RecipeSpaceRepository recipeSpaceRepository(Ref ref) =>
+    DriftRecipeSpaceRepository(
+      ref.watch(appDatabaseProvider),
+      recorder: ref.watch(changeRecorderProvider).requireValue,
+    );
+
+@Riverpod(keepAlive: true)
 FolderRepository folderRepository(Ref ref) => DriftFolderRepository(
   ref.watch(appDatabaseProvider),
   recorder: ref.watch(changeRecorderProvider).requireValue,
