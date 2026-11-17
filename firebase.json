@@ -21,6 +21,7 @@
     "indexes": "firestore.indexes.json"
   },
   "storage": {
+    "bucket": "sousvite.firebasestorage.app",
     "rules": "storage.rules"
   },
   "hosting": {
