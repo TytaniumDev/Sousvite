@@ -4,6 +4,7 @@ import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sousvite/features/account/account.dart';
 import 'package:sousvite/features/editor/editor.dart';
 import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/library/presentation/folder_chips.dart';
@@ -23,11 +24,12 @@ class const LibraryScreen({super.key}) extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.library_title),
-        actions: const [FolderMenu()],
+        actions: const [SyncStatusButton(), FolderMenu()],
       ),
       body: const Column(
         crossAxisAlignment: .stretch,
         children: [
+          SignInCalloutCard(),
           LibrarySearchField(),
           SizedBox(height: AppSpacing.space2),
           FolderChips(),

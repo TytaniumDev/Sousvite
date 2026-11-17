@@ -1983,6 +1983,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t reach your account. Check your connection and try again.'**
   String get account_error;
+
+  /// Sync status icon label when everything is saved to the cloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get account_syncSynced;
+
+  /// Sync status icon label while changes are sent or received.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing'**
+  String get account_syncSyncing;
+
+  /// Sync status icon label with no connection; not an error.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline. Changes are saved on this device.'**
+  String get account_syncOffline;
+
+  /// Sync status icon label when the last sync failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t sync. It will try again.'**
+  String get account_syncError;
+
+  /// Sync status label and button when Google needs the user to sign in again before Drive syncs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to sync with Google Drive'**
+  String get account_syncSignInAgain;
+
+  /// Settings row title for choosing where the library syncs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync source'**
+  String get account_syncSource;
+
+  /// Small label next to the Sync source setting, saying it is a beta feature.
+  ///
+  /// In en, this message translates to:
+  /// **'Beta'**
+  String get account_syncSourceBeta;
+
+  /// Sync source option: Sousvite's own service.
+  ///
+  /// In en, this message translates to:
+  /// **'Sousvite cloud'**
+  String get account_syncSourceCloud;
+
+  /// Sync source option: the user's own Google Drive.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive'**
+  String get account_syncSourceDrive;
+
+  /// Shown under the Sync source setting for users signed in with Apple.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive needs a Google account'**
+  String get account_syncSourceDriveNeedsGoogle;
+
+  /// Snack bar when switching the sync source failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t switch. Your recipes are still syncing where they were.'**
+  String get account_syncSourceSwitchFailed;
+
+  /// Under the Sync source setting: when the last sync finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced {time}'**
+  String account_lastSynced(String time);
+
+  /// Title of the card and settings row that invite signed-out users to sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up your recipes for free'**
+  String get account_signInCalloutTitle;
+
+  /// Body of the card and settings row that invite signed-out users to sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google for free backup and sync through your Google Drive.'**
+  String get account_signInCalloutBody;
+
+  /// Button on the sign-in invitation card.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get account_signInCalloutAction;
+
+  /// Button that hides the sign-in invitation card for 30 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get account_signInCalloutDismiss;
 }
 
 class _AppLocalizationsDelegate

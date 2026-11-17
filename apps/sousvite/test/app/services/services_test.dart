@@ -22,11 +22,15 @@ void main() {
       expect(await auth.deleteAccount(), AuthOutcome.completed);
     });
 
-    test('entitlements are never Pro', () async {
+    test('everyone is Pro during the beta', () async {
       expect(
         await container.read(entitlementsProvider).watchIsPro().first,
-        isFalse,
+        isTrue,
       );
+    });
+
+    test('free entitlements are never Pro', () async {
+      expect(await const FreeEntitlements().watchIsPro().first, isFalse);
     });
 
     test('the offline nutrition API finds nothing', () async {

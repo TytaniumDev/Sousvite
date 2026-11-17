@@ -7,6 +7,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:sousvite/app/providers/database.dart';
 import 'package:sousvite/app/services/error_reporter.dart';
 import 'package:sousvite/app/services/firebase.dart';
+import 'package:sousvite/features/account/account.dart';
 import 'package:sousvite/firebase_options.dart';
 
 /// Starts the app: sets up error reporting, then runs [builder] inside the
@@ -30,6 +31,8 @@ Future<void> bootstrap(Widget Function() builder) async {
   installErrorHandlers(container.read(errorReporterProvider));
   // Repositories read the recorder synchronously once it has loaded.
   await container.read(changeRecorderProvider.future);
+  // Sync runs for the app's lifetime, whichever screen is open.
+  container.listen(syncControllerProvider, (_, _) {});
   runApp(UncontrolledProviderScope(container: container, child: builder()));
 }
 
