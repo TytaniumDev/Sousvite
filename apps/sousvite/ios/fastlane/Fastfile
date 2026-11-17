@@ -14,8 +14,20 @@
 default_platform(:ios)
 
 APP_IDENTIFIER = "com.tytaniumdev.sousvite"
+# The share extension (ios/ShareExtension) is its own bundle with its own
+# profile.
+EXTENSION_IDENTIFIER = "#{APP_IDENTIFIER}.ShareExtension"
 TEAM_ID = "F2HXQGU2CC"
-PROFILE_NAME = "match AppStore #{APP_IDENTIFIER}"
+
+# Each target, by Xcode target name: its bundle id and match's profile name.
+SIGNED_TARGETS = {
+  "Runner" => APP_IDENTIFIER,
+  "ShareExtension" => EXTENSION_IDENTIFIER
+}.freeze
+
+def profile_name(identifier)
+  "match AppStore #{identifier}"
+end
 
 # The API key every Apple-facing action below accepts.
 def asc_api_key
@@ -32,7 +44,18 @@ platform :ios do
   desc "once the profile exists."
   lane :certs do
     setup_ci
-    match(api_key: asc_api_key, readonly: false)
+    api_key = asc_api_key
+    # match needs each bundle id registered before it can make a profile.
+    SIGNED_TARGETS.each_value do |identifier|
+      next if Spaceship::ConnectAPI::BundleId.find(identifier)
+
+      Spaceship::ConnectAPI::BundleId.create(
+        name: identifier.split(".").last,
+        platform: "IOS",
+        identifier: identifier
+      )
+    end
+    match(api_key: api_key, readonly: false)
   end
 
   desc "Build a signed release and upload it to TestFlight"
@@ -46,15 +69,17 @@ platform :ios do
     # sign manually with match's profile, so xcodebuild never asks for Apple's
     # cloud-managed certificate (that needs an Admin API key; ours is App
     # Manager).
-    update_code_signing_settings(
-      path: "Runner.xcodeproj",
-      targets: ["Runner"],
-      use_automatic_signing: false,
-      team_id: TEAM_ID,
-      code_sign_identity: "Apple Distribution",
-      profile_name: PROFILE_NAME,
-      bundle_identifier: APP_IDENTIFIER
-    )
+    SIGNED_TARGETS.each do |target, identifier|
+      update_code_signing_settings(
+        path: "Runner.xcodeproj",
+        targets: [target],
+        use_automatic_signing: false,
+        team_id: TEAM_ID,
+        code_sign_identity: "Apple Distribution",
+        profile_name: profile_name(identifier),
+        bundle_identifier: identifier
+      )
+    end
 
     build_app(
       workspace: "Runner.xcworkspace",
@@ -62,7 +87,9 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
       export_options: {
-        provisioningProfiles: { APP_IDENTIFIER => PROFILE_NAME }
+        provisioningProfiles: SIGNED_TARGETS.values.to_h do |identifier|
+          [identifier, profile_name(identifier)]
+        end
       },
       archive_path: "../build/ios/Sousvite.xcarchive",
       output_directory: "../build/ios/ipa",
