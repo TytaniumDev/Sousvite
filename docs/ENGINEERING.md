@@ -177,6 +177,13 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 
 The bundled USDA database ships as a separate, read-only SQLite file, so app updates can replace it without migrations. The app opens it as its own connection from the asset's bytes (an in-memory file system, so the same code runs on native SQLite and WebAssembly) rather than attaching it to the main database; `DriftFoodRepository` reads the local cache first, then the bundled file.
 
+### 7.2 Recipe photos
+
+- Photos are not in the database. `Recipe.photoRef` names one, and a `PhotoStore` (`app/lib/shared/photos/`) keeps the bytes: one JPEG file per photo in the app's support folder on iOS and Android, and an IndexedDB object store on web. The database stays small, and photo sync (MEDIA-2) moves files on its own schedule.
+- Every saved photo is shrunk to at most 1600 px on its longest side, turned upright, and saved as a JPEG. Picking asks the system picker for a JPEG of that size, which also converts iPhone HEIC photos.
+- `photoRef` is a photo id (a uuid) for a photo saved on this device, or an `https` address for an imported photo that couldn't be downloaded (offline, or a site that blocks reads from web pages). Import tries to download the photo first, so it shows offline. On web, a photo still at its address shows through an `<img>` element when the site blocks reading it.
+- A photo that is replaced, or whose recipe is deleted, stays in the store for now: recipe history (`RecipeVersion`) may still point at it. Cleaning up photos nothing points at comes with MEDIA-2.
+
 ## 8. Sync *(Decided)*
 
 ### 8.1 Model: a change log with per-field merge

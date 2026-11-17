@@ -360,6 +360,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editor_notes => 'Notes';
 
   @override
+  String get editor_addPhoto => 'Add photo';
+
+  @override
+  String get editor_changePhoto => 'Change photo';
+
+  @override
+  String get editor_takePhoto => 'Take a photo';
+
+  @override
+  String get editor_choosePhoto => 'Choose a photo';
+
+  @override
+  String get editor_removePhoto => 'Remove photo';
+
+  @override
+  String get editor_photoFailed =>
+      'That photo couldn\'t be opened. Try another one.';
+
+  @override
   String get editor_moreOptions => 'More options';
 
   @override

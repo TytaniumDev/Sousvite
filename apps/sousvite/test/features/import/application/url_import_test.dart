@@ -8,7 +8,10 @@ import 'package:sousvite/features/import/application/url_import.dart';
 import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/page_url_importer.dart';
 
+import 'package:sousvite/shared/photos/photos.dart';
+
 import '../../../helpers/fakes/fake_folder_repository.dart';
+import '../../../helpers/fakes/fake_photo_store.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../fakes.dart';
@@ -77,7 +80,9 @@ void main() {
 
   group('importers', () {
     test('fetch pages straight from the site off the web', () {
-      final container = ProviderContainer.test();
+      final container = ProviderContainer.test(
+        overrides: [photoStoreProvider.overrideWithValue(FakePhotoStore())],
+      );
 
       expect(container.read(urlImporterProvider), isA<PageUrlImporter>());
     });
@@ -87,6 +92,7 @@ void main() {
         overrides: [
           recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
           folderRepositoryProvider.overrideWithValue(FakeFolderRepository()),
+          photoStoreProvider.overrideWithValue(FakePhotoStore()),
         ],
       );
 

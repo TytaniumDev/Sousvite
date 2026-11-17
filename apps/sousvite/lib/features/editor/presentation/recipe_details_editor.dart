@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/presentation/draft_text_field.dart';
+import 'package:sousvite/features/editor/presentation/recipe_photo_editor.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
-/// The recipe's name, servings, and total time, with a note when it was
-/// just imported.
+/// The recipe's photo, name, servings, and total time, with a note when
+/// it was just imported.
 class const RecipeDetailsEditor({
   /// The recipe being edited.
   required final RecipeId recipeId,
@@ -25,6 +26,7 @@ class const RecipeDetailsEditor({
       spacing: AppSpacing.space4,
       children: [
         _ImportedNote(recipeId: recipeId),
+        RecipePhotoEditor(recipeId: recipeId),
         DraftTextField(
           initialText: recipe.title,
           label: l10n.editor_name,

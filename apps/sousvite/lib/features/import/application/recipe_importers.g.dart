@@ -55,7 +55,7 @@ final class UrlImporterProvider
   }
 }
 
-String _$urlImporterHash() => r'bd21ea927bad6a7dbde9bc1246a389ca0ae3d144';
+String _$urlImporterHash() => r'927a9b0f0fc8165727d8a02cf7e222d3cb10bb94';
 
 /// The whole library, through the system file picker.
 
@@ -101,4 +101,4 @@ final class UmamiTransferProvider
   }
 }
 
-String _$umamiTransferHash() => r'495f45638721acc2b4a1b2ea6d31f53f97f9722a';
+String _$umamiTransferHash() => r'20f9e50f81a9ff7c96e21bb7bdb2cbd9cf494698';

@@ -634,6 +634,42 @@ abstract class AppLocalizations {
   /// **'Notes'**
   String get editor_notes;
 
+  /// Button in the editor that adds a photo to a recipe without one.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get editor_addPhoto;
+
+  /// Button in the editor that replaces or removes the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get editor_changePhoto;
+
+  /// Option that opens the camera to take the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get editor_takePhoto;
+
+  /// Option that opens the photo library or a file picker to choose the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo'**
+  String get editor_choosePhoto;
+
+  /// Option that removes the recipe's photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get editor_removePhoto;
+
+  /// Shown when a picked file isn't an image the app can read.
+  ///
+  /// In en, this message translates to:
+  /// **'That photo couldn\'t be opened. Try another one.'**
+  String get editor_photoFailed;
+
   /// Tooltip of the editor's overflow menu.
   ///
   /// In en, this message translates to:
