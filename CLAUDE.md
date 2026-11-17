@@ -46,6 +46,8 @@ very_good test --coverage --min-coverage 90 \
                                                  # in a package; 70 for apps/sousvite
 ```
 
+End-to-end flows live in `apps/sousvite/integration_test/`. On a machine without a device, run them with `flutter test integration_test/app_test.dart -d flutter-tester --dart-define=E2E_NO_WAKELOCK=true` in `apps/sousvite`; CI runs them in Chrome with `flutter drive` and on an Android emulator.
+
 Cloud Functions and security rules are a Node project in `functions/` (Node version in its `package.json`; the emulators need Java 21). In `functions/`:
 
 ```sh
