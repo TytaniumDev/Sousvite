@@ -13,7 +13,7 @@ import io.flutter.embedding.android.FlutterActivity
  */
 class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        intent = asImportLink(intent)
+        intent?.let { intent = asImportLink(it) }
         super.onCreate(savedInstanceState)
     }
 
@@ -23,8 +23,8 @@ class MainActivity : FlutterActivity() {
         super.onNewIntent(link)
     }
 
-    private fun asImportLink(intent: Intent?): Intent? {
-        if (intent?.action != Intent.ACTION_SEND || intent.type != "text/plain") {
+    private fun asImportLink(intent: Intent): Intent {
+        if (intent.action != Intent.ACTION_SEND || intent.type != "text/plain") {
             return intent
         }
         val shared = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return intent
