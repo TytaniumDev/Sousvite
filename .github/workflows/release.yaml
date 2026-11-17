@@ -112,8 +112,10 @@ jobs:
       - name: ⚙️ Write build settings
         if: env.IS_RELEASE == 'true'
         working-directory: apps/sousvite
+        # --no-codesign: Flutter only writes settings here, and fastlane signs
+        # later. Without it Flutter looks for a local signing certificate.
         run: >-
-          flutter build ios --config-only --release
+          flutter build ios --config-only --release --no-codesign
           --build-number="$BUILD_NUMBER"
           --dart-define=SENTRY_DSN="$SENTRY_DSN"
 
