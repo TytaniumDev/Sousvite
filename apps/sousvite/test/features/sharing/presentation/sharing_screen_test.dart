@@ -7,6 +7,7 @@ import 'package:sousvite/app/services/sharing_service.dart';
 import 'package:sousvite/features/sharing/presentation/sharing_screen.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
+import '../../../helpers/fakes/fake_recipe_space_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
 import '../../account/fakes.dart';
@@ -16,6 +17,7 @@ void main() {
   group(SharingScreen, () {
     late FakeSharingService sharing;
     late FakeRecipeRepository recipes;
+    late FakeRecipeSpaceRepository spaces;
     final copied = <String>[];
 
     setUp(() {
@@ -25,6 +27,7 @@ void main() {
           recipe: RecipeFixtures.recipe(),
           lines: [RecipeFixtures.line('l1', rawText: '1 cup oats')],
         );
+      spaces = FakeRecipeSpaceRepository();
       copied.clear();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (call) async {
@@ -44,6 +47,7 @@ void main() {
             ),
             sharingServiceProvider.overrideWithValue(sharing),
             recipeRepositoryProvider.overrideWithValue(recipes),
+            recipeSpaceRepositoryProvider.overrideWithValue(spaces),
           ],
         );
 
@@ -53,6 +57,69 @@ void main() {
 
       expect(find.text('Sign in to share'), findsOneWidget);
       expect(find.text('Send a copy'), findsNothing);
+    });
+
+    testWidgets('shares jointly with an invite link', (tester) async {
+      await pump(tester);
+      await tester.pumpAndSettle();
+      expect(find.text('Leave share'), findsNothing);
+
+      await tester.tap(find.text('Create invite link'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('https://sousvite.web.app/invite/joint1'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Anyone who opens this link in the next 14 days can join.'),
+        findsOneWidget,
+      );
+      expect(await spaces.sharedSpaceOf(const RecipeId('r1')), 's_1');
+      expect(find.text('Leave share'), findsOneWidget);
+    });
+
+    testWidgets('leaves a joint share after confirming', (tester) async {
+      spaces.seed(const RecipeId('r1'), 's_1');
+      await pump(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Leave share'));
+      await tester.pumpAndSettle();
+      expect(find.text('Leave this share?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(sharing.left, isEmpty);
+
+      await tester.tap(find.text('Leave share'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Leave'));
+      await tester.pumpAndSettle();
+
+      expect(sharing.left, ['s_1']);
+      expect(
+        find.text('You left the share. The recipe stays in your library.'),
+        findsOneWidget,
+      );
+      expect(find.text('Leave share'), findsNothing);
+    });
+
+    testWidgets('says when leaving fails', (tester) async {
+      spaces.seed(const RecipeId('r1'), 's_1');
+      await pump(tester);
+      await tester.pumpAndSettle();
+      sharing.error = const SharingFailure(.unavailable);
+
+      await tester.tap(find.text('Leave share'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Leave'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text("Couldn't share. Check your connection and try again."),
+        findsOneWidget,
+      );
+      expect(find.text('Leave share'), findsOneWidget);
     });
 
     testWidgets('makes a copy link and copies it', (tester) async {
@@ -78,6 +145,8 @@ void main() {
       await pump(tester);
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('Create view-only link'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Create view-only link'));
       await tester.pumpAndSettle();
 
@@ -89,6 +158,7 @@ void main() {
       );
 
       await tester.ensureVisible(find.text('Turn off link'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Turn off link'));
       await tester.pumpAndSettle();
 

@@ -24,6 +24,30 @@ class CopyLink() extends _$CopyLink {
   }
 }
 
+/// The joint-share invite link made for [recipeId] on the share screen:
+/// null until made, loading while it's made, or the error.
+@riverpod
+class JointLink() extends _$JointLink {
+  @override
+  FutureOr<Uri?> build(RecipeId recipeId) => null;
+
+  /// Makes a new invite link, starting the joint share the first time.
+  Future<void> create() =>
+      _run(() => ref.read(recipeSharingProvider).shareJointly(recipeId));
+
+  /// Leaves the joint share, keeping the recipe as the user's own.
+  Future<void> leave() => _run(() async {
+    await ref.read(recipeSharingProvider).leaveJointShare(recipeId);
+    return null;
+  });
+
+  Future<void> _run(Future<Uri?> Function() action) async {
+    state = const AsyncLoading();
+    final result = await AsyncValue.guard(action);
+    if (ref.mounted) state = result;
+  }
+}
+
 /// The view-only link id published for [recipeId] on the share screen, null
 /// until published or after it's turned off.
 @riverpod

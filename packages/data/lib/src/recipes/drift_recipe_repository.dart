@@ -219,9 +219,13 @@ final class DriftRecipeRepository(
   Future<void> saveSnapshot(RecipeSnapshot snapshot) =>
       recorder.write((changes) => _saveSnapshot(changes, snapshot));
 
+  /// Deleting a jointly shared recipe deletes only the user's copy: it
+  /// moves back to the user's own library first, so the delete stays out
+  /// of the share and the others keep the recipe (PRD 7.10).
   @override
   Future<void> deleteRecipe(RecipeId id) => recorder.write((changes) async {
     final recipeId = id.value;
+    await _takeOutOfSharedSpace(recipeId);
     for (final row in await _dao.ingredientLinesOf(recipeId).get()) {
       await _deleteIngredientLine(changes, row.id);
     }
@@ -395,6 +399,16 @@ final class DriftRecipeRepository(
       _steps.entity,
       id,
       spaceId: await _spaceOfPart(row?.recipeId),
+    );
+  }
+
+  /// Records that [recipeId] is in the user's own library, in its own
+  /// write so that every change after it is routed there too.
+  Future<void> _takeOutOfSharedSpace(String recipeId) async {
+    if (await _spaces.sharedSpaceOf(recipeId) == null) return;
+    await recorder.write(
+      (changes) async =>
+          changes.set(_recipes.entity, recipeId, {RecipeSpaces.field: null}),
     );
   }
 

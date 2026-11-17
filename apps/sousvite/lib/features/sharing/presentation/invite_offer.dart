@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/services/sharing_service.dart';
+import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 import 'package:sousvite/features/sharing/application/invite.dart';
 import 'package:sousvite/features/sharing/presentation/invite_screen.dart';
@@ -20,7 +21,7 @@ class const InviteOffer({required final String inviteId, super.key})
     error: (_, _) => const InviteGone(),
     data: (preview) => switch (preview.kind) {
       .copy => _CopyOffer(inviteId: inviteId, preview: preview),
-      .joint => _JointOffer(preview: preview),
+      .joint => _JointOffer(inviteId: inviteId, preview: preview),
     },
   );
 }
@@ -46,11 +47,12 @@ class const _CopyOffer({
         onPressed: busy
             ? null
             : () async {
-                final recipeId = await ref
+                final result = await ref
                     .read(inviteAcceptanceProvider(inviteId).notifier)
                     .accept();
                 if (!context.mounted) return;
                 final messenger = ScaffoldMessenger.of(context);
+                final recipeId = result.value;
                 if (recipeId == null) {
                   messenger.showSnackBar(
                     SnackBar(content: Text(l10n.sharing_failed)),
@@ -68,11 +70,16 @@ class const _CopyOffer({
   }
 }
 
-class const _JointOffer({required final InvitePreview preview})
-    extends StatelessWidget {
+class const _JointOffer({
+  required final String inviteId,
+  required final InvitePreview preview,
+}) extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final busy = ref.watch(
+      inviteAcceptanceProvider(inviteId).select((state) => state.isLoading),
+    );
     final from = preview.fromName;
     return EmptyState(
       icon: Symbols.group_rounded,
@@ -80,6 +87,27 @@ class const _JointOffer({required final InvitePreview preview})
           ? l10n.sharing_inviteJoint(preview.title)
           : l10n.sharing_inviteJointFrom(from, preview.title),
       message: l10n.sharing_inviteJointBody,
+      action: FilledButton(
+        onPressed: busy
+            ? null
+            : () async {
+                final result = await ref
+                    .read(inviteAcceptanceProvider(inviteId).notifier)
+                    .accept();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      result.hasError
+                          ? l10n.sharing_failed
+                          : l10n.sharing_inviteJoined,
+                    ),
+                  ),
+                );
+                if (!result.hasError) context.go(LibraryRoutes.path);
+              },
+        child: Text(l10n.sharing_inviteJoin),
+      ),
     );
   }
 }

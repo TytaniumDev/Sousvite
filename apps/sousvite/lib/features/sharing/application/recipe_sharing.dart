@@ -12,16 +12,52 @@ part 'recipe_sharing.g.dart';
 @riverpod
 RecipeSharing recipeSharing(Ref ref) => RecipeSharing(
   repository: ref.watch(recipeRepositoryProvider),
+  spaces: ref.watch(recipeSpaceRepositoryProvider),
   service: ref.watch(sharingServiceProvider),
 );
 
-/// Sends copies of recipes, publishes view-only links, and saves copies
-/// other people sent (PRD 7.10).
+/// The joint share [recipeId] is in, or null when it's only the user's.
+@riverpod
+Stream<String?> recipeSharedSpace(Ref ref, RecipeId recipeId) =>
+    ref.watch(recipeSpaceRepositoryProvider).watchSharedSpace(recipeId);
+
+/// Shares recipes jointly, sends copies, publishes view-only links, and
+/// saves copies other people sent (PRD 7.10).
 class const RecipeSharing({
   required final RecipeRepository _repository,
+  required final RecipeSpaceRepository _spaces,
   required final SharingService _service,
 }) {
   static const _codec = RecipeSnapshotCodec();
+
+  /// An invite link for editing [recipeId] together. The first time, this
+  /// starts a joint share and moves the recipe into it, so everyone who
+  /// joins gets it and every later edit.
+  Future<Uri> shareJointly(RecipeId recipeId) async {
+    final recipe =
+        await _repository.getRecipe(recipeId) ??
+        (throw StateError('No recipe $recipeId'));
+    final current = await _spaces.sharedSpaceOf(recipeId);
+    final share = await _service.shareJointly(
+      name: recipe.title,
+      spaceId: current,
+    );
+    if (current == null) {
+      await _spaces.moveToSharedSpace(recipeId, share.spaceId);
+    }
+    return share.invite;
+  }
+
+  /// Leaves the joint share [recipeId] is in. The user keeps the share's
+  /// recipes as their own, as they are now, and the others keep theirs.
+  Future<void> leaveJointShare(RecipeId recipeId) async {
+    final spaceId = await _spaces.sharedSpaceOf(recipeId);
+    if (spaceId == null) return;
+    await _service.leaveShare(spaceId);
+    for (final id in await _spaces.recipesInSharedSpace(spaceId)) {
+      await _spaces.moveToOwnLibrary(id);
+    }
+  }
 
   /// An invite link that gives each person who opens it a copy of
   /// [recipeId].
@@ -50,9 +86,9 @@ class const RecipeSharing({
   Future<InvitePreview> previewInvite(String inviteId) =>
       _service.previewInvite(inviteId);
 
-  /// Accepts a copy invite and saves the copy, with new ids, as the user's
-  /// own recipe. Returns the new recipe's id, or null for a joint share
-  /// (joined, and synced like any shared recipe).
+  /// Accepts an invite. A copy is saved, with new ids, as the user's own
+  /// recipe, and its id returned. A joint share returns null: the user is
+  /// now a member, and its recipes arrive when the share syncs.
   Future<RecipeId?> accept(String inviteId) async {
     final accepted = await _service.acceptInvite(inviteId);
     switch (accepted) {
