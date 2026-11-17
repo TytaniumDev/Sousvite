@@ -150,7 +150,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 
 - SQLite on iOS and Android. On web, SQLite compiled to WebAssembly, stored in the Origin Private File System (falling back to IndexedDB).
 - The database is the single source of truth. The UI reads only from it.
-- **Full-text search** (FTS5) indexes recipe titles, ingredient names, and folder names (PRD 7.1).
+- **Full-text search** (FTS5) indexes recipe titles, ingredient names, and folder names (PRD 7.1). Triggers keep the `recipe_search` table current on every write, local or synced, and each typed word matches the start of a word, ignoring accents.
 - **Amounts** are exact rational numbers (numerator and denominator), not floats, so ⅓ cup × 3 is exactly 1 cup.
 - **Units** (`packages/units/`): each unit belongs to a family (US volume, metric volume, US mass, metric mass, count) and counts a whole number of the family's smallest unit, so conversion within a family is exact. US to metric is approximate and always ends in **measurable rounding**: friendly cup fractions (¼, ⅓, ½, ⅔, ¾), tablespoons to ½, teaspoons to ⅛, metric to 0.5, 1, or 5 depending on size, ounces and pounds to ¼, counts to ¼ or ½. A friendly amount may be at most 5% off before rounding falls back to a smaller unit. Rounding applies only to scaled or converted amounts; unscaled amounts show as written.
 - **Ordering** of sections, steps, and ingredients uses fractional index keys, so moving one item changes one row and merges cleanly during sync.
@@ -173,8 +173,9 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 | `MeasuringTool` | Tools the user owns (PRD 7.5) |
 | `UserRecipePrefs` | Per-user serving size and units, kept separate from the recipe so joint shares don't overwrite them |
 | `ChangeLog`, `SyncState` | See §8 |
+| `LocalValues` | Values that stay on this device and never sync, such as its device id |
 
-The bundled USDA database ships as a separate, read-only SQLite file attached to the main database, so app updates can replace it without migrations.
+The bundled USDA database ships as a separate, read-only SQLite file, so app updates can replace it without migrations. The app opens it as its own connection from the asset's bytes (an in-memory file system, so the same code runs on native SQLite and WebAssembly) rather than attaching it to the main database; `DriftFoodRepository` reads the local cache first, then the bundled file.
 
 ## 8. Sync *(Decided)*
 
@@ -200,6 +201,7 @@ Change {
 - **Deletes** are tombstones (`_deleted = true`), so a delete and an offline edit resolve predictably.
 - **Never silently discard.** When a concurrent edit loses on a long text field (notes, step text), the losing value is kept in the recipe's history, so it can be recovered. This addresses the PRD's sync-conflict risk.
 - Applying remote changes is idempotent, and the same changes arriving twice is harmless.
+- **In `packages/data`:** each entity kind has an `EntityCodec` that maps it to its change log fields. Repositories write through `ChangeRecorder` and record only the fields that differ from the stored row (`ChangeSet.setChanged`), so saving a whole entity never overwrites another device's edit to a field it did not touch. Remote changes reach the tables through a `MaterializingApplier` per entity kind, which rebuilds the row from the winning value of each field and writes it once every required field has arrived.
 - **Full backup, never pruned.** The cloud always holds everything needed to rebuild the whole library: a recipe's first changes carry every field, and later changes carry each edit. Changes are **kept forever**, so the log is a complete edit-by-edit backup. Recipe data is small (a few MB for a large library), so this costs almost nothing.
 - **Snapshots** of the current state are written after every 200 pushed changes or once a day, whichever comes first. They only let new devices start fast; they never replace the log. A new device reads the latest snapshot, then the changes after it.
 
@@ -240,22 +242,24 @@ Each **Save** in the recipe editor writes one `RecipeVersion` (§7.1) in the sam
 - A **space** is a set of entities that sync together. Each user has a private space, and each joint share is its own space with members.
 - Joint shares always live in Firestore, even for Drive-sync users (PRD 7.12).
 - **Share jointly:** the recipe or folder moves into a new shared space, and membership is enforced by Firestore security rules.
-- **Send a copy:** a Cloud Function writes a copy, with new ids, into the recipient's inbox, and the recipient's app imports it into their own space.
-- **Leaving or deleting** a joint share removes the user from the space and keeps a local copy for the others (PRD 7.10).
+- **Which space a recipe is in** is itself a change: the field `_space` on the `recipe` entity, whose value is the shared space id or null for the user's own library. The latest one wins, like any field, so a stale device can't move a recipe back. Moving (`RecipeSpaceRepository`) records every field of the recipe and its parts again in the new space, so its members get the whole recipe, then the `_space` change: in the shared space when moving in, so every member learns it, and in the private space only when moving out, so the others keep it. From then on `DriftRecipeRepository` records each edit of the recipe or its parts in the recipe's space. Folder entries, experiments, and preferences stay private.
+- **Invite links** pick the recipients (Tyler, 2026-11-16): sharing makes a link (`https://sousvite.web.app/invite/{id}`, valid 14 days) that the sharer sends through any app. Opening it in the app (signed in) shows whether it's a joint share or a copy, then accepts it. This works for Apple users with hidden emails and for people who don't have the app yet. Invites are stored in `invites/{inviteId}`, written and read only by the sharing functions (`functions/src/sharing/`).
+- **Send a copy:** the sender's app sends every entity of the recipe in its change log encoding (`RecipeSnapshotCodec`). Accepting returns them to the recipient's app, which saves them with new ids (`copyRecipe`) as its own recipe, so they sync to the recipient's other devices like any recipe. There is no server inbox.
+- **Leaving or deleting** a joint share removes the user from the space and keeps a local copy for the others (PRD 7.10). The leaver's app moves the share's recipes back to their own library first (`moveToOwnLibrary`); deleting then removes their copy only.
 - **Experiments in shared recipes** stay in the creator's private space unless "Share with others" is on, and then they move into the shared space.
-- **View-only links:** a Cloud Function renders a read-only page on Firebase Hosting from a published snapshot.
-- **Pro check:** at launch, a share syncs only while at least one member has Pro. The entitlement is stored server-side and enforced by rules (§9.2). **During the beta the gate is off**, so sharing works for everyone.
+- **View-only links:** the app publishes the recipe as plain text (`shareLinks/{linkId}`), and the `shareLinkPage` function renders it at `/r/{linkId}` on Firebase Hosting, with the source credited and `noindex`. Publishing again replaces it, and the owner can turn a link off.
+- **Pro check:** at launch, a share syncs only while at least one member has Pro. The entitlement is stored server-side and enforced by rules and the sharing functions (§9.2). **During the beta the gate is off**, so sharing works for everyone.
 
 ## 9. Backend: Firebase *(Decided)*
 
 | Service | Use |
 |---|---|
 | Firebase Auth | Google and Apple sign-in. Signed-out users have no account at all. |
-| Firestore | Change logs for Sousvite cloud sync, shared spaces, membership, share inbox (§9.1) |
+| Firestore | Change logs for Sousvite cloud sync, shared spaces, membership, invites, view-only links (§9.1) |
 | Cloud Functions | Fetch proxy for web URL import, USDA API proxy (hides the API key), send-a-copy, share links, subscription webhooks |
 | Cloud Storage | Recipe photos for Sousvite cloud users and shares; sync snapshot files |
 | Hosting | Flutter web app and view-only recipe pages |
-| App Check | Limits the proxies to our apps |
+| App Check | Limits the proxies to our apps. Release builds attest with App Attest (iOS), Play Integrity (Android), and reCAPTCHA Enterprise (web); debug builds use the debug provider (`lib/app/services/app_check.dart`) |
 
 - **Security rules** are the access boundary. They're written alongside the schema and tested with the Firestore emulator.
 - **Functions toolchain** *(Default)*: TypeScript on Node.js 24 (the newest Cloud Functions runtime), ES modules, `firebase-functions` v2 APIs, region `us-central1` (next to Cloud Storage) with a `maxInstances` cap set globally in `functions/src/index.ts`. Each function is a folder under `functions/src/<name>/`, exported from `index.ts` with one line. Tests mirror `src/` under `functions/test/` and use Vitest with a 90% coverage gate; rules tests live in `functions/test/rules/` and use `@firebase/rules-unit-testing`. Lints follow the Dart side's approach (§16): ESLint with `typescript-eslint`'s strict type-checked rules, snake_case file names, sorted imports, and Prettier formatting with single quotes. TypeScript stays on 6.0 until `typescript-eslint` supports 7.
@@ -278,10 +282,10 @@ spaces/{spaceId}                     { kind: "private" | "shared", ownerUid, mem
 spaces/{spaceId}/batches/{batchId}   One push: { deviceId, uid, pushedAt (server time),
                                        hlcMax, changes: [Change...] }. Never updated or
                                      deleted. Pull orders by pushedAt, then batchId.
-inbox/{uid}/items/{itemId}           Send-a-copy deliveries, written only by the
-                                     sendCopy function; the recipient reads and deletes.
-shareLinks/{linkId}                  View-only link: { spaceId, entityId, snapshotPath }.
-                                     Written by functions only; the Hosting page reads it.
+invites/{inviteId}                   Invite links for a joint share or a copy (§8.4).
+                                     Written and read only by the sharing functions.
+shareLinks/{linkId}                  View-only link: the recipe as plain text, owner, on/off.
+                                     Written by functions only; shareLinkPage renders it.
 usdaCache/{key}                      USDA proxy cache (§11.1). Functions only.
 ```
 
@@ -290,7 +294,7 @@ Cloud Storage holds `spaces/{spaceId}/snapshots/{hlc}.json.gz` (a snapshot can p
 - A user's private space id on the server is `u_{uid}`, so a device can find it without a query. On the device it stays `private` (DATA-2), and the Firestore transport maps between the two, so signing in never rewrites local changes.
 - A push with more changes than fit in one document (about 500 or 900 KB) splits into several batches.
 - **Rules:** a member of `memberUids` can read the space, create batches with their own `uid` and a server `pushedAt`, and never update or delete a batch. Only the owner of a private space is a member. Shared-space membership changes go through the sharing functions.
-- **Delete account** removes `users/{uid}`, the private space with its batches and snapshots, the inbox, and the user from every shared space's `memberUids` (PRD 7.9).
+- **Delete account** removes `users/{uid}`, the private space with its batches and snapshots, their invites and share links, and the user from every shared space's `memberUids` (PRD 7.9).
 
 ### 9.2 Beta: no Pro gate
 
@@ -380,7 +384,7 @@ Everything Pro-only is still built and tested with the gate both on and off, so 
 - **Lints** *(Decided)*: consistency is enforced by lints, not by convention. When a style rule can be checked by a lint, we turn the lint on instead of writing the rule down. The rules live in one root `analysis_options.yaml`: `very_good_analysis` as the base, plus `use_primary_constructors`, `migrate_design_widgets`, `prefer_expression_function_bodies`, `avoid_annotating_with_dynamic`, `use_decorated_box`, `use_if_null_to_convert_nulls_to_bools`, `prefer_void_to_null`, `unnecessary_async`, `unnecessary_await_in_return`, `avoid_futureor_void`, `unsafe_variance`, `no_dynamic_casts`, `annotate_redeclares`, `avoid_null_checks_in_equality_operators`, and `no_runtimetype_tostring`. Each package's `analysis_options.yaml` includes the root file and adds only its own excludes and plugins (`riverpod_lint` in the app). Rules left off conflict with ones `very_good_analysis` enables (`omit_obvious_property_types`, `prefer_double_quotes`, `prefer_relative_imports`, `always_specify_types`, `unnecessary_final`) or flag our design (`avoid_classes_with_only_static_members` for token classes, `one_member_abstracts` for service interfaces). An `// ignore:` always carries a comment saying why.
 - **Formatting:** `dart format`, checked in CI.
 - **CI** *(Decided)*: GitHub Actions, added in the app scaffold PR, built on Very Good Ventures' reusable [`very_good_workflows`](https://github.com/VeryGoodOpenSource/very_good_workflows). Every package gets a job from their `dart_package` or `flutter_package` workflow (format, analyze, tests, and a coverage gate). Our own steps add code-generation freshness checks and a web build. Mobile builds and Firebase Hosting preview deploys follow once the app runs.
-- **Deploys** *(Decided)*: every push to `main` deploys the web app to Firebase Hosting on the single `sousvite` project (`.github/workflows/deploy_web.yaml`, https://sousvite.web.app) with the `FIREBASE_SERVICE_ACCOUNT` secret; without the secret the build runs and the deploy is skipped with a warning. The Widgetbook deploys to GitHub Pages (`.github/workflows/widgetbook.yaml`, https://tytaniumdev.github.io/Sousvite/) when it or the design system changes. Hosting sets no cross-origin isolation headers, because they would block recipe photos from other sites; Drift picks a storage mode that works without them.
+- **Deploys** *(Decided)*: every push to `main` deploys the web app to Firebase Hosting on the single `sousvite` project (`.github/workflows/deploy_web.yaml`, https://sousvite.web.app) with the `FIREBASE_SERVICE_ACCOUNT` secret; without the secret the build runs and the deploy is skipped with a warning. Cloud Functions, Firestore rules and indexes, and Storage rules deploy from `.github/workflows/deploy_functions.yaml` on pushes to `main` that change them (and by hand), with the same secret and the extra roles in BUILD_PLAN §8.1. The Widgetbook deploys to GitHub Pages (`.github/workflows/widgetbook.yaml`, https://tytaniumdev.github.io/Sousvite/) when it or the design system changes. Hosting sets no cross-origin isolation headers, because they would block recipe photos from other sites; Drift picks a storage mode that works without them.
 - **Widgetbook** *(Decided)*: `apps/widgetbook` shows every `design_system` component with knobs, in the four themes and at 100% to 200% text. Use cases are written by hand as `WidgetbookComponent` lists, one file per component, because `widgetbook_generator` still needs `build` 4 and `analyzer` below 14 while the workspace is on `build` 5. Its themes come from a `ThemeAddon` that sets `material_ui`'s `Theme`, since Widgetbook's `MaterialThemeAddon` takes Flutter's deprecated `ThemeData`.
 - **Coverage gate** *(Default)*: 90% for the pure packages, where most logic lives, and 70% for the app, where goldens and integration tests carry part of the load. These numbers will be tuned in the scaffold PR.
 - **Not used:** the Very Good CLI starter template, because it is built around Bloc and we use Riverpod.

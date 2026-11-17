@@ -1,0 +1,74 @@
+name: Deploy backend
+
+# Deploys Cloud Functions, Firestore rules and indexes, and Storage rules to
+# the single `sousvite` project (BUILD_PLAN.md §8.1) on every push to main
+# that changes them, after CI has already linted and tested them against the
+# emulators. Run it by hand (workflow_dispatch) after changing IAM roles.
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/**
+      - firestore.rules
+      - firestore.indexes.json
+      - storage.rules
+      - firebase.json
+      - .github/workflows/deploy_functions.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy functions and rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # The same service account key as deploy_web.yaml, with the extra
+      # deploy roles in BUILD_PLAN.md §8.1. Until it is added, the deploy is
+      # skipped.
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+    steps:
+      - name: ⚠️ Deploy credential missing
+        if: env.FIREBASE_SERVICE_ACCOUNT == ''
+        run: echo "::warning::FIREBASE_SERVICE_ACCOUNT is not set, so functions and rules were not deployed. See BUILD_PLAN.md §8.1."
+
+      - name: 📚 Git Checkout
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        uses: actions/checkout@v7
+
+      - name: 🟢 Setup Node
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: functions/package.json
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: 📦 Install Dependencies
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        working-directory: functions
+        run: npm ci
+
+      - name: 🔑 Write credentials
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-deploy.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-deploy.json" >> "$GITHUB_ENV"
+
+      # firebase.json's predeploy hooks lint and build the functions first.
+      # --force lets a non-interactive deploy set the Artifact Registry
+      # cleanup policy and delete functions removed from the code.
+      - name: 🚀 Deploy
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: >-
+          npx --yes firebase-tools@15 deploy
+          --only functions,firestore,storage
+          --project sousvite
+          --non-interactive
+          --force

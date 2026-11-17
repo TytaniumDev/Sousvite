@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+import 'package:data/src/change_log/entity_codec.dart';
 import 'package:sync/sync.dart';
 
 /// One field value a write recorded, before it gets a timestamp.
@@ -45,4 +47,28 @@ final class ChangeSet() {
   /// Records that one entity was deleted, as a tombstone.
   void delete(String entity, String entityId, {String? spaceId}) =>
       set(entity, entityId, {Change.deletedField: true}, spaceId: spaceId);
+
+  /// Records the fields of [entity] that differ from [before], or all of
+  /// them when [before] is null (a new entity). Unchanged fields are left
+  /// out, so saving a whole entity never overwrites another device's edit
+  /// to a field this device did not change.
+  ///
+  /// A new entity also clears its tombstone, so saving one again after a
+  /// delete (an undo) brings it back on every device.
+  void setChanged<T>(
+    EntityCodec<T> codec,
+    T entity, {
+    T? before,
+    String? spaceId,
+  }) {
+    final fields = codec.encode(entity);
+    final old = before == null ? null : codec.encode(before);
+    set(codec.entity, codec.idOf(entity), {
+      for (final MapEntry(:key, :value) in fields.entries)
+        if (old == null || !_equality.equals(old[key], value)) key: value,
+      if (old == null) Change.deletedField: false,
+    }, spaceId: spaceId);
+  }
+
+  static const _equality = DeepCollectionEquality();
 }

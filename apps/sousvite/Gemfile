@@ -1,0 +1,7 @@
+# Ruby tools for the release pipeline (BUILD_PLAN.md REL-1). The lanes live
+# in ios/fastlane/ and android/fastlane/; run them with this Gemfile:
+#
+#   cd apps/sousvite/ios && BUNDLE_GEMFILE=../Gemfile bundle exec fastlane beta
+source "https://rubygems.org"
+
+gem "fastlane", "~> 2.242"

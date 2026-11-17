@@ -2,7 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:drift/drift.dart';
 
 // Cached online foods (USDA branded, Open Food Facts). The bundled USDA
-// generic foods ship as a separate read-only SQLite file attached at runtime
+// generic foods ship as a separate read-only SQLite file opened at runtime
 // with the same table shapes (ENGINEERING.md §7).
 
 /// Foods. See `Food` in `packages/domain`.

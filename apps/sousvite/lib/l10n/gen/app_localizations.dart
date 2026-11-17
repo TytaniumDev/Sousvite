@@ -1492,6 +1492,168 @@ abstract class AppLocalizations {
   /// **'Share'**
   String get sharing_title;
 
+  /// Heading on the share screen when signed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to share'**
+  String get sharing_signInTitle;
+
+  /// Why sharing needs sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing goes through Sousvite, so it needs a Google or Apple sign-in.'**
+  String get sharing_signInBody;
+
+  /// Button that opens the account screen to sign in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get sharing_signIn;
+
+  /// Heading of the send-a-copy option.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a copy'**
+  String get sharing_copyTitle;
+
+  /// Explains what sending a copy does.
+  ///
+  /// In en, this message translates to:
+  /// **'They get their own version to change as they like. Your recipe stays as it is.'**
+  String get sharing_copyBody;
+
+  /// Button that makes an invite link for a copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Create copy link'**
+  String get sharing_copyCreate;
+
+  /// Shown under a new copy link.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who opens this link in the next 14 days gets a copy.'**
+  String get sharing_copyExpiry;
+
+  /// Heading of the view-only link option.
+  ///
+  /// In en, this message translates to:
+  /// **'Link for anyone'**
+  String get sharing_linkTitle;
+
+  /// Explains what a view-only link does.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone with the link can read this recipe, even without the app.'**
+  String get sharing_linkBody;
+
+  /// Button that publishes a view-only link.
+  ///
+  /// In en, this message translates to:
+  /// **'Create view-only link'**
+  String get sharing_linkCreate;
+
+  /// Button that unpublishes a view-only link.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off link'**
+  String get sharing_linkTurnOff;
+
+  /// Snackbar after a view-only link is turned off.
+  ///
+  /// In en, this message translates to:
+  /// **'Link turned off'**
+  String get sharing_linkTurnedOff;
+
+  /// Button that copies a link to the clipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get sharing_copyLink;
+
+  /// Snackbar after a link is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get sharing_linkCopied;
+
+  /// Snackbar when making a share link fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share. Check your connection and try again.'**
+  String get sharing_failed;
+
+  /// Title of the screen that opens an invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared recipe'**
+  String get sharing_inviteTitle;
+
+  /// Heading when someone sent a copy. name is the sender, title the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} sent you a copy of {title}'**
+  String sharing_inviteCopyFrom(String name, String title);
+
+  /// Heading when someone without a known name sent a copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You were sent a copy of {title}'**
+  String sharing_inviteCopy(String title);
+
+  /// Explains what accepting a copy does.
+  ///
+  /// In en, this message translates to:
+  /// **'It becomes your own recipe to change as you like. Theirs won\'t change.'**
+  String get sharing_inviteCopyBody;
+
+  /// Button that saves a sent copy into the library.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to my recipes'**
+  String get sharing_inviteAccept;
+
+  /// Heading of a joint share invite. name is the sender, title the recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} invited you to share {title}'**
+  String sharing_inviteJointFrom(String name, String title);
+
+  /// Heading of a joint share invite without a known sender name.
+  ///
+  /// In en, this message translates to:
+  /// **'You were invited to share {title}'**
+  String sharing_inviteJoint(String title);
+
+  /// Shown for a joint invite until joint shares are supported.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipes shared together aren\'t ready in this version yet. Ask them to send a copy for now.'**
+  String get sharing_inviteJointBody;
+
+  /// Shown on an invite when signed out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to add this recipe to your library.'**
+  String get sharing_inviteSignIn;
+
+  /// Heading when an invite is expired or missing.
+  ///
+  /// In en, this message translates to:
+  /// **'This link no longer works'**
+  String get sharing_inviteGone;
+
+  /// What to do about a link that no longer works.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the person who shared it for a new link.'**
+  String get sharing_inviteGoneBody;
+
+  /// Snackbar after a sent copy is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe added'**
+  String get sharing_inviteAdded;
+
   /// Title of the settings screen.
   ///
   /// In en, this message translates to:

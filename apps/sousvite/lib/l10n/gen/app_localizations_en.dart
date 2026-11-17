@@ -846,6 +846,104 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharing_title => 'Share';
 
   @override
+  String get sharing_signInTitle => 'Sign in to share';
+
+  @override
+  String get sharing_signInBody =>
+      'Sharing goes through Sousvite, so it needs a Google or Apple sign-in.';
+
+  @override
+  String get sharing_signIn => 'Sign in';
+
+  @override
+  String get sharing_copyTitle => 'Send a copy';
+
+  @override
+  String get sharing_copyBody =>
+      'They get their own version to change as they like. Your recipe stays as it is.';
+
+  @override
+  String get sharing_copyCreate => 'Create copy link';
+
+  @override
+  String get sharing_copyExpiry =>
+      'Anyone who opens this link in the next 14 days gets a copy.';
+
+  @override
+  String get sharing_linkTitle => 'Link for anyone';
+
+  @override
+  String get sharing_linkBody =>
+      'Anyone with the link can read this recipe, even without the app.';
+
+  @override
+  String get sharing_linkCreate => 'Create view-only link';
+
+  @override
+  String get sharing_linkTurnOff => 'Turn off link';
+
+  @override
+  String get sharing_linkTurnedOff => 'Link turned off';
+
+  @override
+  String get sharing_copyLink => 'Copy link';
+
+  @override
+  String get sharing_linkCopied => 'Link copied';
+
+  @override
+  String get sharing_failed =>
+      'Couldn\'t share. Check your connection and try again.';
+
+  @override
+  String get sharing_inviteTitle => 'Shared recipe';
+
+  @override
+  String sharing_inviteCopyFrom(String name, String title) {
+    return '$name sent you a copy of $title';
+  }
+
+  @override
+  String sharing_inviteCopy(String title) {
+    return 'You were sent a copy of $title';
+  }
+
+  @override
+  String get sharing_inviteCopyBody =>
+      'It becomes your own recipe to change as you like. Theirs won\'t change.';
+
+  @override
+  String get sharing_inviteAccept => 'Add to my recipes';
+
+  @override
+  String sharing_inviteJointFrom(String name, String title) {
+    return '$name invited you to share $title';
+  }
+
+  @override
+  String sharing_inviteJoint(String title) {
+    return 'You were invited to share $title';
+  }
+
+  @override
+  String get sharing_inviteJointBody =>
+      'Recipes shared together aren\'t ready in this version yet. Ask them to send a copy for now.';
+
+  @override
+  String get sharing_inviteSignIn =>
+      'Sign in to add this recipe to your library.';
+
+  @override
+  String get sharing_inviteGone => 'This link no longer works';
+
+  @override
+  String get sharing_inviteGoneBody =>
+      'Ask the person who shared it for a new link.';
+
+  @override
+  String get sharing_inviteAdded => 'Recipe added';
+
+  @override
   String get settings_title => 'Settings';
 
   @override

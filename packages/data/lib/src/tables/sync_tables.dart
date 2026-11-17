@@ -46,3 +46,15 @@ class SyncState() extends Table {
   @override
   Set<Column<Object>> get primaryKey => {transportKey};
 }
+
+/// Small values kept as text by key: this device's id and the app
+/// settings. The table never syncs; settings that sync are recorded in the
+/// change log by `DriftAppSettingsRepository`.
+@DataClassName('LocalValueRow')
+class LocalValues() extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}
