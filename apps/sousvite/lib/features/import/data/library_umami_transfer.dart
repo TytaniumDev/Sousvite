@@ -1,5 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:domain/domain.dart';
+import 'package:flutter/foundation.dart';
 import 'package:recipe_import/recipe_import.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
@@ -34,6 +35,20 @@ class const LibraryUmamiTransfer({
   Future<int?> importLibrary() async {
     final bytes = await files.pickArchive();
     if (bytes == null) return null;
+    final count = await _importArchive(bytes);
+    return count;
+  }
+
+  @override
+  Future<int> importSharedArchive(String path) async {
+    final bytes = await files.takeSharedArchive(path);
+    if (bytes == null) throw const ImportFailure(.invalidFile);
+    final count = await _importArchive(bytes);
+    return count;
+  }
+
+  /// Saves the recipes in the Umami export [bytes], and returns how many.
+  Future<int> _importArchive(Uint8List bytes) async {
     final List<UmamiRecipe> imported;
     try {
       imported = readUmamiArchive(bytes, newId: newId, now: clock.now());

@@ -28,6 +28,26 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<!-- Zip files open in Sousvite, so an Umami export can be shared
+	     straight to it. iOS copies the file into Documents/Inbox and opens
+	     the app at the file's URL; ImportRoutes.redirect sends it to the
+	     Umami import. -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Umami export</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.zip-archive</string>
+				<string>com.pkware.zip-archive</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -97,5 +117,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Work on a copy of a shared file, which the app deletes once it's
+	     imported, instead of the other app's original. -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 </dict>
 </plist>
