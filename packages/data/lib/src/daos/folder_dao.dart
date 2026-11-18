@@ -39,6 +39,27 @@ class FolderDao(super.attachedDatabase)
     return query.map((row) => row.readTable(folderEntries));
   }
 
+  /// The ids of recipes in at least one folder that still exists. Entries
+  /// whose recipe is gone are left out.
+  Selectable<String> recipeIdsInAnyFolder() {
+    final query = selectOnly(folderEntries, distinct: true).join([
+      innerJoin(folders, folders.id.equalsExp(folderEntries.folderId)),
+      innerJoin(recipes, recipes.id.equalsExp(folderEntries.recipeId)),
+    ])..addColumns([folderEntries.recipeId]);
+    return query.map((row) => row.read(folderEntries.recipeId)!);
+  }
+
+  /// The ids of the folders that still exist holding [recipeId].
+  Selectable<String> folderIdsOf(String recipeId) {
+    final query =
+        selectOnly(folderEntries).join([
+            innerJoin(folders, folders.id.equalsExp(folderEntries.folderId)),
+          ])
+          ..addColumns([folderEntries.folderId])
+          ..where(folderEntries.recipeId.equals(recipeId));
+    return query.map((row) => row.read(folderEntries.folderId)!);
+  }
+
   /// Every entry of [folderId], including those whose recipe is gone.
   Future<List<FolderEntryRow>> allEntriesOf(String folderId) => (select(
     folderEntries,

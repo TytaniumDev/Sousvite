@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sousvite/features/cooking/application/step_parts.dart';
+import 'package:sousvite/features/recipe/recipe.dart';
 
 part 'step_ingredients.g.dart';
 

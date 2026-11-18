@@ -113,6 +113,21 @@ void main() {
       );
     });
 
+    testWidgets('keeps rows to the reading column on a wide window', (
+      tester,
+    ) async {
+      tester.setWindowWidth(1600);
+      await arrange();
+      await saveList();
+      await groceries.saveItem(_F.item('milk', name: 'milk'));
+      await pumpScreen(tester);
+
+      tester.expectInCenteredColumn(
+        find.byType(GroceryItemRow),
+        ReadingColumn.readingWidth,
+      );
+    });
+
     testWidgets('checking one item rebuilds only its row', (tester) async {
       await arrange();
       await saveList();

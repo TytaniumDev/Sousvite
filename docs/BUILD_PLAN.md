@@ -276,8 +276,11 @@ The order below is the order to do them in, because later items depend on earlie
 ### 8.0 Decide first
 
 - [x] **App name and id.** The app is **Sousvite** (Tyler, 2026-11-14; briefly Sousline on 2026-11-13), with app id `com.tytaniumdev.sousvite` on iOS and Android, matching Tyler's other `com.tytaniumdev.*` apps (it was `dev.tytanium.sousvite` until 2026-11-14, before any store record existed). The id becomes permanent once the App Store and Play records exist.
-- [x] **Contact email** for the stores, the OAuth consent screen, and the Open Food Facts `User-Agent`: Tyler's developer address (2026-11-13), the one on the privacy policy page.
-- [x] **Privacy policy URL.** Needed by both stores and the OAuth consent screen: `https://sousvite.web.app/privacy/` once the web app is deployed (`REL-1`); until then the stores can link the file on GitHub. The page is `apps/sousvite/web/privacy/index.html`, so every web deploy (`REL-1`) publishes it with the app. Update it when a feature changes what data leaves the device.
+- [x] **Contact email** for the stores, the OAuth consent screen, and the Open Food Facts `User-Agent`: Tyler's developer address (2026-11-13). The public pages and the consent screen use Tyler's Google account address (2026-11-18), because the consent screen only offers the signed-in account's email.
+- [x] **Public pages.** Needed by both stores and the OAuth consent screen's Branding. Static pages in `apps/sousvite/web/`, so every web deploy (`REL-1`) publishes them with the app, sharing `web/site.css`:
+  - Home page: `https://sousvite.web.app/about/` (`about/index.html`). The app's own `/` is a Flutter canvas with no readable text or links, so Google's checks can't use it.
+  - Privacy policy: `https://sousvite.web.app/privacy/` (`privacy/index.html`). Update it when a feature changes what data leaves the device.
+  - Terms of service: `https://sousvite.web.app/terms/` (`terms/index.html`).
 
 ### 8.1 Firebase (needed by `BE-*`, `SYN-5`, `SHR-1`, `APP-ACC`, `PRO-1`, `REL-1`)
 
@@ -306,6 +309,16 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
   ```
 
   Then run the **Deploy backend** workflow by hand from the Actions tab (or ask an agent to). Without the roles, the workflow fails after merge; it never blocks CI.
+- [ ] Let the backend deploy set the Storage bucket's CORS (`storage.cors.json`), which the web app needs to download sync snapshots and photos. In [Cloud Shell](https://shell.cloud.google.com/?show=terminal), run:
+
+  ```sh
+  gcloud storage buckets add-iam-policy-binding gs://sousvite.firebasestorage.app \
+    --member="serviceAccount:github-deploy@sousvite.iam.gserviceaccount.com" \
+    --role=roles/storage.admin
+  ```
+
+  Then run the **Deploy backend** workflow by hand (or ask an agent to).
+- [x] Let `storage.rules` read Firestore (they check space membership there): grant the Cloud Storage for Firebase service agent `service-761600243200@gcp-sa-firebasestorage.iam.gserviceaccount.com` the **Firebase Rules Firestore Service Agent** role (`roles/firebaserules.firestoreServiceAgent`). The CLI only offers this in an interactive deploy, and ours run with `--non-interactive`, so without it every Storage request is denied as unauthorized. Done 2026-11-18 in the IAM console.
 - [x] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets). Done 2026-11-16: `apps/sousvite/lib/firebase_options.dart` holds the registered apps' config, read with the Firebase CLI. The app ships no `google-services.json` or `GoogleService-Info.plist`; Android Google sign-in gets the web OAuth client as its server client id instead, and iOS has the reversed client id as a URL scheme plus the Sign in with Apple and App Attest entitlements.
 
 ### 8.2 Apple Developer Program (needed by Apple sign-in, iOS builds, TestFlight, iOS purchases)
@@ -325,7 +338,7 @@ Costs $99 a year. Enrollment can take a day or two, so start early.
 These live in the Google Cloud project that Firebase created.
 
 - [x] Firebase Auth → Sign-in method → turn on **Google**.
-- [x] Google Cloud console → **OAuth consent screen**: app name, support email, privacy policy URL, and the scopes `openid`, `email`, `profile`, and `drive.appdata`. Done 2026-11-14 in Testing mode with Tyler as a test user. The console classifies `drive.appdata` as **non-sensitive**, so no sensitive-scope review is needed. **Branding** (home page and privacy policy links) waits for the real website. Google lists `drive.appdata` among its recommended Drive scopes, so it should only need basic verification, but check how the console classifies it when you add it.
+- [x] Google Cloud console → **OAuth consent screen**: app name, support email, privacy policy URL, and the scopes `openid`, `email`, `profile`, and `drive.appdata`. Done 2026-11-14 in Testing mode with Tyler as a test user. The console classifies `drive.appdata` as **non-sensitive**, so no sensitive-scope review is needed. **Branding** uses the public pages from §8.0 (2026-11-18), with `sousvite.web.app` under Authorized domains. Google lists `drive.appdata` among its recommended Drive scopes, so it should only need basic verification, but check how the console classifies it when you add it.
 - [ ] Move the consent screen from **Testing** to **In production** before the beta. In Testing mode Google expires sign-ins after 7 days, which would break Drive sync for testers every week.
 - [x] Turn on the **Google Drive API** for the project.
 - [ ] Add your Android **SHA-1 and SHA-256 fingerprints** to the Firebase Android app: the debug key, your upload key (§8.5), and the Play app signing key (shown in Play Console after the first upload). Google sign-in fails on Android without them. The upload key's fingerprints were added 2026-11-14; the debug key and Play app signing key are still to add.
@@ -405,5 +418,5 @@ Costs $25 once.
 Decided by Tyler on 2026-11-13.
 
 1. **Bundled USDA file:** the generated SQLite file is committed to the repo as a normal file, without Git LFS. It is about 9 MB (under 2 MB compressed, which is what Git stores) and USDA updates it about twice a year, so the history grows slowly. Git LFS has a small free quota that every CI checkout uses, and building the file in CI would download hundreds of MB of CSVs on every build.
-2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses fastlane match with the shared certificates repo and the App Store Connect API key from §8.2 (§8.5). Every push to `main` ships a TestFlight and Play internal build (Tyler, 2026-11-16).
+2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses fastlane match with the shared certificates repo and the App Store Connect API key from §8.2 (§8.5). Every push to `main` ships a TestFlight and Play internal build (Tyler, 2026-11-16). The iOS lane waits for Apple's processing and adds each build to the TestFlight group **Internal**, because App Store Connect only distributes Xcode Cloud builds to a group automatically. It skips Beta App Review (`submit_beta_review: false`): internal groups don't need it, and fastlane's default submission fails without a Beta App Description.
 3. **Firebase:** one project, with no dev and prod split (§8.1).

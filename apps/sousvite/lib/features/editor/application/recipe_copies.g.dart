@@ -52,4 +52,4 @@ final class RecipeCopiesProvider
   }
 }
 
-String _$recipeCopiesHash() => r'028e43f47ad658110d444257db01c74c3646712f';
+String _$recipeCopiesHash() => r'02998c9fed09eee3f4d782e6ff7345a914bd680c';

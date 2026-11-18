@@ -6,7 +6,14 @@ import 'e2e_device.dart';
 
 /// Shows [device]'s app on screen. Only one device has a screen at a time;
 /// the others act through their providers, as another phone would.
+///
+/// Text goes in through Flutter's stand-in keyboard, as in widget tests.
+/// With the device's real keyboard, `enterText` changes a field without
+/// telling that keyboard, which on Android later sends its old text back
+/// and undoes the edit. The flows test the app, not the keyboard.
 Future<void> pumpDevice(WidgetTester tester, E2eDevice device) async {
+  tester.testTextInput.register();
+  addTearDown(tester.testTextInput.unregister);
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: device.container,

@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -211,6 +212,20 @@ void main() {
     final steps = tester.getTopLeft(find.text('Steps'));
     expect(ingredients.dy, steps.dy);
     expect(steps.dx, greaterThan(ingredients.dx));
+  });
+
+  testWidgets('keeps the two panes together on a very wide window', (
+    tester,
+  ) async {
+    tester.setWindowWidth(2000);
+    await pumpRecipe(tester);
+
+    tester
+      ..expectInCenteredColumn(
+        find.text('Ingredients'),
+        ReadingColumn.twoPaneWidth,
+      )
+      ..expectInCenteredColumn(find.text('Steps'), ReadingColumn.twoPaneWidth);
   });
 
   group('navigation', () {

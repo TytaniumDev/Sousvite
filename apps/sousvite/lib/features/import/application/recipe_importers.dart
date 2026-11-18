@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/app/services/firebase.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
+import 'package:sousvite/features/import/application/umami_progress.dart';
 import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/page_fetchers.dart';
 import 'package:sousvite/features/import/data/page_url_importer.dart';
@@ -23,12 +24,25 @@ abstract interface class UrlImporter() {
   Future<RecipeSnapshot> importUrl(Uri url);
 }
 
+/// Reports how far an Umami import has got.
+typedef UmamiProgressReport = void Function(UmamiImportProgress progress);
+
 /// Moves recipes in and out of Umami's export format (PRD 7.2).
 abstract interface class UmamiTransfer() {
-  /// Asks the user for an Umami export and saves its recipes. Returns how
-  /// many were imported, or null if the user canceled. Throws
-  /// [ImportFailure] when the file can't be read.
-  Future<int?> importLibrary();
+  /// Asks the user for an Umami export and saves its recipes, reporting
+  /// each step to [onProgress] once a file is picked. Returns how many
+  /// were imported, or null if the user canceled. Throws [ImportFailure]
+  /// when the file can't be read.
+  Future<int?> importLibrary({required UmamiProgressReport onProgress});
+
+  /// Saves the recipes in the Umami export that another app shared into
+  /// this one, which the platform left at [path], reporting each step to
+  /// [onProgress]. Returns how many were imported. Throws [ImportFailure]
+  /// when the file can't be read.
+  Future<int> importSharedArchive(
+    String path, {
+    required UmamiProgressReport onProgress,
+  });
 
   /// Writes every recipe in Umami's format and hands the file to the
   /// user. Returns how many were exported, or null if the user canceled.

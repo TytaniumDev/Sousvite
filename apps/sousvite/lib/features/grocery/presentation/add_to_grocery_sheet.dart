@@ -109,6 +109,7 @@ class const _LineRow({
             ),
       preparation: line.preparation,
       checked: included,
+      checkStyle: .select,
       onChanged: (_) => ref
           .read(excludedIngredientsProvider(recipeId).notifier)
           .toggle(lineId),

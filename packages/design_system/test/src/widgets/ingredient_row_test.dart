@@ -51,6 +51,33 @@ void main() {
       expect(compact, 40);
     });
 
+    testWidgets('a row with a checkbox is 48 dp inside compact density', (
+      tester,
+    ) async {
+      await tester.pumpDesignSystem(
+        CompactDensity(
+          child: IngredientRow(name: 'eggs', onChanged: (_) {}),
+        ),
+      );
+
+      expect(tester.getSize(find.byType(IngredientRow)).height, 48);
+    });
+
+    testWidgets('shows a guide under the name', (tester) async {
+      await tester.pumpDesignSystem(
+        const IngredientRow(name: 'salt', guide: Text('Use ½ Tbsp')),
+      );
+
+      expect(
+        tester.getTopLeft(find.text('Use ½ Tbsp')).dy,
+        greaterThan(tester.getBottomLeft(find.text('salt')).dy - 1),
+      );
+      expect(
+        tester.getTopLeft(find.text('Use ½ Tbsp')).dx,
+        tester.getTopLeft(find.text('salt')).dx,
+      );
+    });
+
     testWidgets('toggles when the row is tapped', (tester) async {
       final changes = <bool>[];
       await tester.pumpDesignSystem(
@@ -91,6 +118,32 @@ void main() {
           .style;
       expect(style.decoration, TextDecoration.lineThrough);
       expect(style.color, AppColorSchemes.light.onSurfaceVariant);
+    });
+
+    testWidgets('leaves a selected line as it is', (tester) async {
+      await tester.pumpDesignSystem(
+        IngredientRow(
+          name: 'eggs',
+          checked: true,
+          checkStyle: IngredientCheckStyle.select,
+          onChanged: (_) {},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final style = tester
+          .widget<DefaultTextStyle>(
+            find
+                .ancestor(
+                  of: find.text('eggs'),
+                  matching: find.byType(DefaultTextStyle),
+                )
+                .first,
+          )
+          .style;
+      expect(style.decoration, isNot(TextDecoration.lineThrough));
+      expect(style.color, AppColorSchemes.light.onSurface);
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
     });
 
     testWidgets('changes at once when motion is reduced', (tester) async {
@@ -143,6 +196,33 @@ void main() {
           preparation: 'softened',
           checked: true,
           onChanged: (_) {},
+        ),
+        'selected': IngredientRow(
+          name: 'butter',
+          quantity: Quantity(1, 2),
+          unit: 'cup',
+          preparation: 'softened',
+          checked: true,
+          checkStyle: IngredientCheckStyle.select,
+          onChanged: (_) {},
+        ),
+        'with guide': IngredientRow(
+          name: 'kosher salt',
+          quantity: Quantity(3, 2),
+          unit: 'tsp',
+          onChanged: (_) {},
+          guide: MeasuringGuide(
+            label: 'Use',
+            tools: [(quantity: Quantity(1, 2), unit: 'Tbsp')],
+          ),
+        ),
+        'compact': CompactDensity(
+          child: IngredientRow(
+            name: 'butter',
+            quantity: Quantity(1, 2),
+            unit: 'cup',
+            onChanged: (_) {},
+          ),
         ),
       },
     );

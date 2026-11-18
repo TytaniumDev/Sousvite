@@ -1,9 +1,18 @@
 import 'package:clock/clock.dart';
 import 'package:domain/domain.dart';
+import 'package:flutter/foundation.dart';
 import 'package:recipe_import/recipe_import.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
+import 'package:sousvite/features/import/application/umami_progress.dart';
 import 'package:sousvite/features/import/data/umami_files.dart';
+
+/// Reads the recipes out of an Umami export (`readUmamiArchive`).
+typedef UmamiArchiveReader = Future<List<UmamiRecipe>> Function(
+  Uint8List bytes, {
+  required String Function() newId,
+  required DateTime now,
+});
 
 /// Moves the whole library in and out of Umami's HTML export, keeping
 /// Umami recipe books as folders (ENGINEERING.md §14).
@@ -27,6 +36,10 @@ class const LibraryUmamiTransfer({
   /// Matches an imported recipe's ingredients to foods where one clearly
   /// fits, so its nutrition shows without fixing every line by hand.
   required final Future<void> Function(RecipeId recipeId) matchNutrition,
+
+  /// Reads the recipes out of an Umami export. Tests pass one that runs
+  /// in the test's isolate.
+  final UmamiArchiveReader read = _readInBackground,
 }) implements UmamiTransfer {
   /// The name export offers for the file.
   static const exportFileName = 'Sousvite recipes.zip';
@@ -34,13 +47,49 @@ class const LibraryUmamiTransfer({
   /// How many photos download at once during import.
   static const photoDownloads = 6;
 
+  /// Reads a large export off the UI isolate, so the progress dialog keeps
+  /// moving.
+  static Future<List<UmamiRecipe>> _readInBackground(
+    Uint8List bytes, {
+    required String Function() newId,
+    required DateTime now,
+  }) => compute(_readArchive, (bytes: bytes, newId: newId, now: now));
+
+  static List<UmamiRecipe> _readArchive(
+    ({Uint8List bytes, String Function() newId, DateTime now}) input,
+  ) => readUmamiArchive(input.bytes, newId: input.newId, now: input.now);
+
   @override
-  Future<int?> importLibrary() async {
+  Future<int?> importLibrary({required UmamiProgressReport onProgress}) async {
     final bytes = await files.pickArchive();
     if (bytes == null) return null;
+    final count = await _importArchive(bytes, onProgress);
+    return count;
+  }
+
+  @override
+  Future<int> importSharedArchive(
+    String path, {
+    required UmamiProgressReport onProgress,
+  }) async {
+    onProgress(const UmamiImportProgress(.reading));
+    final bytes = await files.takeSharedArchive(path);
+    if (bytes == null) throw const ImportFailure(.invalidFile);
+    final count = await _importArchive(bytes, onProgress);
+    return count;
+  }
+
+  /// Saves the recipes in the Umami export [bytes], then their photos, and
+  /// returns how many recipes. Recipes come first so they show in the
+  /// library while the slower photo downloads run.
+  Future<int> _importArchive(
+    Uint8List bytes,
+    UmamiProgressReport onProgress,
+  ) async {
+    onProgress(const UmamiImportProgress(.reading));
     final List<UmamiRecipe> imported;
     try {
-      imported = readUmamiArchive(bytes, newId: newId, now: clock.now());
+      imported = await read(bytes, newId: newId, now: clock.now());
     } on UmamiFailure {
       throw const ImportFailure(.invalidFile);
     }
@@ -48,21 +97,46 @@ class const LibraryUmamiTransfer({
       for (final folder in await folders.watchFolders().first)
         folder.name: folder.id,
     };
-    final photoRefs = await _importPhotos([
-      for (final recipe in imported) recipe.imageUrl,
-    ]);
+    final total = imported.length;
+    onProgress(UmamiImportProgress(.recipes, total: total));
     for (final (index, (:snapshot, :book, imageUrl: _)) in imported.indexed) {
-      await recipes.saveSnapshot(
-        snapshot.copyWith(
-          recipe: snapshot.recipe.copyWith(photoRef: photoRefs[index]),
-        ),
-      );
+      await recipes.saveSnapshot(snapshot);
       await matchNutrition(snapshot.recipe.id);
-      if (book == null || book.trim().isEmpty) continue;
-      final folderId = folderIds[book] ??= await _newFolder(book);
-      await folders.addRecipeToFolder(folderId, snapshot.recipe.id);
+      if (book != null && book.trim().isNotEmpty) {
+        final folderId = folderIds[book] ??= await _newFolder(book);
+        await folders.addRecipeToFolder(folderId, snapshot.recipe.id);
+      }
+      onProgress(UmamiImportProgress(.recipes, done: index + 1, total: total));
     }
-    return imported.length;
+    await _importPhotos([
+      for (final (:snapshot, book: _, :imageUrl) in imported)
+        if (imageUrl != null && imageUrl.trim().isNotEmpty)
+          (recipe: snapshot.recipe, url: imageUrl),
+    ], onProgress);
+    return total;
+  }
+
+  /// Saves each recipe's photo, downloading [photoDownloads] at a time.
+  Future<void> _importPhotos(
+    List<({Recipe recipe, String url})> photos,
+    UmamiProgressReport onProgress,
+  ) async {
+    final total = photos.length;
+    if (total == 0) return;
+    var done = 0;
+    onProgress(UmamiImportProgress(.photos, total: total));
+    for (var start = 0; start < total; start += photoDownloads) {
+      final batch = photos.skip(start).take(photoDownloads);
+      await Future.wait(
+        batch.map((photo) async {
+          final photoRef = await importPhoto(photo.url);
+          if (photoRef != null) {
+            await recipes.saveRecipe(photo.recipe.copyWith(photoRef: photoRef));
+          }
+          onProgress(UmamiImportProgress(.photos, done: ++done, total: total));
+        }),
+      );
+    }
   }
 
   @override
@@ -84,16 +158,6 @@ class const LibraryUmamiTransfer({
       writeUmamiArchive(exported),
     );
     return saved ? exported.length : null;
-  }
-
-  /// Each address's `photoRef`, downloading [photoDownloads] at a time.
-  Future<List<String?>> _importPhotos(List<String?> urls) async {
-    final refs = <String?>[];
-    for (var start = 0; start < urls.length; start += photoDownloads) {
-      final batch = urls.skip(start).take(photoDownloads);
-      refs.addAll(await Future.wait(batch.map(importPhoto)));
-    }
-    return refs;
   }
 
   /// The photo's address for Umami, which can only point at the web. A

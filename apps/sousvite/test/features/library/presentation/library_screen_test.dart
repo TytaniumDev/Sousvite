@@ -1,17 +1,16 @@
-import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/providers/repositories.dart';
-import 'package:sousvite/features/editor/editor.dart';
-import 'package:sousvite/features/import/import.dart';
+import 'package:sousvite/features/library/application/library_scope.dart';
 import 'package:sousvite/features/library/library.dart';
-import 'package:sousvite/features/library/presentation/folder_chips.dart';
+import 'package:sousvite/features/library/presentation/folder_grid.dart';
+import 'package:sousvite/features/library/presentation/folder_screen.dart';
+import 'package:sousvite/features/library/presentation/folder_tile.dart';
 import 'package:sousvite/features/library/presentation/library_recipe_card.dart';
 import 'package:sousvite/features/library/presentation/library_screen.dart';
-import 'package:sousvite/features/library/presentation/recipe_grid.dart';
-
 import 'package:sousvite/shared/photos/photos.dart';
 import 'package:sousvite/shared/photos/stored_photo_image.dart';
 
@@ -54,124 +53,143 @@ void main() {
       );
   });
 
+  List<Override> overrides() => [
+    recipeRepositoryProvider.overrideWithValue(recipes),
+    folderRepositoryProvider.overrideWithValue(folders),
+    photoStoreProvider.overrideWithValue(photos),
+  ];
+
   Future<void> pumpLibrary(WidgetTester tester) async {
-    await tester.pumpApp(
-      const LibraryScreen(),
-      overrides: [
-        recipeRepositoryProvider.overrideWithValue(recipes),
-        folderRepositoryProvider.overrideWithValue(folders),
-        photoStoreProvider.overrideWithValue(photos),
-      ],
-    );
+    await tester.pumpApp(const LibraryScreen(), overrides: overrides());
     await tester.pumpAndSettle();
   }
 
+  Iterable<FolderTile> tiles(WidgetTester tester) =>
+      tester.widgetList<FolderTile>(find.byType(FolderTile));
+
   group(LibraryScreen, () {
-    testWidgets('shows recipe cards newest first, with total time', (
+    testWidgets('shows only folders: unsorted, each folder, then new', (
       tester,
     ) async {
       await pumpLibrary(tester);
 
-      final titles = tester
-          .widgetList<RecipeCard>(find.byType(RecipeCard))
-          .map((card) => card.title);
-      expect(titles, ['Tomato soup', 'Oat pancakes']);
-      final images = tester
-          .widgetList<RecipeCard>(find.byType(RecipeCard))
-          .map((card) => card.image);
-      expect(images.first, isNull);
+      expect(tiles(tester).map((tile) => tile.title), [
+        'Unsorted',
+        'Breakfast',
+        'New folder',
+      ]);
+      expect(find.byType(LibraryRecipeCard), findsNothing);
+      final breakfastTile = tiles(tester).elementAt(1);
+      expect(breakfastTile.countLabel, '1 recipe');
       expect(
-        images.last,
+        breakfastTile.images.single,
         isA<ResizeImage>().having(
-          (i) => i.imageProvider,
+          (image) => image.imageProvider,
           'photo',
           StoredPhotoImage(photos, 'oats-photo'),
         ),
       );
-      expect(find.text('1 h 30 min'), findsOneWidget);
+      final unsortedTile = tiles(tester).first;
+      expect(unsortedTile.countLabel, '1 recipe');
+      expect(unsortedTile.images, isEmpty);
     });
 
-    testWidgets('renaming a recipe rebuilds only its card', (tester) async {
+    testWidgets('leaves out the unsorted tile once every recipe is filed', (
+      tester,
+    ) async {
+      await folders.addRecipeToFolder(breakfast, const RecipeId('soup'));
+      await pumpLibrary(tester);
+
+      expect(tiles(tester).map((tile) => tile.title), [
+        'Breakfast',
+        'New folder',
+      ]);
+      expect(tiles(tester).first.countLabel, '2 recipes');
+    });
+
+    testWidgets('renaming a folder rebuilds only its tile', (tester) async {
       final builds = BuildCounter.start();
       await pumpLibrary(tester);
       builds.reset();
 
-      await recipes.saveRecipe(
-        RecipeFixtures.recipe(
-          id: 'soup',
-          title: 'Roasted tomato soup',
-          createdAt: DateTime.utc(2027),
+      await folders.saveFolder(
+        Folder(
+          id: breakfast,
+          name: 'Mornings',
+          createdAt: RecipeFixtures.createdAt,
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Roasted tomato soup'), findsOneWidget);
-      expect(builds.ofKey(const ValueKey(RecipeId('soup'))), 1);
-      expect(builds.ofKey(const ValueKey(RecipeId('oats'))), 0);
-      expect(builds.of<RecipeGrid>(), 0);
-      expect(builds.of<FolderChips>(), 0);
+      expect(find.text('Mornings'), findsOneWidget);
+      expect(
+        builds.ofKey(const ValueKey<LibraryScope>(FolderRecipes(breakfast))),
+        1,
+      );
+      expect(builds.ofKey(const ValueKey<LibraryScope>(UnsortedRecipes())), 0);
+      expect(builds.of<FolderGrid>(), 0);
     });
 
-    testWidgets('filters by search', (tester) async {
+    testWidgets('searching swaps the tiles for matching recipes', (
+      tester,
+    ) async {
       await pumpLibrary(tester);
 
       await tester.enterText(find.byType(SearchBar), 'tomato');
       await tester.pumpAndSettle();
+      expect(find.byType(FolderTile), findsNothing);
       expect(find.byType(LibraryRecipeCard), findsOneWidget);
+      expect(find.text('Tomato soup'), findsOneWidget);
 
       await tester.enterText(find.byType(SearchBar), 'waffles');
       await tester.pumpAndSettle();
       expect(find.text('No matching recipes'), findsOneWidget);
+
+      await tester.enterText(find.byType(SearchBar), ' ');
+      await tester.pumpAndSettle();
+      expect(find.byType(FolderTile), findsNWidgets(3));
     });
 
-    testWidgets('filters by folder', (tester) async {
-      final builds = BuildCounter.start();
+    testWidgets('shows three tiles across a phone', (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
       await pumpLibrary(tester);
-      builds.reset();
+
+      final tops = [
+        for (final element in find.byType(FolderTile).evaluate())
+          tester.getTopLeft(find.byWidget(element.widget)).dy,
+      ];
+      expect(tops, hasLength(3));
+      expect(tops.toSet(), hasLength(1));
+    });
+
+    testWidgets('a tile opens its folder, and unsorted opens its own page', (
+      tester,
+    ) async {
+      final router = GoRouter(
+        initialLocation: LibraryRoutes.path,
+        routes: LibraryRoutes.routes,
+      );
+      addTearDown(router.dispose);
+      await tester.pumpRouterApp(router, overrides: overrides());
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Breakfast'));
       await tester.pumpAndSettle();
-
-      expect(find.byType(LibraryRecipeCard), findsOneWidget);
+      expect(find.byType(FolderScreen), findsOneWidget);
       expect(find.text('Oat pancakes'), findsOneWidget);
-      expect(builds.of<FolderChips>(), 0);
-    });
+      expect(find.text('Tomato soup'), findsNothing);
 
-    testWidgets('shows an empty folder', (tester) async {
-      await folders.saveFolder(
-        Folder(
-          id: const FolderId('empty'),
-          name: 'Desserts',
-          createdAt: RecipeFixtures.createdAt,
-        ),
-      );
-      await pumpLibrary(tester);
-
-      await tester.tap(find.text('Desserts'));
+      router.pop();
       await tester.pumpAndSettle();
-      expect(find.text('Nothing in this folder yet'), findsOneWidget);
-    });
-
-    testWidgets('shows an empty library', (tester) async {
-      recipes = FakeRecipeRepository();
-      await pumpLibrary(tester);
-      expect(find.text('No recipes yet'), findsOneWidget);
-    });
-
-    testWidgets('shows an error with a retry button', (tester) async {
-      await tester.pumpApp(
-        const LibraryScreen(),
-        overrides: [folderRepositoryProvider.overrideWithValue(folders)],
-      );
+      await tester.tap(find.text('Unsorted'));
       await tester.pumpAndSettle();
-
-      expect(find.byType(ErrorState), findsOneWidget);
-      await tester.tap(find.text('Try again'));
-      await tester.pumpAndSettle();
-      expect(find.byType(ErrorState), findsOneWidget);
+      expect(find.text('Tomato soup'), findsOneWidget);
+      expect(find.text('Oat pancakes'), findsNothing);
     });
 
-    testWidgets('creates a folder and selects it', (tester) async {
+    testWidgets('creates a folder from the new folder tile', (tester) async {
       await pumpLibrary(tester);
 
       await tester.tap(find.text('New folder'));
@@ -181,7 +199,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Soups'), findsOneWidget);
-      expect(find.text('Nothing in this folder yet'), findsOneWidget);
+      expect(folders.allFolders, hasLength(2));
     });
 
     testWidgets('cancelling the folder dialog creates nothing', (tester) async {
@@ -193,124 +211,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(folders.allFolders, hasLength(1));
-    });
-
-    testWidgets('renames, deletes, and restores the selected folder', (
-      tester,
-    ) async {
-      await pumpLibrary(tester);
-      expect(find.byTooltip('Folder options'), findsNothing);
-
-      await tester.tap(find.text('Breakfast'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Folder options'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Rename folder'));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).last, 'Mornings');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pumpAndSettle();
-      expect(find.text('Mornings'), findsOneWidget);
-
-      await tester.tap(find.byTooltip('Folder options'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Delete folder'));
-      await tester.pumpAndSettle();
-      expect(find.text('Mornings'), findsNothing);
-      expect(find.text('Folder deleted'), findsOneWidget);
-
-      await tester.tap(find.text('Undo'));
-      await tester.pumpAndSettle();
-      expect(find.text('Mornings'), findsOneWidget);
-      expect(folders.recipeIdsIn(breakfast), [const RecipeId('oats')]);
-    });
-
-    testWidgets('puts a recipe in folders with a long press', (tester) async {
-      await pumpLibrary(tester);
-
-      await tester.longPress(find.text('Tomato soup'));
-      await tester.pumpAndSettle();
-      expect(find.text('Folders'), findsOneWidget);
-
-      await tester.tap(find.widgetWithText(CheckboxListTile, 'Breakfast'));
-      await tester.pumpAndSettle();
-      expect(folders.recipeIdsIn(breakfast), contains(const RecipeId('soup')));
-
-      await tester.tap(find.widgetWithText(ListTile, 'New folder'));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).last, 'Soups');
-      await tester.tap(find.text('Create'));
-      await tester.pumpAndSettle();
-      final soups = folders.allFolders.firstWhere((f) => f.name == 'Soups');
-      expect(folders.recipeIdsIn(soups.id), [const RecipeId('soup')]);
-    });
-
-    testWidgets('the folders sheet says when there are no folders', (
-      tester,
-    ) async {
-      folders = FakeFolderRepository();
-      await pumpLibrary(tester);
-
-      await tester.longPress(find.text('Tomato soup'));
-      await tester.pumpAndSettle();
-      expect(
-        find.text('No folders yet. Create one to sort your recipes.'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('lays cards out in more columns on wide windows', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(1200, 800);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      await pumpLibrary(tester);
-
-      final first = tester.getTopLeft(find.byType(RecipeCard).first);
-      final second = tester.getTopLeft(find.byType(RecipeCard).last);
-      expect(first.dy, second.dy);
-    });
-
-    testWidgets('the add button opens import or a new recipe', (tester) async {
-      final router = GoRouter(
-        initialLocation: LibraryRoutes.path,
-        routes: [
-          ...LibraryRoutes.routes,
-          GoRoute(
-            path: ImportRoutes.path,
-            builder: (_, _) => const Text('Import'),
-          ),
-          GoRoute(
-            path: EditorRoutes.path,
-            builder: (_, _) => const Text('Editor'),
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
-      await tester.pumpRouterApp(
-        router,
-        overrides: [
-          recipeRepositoryProvider.overrideWithValue(recipes),
-          folderRepositoryProvider.overrideWithValue(folders),
-          photoStoreProvider.overrideWithValue(photos),
-        ],
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(AddRecipeButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Write a recipe'));
-      await tester.pumpAndSettle();
-      expect(find.text('Editor'), findsOneWidget);
-
-      router.pop();
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(AddRecipeButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Import from a link'));
-      await tester.pumpAndSettle();
-      expect(find.text('Import'), findsOneWidget);
     });
   });
 }

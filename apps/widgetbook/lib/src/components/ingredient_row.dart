@@ -36,6 +36,30 @@ final ingredientRowComponent = WidgetbookComponent(
             preparation: 'finely diced',
             checked: checked,
             onChanged: onChanged,
+            checkStyle: context.knobs.object.dropdown(
+              label: 'Check style',
+              options: IngredientCheckStyle.values,
+              labelBuilder: (style) => style.name,
+            ),
+          ),
+        ),
+      ),
+    ),
+    WidgetbookUseCase(
+      name: 'With measuring guide',
+      builder: (context) => Preview(
+        child: Interactive(
+          initialValue: false,
+          builder: (context, checked, onChanged) => IngredientRow(
+            name: 'Kosher salt',
+            quantity: Quantity(3, 2),
+            unit: 'tsp',
+            checked: checked,
+            onChanged: onChanged,
+            guide: MeasuringGuide(
+              label: context.knobs.string(label: 'Label', initialValue: 'Use'),
+              tools: [(quantity: Quantity(1, 2), unit: 'Tbsp')],
+            ),
           ),
         ),
       ),

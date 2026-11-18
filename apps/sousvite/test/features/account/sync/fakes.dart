@@ -50,6 +50,26 @@ class FailingTransport(final Exception error) implements SyncTransport {
   Future<void> writeSnapshot(Snapshot snapshot) async => throw error;
 }
 
+/// A working transport whose snapshot writes fail with [snapshotError]
+/// while it is set.
+class SnapshotFailingTransport(final SyncTransport _inner)
+    implements SyncTransport {
+  /// Thrown by [writeSnapshot] when set.
+  Exception? snapshotError;
+
+  @override
+  Future<void> push(List<Change> changes) => _inner.push(changes);
+
+  @override
+  Stream<PulledBatch> pull({SyncCursor? since}) => _inner.pull(since: since);
+
+  @override
+  Future<void> writeSnapshot(Snapshot snapshot) async {
+    if (snapshotError case final error?) throw error;
+    await _inner.writeSnapshot(snapshot);
+  }
+}
+
 /// A Firebase app that is only ever compared with null.
 class FakeFirebaseApp() extends Fake implements FirebaseApp;
 

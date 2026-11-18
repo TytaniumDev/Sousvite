@@ -19,6 +19,9 @@ class const UrlImportForm({
   /// Text shared from another app. Its link fills the field and starts
   /// importing.
   final String? sharedText,
+
+  /// The folder the imported recipe goes into, or null for none.
+  final FolderId? folderId,
   super.key,
 }) extends ConsumerStatefulWidget {
   @override
@@ -46,8 +49,9 @@ class _UrlImportFormState() extends ConsumerState<UrlImportForm> {
     super.dispose();
   }
 
-  Future<void> _import() =>
-      ref.read(urlImportProvider.notifier).import(_url.text);
+  Future<void> _import() => ref
+      .read(urlImportProvider.notifier)
+      .import(_url.text, folderId: widget.folderId);
 
   @override
   Widget build(BuildContext context) {

@@ -34,9 +34,11 @@ PhotoSync photoSync(Ref ref) => PhotoSync(
 /// app comes back to the foreground, and when the transport says other
 /// devices pushed (Firestore's listener) or every few minutes (Drive). The
 /// first sync through a transport, and the first after switching to it,
-/// copies the whole library into it as a snapshot (the `replay()` of
-/// ENGINEERING.md §8.2) and pushes this device's own changes, which is how
-/// signing in for the first time and switching sources lose nothing.
+/// pushes this device's own changes and then copies the whole library into
+/// it as a snapshot (the `replay()` of ENGINEERING.md §8.2), which is how
+/// signing in for the first time and switching sources lose nothing. A
+/// snapshot that fails is reported and tried again on the next sync; it
+/// never holds back the pushes and pulls.
 @Riverpod(keepAlive: true)
 class SyncController() extends _$SyncController {
   /// How long after a local change the push waits, so a burst of edits
@@ -51,6 +53,9 @@ class SyncController() extends _$SyncController {
   var _engines = <(SyncEngine, SpaceTransport)>[];
   Future<void>? _running;
   var _replayNext = false;
+
+  /// The transports, by key, still owed a snapshot of the whole library.
+  final _snapshotOwed = <String>{};
   var _again = false;
   Timer? _soon;
 
@@ -135,16 +140,15 @@ class SyncController() extends _$SyncController {
       for (final (index, (engine, space)) in engines.indexed) {
         final fresh =
             await store.progress(engine.transportKey) == const SyncProgress();
-        final switched = index == 0 && _replayNext;
-        if (fresh || switched) {
-          // First sync through this transport, or a switch to it: copy the
-          // whole current state as a snapshot (replay), and push every own
-          // change it hasn't had, so its log keeps their history too.
-          await engine.writeSnapshot();
-          if (switched) _replayNext = false;
+        if (fresh || (index == 0 && _replayNext)) {
+          // First sync through this transport, or a switch to it: after
+          // pushing every own change it hasn't had, so its log keeps their
+          // history too, copy the whole current state as a snapshot.
+          _snapshotOwed.add(engine.transportKey);
+          if (index == 0) _replayNext = false;
         }
         await engine.sync();
-        await engine.snapshotIfDue();
+        await _snapshot(engine);
         await photos.run(
           spaceId: space.spaceId,
           key: space.key,
@@ -162,6 +166,28 @@ class SyncController() extends _$SyncController {
         state = state.to(.error);
         unawaited(ref.read(errorReporterProvider).report(error, stackTrace));
       }
+    }
+  }
+
+  /// Writes [engine]'s snapshot when its transport is owed one or one is
+  /// due (ENGINEERING.md §8.1). Snapshots only let new devices start fast,
+  /// and the log already holds every change, so a failure is reported and
+  /// the snapshot stays owed for the next sync. Being offline or needing
+  /// Drive access again still ends the sync, as it does everywhere else.
+  Future<void> _snapshot(SyncEngine engine) async {
+    final key = engine.transportKey;
+    try {
+      if (_snapshotOwed.contains(key)) {
+        await engine.writeSnapshot();
+        _snapshotOwed.remove(key);
+      } else {
+        await engine.snapshotIfDue();
+      }
+    } on DriveSignInRequired {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      if (_isOffline(error)) rethrow;
+      unawaited(ref.read(errorReporterProvider).report(error, stackTrace));
     }
   }
 

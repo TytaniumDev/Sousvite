@@ -109,9 +109,18 @@ void main() {
       ),
       findsOneWidget,
     );
-    // ¾ cup is one of your cups, so only the sugar needs a guide.
+    // ¾ cup is one of your cups, so only the sugar's row has a guide.
     expect(find.byType(MeasuringGuide), findsOneWidget);
-    expect(find.text('5\u00a0tsp sugar'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(ValueKey(sugar.id)),
+        matching: find.byType(MeasuringGuide),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Use'), findsOneWidget);
+    expect(find.text('1\u00a0Tbsp'), findsOneWidget);
+    expect(find.text('1\u00a0tsp'), findsNWidgets(2));
 
     ProviderScope.containerOf(tester.element(find.byType(CookingScreen)))
         .read(recipeScaleProvider(recipeId).notifier)
@@ -238,6 +247,23 @@ void main() {
     expect(find.byType(CookingHeader), findsOneWidget);
   });
 
+  testWidgets('lists the ingredients above the step on a phone', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpCooking(tester);
+
+    // The ingredients come first, so you can get them ready.
+    expect(
+      tester.getTopLeft(find.text('Ingredients for this step')).dy,
+      lessThan(
+        tester.getTopLeft(find.textContaining('Whisk', findRichText: true)).dy,
+      ),
+    );
+  });
+
   testWidgets('shows ingredients beside the step on a landscape tablet', (
     tester,
   ) async {
@@ -253,6 +279,23 @@ void main() {
       find.text('Ingredients for this step'),
     );
     expect(ingredients.dx, greaterThan(step.dx));
+  });
+
+  testWidgets('keeps Back and Next to the reading column on a wide window', (
+    tester,
+  ) async {
+    tester.setWindowWidth(1600);
+    await pumpCooking(tester);
+
+    tester
+      ..expectInCenteredColumn(
+        find.byType(FilledButton),
+        ReadingColumn.readingWidth,
+      )
+      ..expectInCenteredColumn(
+        find.byType(OutlinedButton),
+        ReadingColumn.readingWidth,
+      );
   });
 
   group('leaving', () {

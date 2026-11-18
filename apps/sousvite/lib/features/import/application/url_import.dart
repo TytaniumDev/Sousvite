@@ -16,19 +16,25 @@ class UrlImport() extends _$UrlImport {
   @override
   FutureOr<RecipeId?> build() => null;
 
-  /// Imports the recipe at [text] and saves it, so the user can review it
-  /// in the editor (PRD 7.2). Ingredients that clearly fit a USDA food are
-  /// matched for nutrition right away.
-  Future<void> import(String text) async {
+  /// Imports the recipe at [text] and saves it in [folderId], so the user
+  /// can review it in the editor (PRD 7.2). Ingredients that clearly fit
+  /// a USDA food are matched for nutrition right away.
+  Future<void> import(String text, {FolderId? folderId}) async {
     final url = parseRecipeUrl(text);
     if (url == null) {
       state = AsyncError(const ImportFailure(.invalidUrl), StackTrace.current);
       return;
     }
+    final importer = ref.read(urlImporterProvider);
+    final recipes = ref.read(recipeRepositoryProvider);
+    final folders = folderId == null
+        ? null
+        : ref.read(folderRepositoryProvider);
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final snapshot = await ref.read(urlImporterProvider).importUrl(url);
-      await ref.read(recipeRepositoryProvider).saveSnapshot(snapshot);
+      final snapshot = await importer.importUrl(url);
+      await recipes.saveSnapshot(snapshot);
+      await folders?.addRecipeToFolder(folderId!, snapshot.recipe.id);
       final autoMatch = await ref.read(autoMatchProvider.future);
       await autoMatch.matchRecipe(snapshot.recipe.id);
       return snapshot.recipe.id;

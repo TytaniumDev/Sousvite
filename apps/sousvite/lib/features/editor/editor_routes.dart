@@ -11,14 +11,28 @@ abstract final class EditorRoutes() {
   static String location(RecipeId recipeId) =>
       path.replaceFirst(':recipeId', Uri.encodeComponent(recipeId.value));
 
-  /// The location of a new, empty recipe.
-  static String newRecipeLocation() => location(RecipeId(const Uuid().v4()));
+  /// The query parameter that carries the folder a new recipe goes into.
+  static const folderParameter = 'folder';
+
+  /// The location of a new, empty recipe, saved into [folderId] (every
+  /// recipe belongs in a folder).
+  static String newRecipeLocation({FolderId? folderId}) => Uri(
+    path: location(RecipeId(const Uuid().v4())),
+    queryParameters: folderId == null
+        ? null
+        : {folderParameter: folderId.value},
+  ).toString();
 
   static final List<RouteBase> routes = [
     GoRoute(
       path: path,
-      builder: (context, state) =>
-          EditorScreen(recipeId: RecipeId(state.pathParameters['recipeId']!)),
+      builder: (context, state) => EditorScreen(
+        recipeId: RecipeId(state.pathParameters['recipeId']!),
+        folderId: switch (state.uri.queryParameters[folderParameter]) {
+          final String id => FolderId(id),
+          null => null,
+        },
+      ),
     ),
   ];
 }

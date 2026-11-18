@@ -13,6 +13,7 @@ import 'package:sousvite_widgetbook/src/components/match_status_chip.dart';
 import 'package:sousvite_widgetbook/src/components/measuring_guide.dart';
 import 'package:sousvite_widgetbook/src/components/nutrient_row.dart';
 import 'package:sousvite_widgetbook/src/components/pro_badge.dart';
+import 'package:sousvite_widgetbook/src/components/reading_column.dart';
 import 'package:sousvite_widgetbook/src/components/recipe_card.dart';
 import 'package:sousvite_widgetbook/src/components/section_header.dart';
 import 'package:sousvite_widgetbook/src/components/serving_stepper.dart';
@@ -66,6 +67,7 @@ final List<WidgetbookNode> directories = [
       syncStatusIconComponent,
     ],
   ),
+  WidgetbookFolder(name: 'Layout', children: [readingColumnComponent]),
   WidgetbookFolder(
     name: 'States',
     children: [emptyStateComponent, errorStateComponent],

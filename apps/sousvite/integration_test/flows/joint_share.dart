@@ -20,7 +20,9 @@ Future<void> jointShareEdits(WidgetTester tester) async {
   final recipeId = await seedRecipe(phone, 'Shared soup');
   await pumpDevice(tester, phone);
 
-  // Alice makes an invite link on the share screen.
+  // Alice makes an invite link on the share screen. The recipe is in no
+  // folder yet, so it waits under Unsorted.
+  await tapOn(tester, find.text('Unsorted'));
   await tapOn(tester, find.text('Shared soup'));
   await tapOn(tester, find.byTooltip('More options'));
   await tapOn(tester, find.text('Share'));

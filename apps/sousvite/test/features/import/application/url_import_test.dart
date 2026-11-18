@@ -21,17 +21,20 @@ void main() {
   late FakeUrlImporter importer;
   late FakeRecipeRepository recipes;
   late FakeFoodRepository foods;
+  late FakeFolderRepository folders;
   late ProviderContainer container;
 
   setUp(() {
     importer = FakeUrlImporter();
     recipes = FakeRecipeRepository();
     foods = FakeFoodRepository();
+    folders = FakeFolderRepository();
     container = ProviderContainer.test(
       overrides: [
         urlImporterProvider.overrideWithValue(importer),
         recipeRepositoryProvider.overrideWithValue(recipes),
         foodRepositoryProvider.overrideWithValue(foods),
+        folderRepositoryProvider.overrideWithValue(folders),
       ],
     )..listen(urlImportProvider, (_, _) {});
   });
@@ -91,6 +94,17 @@ void main() {
       expect(match.ingredientLineId, const IngredientLineId('l1'));
       expect(match.foodId, garlic.id);
       expect(match.gramWeight, 10);
+    });
+
+    test('files the recipe into the folder it was added from', () async {
+      const soups = FolderId('soups');
+      importer.result = RecipeSnapshot(
+        recipe: RecipeFixtures.recipe(id: 'chili', title: 'Chili'),
+      );
+
+      await notifier().import('seriouseats.com/chili', folderId: soups);
+
+      expect(folders.recipeIdsIn(soups), [const RecipeId('chili')]);
     });
 
     test('rejects text that is not a link without fetching', () async {
