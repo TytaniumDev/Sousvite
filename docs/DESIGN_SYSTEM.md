@@ -288,7 +288,7 @@ All springs have mass 1. In Flutter these are `SpringDescription.withDampingRati
 
 ### 8.2 Signature moments
 
-- **Checking an ingredient:** the check mark pops in (`spatialFast`), the row fades to `on-surface-variant` and gets a strike-through (`effectsDefault`).
+- **Checking off an ingredient while cooking:** the check mark pops in (`spatialFast`), the row fades to `on-surface-variant` and gets a strike-through (`effectsDefault`). Choosing ingredients to add to the grocery list only ticks the box.
 - **Reordering sections and steps:** the dragged item lifts (scale 1.02, shadow), neighbors make room, and it settles with `spatialDefault`.
 - **Add to grocery list:** the grocery nav badge bumps its count with a small overshoot.
 - **Cooking step change:** the step follows the finger while swiping, then settles with `spatialDefault`. Buttons trigger the same motion.
@@ -322,7 +322,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `AmountText` | A formatted amount with fraction glyphs and an optional screen-reader label | `quantity` (`Quantity` from `units`), `unit` (localized word), `semanticsLabel`, `style` |
 | `StepText` | Step text with amounts placed inline and emphasized | `segments` (`StepTextSegment` words and `StepAmountSegment` quantity and unit), `style`, `amountStyle`, `highlightAmounts` (editor) |
 | `MeasuringGuide` | Which measuring tools to use: `½ cup` `+` `¼ cup` | `tools` (quantity and unit word of each tool), `style` |
-| `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `quantity`, `unit`, `name`, `preparation`, `checked`, `onChanged` (null for read-only) |
+| `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `quantity`, `unit`, `name`, `preparation`, `checked`, `onChanged` (null for read-only), `checkStyle` (`checkOff` strikes a checked line through; `select` leaves the text alone) |
 | `IngredientSplitPreview` | How a typed line was split: amount, ingredient, and preparation as chips the user can fix | `quantity`, `unit`, `name`, `preparation`, a spoken label for each part, `onEdit(part)` |
 | `MacroBar` | Horizontal bar of protein, carbs, and fat by calories, with small gaps between segments | `protein`, `carbs`, `fat` (grams) |
 | `MacroSummary` | Calories plus P / C / F grams, with the macro bar | `calories`, `protein`, `carbs`, `fat`, `basisLabel` ("Per serving"), `labels` (`MacroLabels`) |
@@ -347,7 +347,7 @@ Details that matter:
 - **MacroBar** segments are always labeled nearby (by `MacroSummary` or a legend). Segments are separated by 2 dp gaps in the surface color so they read without relying on hue alone.
 - **MatchStatusChip** pairs color with an icon and a word: USDA and Open Food Facts are neutral (`surface-container-high` with an icon), Edited uses `secondary-container`, Not matched uses `warning-container` with a warning icon.
 - **TimerChip** is idle in `secondary-container`, running in `tertiary-container` with a live countdown, and done with a pulse (§8.2). The feature owns whether a timer runs and passes `startedAt`, so running timers survive step changes and collect in the tray; the chip only ticks its own countdown. Sound and vibration are the feature's job.
-- **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Read-only rows follow the theme's density (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp and toggle when tapped anywhere.
+- **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Read-only rows follow the theme's density (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp and toggle when tapped anywhere. A checkbox that means "done" (cooking) uses `checkOff`, which strikes the line through; one that means "include" (choosing lines for the grocery list) uses `select`, which leaves the text alone.
 - **MeasuringGuide** shows each tool as a `surface-container-high` pill joined by `+`, wrapping onto more lines when space runs out.
 - **Nutrition numbers** are whole for calories and milligrams, and keep one decimal below 10 g (`2.5 g`, `31 g`), dropping a trailing `.0`. `NutrientPrecision` holds this rule so every nutrition widget rounds the same way.
 - **ServingStepper** steps by whole servings: from 2½, minus goes to 2 and plus goes to 3. A fractional serving size typed elsewhere is kept until the next step.

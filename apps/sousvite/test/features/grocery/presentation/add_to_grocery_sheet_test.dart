@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -68,6 +69,18 @@ void main() {
       ]);
       expect(find.text('Added to grocery list'), findsOneWidget);
       expect(find.text('Add to list'), findsNothing);
+    });
+
+    testWidgets('picks lines without striking them through', (tester) async {
+      await arrange();
+      await openSheet(tester, chili);
+
+      final rows = tester.widgetList<IngredientRow>(find.byType(IngredientRow));
+      expect(rows.map((row) => row.checked), everyElement(isTrue));
+      expect(
+        rows.map((row) => row.checkStyle),
+        everyElement(IngredientCheckStyle.select),
+      );
     });
 
     testWidgets('leaves out unchecked lines, rebuilding only that row', (

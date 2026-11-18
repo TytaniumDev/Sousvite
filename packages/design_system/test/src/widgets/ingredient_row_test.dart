@@ -93,6 +93,32 @@ void main() {
       expect(style.color, AppColorSchemes.light.onSurfaceVariant);
     });
 
+    testWidgets('leaves a selected line as it is', (tester) async {
+      await tester.pumpDesignSystem(
+        IngredientRow(
+          name: 'eggs',
+          checked: true,
+          checkStyle: IngredientCheckStyle.select,
+          onChanged: (_) {},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final style = tester
+          .widget<DefaultTextStyle>(
+            find
+                .ancestor(
+                  of: find.text('eggs'),
+                  matching: find.byType(DefaultTextStyle),
+                )
+                .first,
+          )
+          .style;
+      expect(style.decoration, isNot(TextDecoration.lineThrough));
+      expect(style.color, AppColorSchemes.light.onSurface);
+      expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
+    });
+
     testWidgets('changes at once when motion is reduced', (tester) async {
       await tester.pumpDesignSystem(
         MediaQuery(
@@ -142,6 +168,15 @@ void main() {
           unit: 'cup',
           preparation: 'softened',
           checked: true,
+          onChanged: (_) {},
+        ),
+        'selected': IngredientRow(
+          name: 'butter',
+          quantity: Quantity(1, 2),
+          unit: 'cup',
+          preparation: 'softened',
+          checked: true,
+          checkStyle: IngredientCheckStyle.select,
           onChanged: (_) {},
         ),
       },
