@@ -6,7 +6,9 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/umami_actions.dart';
+import 'package:sousvite/features/import/application/umami_progress.dart';
 import 'package:sousvite/features/import/presentation/import_failure_text.dart';
+import 'package:sousvite/features/import/presentation/umami_import_dialog.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
 /// Import an Umami library, or export recipes for Umami (PRD 7.2). The
@@ -46,6 +48,14 @@ class _UmamiSectionState() extends ConsumerState<UmamiSection> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(umamiProgressProvider.select((p) => p != null), (
+      wasRunning,
+      running,
+    ) {
+      if (running && wasRunning != true) {
+        unawaited(UmamiImportDialog.show(context));
+      }
+    });
     final task = ref.watch(umamiActionsProvider);
     final l10n = context.l10n;
     final actions = ref.read(umamiActionsProvider.notifier);
