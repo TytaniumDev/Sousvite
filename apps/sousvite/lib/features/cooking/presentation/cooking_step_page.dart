@@ -6,7 +6,6 @@ import 'package:measuring/measuring.dart';
 import 'package:sousvite/features/cooking/application/checked_ingredients.dart';
 import 'package:sousvite/features/cooking/application/cooking_timers.dart';
 import 'package:sousvite/features/cooking/application/step_ingredients.dart';
-import 'package:sousvite/features/cooking/application/step_parts.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 import 'package:sousvite/features/settings/settings.dart';
 import 'package:sousvite/l10n/l10n.dart';
@@ -71,50 +70,16 @@ class const CookingStepText({
   /// The step to show.
   required final RecipeStepId stepId,
   super.key,
-}) extends ConsumerWidget {
+}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final parts = ref.watch(stepPartsProvider(recipeId, stepId));
-    final factor = ref.watch(recipeScaleProvider(recipeId));
-    final system = ref.watch(recipeUnitSystemProvider(recipeId));
-    final l10n = context.l10n;
-
-    StepAmountSegment inline(Amount written, {String? countWord}) {
-      final shown = shownAmount(written, factor: factor, system: system);
-      return StepAmountSegment(
-        quantity: shown.quantity,
-        unit: l10n.unitWord(shown.unit, shown.quantity, countWord: countWord),
-      );
-    }
-
-    final segments = <StepSegment>[
-      for (final part in parts)
-        ...switch (part) {
-          StepWords(:final text) => [StepTextSegment(text)],
-          StepMention(
-            :final amount,
-            :final amountMax,
-            :final countWord,
-            :final name,
-          ) =>
-            [
-              if (amountMax == null)
-                inline(amount, countWord: countWord)
-              else ...[
-                inline(Amount(amount.quantity, null)),
-                const StepTextSegment('–'),
-                inline(Amount(amountMax, amount.unit), countWord: countWord),
-              ],
-              StepTextSegment(' $name'),
-            ],
-        },
-    ];
+  Widget build(BuildContext context) {
     final large = WindowSizeClass.of(context) != .compact;
     final styles = context.appText;
     return Semantics(
       liveRegion: true,
-      child: StepText(
-        segments: segments,
+      child: SmartStepText(
+        recipeId: recipeId,
+        stepId: stepId,
         style: large ? styles.cookingStepLarge : styles.cookingStep,
         amountStyle: large ? styles.cookingAmountLarge : styles.cookingAmount,
       ),
