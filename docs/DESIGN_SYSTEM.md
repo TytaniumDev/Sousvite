@@ -239,6 +239,16 @@ Top-level destinations: **Library**, **Grocery list**, and **Settings**. Cooking
 
 Page gutters are `space4` (compact), `space6` (medium), and `space8` (expanded). Reading columns max out at 720 dp.
 
+Every page keeps its content in a centered column with `ReadingColumn`, so nothing stretches across a tablet or a browser window:
+
+| Column | Max width | Used for |
+|---|---|---|
+| `readingWidth` | 720 dp | Most pages: settings, editor, grocery list, nutrition, import, sharing, history, cooking steps |
+| `formWidth` | 400 dp | Short forms that are mostly buttons: sign in, the account page |
+| `twoPaneWidth` | 1200 dp | Two panes side by side: the recipe page's ingredients and steps, cooking mode's step and ingredients |
+
+The column sets the width, never the widgets in it: buttons, fields, and rows fill whatever width their parent gives them. `ReadingColumn` pads the scroll view rather than shrinking it, so the page still scrolls from anywhere in the window and the scrollbar stays at the window's edge. The library's recipe grid is the exception: it fills the window and adds columns as it grows.
+
 ### 6.4 Shape
 
 Soft and rounded, but not bubbly.
@@ -340,6 +350,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
+| `ReadingColumn` | Centers a page's content in a column at most `maxWidth` wide by handing its builder side insets for a scroll view's padding (§6.3) | `builder(context, insets)`, `maxWidth` (`readingWidth` 720, `formWidth` 400, `twoPaneWidth` 1200) |
 
 Details that matter:
 

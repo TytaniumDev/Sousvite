@@ -115,26 +115,28 @@ class const CookingNavBar({
     const size = Size.fromHeight(buttonHeight);
     return SafeArea(
       top: false,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.space4),
-        child: Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(minimumSize: size),
-                onPressed: index == 0 ? null : () => onShowStep(index - 1),
-                child: Text(l10n.cooking_back),
+      child: ReadingColumn(
+        builder: (context, insets) => Padding(
+          padding: insets + const EdgeInsets.all(AppSpacing.space4),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(minimumSize: size),
+                  onPressed: index == 0 ? null : () => onShowStep(index - 1),
+                  child: Text(l10n.cooking_back),
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.space4),
-            Expanded(
-              child: FilledButton(
-                style: FilledButton.styleFrom(minimumSize: size),
-                onPressed: isLast ? onDone : () => onShowStep(index + 1),
-                child: Text(isLast ? l10n.cooking_done : l10n.cooking_next),
+              const SizedBox(width: AppSpacing.space4),
+              Expanded(
+                child: FilledButton(
+                  style: FilledButton.styleFrom(minimumSize: size),
+                  onPressed: isLast ? onDone : () => onShowStep(index + 1),
+                  child: Text(isLast ? l10n.cooking_done : l10n.cooking_next),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -43,6 +43,44 @@ void main() {
       });
     }
 
+    testWidgets('shows a use case at a desktop viewport', (tester) async {
+      await tester.pumpWidget(
+        const SousviteWidgetbook(
+          initialRoute:
+              '/?path=layout/readingcolumn/page'
+              '&viewport={name:MacBook Pro}',
+        ),
+      );
+      await tester.pump();
+
+      // The viewport is wider than the column, so the column is centered
+      // between equal insets instead of filling the viewport.
+      Finder inColumn(Type type) => find
+          .descendant(
+            of: find.byType(ReadingColumn),
+            matching: find.byType(type),
+          )
+          .first;
+      expect(
+        MediaQuery.sizeOf(tester.element(inColumn(ListView))).width,
+        MacosViewports.macbookPro.width,
+      );
+      final list = tester.getRect(inColumn(ListView));
+      final button = tester.getRect(inColumn(FilledButton));
+      expect(button.width, lessThan(list.width / 2));
+      expect(button.center.dx, closeTo(list.center.dx, 1));
+    });
+
+    test('offers a viewport for each window size class', () {
+      expect(
+        SousviteWidgetbook.viewports
+            .where((viewport) => viewport != Viewports.none)
+            .map((viewport) => WindowSizeClass.fromWidth(viewport.width))
+            .toSet(),
+        WindowSizeClass.values.toSet(),
+      );
+    });
+
     test('offers the four app themes', () {
       expect(SousviteWidgetbook.themes.map((theme) => theme.name), [
         'Light',

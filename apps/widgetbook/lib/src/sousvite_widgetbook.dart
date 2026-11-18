@@ -5,7 +5,8 @@ import 'package:sousvite_widgetbook/src/helpers/app_theme_addon.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 /// The Widgetbook: every design_system component in the app's four themes
-/// (DESIGN_SYSTEM.md §3), at text scales from 100% to 200%.
+/// (DESIGN_SYSTEM.md §3), at text scales from 100% to 200%, on phone,
+/// tablet, and desktop viewports.
 class const SousviteWidgetbook({
   /// The route to open, such as `/?path=nutrition/macrobar/default`.
   /// Tests use it to open one use case.
@@ -28,8 +29,21 @@ class const SousviteWidgetbook({
       // DESIGN_SYSTEM.md §12 asks every screen to work at 200%.
       TextScaleAddon(min: 1, divisions: 4),
       AlignmentAddon(),
+      ViewportAddon(viewports),
     ],
   );
+
+  /// A phone, a tablet in each size class, and a laptop, to check layouts
+  /// at each window size class (DESIGN_SYSTEM.md §6.3). None shows the
+  /// use case in the whole workbench.
+  static const List<ViewportData> viewports = [
+    Viewports.none,
+    IosViewports.iPhone13,
+    IosViewports.iPad,
+    IosViewports.iPad12InchesGen4,
+    AndroidViewports.mediumTablet,
+    MacosViewports.macbookPro,
+  ];
 
   /// Light, dark, and the high-contrast cooking variants of each.
   static final List<WidgetbookTheme<ThemeData>> themes = [

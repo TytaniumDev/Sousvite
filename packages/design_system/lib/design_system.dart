@@ -28,6 +28,7 @@ export 'src/widgets/measuring_guide.dart';
 export 'src/widgets/nutrient_row.dart';
 export 'src/widgets/nutrition_format.dart';
 export 'src/widgets/pro_badge.dart';
+export 'src/widgets/reading_column.dart';
 export 'src/widgets/recipe_card.dart';
 export 'src/widgets/section_header.dart';
 export 'src/widgets/serving_stepper.dart';

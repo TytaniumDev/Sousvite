@@ -36,18 +36,34 @@ class const CookingStepPage({
     final ingredients = StepIngredients(recipeId: recipeId, stepId: stepId);
     const padding = EdgeInsets.all(AppSpacing.space6);
     if (!twoPanes) {
-      return ListView(padding: padding, children: [ingredients, ...step]);
+      return ReadingColumn(
+        builder: (context, insets) => ListView(
+          padding: insets + padding,
+          children: [ingredients, ...step],
+        ),
+      );
     }
-    return Row(
-      crossAxisAlignment: .start,
-      children: [
-        Expanded(
-          child: ListView(padding: padding, children: step),
-        ),
-        Expanded(
-          child: ListView(padding: padding, children: [ingredients]),
-        ),
-      ],
+    // Each pane takes its outer inset, so both scroll from the window's
+    // edges while the panes stay together in the middle.
+    return ReadingColumn(
+      maxWidth: ReadingColumn.twoPaneWidth,
+      builder: (context, insets) => Row(
+        crossAxisAlignment: .start,
+        children: [
+          Expanded(
+            child: ListView(
+              padding: padding + EdgeInsets.only(left: insets.left),
+              children: step,
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              padding: padding + EdgeInsets.only(right: insets.right),
+              children: [ingredients],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

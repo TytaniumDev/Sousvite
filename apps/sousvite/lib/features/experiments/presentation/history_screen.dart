@@ -67,22 +67,25 @@ class const _Timeline({required final RecipeId recipeId})
               title: l10n.experiments_emptyTitle,
               message: l10n.experiments_emptyMessage,
             )
-          : ListView(
-              children: [
-                for (final entry in timeline.entries)
-                  switch (entry) {
-                    VersionRef(:final id) => _VersionTile(
-                      key: ValueKey(id),
-                      recipeId: recipeId,
-                      versionId: id,
-                    ),
-                    ExperimentRef(:final id) => _ExperimentTile(
-                      key: ValueKey(id),
-                      recipeId: recipeId,
-                      experimentId: id,
-                    ),
-                  },
-              ],
+          : ReadingColumn(
+              builder: (context, insets) => ListView(
+                padding: insets,
+                children: [
+                  for (final entry in timeline.entries)
+                    switch (entry) {
+                      VersionRef(:final id) => _VersionTile(
+                        key: ValueKey(id),
+                        recipeId: recipeId,
+                        versionId: id,
+                      ),
+                      ExperimentRef(:final id) => _ExperimentTile(
+                        key: ValueKey(id),
+                        recipeId: recipeId,
+                        experimentId: id,
+                      ),
+                    },
+                ],
+              ),
             ),
     );
   }
