@@ -5,6 +5,7 @@ import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:recipe_import/recipe_import.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
+import 'package:sousvite/features/import/application/umami_progress.dart';
 import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/umami_files.dart';
 
@@ -51,6 +52,7 @@ void main() {
   late FakeFolderRepository folders;
   late LibraryUmamiTransfer transfer;
   late List<String?> photoUrls;
+  late List<UmamiImportProgress> progress;
   final baking = Folder(
     id: const FolderId('baking'),
     name: 'Baking',
@@ -62,6 +64,7 @@ void main() {
     recipes = FakeRecipeRepository();
     folders = FakeFolderRepository();
     photoUrls = [];
+    progress = [];
     var nextId = 0;
     transfer = LibraryUmamiTransfer(
       files: files,
@@ -72,6 +75,8 @@ void main() {
         photoUrls.add(url);
         return url == null ? null : 'saved:$url';
       },
+      read: (bytes, {required newId, required now}) async =>
+          readUmamiArchive(bytes, newId: newId, now: now),
     );
   });
 
@@ -84,7 +89,7 @@ void main() {
         _umami('c', 'Toast', null),
       ]);
 
-      expect(await transfer.importLibrary(), 3);
+      expect(await transfer.importLibrary(onProgress: progress.add), 3);
 
       final saved = recipes.writes.whereType<RecipeSnapshot>().toList();
       expect(saved.map((s) => s.recipe.title), ['Scones', 'Chili', 'Toast']);
@@ -97,7 +102,7 @@ void main() {
       ]);
     });
 
-    test('saves each photo, a few at a time, in recipe order', () async {
+    test('saves every recipe first, then each photo', () async {
       files.picked = writeUmamiArchive([
         for (var i = 0; i < LibraryUmamiTransfer.photoDownloads + 2; i++)
           _umami(
@@ -108,17 +113,63 @@ void main() {
           ),
       ]);
 
-      await transfer.importLibrary();
+      await transfer.importLibrary(onProgress: progress.add);
 
-      final saved = recipes.writes.whereType<RecipeSnapshot>().toList();
-      expect(saved[0].recipe.photoRef, 'saved:https://u.com/0.jpg');
-      expect(saved[1].recipe.photoRef, isNull);
-      expect(saved.last.recipe.photoRef, 'saved:https://u.com/7.jpg');
-      expect(photoUrls, hasLength(LibraryUmamiTransfer.photoDownloads + 2));
+      const count = LibraryUmamiTransfer.photoDownloads + 2;
+      // Recipes go in without photos, so they show while photos download.
+      expect(recipes.writes.take(count), everyElement(isA<RecipeSnapshot>()));
+      final withPhotos = recipes.writes.skip(count).cast<Recipe>().toList();
+      expect(withPhotos.first.photoRef, 'saved:https://u.com/0.jpg');
+      expect(withPhotos.last.photoRef, 'saved:https://u.com/7.jpg');
+      expect(withPhotos, hasLength(count - 1));
+      expect(photoUrls, hasLength(count - 1));
+      expect(
+        (await recipes.watchRecipe(withPhotos.first.id).first)?.photoRef,
+        'saved:https://u.com/0.jpg',
+      );
+    });
+
+    test('reports each step as it goes', () async {
+      files.picked = writeUmamiArchive([
+        _umami('a', 'Scones', null, imageUrl: 'https://u.com/a.jpg'),
+        _umami('b', 'Chili', null),
+      ]);
+
+      await transfer.importLibrary(onProgress: progress.add);
+
+      expect(progress, const [
+        UmamiImportProgress(UmamiImportStage.reading),
+        UmamiImportProgress(UmamiImportStage.recipes, total: 2),
+        UmamiImportProgress(UmamiImportStage.recipes, done: 1, total: 2),
+        UmamiImportProgress(UmamiImportStage.recipes, done: 2, total: 2),
+        UmamiImportProgress(UmamiImportStage.photos, total: 1),
+        UmamiImportProgress(UmamiImportStage.photos, done: 1, total: 1),
+      ]);
+      expect(progress[3].fraction, 1);
+      expect(progress.first.fraction, isNull);
+    });
+
+    test('keeps a recipe without a photo when it does not download', () async {
+      transfer = LibraryUmamiTransfer(
+        files: files,
+        recipes: recipes,
+        folders: folders,
+        newId: () => 'id',
+        importPhoto: (url) async => null,
+        read: (bytes, {required newId, required now}) async =>
+            readUmamiArchive(bytes, newId: newId, now: now),
+      );
+      files.picked = writeUmamiArchive([
+        _umami('a', 'Scones', null, imageUrl: 'https://u.com/a.jpg'),
+      ]);
+
+      await transfer.importLibrary(onProgress: progress.add);
+
+      expect(recipes.writes.single, isA<RecipeSnapshot>());
     });
 
     test('does nothing when the user cancels', () async {
-      expect(await transfer.importLibrary(), isNull);
+      expect(await transfer.importLibrary(onProgress: progress.add), isNull);
       expect(recipes.writes, isEmpty);
     });
 
@@ -126,7 +177,7 @@ void main() {
       files.picked = Uint8List.fromList(utf8.encode('not a zip'));
 
       await expectLater(
-        transfer.importLibrary(),
+        transfer.importLibrary(onProgress: progress.add),
         throwsA(
           isA<ImportFailure>().having(
             (f) => f.reason,
@@ -144,7 +195,13 @@ void main() {
         _umami('a', 'Scones', 'Baking'),
       ]);
 
-      expect(await transfer.importSharedArchive('/inbox/Umami.zip'), 1);
+      expect(
+        await transfer.importSharedArchive(
+          '/inbox/Umami.zip',
+          onProgress: progress.add,
+        ),
+        1,
+      );
 
       final saved = recipes.writes.whereType<RecipeSnapshot>().single;
       expect(saved.recipe.title, 'Scones');
@@ -154,7 +211,10 @@ void main() {
 
     test('fails with invalidFile when the file is gone', () async {
       await expectLater(
-        transfer.importSharedArchive('/inbox/missing.zip'),
+        transfer.importSharedArchive(
+          '/inbox/missing.zip',
+          onProgress: progress.add,
+        ),
         throwsA(
           isA<ImportFailure>().having(
             (f) => f.reason,

@@ -69,7 +69,9 @@ void main() {
       );
     });
 
-    testWidgets('turns while syncing', (tester) async {
+    testWidgets('turns counterclockwise, with the arrows, while syncing', (
+      tester,
+    ) async {
       await tester.pumpDesignSystem(
         const SyncStatusIcon(status: .syncing, label: 'Syncing'),
       );
@@ -78,7 +80,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(turns.value, isNot(start));
+      expect(turns.value, lessThan(start));
       expect(iconOf(tester).icon, Symbols.sync_rounded);
     });
 
@@ -115,7 +117,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       final turns = turnsOf(tester);
-      expect(turns.value, greaterThan(0));
+      expect(turns.value, lessThan(0));
     });
 
     testWidgets('meets the accessibility guidelines', (tester) async {

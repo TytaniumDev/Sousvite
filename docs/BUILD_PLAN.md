@@ -309,6 +309,15 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
   ```
 
   Then run the **Deploy backend** workflow by hand from the Actions tab (or ask an agent to). Without the roles, the workflow fails after merge; it never blocks CI.
+- [ ] Let the backend deploy set the Storage bucket's CORS (`storage.cors.json`), which the web app needs to download sync snapshots and photos. In [Cloud Shell](https://shell.cloud.google.com/?show=terminal), run:
+
+  ```sh
+  gcloud storage buckets add-iam-policy-binding gs://sousvite.firebasestorage.app \
+    --member="serviceAccount:github-deploy@sousvite.iam.gserviceaccount.com" \
+    --role=roles/storage.admin
+  ```
+
+  Then run the **Deploy backend** workflow by hand (or ask an agent to).
 - [x] Let `storage.rules` read Firestore (they check space membership there): grant the Cloud Storage for Firebase service agent `service-761600243200@gcp-sa-firebasestorage.iam.gserviceaccount.com` the **Firebase Rules Firestore Service Agent** role (`roles/firebaserules.firestoreServiceAgent`). The CLI only offers this in an interactive deploy, and ours run with `--non-interactive`, so without it every Storage request is denied as unauthorized. Done 2026-11-18 in the IAM console.
 - [x] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets). Done 2026-11-16: `apps/sousvite/lib/firebase_options.dart` holds the registered apps' config, read with the Firebase CLI. The app ships no `google-services.json` or `GoogleService-Info.plist`; Android Google sign-in gets the web OAuth client as its server client id instead, and iOS has the reversed client id as a URL scheme plus the Sign in with Apple and App Attest entitlements.
 
@@ -409,5 +418,5 @@ Costs $25 once.
 Decided by Tyler on 2026-11-13.
 
 1. **Bundled USDA file:** the generated SQLite file is committed to the repo as a normal file, without Git LFS. It is about 9 MB (under 2 MB compressed, which is what Git stores) and USDA updates it about twice a year, so the history grows slowly. Git LFS has a small free quota that every CI checkout uses, and building the file in CI would download hundreds of MB of CSVs on every build.
-2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses fastlane match with the shared certificates repo and the App Store Connect API key from §8.2 (§8.5). Every push to `main` ships a TestFlight and Play internal build (Tyler, 2026-11-16).
+2. **Release builds:** fastlane, run on GitHub Actions. The repo is public, so Actions minutes (including macOS) are free, and releases run alongside CI. iOS signing uses fastlane match with the shared certificates repo and the App Store Connect API key from §8.2 (§8.5). Every push to `main` ships a TestFlight and Play internal build (Tyler, 2026-11-16). The iOS lane waits for Apple's processing and adds each build to the TestFlight group **Internal**, because App Store Connect only distributes Xcode Cloud builds to a group automatically.
 3. **Firebase:** one project, with no dev and prod split (§8.1).

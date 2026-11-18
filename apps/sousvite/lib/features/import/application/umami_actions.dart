@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
+import 'package:sousvite/features/import/application/umami_progress.dart';
 
 part 'umami_actions.g.dart';
 
@@ -18,15 +19,19 @@ class UmamiActions() extends _$UmamiActions {
 
   /// Imports an Umami library. Returns how many recipes came in, or null
   /// if the user canceled. Rethrows failures for the screen to report.
-  Future<int?> importLibrary() =>
-      _run(.importing, ref.read(umamiTransferProvider).importLibrary);
+  Future<int?> importLibrary() => _run(
+    .importing,
+    () => ref.read(umamiTransferProvider).importLibrary(onProgress: _report),
+  );
 
   /// Imports the Umami export another app shared into this one, at [path].
   /// Returns how many recipes came in, or null if a transfer was already
   /// running.
   Future<int?> importSharedArchive(String path) => _run(
     .importing,
-    () => ref.read(umamiTransferProvider).importSharedArchive(path),
+    () => ref
+        .read(umamiTransferProvider)
+        .importSharedArchive(path, onProgress: _report),
   );
 
   /// Exports every recipe for Umami. Returns how many went out, or null if
@@ -34,13 +39,19 @@ class UmamiActions() extends _$UmamiActions {
   Future<int?> exportLibrary() =>
       _run(.exporting, ref.read(umamiTransferProvider).exportLibrary);
 
+  void _report(UmamiImportProgress? progress) =>
+      ref.read(umamiProgressProvider.notifier).report(progress);
+
   Future<int?> _run(UmamiTask task, Future<int?> Function() transfer) async {
     if (state != null) return null;
     state = task;
     try {
       return await transfer();
     } finally {
-      if (ref.mounted) state = null;
+      if (ref.mounted) {
+        state = null;
+        _report(null);
+      }
     }
   }
 }

@@ -15,5 +15,7 @@ export 'application/recipe_outline.dart'
 export 'application/recipe_scale.dart'
     show LineAmount, lineAmountProvider, recipeScaleProvider, shownAmount;
 export 'application/recipe_units.dart' show recipeUnitSystemProvider;
+export 'application/step_parts.dart' show StepMentions, stepPartsProvider;
 export 'presentation/recipe_ingredient_row.dart';
+export 'presentation/smart_step_text.dart';
 export 'recipe_routes.dart';

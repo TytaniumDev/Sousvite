@@ -488,6 +488,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get import_umamiImporting => 'Importing…';
 
   @override
+  String get import_umamiImportingTitle => 'Importing from Umami';
+
+  @override
+  String get import_umamiReading => 'Reading the export…';
+
+  @override
+  String import_umamiSavingRecipes(int done, int total) {
+    return 'Saving recipes: $done of $total';
+  }
+
+  @override
+  String import_umamiSavingPhotos(int done, int total) {
+    return 'Saving photos: $done of $total';
+  }
+
+  @override
+  String get import_umamiKeepOpen => 'Keep Sousvite open until this finishes.';
+
+  @override
   String get import_umamiExport => 'Export for Umami';
 
   @override

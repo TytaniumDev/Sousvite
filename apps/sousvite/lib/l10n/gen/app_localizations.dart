@@ -850,6 +850,36 @@ abstract class AppLocalizations {
   /// **'Importing…'**
   String get import_umamiImporting;
 
+  /// Title of the dialog shown while an Umami import runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing from Umami'**
+  String get import_umamiImportingTitle;
+
+  /// Umami import dialog status while the export file is read.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the export…'**
+  String get import_umamiReading;
+
+  /// Umami import dialog status while recipes are saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving recipes: {done} of {total}'**
+  String import_umamiSavingRecipes(int done, int total);
+
+  /// Umami import dialog status while recipe photos download. Recipes are already saved and show in the library.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving photos: {done} of {total}'**
+  String import_umamiSavingPhotos(int done, int total);
+
+  /// Umami import dialog note: leaving the app pauses the import.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Sousvite open until this finishes.'**
+  String get import_umamiKeepOpen;
+
   /// Button that exports recipes in Umami's format.
   ///
   /// In en, this message translates to:
