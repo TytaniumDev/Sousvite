@@ -9,6 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
+import 'package:sousvite/features/import/application/umami_progress.dart';
 import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/import/presentation/umami_section.dart';
 import 'package:sousvite/features/library/library.dart';
@@ -165,6 +166,60 @@ void main() {
       umami.gate!.complete();
       await tester.pumpAndSettle();
       expect(find.text('Imported 12 recipes'), findsOneWidget);
+    });
+
+    testWidgets('shows the import progress in a dialog until it ends', (
+      tester,
+    ) async {
+      await pump(tester);
+      umami
+        ..outcome = (() => 10)
+        ..progress = const [
+          UmamiImportProgress(UmamiImportStage.reading),
+          UmamiImportProgress(UmamiImportStage.recipes, done: 3, total: 10),
+        ]
+        ..gate = Completer();
+
+      await tester.tap(find.text('Import from Umami'));
+      await tester.pumpAndSettle();
+      expect(find.text('Importing from Umami'), findsOneWidget);
+      expect(find.text('Saving recipes: 3 of 10'), findsOneWidget);
+      expect(
+        tester
+            .widget<LinearProgressIndicator>(
+              find.byType(LinearProgressIndicator),
+            )
+            .value,
+        0.3,
+      );
+
+      // The dialog can't be dismissed while the import runs.
+      await tester.tapAt(Offset.zero);
+      await tester.pumpAndSettle();
+      expect(find.text('Importing from Umami'), findsOneWidget);
+
+      umami.gate!.complete();
+      await tester.pumpAndSettle();
+      expect(find.text('Importing from Umami'), findsNothing);
+      expect(find.text('Imported 10 recipes'), findsOneWidget);
+      expect(find.text('Import recipe'), findsOneWidget);
+    });
+
+    testWidgets('closes the dialog when the import ends right away', (
+      tester,
+    ) async {
+      await pump(tester);
+      umami
+        ..outcome = (() => 1)
+        ..progress = const [
+          UmamiImportProgress(UmamiImportStage.photos, done: 1, total: 2),
+        ];
+
+      await tester.tap(find.text('Import from Umami'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Importing from Umami'), findsNothing);
+      expect(find.text('Import recipe'), findsOneWidget);
     });
 
     testWidgets('imports an Umami export shared from another app', (
