@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:domain/domain.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -18,6 +19,10 @@ class const ImportScreen({
 
   /// Where the platform left an Umami export shared from another app.
   final String? sharedArchive,
+
+  /// The folder a recipe imported from a link goes into. Null leaves it
+  /// unsorted, as for a link shared from another app.
+  final FolderId? folderId,
   super.key,
 }) extends StatelessWidget {
   @override
@@ -40,7 +45,7 @@ class const ImportScreen({
           SectionHeader(title: l10n.import_fromWeb),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-            child: UrlImportForm(sharedText: sharedText),
+            child: UrlImportForm(sharedText: sharedText, folderId: folderId),
           ),
           const SizedBox(height: AppSpacing.space6),
           SectionHeader(title: l10n.import_umami),

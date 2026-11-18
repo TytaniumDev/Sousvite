@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/library/application/library_scope.dart';
+import 'package:sousvite/features/library/presentation/add_recipe_button.dart';
 import 'package:sousvite/features/library/presentation/folder_menu.dart';
 import 'package:sousvite/features/library/presentation/library_search_field.dart';
 import 'package:sousvite/features/library/presentation/recipe_grid.dart';
@@ -32,6 +33,11 @@ class const FolderScreen({
           const RecipeGridEndSpace(),
         ],
       ),
+      // New recipes go into a folder, so the unsorted page has no button.
+      floatingActionButton: switch (scope) {
+        FolderRecipes(:final folderId) => AddRecipeButton(folderId: folderId),
+        _ => null,
+      },
     );
   }
 }

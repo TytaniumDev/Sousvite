@@ -412,7 +412,7 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 
 ### 10.8 Feedback
 
-- **Undo over confirm.** Reversible actions (delete a recipe, remove a grocery item, uncheck all) happen immediately with an Undo snackbar. Dialogs are only for things that can't be undone.
+- **Undo over confirm.** Reversible actions (delete a recipe, remove a grocery item, uncheck all) happen immediately with an Undo snackbar. Dialogs are only for things that can't be undone, and for deleting a folder that takes recipes with it (§10.11), which confirms and still offers Undo.
 - **Snackbars** use `inverse-surface`, say what happened in a few words ("Recipe deleted"), and have at most one action.
 - **Loading** waits 300 ms before showing a progress indicator, so fast loads don't flash. Recipe lists use placeholder cards in `surface-container-low`, not spinners.
 - **Empty states** use `EmptyState`: what this space is for and the one action that fills it ("No recipes yet. Paste a link or write your own.").
@@ -432,6 +432,8 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 - **Folders lead.** Every recipe belongs in a folder, so the Library tab lists only folders, as a grid of tiles (three across a phone, more on wider windows), with a "New folder" tile last. A tile shows a square collage of up to four of the folder's newest photos (one fills it, two split it, three put the newest on the left, four make a 2 by 2 grid), the folder name, and its recipe count. No photos shows a folder icon.
 - **Unsorted** is a tile, first in the grid, shown only while some recipes are in no folder (from before folders were required). It opens their page, where press and hold files them.
 - Tapping a tile opens the folder's own page under the library: its recipe cards, its own search, and rename and delete in the app bar menu.
+- **Adding** a recipe happens from a folder: Add recipe on a folder page files the import or new recipe there. On the main page it first asks "Add to which folder?" (with New folder). The Unsorted page has no Add button. A duplicate goes into the original's folders. A link shared from another app, and Umami recipes without a book, arrive unsorted.
+- **Removing:** the folders sheet won't untick a recipe's only folder ("A recipe needs at least one folder"). Deleting a folder deletes the recipes in no other folder too, after a dialog saying how many, and Undo brings back the folder and those recipes.
 - The search field on the main page searches every recipe; while it has words, matching recipe cards replace the tiles.
 - `FolderTile` lives in the library feature until a second feature shows folders.
 

@@ -187,6 +187,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library_unsorted => 'Unsorted';
 
   @override
+  String get library_pickFolderTitle => 'Add to which folder?';
+
+  @override
+  String get library_lastFolder => 'A recipe needs at least one folder';
+
+  @override
+  String library_deleteFolderTitle(String name) {
+    return 'Delete $name?';
+  }
+
+  @override
+  String library_deleteFolderMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recipes are in no other folder and will be deleted too.',
+      one: '1 recipe is in no other folder and will be deleted too.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get library_deleteConfirm => 'Delete';
+
+  @override
+  String library_folderAndRecipesDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Folder and $count recipes deleted',
+      one: 'Folder and 1 recipe deleted',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get recipe_title => 'Recipe';
 
   @override

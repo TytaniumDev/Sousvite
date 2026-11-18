@@ -16,7 +16,14 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   await pumpDevice(tester, phone);
 
   // Import.
+  // Every recipe goes in a folder: make one to add it to.
   await tapOn(tester, find.text('Add recipe'));
+  await tapOn(tester, find.widgetWithText(ListTile, 'New folder'));
+  await tester.enterText(
+    find.widgetWithText(TextField, 'Folder name'),
+    'Soups',
+  );
+  await tapOn(tester, find.text('Create'));
   await tapOn(tester, find.text('Import from a link'));
   await tester.enterText(
     find.widgetWithText(TextField, 'Recipe link'),
@@ -32,10 +39,9 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   );
   await tapOn(tester, find.text('Save'));
 
-  // Saving goes back to the import screen; the recipe is in the library,
-  // under Unsorted until it is put in a folder.
+  // Saving goes back to the import screen; the recipe is in its folder.
   await tapOn(tester, find.byTooltip('Back'));
-  await tapOn(tester, find.text('Unsorted'));
+  await tapOn(tester, find.text('Soups'));
   await tapOn(tester, find.text('Tomato basil soup'));
   expect(find.text('crushed tomatoes'), findsOneWidget);
   // The steps show the amounts inline on the recipe page too.

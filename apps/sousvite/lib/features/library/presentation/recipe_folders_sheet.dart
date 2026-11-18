@@ -8,7 +8,8 @@ import 'package:sousvite/features/library/presentation/folder_name_dialog.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
 /// Shows a sheet where [recipeId] is put in or taken out of folders. A
-/// recipe can be in several folders (PRD 7.1).
+/// recipe can be in several folders, and is always in at least one once
+/// filed (PRD 7.1).
 Future<void> showRecipeFoldersSheet(BuildContext context, RecipeId recipeId) =>
     showModalBottomSheet<void>(
       context: context,
@@ -81,10 +82,13 @@ class const _FolderCheckbox({
   Widget build(BuildContext context, WidgetRef ref) {
     final name = ref.watch(folderNameProvider(folderId)) ?? '';
     final inFolder = ref.watch(isRecipeInFolderProvider(folderId, recipeId));
+    // Every recipe belongs in a folder, so its last one can't be unticked.
+    final onlyFolder = ref.watch(isOnlyFolderProvider(folderId, recipeId));
     return CheckboxListTile(
       title: Text(name),
+      subtitle: onlyFolder ? Text(context.l10n.library_lastFolder) : null,
       value: inFolder ?? false,
-      onChanged: inFolder == null
+      onChanged: inFolder == null || onlyFolder
           ? null
           : (checked) => ref
                 .read(folderEditorProvider.notifier)

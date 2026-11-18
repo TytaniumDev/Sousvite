@@ -6,6 +6,7 @@ import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/application/editor_outline.dart';
 import 'package:sousvite/features/editor/application/recipe_copies.dart';
 
+import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 
@@ -13,6 +14,8 @@ void main() {
   const recipeId = RecipeId('r1');
   const flour = IngredientLineId('flour');
   late FakeRecipeRepository recipes;
+  late FakeFolderRepository folders;
+  const soups = FolderId('soups');
   late ProviderContainer container;
 
   setUp(() {
@@ -34,8 +37,15 @@ void main() {
         ],
         steps: [RecipeFixtures.step('mix', sectionId: 'prep')],
       );
+    folders = FakeFolderRepository()
+      ..seed(
+        Folder(id: soups, name: 'Soups', createdAt: RecipeFixtures.createdAt),
+      );
     container = ProviderContainer.test(
-      overrides: [recipeRepositoryProvider.overrideWithValue(recipes)],
+      overrides: [
+        recipeRepositoryProvider.overrideWithValue(recipes),
+        folderRepositoryProvider.overrideWithValue(folders),
+      ],
     );
   });
 
@@ -243,8 +253,17 @@ void main() {
     expect(container.read(editorIsNewProvider(id)), isFalse);
   });
 
+  test('saves a new recipe into the folder it was added from', () async {
+    const id = RecipeId('new');
+    final editor = await load(id);
+    editor.setTitle('Soup');
+    expect(await editor.save(folderId: soups), isTrue);
+    expect(folders.recipeIdsIn(soups), [id]);
+  });
+
   group(RecipeCopies, () {
     test('duplicates with new ids, then deletes and restores', () async {
+      await folders.addRecipeToFolder(soups, recipeId);
       await load();
       final source = draft();
       final copies = container.read(recipeCopiesProvider);
@@ -257,6 +276,7 @@ void main() {
       expect(lines.map((l) => l.id), isNot(contains(flour)));
       expect(lines.last.sectionId, isNot(const IngredientSectionId('sauce')));
       expect(recipes.stepsOf(copyId).single.sectionId, isNotNull);
+      expect(folders.recipeIdsIn(soups), [recipeId, copyId]);
 
       await copies.delete(recipeId);
       expect(recipes.recipeById(recipeId), isNull);

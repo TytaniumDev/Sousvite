@@ -202,13 +202,48 @@ void main() {
       expect(await folders.getFolder(const FolderId('gone')), isNull);
     });
 
-    test('deletes a folder and undoes it with its recipes', () async {
-      final deleted = await editor().delete(breakfast);
-      expect(await folders.getFolder(breakfast), isNull);
-      expect(await editor().delete(breakfast), isNull);
+    test(
+      'deletes a folder with its only-here recipes, and undoes it',
+      () async {
+        expect(await editor().recipesOnlyIn(breakfast), [oats]);
+        final deleted = await editor().delete(breakfast);
+        expect(await folders.getFolder(breakfast), isNull);
+        expect(recipes.recipeById(oats), isNull);
+        expect(deleted!.recipes.single.recipe.id, oats);
+        expect(await editor().delete(breakfast), isNull);
 
-      await editor().restore(deleted!);
-      expect(await folders.watchRecipeIdsInFolder(breakfast).first, [oats]);
+        await editor().restore(deleted);
+        expect(await folders.watchRecipeIdsInFolder(breakfast).first, [oats]);
+        expect(recipes.recipeById(oats), isNotNull);
+      },
+    );
+
+    test('keeps recipes that are in another folder too', () async {
+      final dinner = await editor().create('Dinner');
+      await editor().setRecipeInFolder(dinner, oats, inFolder: true);
+      expect(await editor().recipesOnlyIn(breakfast), isEmpty);
+
+      final deleted = await editor().delete(breakfast);
+      expect(deleted!.recipes, isEmpty);
+      expect(recipes.recipeById(oats), isNotNull);
+    });
+
+    test("knows a recipe's only folder", () async {
+      container.listen(isOnlyFolderProvider(breakfast, oats), (_, _) {});
+      expect(
+        await settle(
+          () => container.read(isOnlyFolderProvider(breakfast, oats)),
+        ),
+        isTrue,
+      );
+      final dinner = await editor().create('Dinner');
+      await editor().setRecipeInFolder(dinner, oats, inFolder: true);
+      expect(
+        await settle(
+          () => container.read(isOnlyFolderProvider(breakfast, oats)),
+        ),
+        isFalse,
+      );
     });
 
     test('puts a recipe in several folders', () async {

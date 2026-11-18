@@ -1,3 +1,4 @@
+import 'package:domain/domain.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/import/presentation/import_screen.dart';
@@ -6,6 +7,19 @@ import 'package:sousvite/features/import/presentation/import_screen.dart';
 /// (PRD 7.2), including links and Umami exports shared from other apps.
 abstract final class ImportRoutes() {
   static const path = '/import';
+
+  /// The query parameter that carries the folder an imported recipe goes
+  /// into.
+  static const folderParameter = 'folder';
+
+  /// The import screen, filing what it imports from a link into
+  /// [folderId] (every recipe belongs in a folder).
+  static String location({FolderId? folderId}) => Uri(
+    path: path,
+    queryParameters: folderId == null
+        ? null
+        : {folderParameter: folderId.value},
+  ).toString();
 
   /// The query parameter that carries text shared from another app.
   static const sharedParameter = 'shared';
@@ -51,6 +65,10 @@ abstract final class ImportRoutes() {
       builder: (context, state) => ImportScreen(
         sharedText: state.uri.queryParameters[sharedParameter],
         sharedArchive: state.uri.queryParameters[archiveParameter],
+        folderId: switch (state.uri.queryParameters[folderParameter]) {
+          final String id => FolderId(id),
+          null => null,
+        },
       ),
     ),
   ];

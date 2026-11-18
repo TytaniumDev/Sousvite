@@ -142,9 +142,21 @@ void main() {
         const RecipeId('r2'),
       });
 
+      expect(await phone.folders.watchFolderIdsOf(const RecipeId('r1')).first, {
+        weeknight,
+        soups,
+      });
+      expect(
+        await phone.folders.watchFolderIdsOf(const RecipeId('r3')).first,
+        isEmpty,
+      );
+
       await phone.folders.deleteFolder(soups);
       expect(await phone.folders.watchRecipeIdsInAnyFolder().first, {
         const RecipeId('r1'),
+      });
+      expect(await phone.folders.watchFolderIdsOf(const RecipeId('r1')).first, {
+        weeknight,
       });
     });
 
