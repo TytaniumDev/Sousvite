@@ -32,8 +32,10 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   );
   await tapOn(tester, find.text('Save'));
 
-  // Saving goes back to the import screen; the recipe is in the library.
+  // Saving goes back to the import screen; the recipe is in the library,
+  // under Unsorted until it is put in a folder.
   await tapOn(tester, find.byTooltip('Back'));
+  await tapOn(tester, find.text('Unsorted'));
   await tapOn(tester, find.text('Tomato basil soup'));
   expect(find.textContaining('crushed tomatoes'), findsOneWidget);
 

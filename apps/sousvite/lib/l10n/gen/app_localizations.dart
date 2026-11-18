@@ -322,6 +322,18 @@ abstract class AppLocalizations {
   /// **'Edit folders'**
   String get library_editFoldersHint;
 
+  /// How many recipes a folder holds, under its tile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 recipe} other{{count} recipes}}'**
+  String library_recipeCount(int count);
+
+  /// Tile and page title for recipes that are in no folder yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsorted'**
+  String get library_unsorted;
+
   /// Title of the recipe page before its name loads.
   ///
   /// In en, this message translates to:

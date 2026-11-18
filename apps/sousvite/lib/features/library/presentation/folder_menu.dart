@@ -1,20 +1,24 @@
+import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/library/application/folders.dart';
-import 'package:sousvite/features/library/application/library_filter.dart';
+import 'package:sousvite/features/library/library_routes.dart';
 import 'package:sousvite/features/library/presentation/folder_name_dialog.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
-/// Rename or delete the selected folder. Hidden when no folder is chosen.
+/// Rename or delete a folder, from its page's app bar.
 ///
-/// Deleting keeps the recipes and offers Undo instead of asking first
-/// (DESIGN_SYSTEM.md §10.8).
-class const FolderMenu({super.key}) extends ConsumerWidget {
+/// Deleting keeps the recipes, goes back to the library, and offers Undo
+/// instead of asking first (DESIGN_SYSTEM.md §10.8).
+class const FolderMenu({
+  /// The folder this menu changes.
+  required final FolderId folderId,
+  super.key,
+}) extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final folderId = ref.watch(libraryFolderProvider);
-    if (folderId == null) return const SizedBox.shrink();
     final l10n = context.l10n;
 
     Future<void> rename() async {
@@ -29,14 +33,14 @@ class const FolderMenu({super.key}) extends ConsumerWidget {
     }
 
     Future<void> delete() async {
-      // Read everything first: deselecting hides this menu, which disposes
-      // its ref.
+      // Read everything first: leaving the page disposes this menu's ref.
       final messenger = ScaffoldMessenger.of(context);
+      final router = GoRouter.of(context);
       final editor = ref.read(folderEditorProvider.notifier);
       final container = ProviderScope.containerOf(context, listen: false);
       final deleted = await editor.delete(folderId);
       if (deleted == null) return;
-      container.read(libraryFolderProvider.notifier).select(null);
+      router.go(LibraryRoutes.path);
       messenger.showSnackBar(
         SnackBar(
           content: Text(l10n.library_folderDeleted),

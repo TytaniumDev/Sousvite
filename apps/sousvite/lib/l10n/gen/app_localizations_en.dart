@@ -173,6 +173,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library_editFoldersHint => 'Edit folders';
 
   @override
+  String library_recipeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recipes',
+      one: '1 recipe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get library_unsorted => 'Unsorted';
+
+  @override
   String get recipe_title => 'Recipe';
 
   @override

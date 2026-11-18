@@ -17,7 +17,7 @@ Stream<List<Folder>> folders(Ref ref) =>
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 @riverpod
 class FolderIds() extends _$FolderIds {
   @override

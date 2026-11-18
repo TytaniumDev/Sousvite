@@ -427,6 +427,14 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 - Pro features show `ProBadge` where they're offered (sync through Sousvite, sharing). Tapping one explains what Pro does and its price in one sheet.
 - No nagging: no upsell pop-ups on launch, and no features shown and then locked mid-task.
 
+### 10.11 Library *(Decided by Tyler, 2026-11-18)*
+
+- **Folders lead.** Every recipe belongs in a folder, so the Library tab lists only folders, as a grid of tiles (three across a phone, more on wider windows), with a "New folder" tile last. A tile shows a square collage of up to four of the folder's newest photos (one fills it, two split it, three put the newest on the left, four make a 2 by 2 grid), the folder name, and its recipe count. No photos shows a folder icon.
+- **Unsorted** is a tile, first in the grid, shown only while some recipes are in no folder (from before folders were required). It opens their page, where press and hold files them.
+- Tapping a tile opens the folder's own page under the library: its recipe cards, its own search, and rename and delete in the app bar menu.
+- The search field on the main page searches every recipe; while it has words, matching recipe cards replace the tiles.
+- `FolderTile` lives in the library feature until a second feature shows folders.
+
 ## 11. Content and voice
 
 - **Plain and calm.** Short sentences, everyday words. Like a friend who cooks well, not a marketing page.

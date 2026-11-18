@@ -81,6 +81,10 @@
   "@library_noFolders": {"description": "Shown in the folders sheet when there are no folders."},
   "library_editFoldersHint": "Edit folders",
   "@library_editFoldersHint": {"description": "Screen reader hint for pressing and holding a recipe card."},
+  "library_recipeCount": "{count, plural, =1{1 recipe} other{{count} recipes}}",
+  "@library_recipeCount": {"description": "How many recipes a folder holds, under its tile.", "placeholders": {"count": {"type": "int"}}},
+  "library_unsorted": "Unsorted",
+  "@library_unsorted": {"description": "Tile and page title for recipes that are in no folder yet."},
 
   "recipe_title": "Recipe",
   "@recipe_title": {"description": "Title of the recipe page before its name loads."},

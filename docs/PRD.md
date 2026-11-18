@@ -127,7 +127,7 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
 ### 7.1 Recipe library
 - Create, edit, duplicate, and delete recipes.
 - Each recipe includes a title, photo, servings, times, ingredients, steps, notes, and source.
-- Organize recipes into folders. A recipe can live in more than one folder.
+- Organize recipes into folders. Every recipe lives in at least one folder, and can live in more than one. The library opens on the folders, shown as tiles.
 - Search by title, ingredient, and folder.
 
 ### 7.2 Recipe import and export
