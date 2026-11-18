@@ -334,6 +334,42 @@ abstract class AppLocalizations {
   /// **'Unsorted'**
   String get library_unsorted;
 
+  /// Title of the sheet that picks a folder for a new recipe, from the library's main page.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to which folder?'**
+  String get library_pickFolderTitle;
+
+  /// Under a recipe's only folder in the folders sheet, explaining why it can't be unticked.
+  ///
+  /// In en, this message translates to:
+  /// **'A recipe needs at least one folder'**
+  String get library_lastFolder;
+
+  /// Title of the dialog confirming a folder delete that also deletes recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}?'**
+  String library_deleteFolderTitle(String name);
+
+  /// Body of the dialog confirming a folder delete: how many recipes go with it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 recipe is in no other folder and will be deleted too.} other{{count} recipes are in no other folder and will be deleted too.}}'**
+  String library_deleteFolderMessage(int count);
+
+  /// Button that confirms deleting a folder and its recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get library_deleteConfirm;
+
+  /// Snackbar after deleting a folder along with recipes in no other folder.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Folder and 1 recipe deleted} other{Folder and {count} recipes deleted}}'**
+  String library_folderAndRecipesDeleted(int count);
+
   /// Title of the recipe page before its name loads.
   ///
   /// In en, this message translates to:

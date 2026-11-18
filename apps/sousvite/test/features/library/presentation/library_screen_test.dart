@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/providers/repositories.dart';
-import 'package:sousvite/features/editor/editor.dart';
-import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/library/application/library_scope.dart';
 import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/features/library/presentation/folder_grid.dart';
@@ -213,47 +211,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(folders.allFolders, hasLength(1));
-    });
-
-    testWidgets('the add button opens import or a new recipe', (tester) async {
-      final router = GoRouter(
-        initialLocation: LibraryRoutes.path,
-        routes: [
-          ...LibraryRoutes.routes,
-          GoRoute(
-            path: ImportRoutes.path,
-            builder: (_, _) => const Text('Import'),
-          ),
-          GoRoute(
-            path: EditorRoutes.path,
-            builder: (_, _) => const Text('Editor'),
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
-      await tester.pumpRouterApp(
-        router,
-        overrides: [
-          recipeRepositoryProvider.overrideWithValue(recipes),
-          folderRepositoryProvider.overrideWithValue(folders),
-          photoStoreProvider.overrideWithValue(photos),
-        ],
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(AddRecipeButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Write a recipe'));
-      await tester.pumpAndSettle();
-      expect(find.text('Editor'), findsOneWidget);
-
-      router.pop();
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(AddRecipeButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Import from a link'));
-      await tester.pumpAndSettle();
-      expect(find.text('Import'), findsOneWidget);
     });
   });
 }

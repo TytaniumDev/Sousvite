@@ -43,6 +43,20 @@ String? folderName(Ref ref, FolderId folderId) => ref.watch(
   ),
 );
 
+/// The folders one recipe is in.
+@riverpod
+Stream<Set<FolderId>> recipeFolderIds(Ref ref, RecipeId recipeId) =>
+    ref.watch(folderRepositoryProvider).watchFolderIdsOf(recipeId);
+
+/// Whether [folderId] is the only folder [recipeId] is in, so taking the
+/// recipe out would leave it in none. False while loading.
+@riverpod
+bool isOnlyFolder(Ref ref, FolderId folderId, RecipeId recipeId) => ref.watch(
+  recipeFolderIdsProvider(recipeId).select(
+    (ids) => ids.value?.length == 1 && (ids.value?.contains(folderId) ?? false),
+  ),
+);
+
 /// Whether one recipe is in one folder. Null while loading.
 @riverpod
 bool? isRecipeInFolder(Ref ref, FolderId folderId, RecipeId recipeId) =>
@@ -80,20 +94,54 @@ class FolderEditor() extends _$FolderEditor {
     await repository.saveFolder(folder.copyWith(name: name.trim()));
   }
 
-  /// Deletes a folder, leaving its recipes in the library. Returns what
-  /// [restore] needs to undo it, or null when the folder is gone already.
+  /// The recipes in [folderId] that are in no other folder: deleting the
+  /// folder deletes them too, since every recipe belongs in a folder.
+  Future<List<RecipeId>> recipesOnlyIn(FolderId folderId) =>
+      _recipesOnlyIn(_repository, folderId);
+
+  static Future<List<RecipeId>> _recipesOnlyIn(
+    FolderRepository repository,
+    FolderId folderId,
+  ) async {
+    final onlyHere = <RecipeId>[];
+    for (final recipeId
+        in await repository.watchRecipeIdsInFolder(folderId).first) {
+      final folderIds = await repository.watchFolderIdsOf(recipeId).first;
+      if (folderIds.length == 1 && folderIds.contains(folderId)) {
+        onlyHere.add(recipeId);
+      }
+    }
+    return onlyHere;
+  }
+
+  /// Deletes a folder, and the recipes in no other folder with it.
+  /// Returns what [restore] needs to undo it, or null when the folder is
+  /// gone already.
   Future<DeletedFolder?> delete(FolderId folderId) async {
     final repository = _repository;
+    final recipes = ref.read(recipeRepositoryProvider);
     final folder = await repository.getFolder(folderId);
     if (folder == null) return null;
     final recipeIds = await repository.watchRecipeIdsInFolder(folderId).first;
+    final snapshots = <RecipeSnapshot>[];
+    for (final recipeId in await _recipesOnlyIn(repository, folderId)) {
+      final snapshot = await recipes.getSnapshot(recipeId);
+      if (snapshot != null) snapshots.add(snapshot);
+    }
     await repository.deleteFolder(folderId);
-    return (folder: folder, recipeIds: recipeIds);
+    for (final snapshot in snapshots) {
+      await recipes.deleteRecipe(snapshot.recipe.id);
+    }
+    return (folder: folder, recipeIds: recipeIds, recipes: snapshots);
   }
 
   /// Puts back a folder that [delete] removed, with its recipes.
   Future<void> restore(DeletedFolder deleted) async {
     final repository = _repository;
+    final recipes = ref.read(recipeRepositoryProvider);
+    for (final snapshot in deleted.recipes) {
+      await recipes.saveSnapshot(snapshot);
+    }
     await repository.saveFolder(deleted.folder);
     for (final recipeId in deleted.recipeIds) {
       await repository.addRecipeToFolder(deleted.folder.id, recipeId);
@@ -110,5 +158,10 @@ class FolderEditor() extends _$FolderEditor {
       : _repository.removeRecipeFromFolder(folderId, recipeId);
 }
 
-/// A deleted folder and the recipes it held, for undo.
-typedef DeletedFolder = ({Folder folder, List<RecipeId> recipeIds});
+/// A deleted folder, the recipes it held, and the whole recipes deleted
+/// with it, for undo.
+typedef DeletedFolder = ({
+  Folder folder,
+  List<RecipeId> recipeIds,
+  List<RecipeSnapshot> recipes,
+});

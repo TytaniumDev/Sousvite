@@ -15,6 +15,7 @@ import 'package:sousvite/features/import/presentation/umami_section.dart';
 import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
+import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
@@ -23,6 +24,7 @@ import '../fakes.dart';
 void main() {
   late FakeUrlImporter importer;
   late FakeUmamiTransfer umami;
+  late FakeFolderRepository folders;
 
   // Made inside each test so their futures run in the fake-async zone.
   Future<void> pump(
@@ -33,6 +35,7 @@ void main() {
   }) async {
     importer = FakeUrlImporter()..result = result;
     umami = FakeUmamiTransfer()..outcome = () => umamiCount;
+    folders = FakeFolderRepository();
     final router = GoRouter(
       initialLocation: initialLocation,
       redirect: ImportRoutes.redirect,
@@ -55,6 +58,7 @@ void main() {
           urlImporterProvider.overrideWithValue(importer),
           umamiTransferProvider.overrideWithValue(umami),
           recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
+          folderRepositoryProvider.overrideWithValue(folders),
         ],
         child: MaterialApp.router(
           theme: AppTheme.light(),
@@ -98,6 +102,23 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('/editor/chili'), findsOneWidget);
+    });
+
+    testWidgets('files a link into the folder it was added from', (
+      tester,
+    ) async {
+      const soups = FolderId('soups');
+      expect(ImportRoutes.location(), ImportRoutes.path);
+      await pump(
+        tester,
+        initialLocation: ImportRoutes.location(folderId: soups),
+        result: RecipeSnapshot(recipe: RecipeFixtures.recipe(id: 'chili')),
+      );
+
+      await importLink(tester, 'a.com/chili');
+
+      expect(find.text('/editor/chili'), findsOneWidget);
+      expect(folders.recipeIdsIn(soups), [const RecipeId('chili')]);
     });
 
     testWidgets('imports a link shared from another app', (tester) async {

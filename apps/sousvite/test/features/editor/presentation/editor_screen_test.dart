@@ -13,6 +13,7 @@ import 'package:sousvite/features/editor/presentation/steps_editor.dart';
 import 'package:sousvite/features/library/library.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 
+import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
@@ -21,6 +22,7 @@ void main() {
   const recipeId = RecipeId('r1');
   const flour = IngredientLineId('flour');
   late FakeRecipeRepository recipes;
+  final folders = FakeFolderRepository();
 
   setUp(() {
     recipes = FakeRecipeRepository()
@@ -46,6 +48,7 @@ void main() {
   Future<GoRouter> pumpEditor(
     WidgetTester tester, {
     RecipeId id = recipeId,
+    String? location,
   }) async {
     tester.view.physicalSize = const Size(800, 3000);
     tester.view.devicePixelRatio = 1;
@@ -67,9 +70,12 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpRouterApp(
       router,
-      overrides: [recipeRepositoryProvider.overrideWithValue(recipes)],
+      overrides: [
+        recipeRepositoryProvider.overrideWithValue(recipes),
+        folderRepositoryProvider.overrideWithValue(folders),
+      ],
     );
-    unawaited(router.push(EditorRoutes.location(id)));
+    unawaited(router.push(location ?? EditorRoutes.location(id)));
     await tester.pumpAndSettle();
     return router;
   }
@@ -128,6 +134,22 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Recipe (new)'), findsOneWidget);
       expect(recipes.recipeById(id)?.title, 'Soup');
+    });
+
+    testWidgets('saves a new recipe into the folder it was added from', (
+      tester,
+    ) async {
+      const soups = FolderId('soups');
+      final location = EditorRoutes.newRecipeLocation(folderId: soups);
+      expect(Uri.parse(location).queryParameters, {'folder': 'soups'});
+      expect(Uri.parse(EditorRoutes.newRecipeLocation()).hasQuery, isFalse);
+      await pumpEditor(tester, location: location);
+
+      await tester.enterText(field('Recipe name'), 'Soup');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(folders.recipeIdsIn(soups), hasLength(1));
     });
 
     testWidgets('typing in a line rebuilds only that line', (tester) async {

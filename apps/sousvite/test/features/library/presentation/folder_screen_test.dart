@@ -177,9 +177,7 @@ void main() {
       expect(find.widgetWithText(AppBar, 'Mornings'), findsOneWidget);
     });
 
-    testWidgets('deleting goes back to the library, and undo restores it', (
-      tester,
-    ) async {
+    Future<GoRouter> pumpFolderRoute(WidgetTester tester) async {
       final router = GoRouter(
         initialLocation: LibraryRoutes.location(breakfastScope),
         routes: LibraryRoutes.routes,
@@ -187,23 +185,115 @@ void main() {
       addTearDown(router.dispose);
       await tester.pumpRouterApp(router, overrides: overrides());
       await tester.pumpAndSettle();
+      return router;
+    }
 
+    Future<void> tapDelete(WidgetTester tester) async {
       await tester.tap(find.byTooltip('Folder options'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Delete folder'));
       await tester.pumpAndSettle();
-      expect(find.byType(LibraryScreen), findsOneWidget);
-      expect(find.byType(FolderScreen), findsNothing);
-      expect(find.text('Breakfast'), findsNothing);
-      expect(find.text('Folder deleted'), findsOneWidget);
+    }
 
-      await tester.tap(find.text('Undo'));
+    testWidgets(
+      'deleting asks first, takes its only-here recipes, and undo restores',
+      (tester) async {
+        await pumpFolderRoute(tester);
+
+        await tapDelete(tester);
+        expect(find.text('Delete Breakfast?'), findsOneWidget);
+        expect(
+          find.text(
+            '2 recipes are in no other folder and will be deleted too.',
+          ),
+          findsOneWidget,
+        );
+        await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(LibraryScreen), findsOneWidget);
+        expect(find.byType(FolderScreen), findsNothing);
+        expect(find.text('Breakfast'), findsNothing);
+        expect(find.text('Folder and 2 recipes deleted'), findsOneWidget);
+        expect(recipes.recipeById(const RecipeId('oats')), isNull);
+        expect(recipes.recipeById(const RecipeId('salad')), isNotNull);
+
+        await tester.tap(find.text('Undo'));
+        await tester.pumpAndSettle();
+        expect(find.text('Breakfast'), findsOneWidget);
+        expect(recipes.recipeById(const RecipeId('oats')), isNotNull);
+        expect(folders.recipeIdsIn(breakfast), [
+          const RecipeId('oats'),
+          const RecipeId('soup'),
+        ]);
+      },
+    );
+
+    testWidgets('cancelling the delete keeps everything', (tester) async {
+      await pumpFolderRoute(tester);
+
+      await tapDelete(tester);
+      await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
-      expect(find.text('Breakfast'), findsOneWidget);
-      expect(folders.recipeIdsIn(breakfast), [
-        const RecipeId('oats'),
-        const RecipeId('soup'),
-      ]);
+
+      expect(find.byType(FolderScreen), findsOneWidget);
+      expect(folders.allFolders, hasLength(1));
+      expect(recipes.recipeById(const RecipeId('oats')), isNotNull);
+    });
+
+    testWidgets(
+      'a folder whose recipes are all elsewhere goes without asking',
+      (tester) async {
+        folders.seed(
+          Folder(
+            id: const FolderId('mornings'),
+            name: 'Mornings',
+            createdAt: RecipeFixtures.createdAt,
+          ),
+          [const RecipeId('oats'), const RecipeId('soup')],
+        );
+        await pumpFolderRoute(tester);
+
+        await tapDelete(tester);
+
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(find.text('Folder deleted'), findsOneWidget);
+        expect(recipes.recipeById(const RecipeId('oats')), isNotNull);
+      },
+    );
+
+    testWidgets('a folder page adds recipes to that folder', (tester) async {
+      await pumpFolder(tester);
+      await tester.tap(find.text('Add recipe'));
+      await tester.pumpAndSettle();
+      expect(find.text('Add to which folder?'), findsNothing);
+      expect(find.text('Write a recipe'), findsOneWidget);
+    });
+
+    testWidgets('the unsorted page has no add button', (tester) async {
+      await pumpFolder(tester, const UnsortedRecipes());
+      expect(find.text('Add recipe'), findsNothing);
+    });
+
+    testWidgets("a recipe's only folder can't be unticked", (tester) async {
+      await pumpFolder(tester);
+
+      await tester.longPress(find.text('Tomato soup'));
+      await tester.pumpAndSettle();
+      final only = find.widgetWithText(CheckboxListTile, 'Breakfast');
+      expect(find.text('A recipe needs at least one folder'), findsOneWidget);
+      expect(tester.widget<CheckboxListTile>(only).onChanged, isNull);
+
+      await tester.tap(find.widgetWithText(ListTile, 'New folder'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).last, 'Soups');
+      await tester.tap(find.text('Create'));
+      await tester.pumpAndSettle();
+      expect(find.text('A recipe needs at least one folder'), findsNothing);
+
+      await tester.tap(only);
+      await tester.pumpAndSettle();
+      expect(folders.recipeIdsIn(breakfast), [const RecipeId('oats')]);
     });
 
     testWidgets('puts a recipe in folders with a long press', (tester) async {
