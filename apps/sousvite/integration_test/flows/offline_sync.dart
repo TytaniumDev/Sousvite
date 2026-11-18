@@ -24,7 +24,7 @@ Future<void> offlineEditSyncs(WidgetTester tester) async {
   final recipeId = await seedRecipe(laptop, 'Cinnamon toast');
   await laptop.sync();
   await phone.sync();
-  await tester.pumpAndSettle();
+  await pumpUntilFound(tester, find.text('Cinnamon toast'));
   expect(find.text('Cinnamon toast'), findsOneWidget);
 
   // Edited on the phone with no connection.
@@ -37,7 +37,7 @@ Future<void> offlineEditSyncs(WidgetTester tester) async {
     'Cardamom toast',
   );
   await tapOn(tester, find.text('Save'));
-  expect(find.text('Cardamom toast'), findsWidgets);
+  await pumpUntilFound(tester, find.text('Cardamom toast'));
   await phone.sync();
   await laptop.sync();
   expect(await titleOn(laptop, recipeId), 'Cinnamon toast');
