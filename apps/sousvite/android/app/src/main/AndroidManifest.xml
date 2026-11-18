@@ -31,6 +31,14 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="text/plain"/>
             </intent-filter>
+            <!-- "Share" an Umami export (a zip file). MainActivity copies it
+                 into the app and opens sousvite://open/import?archive=…. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/zip"/>
+                <data android:mimeType="application/x-zip-compressed"/>
+            </intent-filter>
             <!-- The import link itself, also used by the iOS share
                  extension. -->
             <intent-filter>

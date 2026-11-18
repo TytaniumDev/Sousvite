@@ -21,6 +21,14 @@ class UmamiActions() extends _$UmamiActions {
   Future<int?> importLibrary() =>
       _run(.importing, ref.read(umamiTransferProvider).importLibrary);
 
+  /// Imports the Umami export another app shared into this one, at [path].
+  /// Returns how many recipes came in, or null if a transfer was already
+  /// running.
+  Future<int?> importSharedArchive(String path) => _run(
+    .importing,
+    () => ref.read(umamiTransferProvider).importSharedArchive(path),
+  );
+
   /// Exports every recipe for Umami. Returns how many went out, or null if
   /// the user canceled.
   Future<int?> exportLibrary() =>

@@ -35,6 +35,16 @@ class FakeUmamiTransfer() implements UmamiTransfer {
   @override
   Future<int?> exportLibrary() => _run();
 
+  /// The paths [importSharedArchive] was asked for.
+  final sharedArchives = <String>[];
+
+  @override
+  Future<int> importSharedArchive(String path) async {
+    sharedArchives.add(path);
+    final count = await _run();
+    return count ?? 0;
+  }
+
   Future<int?> _run() async {
     await gate?.future;
     final count = await outcome();

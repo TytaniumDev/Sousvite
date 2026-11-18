@@ -47,7 +47,7 @@ final class UmamiActionsProvider
   }
 }
 
-String _$umamiActionsHash() => r'1fb09b387acb6238fab7dba6b195f8406e04c3d2';
+String _$umamiActionsHash() => r'0c53cd10e67f6a5e3b9c57d89b67a6d9f65f5c03';
 
 /// Runs one Umami import or export at a time. The state is the running
 /// task, or null when idle.

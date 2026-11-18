@@ -29,6 +29,11 @@ abstract interface class UmamiTransfer() {
   /// [ImportFailure] when the file can't be read.
   Future<int?> importLibrary();
 
+  /// Saves the recipes in the Umami export that another app shared into
+  /// this one, which the platform left at [path]. Returns how many were
+  /// imported. Throws [ImportFailure] when the file can't be read.
+  Future<int> importSharedArchive(String path);
+
   /// Writes every recipe in Umami's format and hands the file to the
   /// user. Returns how many were exported, or null if the user canceled.
   Future<int?> exportLibrary();
