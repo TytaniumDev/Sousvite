@@ -36,6 +36,11 @@ final ingredientRowComponent = WidgetbookComponent(
             preparation: 'finely diced',
             checked: checked,
             onChanged: onChanged,
+            checkStyle: context.knobs.object.dropdown(
+              label: 'Check style',
+              options: IngredientCheckStyle.values,
+              labelBuilder: (style) => style.name,
+            ),
           ),
         ),
       ),

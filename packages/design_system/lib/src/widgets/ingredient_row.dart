@@ -7,14 +7,26 @@ import 'package:design_system/src/widgets/amount_text.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
 
+/// What ticking an [IngredientRow]'s checkbox means.
+enum IngredientCheckStyle() {
+  /// Done with it, as while cooking: a checked line fades and is struck
+  /// through (§8.2).
+  checkOff,
+
+  /// Picked, as when choosing lines to add to the grocery list: the text
+  /// stays as it is whether checked or not.
+  select,
+}
+
 /// One ingredient line: amount column, name, and preparation note, with an
 /// optional checkbox (DESIGN_SYSTEM.md §9.2).
 ///
 /// Without [onChanged] the row is read-only and follows the theme's density,
 /// so wrapping a list in `CompactDensity` makes its rows compact (§6.2).
 /// With [onChanged] the whole row toggles [checked] and stays at least
-/// 56 dp tall. A checked line fades to `on-surface-variant` and is struck
-/// through (§8.2).
+/// 56 dp tall. With [IngredientCheckStyle.checkOff] a checked line fades to
+/// `on-surface-variant` and is struck through (§8.2); with
+/// [IngredientCheckStyle.select] the checkbox alone shows the choice.
 class const IngredientRow({
   /// The ingredient: "flour".
   required final String name,
@@ -39,6 +51,10 @@ class const IngredientRow({
   /// Called with the new value when the row is tapped. Null for a
   /// read-only row with no checkbox.
   final ValueChanged<bool>? onChanged,
+
+  /// What [checked] means, and so whether a checked line is struck
+  /// through.
+  final IngredientCheckStyle checkStyle = .checkOff,
   super.key,
 }) extends StatelessWidget {
   /// The narrowest the amount column gets, so names line up in a list.
@@ -53,8 +69,9 @@ class const IngredientRow({
   Widget build(BuildContext context) {
     final colors = context.colors;
     final body = context.textStyles.bodyLarge!;
-    final color = checked ? colors.onSurfaceVariant : colors.onSurface;
-    final decoration = checked ? TextDecoration.lineThrough : null;
+    final checkedOff = checked && checkStyle == .checkOff;
+    final color = checkedOff ? colors.onSurfaceVariant : colors.onSurface;
+    final decoration = checkedOff ? TextDecoration.lineThrough : null;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : _fade.duration;
