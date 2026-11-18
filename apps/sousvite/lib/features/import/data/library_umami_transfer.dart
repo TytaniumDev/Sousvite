@@ -33,6 +33,10 @@ class const LibraryUmamiTransfer({
   /// recipe's `photoRef` for it (`RecipePhotos.importFrom`).
   required final Future<String?> Function(String? url) importPhoto,
 
+  /// Matches an imported recipe's ingredients to foods where one clearly
+  /// fits, so its nutrition shows without fixing every line by hand.
+  required final Future<void> Function(RecipeId recipeId) matchNutrition,
+
   /// Reads the recipes out of an Umami export. Tests pass one that runs
   /// in the test's isolate.
   final UmamiArchiveReader read = _readInBackground,
@@ -97,6 +101,7 @@ class const LibraryUmamiTransfer({
     onProgress(UmamiImportProgress(.recipes, total: total));
     for (final (index, (:snapshot, :book, imageUrl: _)) in imported.indexed) {
       await recipes.saveSnapshot(snapshot);
+      await matchNutrition(snapshot.recipe.id);
       if (book != null && book.trim().isNotEmpty) {
         final folderId = folderIds[book] ??= await _newFolder(book);
         await folders.addRecipeToFolder(folderId, snapshot.recipe.id);

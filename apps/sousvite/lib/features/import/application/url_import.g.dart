@@ -42,7 +42,7 @@ final class UrlImportProvider
   UrlImport create() => UrlImport();
 }
 
-String _$urlImportHash() => r'ceeb0ff47b8ffbb645a16e2650b9532480907a28';
+String _$urlImportHash() => r'fbc35727d9819c7dc4e75f67e27ceb15b5a43bee';
 
 /// Imports a recipe from a web address. The state is the imported
 /// recipe's id once saved, null before anything is imported, or an

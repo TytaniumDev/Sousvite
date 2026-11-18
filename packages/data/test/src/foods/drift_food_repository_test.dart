@@ -93,6 +93,7 @@ void main() {
       expect(await foods.getNutrients(id), hasLength(2));
       expect(await foods.getPortions(id), hasLength(2));
       expect(await foods.getFood(const FoodId('missing')), isNull);
+      expect(await foods.genericFoods(), hasLength(3));
     });
 
     test('reads nothing bundled without the bundled file', () async {
@@ -107,6 +108,7 @@ void main() {
       expect(await foods.getNutrients(id), isEmpty);
       expect(await foods.getPortions(id), isEmpty);
       expect(await foods.searchFoods('butter'), isEmpty);
+      expect(await foods.genericFoods(), isEmpty);
     });
 
     test('caches a food and syncs it to another device', () async {

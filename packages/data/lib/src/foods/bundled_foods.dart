@@ -71,6 +71,12 @@ final class BundledFoods(
       ),
   ];
 
+  /// Every bundled food, in id order.
+  List<Food> all() => [
+    for (final row in database.select('SELECT * FROM foods ORDER BY id'))
+      _food(row),
+  ];
+
   /// Foods whose names hold every word of [words].
   List<Food> search(List<String> words) {
     if (words.isEmpty) return const [];

@@ -4,6 +4,7 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/import/application/import_failure.dart';
 import 'package:sousvite/features/import/application/recipe_importers.dart';
 import 'package:sousvite/features/import/application/recipe_url.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 
 part 'url_import.g.dart';
 
@@ -16,7 +17,8 @@ class UrlImport() extends _$UrlImport {
   FutureOr<RecipeId?> build() => null;
 
   /// Imports the recipe at [text] and saves it in [folderId], so the user
-  /// can review it in the editor (PRD 7.2).
+  /// can review it in the editor (PRD 7.2). Ingredients that clearly fit
+  /// a USDA food are matched for nutrition right away.
   Future<void> import(String text, {FolderId? folderId}) async {
     final url = parseRecipeUrl(text);
     if (url == null) {
@@ -33,6 +35,8 @@ class UrlImport() extends _$UrlImport {
       final snapshot = await importer.importUrl(url);
       await recipes.saveSnapshot(snapshot);
       await folders?.addRecipeToFolder(folderId!, snapshot.recipe.id);
+      final autoMatch = await ref.read(autoMatchProvider.future);
+      await autoMatch.matchRecipe(snapshot.recipe.id);
       return snapshot.recipe.id;
     });
   }

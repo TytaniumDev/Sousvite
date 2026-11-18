@@ -14,22 +14,26 @@ import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_photo_store.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 import '../fakes.dart';
 
 void main() {
   late FakeUrlImporter importer;
   late FakeRecipeRepository recipes;
+  late FakeFoodRepository foods;
   late FakeFolderRepository folders;
   late ProviderContainer container;
 
   setUp(() {
     importer = FakeUrlImporter();
     recipes = FakeRecipeRepository();
+    foods = FakeFoodRepository();
     folders = FakeFolderRepository();
     container = ProviderContainer.test(
       overrides: [
         urlImporterProvider.overrideWithValue(importer),
         recipeRepositoryProvider.overrideWithValue(recipes),
+        foodRepositoryProvider.overrideWithValue(foods),
         folderRepositoryProvider.overrideWithValue(folders),
       ],
     )..listen(urlImportProvider, (_, _) {});
@@ -61,6 +65,35 @@ void main() {
 
       notifier().reset();
       expect(container.read(urlImportProvider).value, isNull);
+    });
+
+    test('matches ingredients that clearly fit a food', () async {
+      const garlic = Food(
+        id: FoodId('usda:1'),
+        source: NutritionSource.usda,
+        externalId: '1',
+        name: 'Garlic, raw',
+      );
+      foods.addFood(garlic);
+      importer.result = RecipeSnapshot(
+        recipe: RecipeFixtures.recipe(id: 'chili'),
+        ingredientLines: [
+          RecipeFixtures.line(
+            'l1',
+            recipeId: 'chili',
+            quantity: Quantity(10),
+            unit: Unit.gram,
+            name: 'garlic',
+          ),
+        ],
+      );
+
+      await notifier().import('seriouseats.com/chili');
+
+      final match = foods.matches.values.single;
+      expect(match.ingredientLineId, const IngredientLineId('l1'));
+      expect(match.foodId, garlic.id);
+      expect(match.gramWeight, 10);
     });
 
     test('files the recipe into the folder it was added from', () async {

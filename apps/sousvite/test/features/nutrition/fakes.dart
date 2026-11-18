@@ -70,6 +70,12 @@ class FakeFoodRepository() implements FoodRepository {
       searchResults;
 
   @override
+  Future<List<Food>> genericFoods() async => [
+    for (final food in foods.values)
+      if (food.source == NutritionSource.usda) food,
+  ];
+
+  @override
   Future<void> saveFood(
     Food food, {
     required List<FoodNutrient> nutrients,
@@ -122,6 +128,13 @@ class FakeRecipeRepository() extends Fake implements RecipeRepository {
   final recipes = <RecipeId, Recipe>{};
   final lines = <IngredientLineId, IngredientLine>{};
   final _changes = StreamController<void>.broadcast(sync: true);
+
+  @override
+  Stream<List<RecipeId>> watchRecipeIds() => watchValue(
+    _changes.stream,
+    () => recipes.keys.toList(),
+    equals: listEquals,
+  );
 
   @override
   Stream<Recipe?> watchRecipe(RecipeId id) =>

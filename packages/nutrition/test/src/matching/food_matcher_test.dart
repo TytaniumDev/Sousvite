@@ -11,6 +11,9 @@ Food _usda(String id, String name) => Food(
   name: name,
 );
 
+Matcher _clear(Matcher isClear) =>
+    isA<FoodMatched>().having((m) => m.isClear, 'isClear', isClear);
+
 void main() {
   final garlic = _usda('1', 'Garlic, raw');
   final garlicPowder = _usda('2', 'Spices, garlic powder');
@@ -72,6 +75,25 @@ void main() {
 
       test('is unmatched for a name with no words', () {
         expect(matcher.match('chopped, to taste'), isA<FoodUnmatched>());
+      });
+
+      group('isClear', () {
+        final leaves = FoodMatcher([
+          _usda('9', 'Taro leaves, raw'),
+          _usda('10', 'Soy sauce made from soy and wheat (shoyu)'),
+        ]);
+
+        test('when the food is named in full', () {
+          expect(matcher.match('garlic'), _clear(isTrue));
+        });
+
+        test('when the food fits well without being named in full', () {
+          expect(leaves.match('soy sauce'), _clear(isTrue));
+        });
+
+        test('not when the food only shares the main word', () {
+          expect(leaves.match('mint leaves'), _clear(isFalse));
+        });
       });
 
       test('reports the score of the best food', () {

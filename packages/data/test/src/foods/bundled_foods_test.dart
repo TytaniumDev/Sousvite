@@ -58,6 +58,13 @@ void main() {
     expect(bundled.search([]), isEmpty);
   });
 
+  test('lists every food in id order', () {
+    expect(
+      [for (final food in bundled.all()) food.id],
+      const [FoodId('usda:1'), FoodId('usda:2'), FoodId('usda:3')],
+    );
+  });
+
   test('opens the file from its bytes, read-only', () {
     final directory = Directory.systemTemp.createTempSync('bundled');
     addTearDown(() => directory.deleteSync(recursive: true));

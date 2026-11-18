@@ -8,6 +8,7 @@ import 'package:sousvite/features/nutrition/application/nutrient.dart';
 import 'package:sousvite/features/nutrition/application/nutrition_basis.dart';
 import 'package:sousvite/features/nutrition/application/nutrition_providers.dart';
 import 'package:sousvite/features/nutrition/nutrition_routes.dart';
+import 'package:sousvite/features/nutrition/presentation/fix_all_button.dart';
 import 'package:sousvite/features/nutrition/presentation/nutrition_words.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
@@ -120,6 +121,7 @@ class const _UnmatchedNote({
             style: context.textStyles.bodyMedium?.copyWith(color: warning),
           ),
         ),
+        FixAllButton(recipeId: recipeId),
         if (showFixLink)
           TextButton(
             onPressed: () => context.push(NutritionRoutes.location(recipeId)),

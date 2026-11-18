@@ -96,6 +96,9 @@ final class DriftFoodRepository(
   }
 
   @override
+  Future<List<Food>> genericFoods() async => bundled?.all() ?? const [];
+
+  @override
   Future<void> saveFood(
     Food food, {
     required List<FoodNutrient> nutrients,

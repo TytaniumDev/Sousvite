@@ -730,6 +730,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutrition_leaveUnmatched => 'Leave unmatched';
 
   @override
+  String get nutrition_fixAll => 'Fix all';
+
+  @override
+  String nutrition_matchedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Matched $count ingredients.',
+      one: 'Matched 1 ingredient.',
+      zero: 'No clear matches found.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nutrition_stillUnmatched(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count still need a match.',
+      one: '1 still needs a match.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nutrition_matchLibrary => 'Match nutrition for all recipes';
+
+  @override
+  String get nutrition_matchLibraryDescription =>
+      'Matches ingredients to USDA foods where the fit is clear';
+
+  @override
   String get nutrition_searchFoods => 'Search foods';
 
   @override

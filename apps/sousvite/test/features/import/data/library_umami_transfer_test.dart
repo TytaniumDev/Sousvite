@@ -52,6 +52,7 @@ void main() {
   late FakeFolderRepository folders;
   late LibraryUmamiTransfer transfer;
   late List<String?> photoUrls;
+  late List<RecipeId> matched;
   late List<UmamiImportProgress> progress;
   final baking = Folder(
     id: const FolderId('baking'),
@@ -64,6 +65,7 @@ void main() {
     recipes = FakeRecipeRepository();
     folders = FakeFolderRepository();
     photoUrls = [];
+    matched = [];
     progress = [];
     var nextId = 0;
     transfer = LibraryUmamiTransfer(
@@ -75,6 +77,7 @@ void main() {
         photoUrls.add(url);
         return url == null ? null : 'saved:$url';
       },
+      matchNutrition: (recipeId) async => matched.add(recipeId),
       read: (bytes, {required newId, required now}) async =>
           readUmamiArchive(bytes, newId: newId, now: now),
     );
@@ -100,6 +103,8 @@ void main() {
       expect(folders.recipeIdsIn(folders.allFolders.last.id), [
         saved[1].recipe.id,
       ]);
+      // Each recipe's ingredients are matched for nutrition once saved.
+      expect(matched, [for (final s in saved) s.recipe.id]);
     });
 
     test('saves every recipe first, then each photo', () async {
@@ -156,6 +161,7 @@ void main() {
         folders: folders,
         newId: () => 'id',
         importPhoto: (url) async => null,
+        matchNutrition: (_) async {},
         read: (bytes, {required newId, required now}) async =>
             readUmamiArchive(bytes, newId: newId, now: now),
       );
