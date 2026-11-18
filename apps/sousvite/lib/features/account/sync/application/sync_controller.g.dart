@@ -61,9 +61,11 @@ String _$photoSyncHash() => r'2d410f9891de626bd163d55bd28471c4b85c993f';
 /// app comes back to the foreground, and when the transport says other
 /// devices pushed (Firestore's listener) or every few minutes (Drive). The
 /// first sync through a transport, and the first after switching to it,
-/// copies the whole library into it as a snapshot (the `replay()` of
-/// ENGINEERING.md §8.2) and pushes this device's own changes, which is how
-/// signing in for the first time and switching sources lose nothing.
+/// pushes this device's own changes and then copies the whole library into
+/// it as a snapshot (the `replay()` of ENGINEERING.md §8.2), which is how
+/// signing in for the first time and switching sources lose nothing. A
+/// snapshot that fails is reported and tried again on the next sync; it
+/// never holds back the pushes and pulls.
 
 @ProviderFor(SyncController)
 final syncControllerProvider = SyncControllerProvider._();
@@ -75,9 +77,11 @@ final syncControllerProvider = SyncControllerProvider._();
 /// app comes back to the foreground, and when the transport says other
 /// devices pushed (Firestore's listener) or every few minutes (Drive). The
 /// first sync through a transport, and the first after switching to it,
-/// copies the whole library into it as a snapshot (the `replay()` of
-/// ENGINEERING.md §8.2) and pushes this device's own changes, which is how
-/// signing in for the first time and switching sources lose nothing.
+/// pushes this device's own changes and then copies the whole library into
+/// it as a snapshot (the `replay()` of ENGINEERING.md §8.2), which is how
+/// signing in for the first time and switching sources lose nothing. A
+/// snapshot that fails is reported and tried again on the next sync; it
+/// never holds back the pushes and pulls.
 final class SyncControllerProvider
     extends $NotifierProvider<SyncController, SyncState> {
   /// Keeps the library in sync with the chosen cloud while the app runs
@@ -87,9 +91,11 @@ final class SyncControllerProvider
   /// app comes back to the foreground, and when the transport says other
   /// devices pushed (Firestore's listener) or every few minutes (Drive). The
   /// first sync through a transport, and the first after switching to it,
-  /// copies the whole library into it as a snapshot (the `replay()` of
-  /// ENGINEERING.md §8.2) and pushes this device's own changes, which is how
-  /// signing in for the first time and switching sources lose nothing.
+  /// pushes this device's own changes and then copies the whole library into
+  /// it as a snapshot (the `replay()` of ENGINEERING.md §8.2), which is how
+  /// signing in for the first time and switching sources lose nothing. A
+  /// snapshot that fails is reported and tried again on the next sync; it
+  /// never holds back the pushes and pulls.
   SyncControllerProvider._()
     : super(
         from: null,
@@ -117,7 +123,7 @@ final class SyncControllerProvider
   }
 }
 
-String _$syncControllerHash() => r'0c7bc8d1d21ef9c6b5420904657d979503af8615';
+String _$syncControllerHash() => r'4068764bfbbb37f189267be7923c17550b5926c9';
 
 /// Keeps the library in sync with the chosen cloud while the app runs
 /// (ENGINEERING.md §8.2 and §10).
@@ -126,9 +132,11 @@ String _$syncControllerHash() => r'0c7bc8d1d21ef9c6b5420904657d979503af8615';
 /// app comes back to the foreground, and when the transport says other
 /// devices pushed (Firestore's listener) or every few minutes (Drive). The
 /// first sync through a transport, and the first after switching to it,
-/// copies the whole library into it as a snapshot (the `replay()` of
-/// ENGINEERING.md §8.2) and pushes this device's own changes, which is how
-/// signing in for the first time and switching sources lose nothing.
+/// pushes this device's own changes and then copies the whole library into
+/// it as a snapshot (the `replay()` of ENGINEERING.md §8.2), which is how
+/// signing in for the first time and switching sources lose nothing. A
+/// snapshot that fails is reported and tried again on the next sync; it
+/// never holds back the pushes and pulls.
 
 abstract class _$SyncController extends $Notifier<SyncState> {
   SyncState build();
