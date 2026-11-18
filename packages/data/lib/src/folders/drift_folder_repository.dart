@@ -62,6 +62,13 @@ final class DriftFolderRepository(
       .distinct(const ListEquality<RecipeId>().equals);
 
   @override
+  Stream<Set<RecipeId>> watchRecipeIdsInAnyFolder() => _dao
+      .recipeIdsInAnyFolder()
+      .watch()
+      .map((ids) => {for (final id in ids) RecipeId(id)})
+      .distinct(const SetEquality<RecipeId>().equals);
+
+  @override
   Future<Folder?> getFolder(FolderId id) async =>
       (await _dao.folder(id.value).getSingleOrNull())?.toEntity();
 

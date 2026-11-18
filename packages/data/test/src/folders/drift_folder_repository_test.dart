@@ -118,6 +118,36 @@ void main() {
       );
     });
 
+    test('lists recipes in any folder that still exists', () async {
+      final phone = device('phone');
+      const soups = FolderId('f2');
+      await phone.folders.saveFolder(_folder('f1', 'Weeknight'));
+      await phone.folders.saveFolder(_folder('f2', 'Soups'));
+      for (final id in ['r1', 'r2', 'r3']) {
+        await phone.addRecipe(id);
+      }
+      await phone.folders.addRecipeToFolder(weeknight, const RecipeId('r1'));
+      await phone.folders.addRecipeToFolder(soups, const RecipeId('r1'));
+      await phone.folders.addRecipeToFolder(soups, const RecipeId('r2'));
+      // An entry whose folder row never arrived, as sync can leave one.
+      await phone.folders.addRecipeToFolder(
+        const FolderId('gone'),
+        const RecipeId('r3'),
+      );
+      // An entry whose recipe is gone.
+      await phone.folders.addRecipeToFolder(weeknight, const RecipeId('r4'));
+
+      expect(await phone.folders.watchRecipeIdsInAnyFolder().first, {
+        const RecipeId('r1'),
+        const RecipeId('r2'),
+      });
+
+      await phone.folders.deleteFolder(soups);
+      expect(await phone.folders.watchRecipeIdsInAnyFolder().first, {
+        const RecipeId('r1'),
+      });
+    });
+
     test('removes a recipe from a folder', () async {
       final phone = device('phone');
       await phone.addRecipe('r1');

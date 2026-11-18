@@ -55,7 +55,7 @@ String _$foldersHash() => r'0c51c5d69c9ec3612721337150f498290d3cad98';
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 
 @ProviderFor(FolderIds)
 final folderIdsProvider = FolderIdsProvider._();
@@ -63,13 +63,13 @@ final folderIdsProvider = FolderIdsProvider._();
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 final class FolderIdsProvider
     extends $NotifierProvider<FolderIds, List<FolderId>?> {
   /// The folder ids, in order. Null while loading.
   ///
   /// Notifies only when folders are added, removed, or reordered, not when
-  /// one is renamed, so the chip row doesn't rebuild for a new name.
+  /// one is renamed, so the folder grid doesn't rebuild for a new name.
   FolderIdsProvider._()
     : super(
         from: null,
@@ -102,7 +102,7 @@ String _$folderIdsHash() => r'e8d29986b7f6caf32e5ac32b840f53de82a07279';
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 
 abstract class _$FolderIds extends $Notifier<List<FolderId>?> {
   List<FolderId>? build();

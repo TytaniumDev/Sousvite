@@ -53,6 +53,14 @@ class FakeFolderRepository() implements FolderRepository {
       _watch(() => [...?_entries[folderId]]);
 
   @override
+  Stream<Set<RecipeId>> watchRecipeIdsInAnyFolder() => _watch(
+    () => {
+      for (final MapEntry(:key, :value) in _entries.entries)
+        if (_folders.containsKey(key)) ...value,
+    },
+  );
+
+  @override
   Future<Folder?> getFolder(FolderId id) async => _folders[id];
 
   @override
