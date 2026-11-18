@@ -136,10 +136,16 @@ platform :ios do
     # App Store Connect only distributes Xcode Cloud builds to a group on
     # its own, so the lane adds each build to the Internal group. That needs
     # the build processed first, which takes Apple 10 to 20 minutes.
+    #
+    # submit_beta_review: false because fastlane otherwise submits every
+    # build given `groups` for Beta App Review, which only external testing
+    # needs. That submission fails without a Beta App Description, before
+    # the build is ever added to the group. Internal groups need no review.
     upload_to_testflight(
       api_key: api_key,
       groups: [TESTER_GROUP],
-      distribute_external: false
+      distribute_external: false,
+      submit_beta_review: false
     )
   end
 end
