@@ -306,6 +306,7 @@ One project only, with no dev and prod split (Tyler, 2026-11-13). Day-to-day dev
   ```
 
   Then run the **Deploy backend** workflow by hand from the Actions tab (or ask an agent to). Without the roles, the workflow fails after merge; it never blocks CI.
+- [x] Let `storage.rules` read Firestore (they check space membership there): grant the Cloud Storage for Firebase service agent `service-761600243200@gcp-sa-firebasestorage.iam.gserviceaccount.com` the **Firebase Rules Firestore Service Agent** role (`roles/firebaserules.firestoreServiceAgent`). The CLI only offers this in an interactive deploy, and ours run with `--non-interactive`, so without it every Storage request is denied as unauthorized. Done 2026-11-18 in the IAM console.
 - [x] Tell an agent the project id. It runs `flutterfire configure` and commits the generated config (these config files are not secrets). Done 2026-11-16: `apps/sousvite/lib/firebase_options.dart` holds the registered apps' config, read with the Firebase CLI. The app ships no `google-services.json` or `GoogleService-Info.plist`; Android Google sign-in gets the web OAuth client as its server client id instead, and iOS has the reversed client id as a URL scheme plus the Sign in with Apple and App Attest entitlements.
 
 ### 8.2 Apple Developer Program (needed by Apple sign-in, iOS builds, TestFlight, iOS purchases)

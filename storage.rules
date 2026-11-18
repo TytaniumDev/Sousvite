@@ -19,7 +19,9 @@ service firebase.storage {
         && firestore.get(path).data.expiresAt > request.time;
     }
 
-    // Membership lives on the space document in Firestore.
+    // Membership lives on the space document in Firestore. Reading it needs
+    // the Storage service agent to hold the Firebase Rules Firestore Service
+    // Agent role (docs/BUILD_PLAN.md §8.1); without it every check fails.
     function maySync(spaceId) {
       let path = /databases/(default)/documents/spaces/$(spaceId);
       return request.auth != null
