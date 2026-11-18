@@ -17,6 +17,7 @@ import 'package:sousvite/l10n/l10n.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 import '../fakes.dart';
 
 void main() {
@@ -52,6 +53,7 @@ void main() {
           urlImporterProvider.overrideWithValue(importer),
           umamiTransferProvider.overrideWithValue(umami),
           recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
+          foodRepositoryProvider.overrideWithValue(FakeFoodRepository()),
         ],
         child: MaterialApp.router(
           theme: AppTheme.light(),

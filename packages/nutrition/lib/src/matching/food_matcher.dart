@@ -36,7 +36,11 @@ final class FoodMatcher(
     final best = rank(ingredientName, limit: 1).firstOrNull;
     return best == null
         ? const FoodUnmatched()
-        : FoodMatched(food: best.food, score: best.score);
+        : FoodMatched(
+            food: best.food,
+            score: best.score,
+            isClear: best.isClear,
+          );
   }
 
   /// Foods for [ingredientName], best first, at most [limit] of them. Only
@@ -49,7 +53,13 @@ final class FoodMatcher(
     final ranked = [
       for (final food in _foods)
         if (food.scoreFor(query) case final score?)
-          RankedFood(food: food.food, score: score),
+          RankedFood(
+            food: food.food,
+            score: score,
+            isClear:
+                score >= clearScore ||
+                (score >= clearNamedScore && food.namedBy(query)),
+          ),
     ]..sort(_compare);
     return ranked.take(limit).toList();
   }
@@ -114,6 +124,11 @@ final class const _IndexedFood._(
   bool get _isGeneric =>
       food.source == NutritionSource.usda && food.brand == null;
 
+  /// Whether every word of the segment that says what this food is
+  /// appears in [query].
+  bool namedBy(_Query query) =>
+      identity.isNotEmpty && identity.every(query.set.contains);
+
   /// How well this food fits [query], or null when it doesn't contain the
   /// main word or covers too little of the name.
   double? scoreFor(_Query query) {
@@ -129,10 +144,7 @@ final class const _IndexedFood._(
           unwantedWords[token] ??
           extraWordPenalty * (segment < 2 ? 1 : laterSegmentWeight);
     }
-    final identityBonus =
-        identity.isNotEmpty && identity.every(query.set.contains)
-        ? identityMatchBonus
-        : 0;
+    final identityBonus = namedBy(query) ? identityMatchBonus : 0;
     return 100 * coverage +
         identityBonus -
         penalty -

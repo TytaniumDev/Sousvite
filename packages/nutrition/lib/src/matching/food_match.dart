@@ -8,6 +8,9 @@ final class const RankedFood({
 
   /// How well the food fits.
   required final double score,
+
+  /// Whether the food is clearly the ingredient. See [FoodMatched.isClear].
+  final bool isClear = false,
 });
 
 /// The outcome of matching one ingredient name to a food.
@@ -23,6 +26,13 @@ final class const FoodMatched({
 
   /// How well it fits, from the same scale as [RankedFood.score].
   required final double score,
+
+  /// Whether the food is clearly the ingredient: it scores at least
+  /// `clearScore`, or `clearNamedScore` when every word of the part of the
+  /// food's name that says what it is ("Garlic" in "Garlic, raw") is in the
+  /// ingredient's name. Automatic matching saves only clear matches; the
+  /// rest are left for the user.
+  final bool isClear = false,
 }) extends FoodMatch;
 
 /// No food fits the ingredient well enough to use without asking the user.

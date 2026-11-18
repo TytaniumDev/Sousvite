@@ -18,6 +18,17 @@ const laterSegmentWeight = 0.5;
 /// ingredient, so "garlic" picks "Garlic, raw" over "Spices, garlic powder".
 const identityMatchBonus = 15.0;
 
+/// The score at which a match is clear enough to save without asking the
+/// user, when the food's leading name segment is entirely in the
+/// ingredient. Below it are near misses like "coconut oil or alt milk" →
+/// "Milk, filled". Tuned on Tyler's Umami recipes.
+const clearNamedScore = 70.0;
+
+/// The score at which any match is clear enough to save without asking,
+/// such as "soy sauce" → "Soy sauce made from soy and wheat (shoyu)".
+/// Below it are wrong guesses like "mint leaves" → "Taro leaves, raw".
+const clearScore = 90.0;
+
 /// Points lost by branded and Open Food Facts foods, so generic USDA foods
 /// win unless the ingredient names the product.
 const nonGenericPenalty = 20.0;

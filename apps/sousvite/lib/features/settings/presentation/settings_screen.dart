@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/account/account.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/features/settings/presentation/about_section.dart';
 import 'package:sousvite/features/settings/presentation/section_title.dart';
 import 'package:sousvite/features/settings/presentation/theme_setting.dart';
@@ -23,6 +24,7 @@ class const SettingsScreen({super.key}) extends StatelessWidget {
           SectionTitle(l10n.settings_recipes),
           const UnitSystemSetting(),
           const _MeasuringToolsTile(),
+          const MatchLibraryTile(),
           SectionTitle(l10n.settings_account),
           const SignInCalloutTile(),
           const _AccountTile(),

@@ -22,6 +22,10 @@ abstract interface class FoodRepository() {
   /// come from the app's `NutritionApi` instead.
   Future<List<Food>> searchFoods(String query, {int limit = 20});
 
+  /// Every bundled generic food, for matching ingredients automatically
+  /// (ENGINEERING.md §11.2). Empty until the bundled file has loaded.
+  Future<List<Food>> genericFoods();
+
   /// Caches a food fetched online, so recipes using it work offline.
   Future<void> saveFood(
     Food food, {

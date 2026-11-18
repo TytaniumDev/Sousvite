@@ -23,6 +23,10 @@ class const LibraryUmamiTransfer({
   /// Saves the photo at an address on this device, and returns the
   /// recipe's `photoRef` for it (`RecipePhotos.importFrom`).
   required final Future<String?> Function(String? url) importPhoto,
+
+  /// Matches an imported recipe's ingredients to foods where one clearly
+  /// fits, so its nutrition shows without fixing every line by hand.
+  required final Future<void> Function(RecipeId recipeId) matchNutrition,
 }) implements UmamiTransfer {
   /// The name export offers for the file.
   static const exportFileName = 'Sousvite recipes.zip';
@@ -53,6 +57,7 @@ class const LibraryUmamiTransfer({
           recipe: snapshot.recipe.copyWith(photoRef: photoRefs[index]),
         ),
       );
+      await matchNutrition(snapshot.recipe.id);
       if (book == null || book.trim().isEmpty) continue;
       final folderId = folderIds[book] ??= await _newFolder(book);
       await folders.addRecipeToFolder(folderId, snapshot.recipe.id);

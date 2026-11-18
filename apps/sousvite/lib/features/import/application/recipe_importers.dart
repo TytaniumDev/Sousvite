@@ -10,6 +10,7 @@ import 'package:sousvite/features/import/data/library_umami_transfer.dart';
 import 'package:sousvite/features/import/data/page_fetchers.dart';
 import 'package:sousvite/features/import/data/page_url_importer.dart';
 import 'package:sousvite/features/import/data/umami_files.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/shared/photos/photos.dart';
 import 'package:uuid/uuid.dart';
 
@@ -74,4 +75,8 @@ UmamiTransfer umamiTransfer(Ref ref) => LibraryUmamiTransfer(
   folders: ref.watch(folderRepositoryProvider),
   newId: const Uuid().v4,
   importPhoto: ref.watch(recipePhotosProvider).importFrom,
+  matchNutrition: (recipeId) async {
+    final autoMatch = await ref.read(autoMatchProvider.future);
+    await autoMatch.matchRecipe(recipeId);
+  },
 );

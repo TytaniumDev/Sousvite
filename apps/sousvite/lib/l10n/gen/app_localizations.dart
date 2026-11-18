@@ -1138,6 +1138,36 @@ abstract class AppLocalizations {
   /// **'Leave unmatched'**
   String get nutrition_leaveUnmatched;
 
+  /// Button next to the unmatched count that matches every ingredient that clearly fits a USDA food, leaving the rest unmatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix all'**
+  String get nutrition_fixAll;
+
+  /// Snack bar after matching ingredients automatically: how many were matched.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No clear matches found.} =1{Matched 1 ingredient.} other{Matched {count} ingredients.}}'**
+  String nutrition_matchedCount(int count);
+
+  /// Follows nutrition_matchedCount in the snack bar: how many ingredients were left for the user to match.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 still needs a match.} other{{count} still need a match.}}'**
+  String nutrition_stillUnmatched(int count);
+
+  /// Settings row that matches the unmatched ingredients of every recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Match nutrition for all recipes'**
+  String get nutrition_matchLibrary;
+
+  /// Explains the row that matches every recipe's ingredients; unclear ones are left for the user.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches ingredients to USDA foods where the fit is clear'**
+  String get nutrition_matchLibraryDescription;
+
   /// Label of the food search field.
   ///
   /// In en, this message translates to:

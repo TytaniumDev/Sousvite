@@ -46,6 +46,7 @@ void main() {
   late FakeFolderRepository folders;
   late LibraryUmamiTransfer transfer;
   late List<String?> photoUrls;
+  late List<RecipeId> matched;
   final baking = Folder(
     id: const FolderId('baking'),
     name: 'Baking',
@@ -57,6 +58,7 @@ void main() {
     recipes = FakeRecipeRepository();
     folders = FakeFolderRepository();
     photoUrls = [];
+    matched = [];
     var nextId = 0;
     transfer = LibraryUmamiTransfer(
       files: files,
@@ -67,6 +69,7 @@ void main() {
         photoUrls.add(url);
         return url == null ? null : 'saved:$url';
       },
+      matchNutrition: (recipeId) async => matched.add(recipeId),
     );
   });
 
@@ -90,6 +93,8 @@ void main() {
       expect(folders.recipeIdsIn(folders.allFolders.last.id), [
         saved[1].recipe.id,
       ]);
+      // Each recipe's ingredients are matched for nutrition once saved.
+      expect(matched, [for (final s in saved) s.recipe.id]);
     });
 
     test('saves each photo, a few at a time, in recipe order', () async {

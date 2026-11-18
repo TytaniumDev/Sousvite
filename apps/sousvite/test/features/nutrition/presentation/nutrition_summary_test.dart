@@ -1,3 +1,4 @@
+import 'package:domain/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../fakes.dart';
@@ -46,6 +47,55 @@ void main() {
 
       expect(find.text('Nutrients'), findsOneWidget);
       expect(find.text('Fix'), findsNothing);
+    });
+
+    testWidgets('fixes all the ingredients that clearly fit a food', (
+      tester,
+    ) async {
+      final harness = NutritionHarness();
+      await harness.seed();
+      final milk = NutritionFixtures.food('usda-milk')
+          .copyWith(name: 'Milk, whole');
+      harness.foods.addFood(
+        milk,
+        portions: [
+          FoodPortion(
+            id: const FoodPortionId('usda-milk:cup'),
+            foodId: milk.id,
+            amount: Quantity.one,
+            gramWeight: 244,
+            unit: Unit.cup,
+            description: '1 cup',
+          ),
+        ],
+      );
+      await harness.pump(tester);
+
+      await tester.tap(find.text('Fix all'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Matched 1 ingredient.'), findsOneWidget);
+      expect(find.textContaining('unmatched'), findsNothing);
+      final match = harness.foods.matches.values.firstWhere(
+        (m) => m.ingredientLineId == NutritionHarness.milk,
+      );
+      expect(match.foodId, milk.id);
+      expect(match.gramWeight, 244);
+    });
+
+    testWidgets('says what it could not fix', (tester) async {
+      final harness = NutritionHarness();
+      await harness.seed();
+      await harness.pump(tester);
+
+      await tester.tap(find.text('Fix all'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('No clear matches found. 1 still needs a match.'),
+        findsOneWidget,
+      );
+      expect(find.text('Excludes 1 unmatched ingredient'), findsOneWidget);
     });
 
     testWidgets('says nothing when every ingredient is matched', (

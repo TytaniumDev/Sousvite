@@ -101,4 +101,4 @@ final class UmamiTransferProvider
   }
 }
 
-String _$umamiTransferHash() => r'20f9e50f81a9ff7c96e21bb7bdb2cbd9cf494698';
+String _$umamiTransferHash() => r'05d504f5098f265af3b2b35a5f8cc23c82cbc98f';
