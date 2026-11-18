@@ -36,7 +36,9 @@ Future<void> offlineEditSyncs(WidgetTester tester) async {
     find.widgetWithText(TextField, 'Recipe name'),
     'Cardamom toast',
   );
+  expect(find.widgetWithText(TextField, 'Cardamom toast'), findsOneWidget);
   await tapOn(tester, find.text('Save'));
+  expect(await titleOn(phone, recipeId), 'Cardamom toast');
   await pumpUntilFound(tester, find.text('Cardamom toast'));
   await phone.sync();
   await laptop.sync();
