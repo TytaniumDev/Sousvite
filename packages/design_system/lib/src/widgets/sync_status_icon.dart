@@ -57,8 +57,9 @@ class const SyncStatusIcon({
   }
 }
 
-/// Turns its child once every [period], or holds still under reduced
-/// motion. Kept in its own widget so the ticking stays local.
+/// Turns its child counterclockwise once every [period], the way the
+/// arrows of the sync symbol point, or holds still under reduced motion.
+/// Kept in its own widget so the ticking stays local.
 class const _Turning({required final Widget child}) extends StatefulWidget {
   static const period = Duration(milliseconds: 1500);
 
@@ -73,6 +74,12 @@ class _TurningState()
     vsync: this,
     duration: _Turning.period,
   );
+
+  // Negative turns go counterclockwise, matching the symbol's arrows.
+  late final Animation<double> _turns = Tween<double>(
+    begin: 0,
+    end: -1,
+  ).animate(_controller);
 
   @override
   void didChangeDependencies() {
@@ -93,5 +100,5 @@ class _TurningState()
 
   @override
   Widget build(BuildContext context) =>
-      RotationTransition(turns: _controller, child: widget.child);
+      RotationTransition(turns: _turns, child: widget.child);
 }
