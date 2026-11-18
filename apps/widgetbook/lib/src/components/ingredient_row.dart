@@ -45,5 +45,24 @@ final ingredientRowComponent = WidgetbookComponent(
         ),
       ),
     ),
+    WidgetbookUseCase(
+      name: 'With measuring guide',
+      builder: (context) => Preview(
+        child: Interactive(
+          initialValue: false,
+          builder: (context, checked, onChanged) => IngredientRow(
+            name: 'Kosher salt',
+            quantity: Quantity(3, 2),
+            unit: 'tsp',
+            checked: checked,
+            onChanged: onChanged,
+            guide: MeasuringGuide(
+              label: context.knobs.string(label: 'Label', initialValue: 'Use'),
+              tools: [(quantity: Quantity(1, 2), unit: 'Tbsp')],
+            ),
+          ),
+        ),
+      ),
+    ),
   ],
 );

@@ -1240,6 +1240,12 @@ abstract class AppLocalizations {
   /// **'Ingredients for this step'**
   String get cooking_stepIngredients;
 
+  /// Shown before the measuring cups and spoons to fill for an ingredient's amount in cooking mode, as in 'Use ½ Tbsp' for 1 ½ tsp of salt.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get cooking_measureWith;
+
   /// Shown on a timer chip when its time has run out.
   ///
   /// In en, this message translates to:

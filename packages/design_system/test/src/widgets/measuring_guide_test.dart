@@ -33,6 +33,20 @@ void main() {
       expect(find.text('+'), findsNothing);
     });
 
+    testWidgets('says what the tools are for before them', (tester) async {
+      await tester.pumpDesignSystem(
+        const MeasuringGuide(
+          label: 'Use',
+          tools: [(quantity: Quantity.one, unit: 'cup')],
+        ),
+      );
+
+      expect(
+        tester.getTopRight(find.text('Use')).dx,
+        lessThan(tester.getTopLeft(find.text('1\u00A0cup')).dx),
+      );
+    });
+
     testWidgets('takes the cooking style', (tester) async {
       await tester.pumpDesignSystem(
         Builder(
@@ -77,6 +91,10 @@ void main() {
             (quantity: Quantity.one, unit: 'Tbsp'),
             (quantity: Quantity(1, 2), unit: 'tsp'),
           ],
+        ),
+        'labeled': MeasuringGuide(
+          label: 'Use',
+          tools: [(quantity: Quantity(1, 2), unit: 'Tbsp')],
         ),
         'cooking': Builder(
           builder: (context) => MeasuringGuide(

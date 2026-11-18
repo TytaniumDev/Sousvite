@@ -728,6 +728,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cooking_stepIngredients => 'Ingredients for this step';
 
   @override
+  String get cooking_measureWith => 'Use';
+
+  @override
   String get cooking_timerDone => 'Time\'s up';
 
   @override
