@@ -227,7 +227,7 @@ abstract interface class SyncTransport {
 }
 ```
 
-The engine (`packages/sync/lib/src/engine/`) talks to the database through a `LocalStore` interface that `packages/data` implements. It pushes only this device's own changes, merges each pulled batch in one local transaction, and saves the cursor in that transaction, so an interrupted sync resumes without loss. The app writes a snapshot after every 200 pushed changes or daily (§8.1), and switching transports is `replay()`: a snapshot of the current state into the new transport.
+The engine (`packages/sync/lib/src/engine/`) talks to the database through a `LocalStore` interface that `packages/data` implements. It pushes only this device's own changes, merges each pulled batch in one local transaction, and saves the cursor in that transaction, so an interrupted sync resumes without loss. The app writes a snapshot after every 200 pushed changes or daily (§8.1), and switching transports is `replay()`: a snapshot of the current state into the new transport. The app pushes and pulls before it writes a snapshot, and a snapshot that fails is reported and tried again on the next sync, so it never holds back the log.
 
 | | Google Drive (free) | Sousvite cloud (Pro at launch; everyone in the beta) |
 |---|---|---|

@@ -244,6 +244,49 @@ void main() {
       expect(phone.reporter.errors, isNotEmpty);
     });
 
+    test('a failed snapshot still pushes, and is written next sync', () async {
+      final transport = SnapshotFailingTransport(InMemoryTransport(space))
+        ..snapshotError = const SocketLikeException('unauthorized');
+      final phone = device(transport);
+      await phone.container.read(changeRecorderProvider.future);
+      await phone.container
+          .read(recipeRepositoryProvider)
+          .saveRecipe(_recipe('r1', 'Soup'));
+
+      final controller = await phone.start();
+      expect(phone.state.phase, SyncPhase.synced);
+      expect(space.changes, isNotEmpty);
+      expect(space.snapshot, isNull);
+      expect(phone.reporter.errors, isNotEmpty);
+
+      transport.snapshotError = null;
+      await controller.sync();
+      expect(space.snapshot, isNotNull);
+    });
+
+    test('a snapshot that fails offline leaves the sync offline', () async {
+      final phone = device(
+        SnapshotFailingTransport(InMemoryTransport(space))
+          ..snapshotError = const SocketLikeException('SocketException'),
+      );
+
+      await phone.start();
+
+      expect(phone.state.phase, SyncPhase.offline);
+      expect(phone.reporter.errors, isEmpty);
+    });
+
+    test('a snapshot that needs Drive again asks for sign-in', () async {
+      final phone = device(
+        SnapshotFailingTransport(InMemoryTransport(space))
+          ..snapshotError = const DriveSignInRequired(),
+      );
+
+      await phone.start();
+
+      expect(phone.state.phase, SyncPhase.signInAgain);
+    });
+
     test('switching to Drive asks for access and copies everything', () async {
       final phone = device();
       final controller = await phone.start();
