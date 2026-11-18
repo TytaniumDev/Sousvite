@@ -12,6 +12,7 @@ on:
       - firestore.rules
       - firestore.indexes.json
       - storage.rules
+      - storage.cors.json
       - firebase.json
       - .github/workflows/deploy_functions.yaml
   workflow_dispatch:
@@ -81,3 +82,14 @@ jobs:
           --only storage
           --project sousvite
           --non-interactive
+
+      # The web app downloads sync snapshots and photos from their download
+      # URLs, which browsers only allow when the bucket's CORS lists the
+      # app's origins (ENGINEERING.md §9.1). Needs Storage Admin on the
+      # bucket (BUILD_PLAN.md §8.1).
+      - name: 🌐 Set Storage CORS
+        if: env.FIREBASE_SERVICE_ACCOUNT != ''
+        run: |
+          gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet
+          gcloud storage buckets update gs://sousvite.firebasestorage.app \
+            --cors-file=storage.cors.json --project sousvite

@@ -297,7 +297,7 @@ shareLinks/{linkId}                  View-only link: the recipe as plain text, o
 usdaCache/{key}                      USDA proxy cache (§11.1). Functions only.
 ```
 
-Cloud Storage holds `spaces/{spaceId}/snapshots/{hlc}.json.gz` (a snapshot can pass Firestore's 1 MiB document limit) and `spaces/{spaceId}/photos/{photoId}`. Both are written once and never changed or deleted by the app: a new photo gets a new id, and old photos stay because recipe history can show them. Photos must be images under 10 MB. Drive users keep photos in their app folder as `photos/{photoId}`. In `packages/sync`, `BlobStore` has a Drive and a Cloud Storage implementation (MEDIA-2) that share one contract suite.
+Cloud Storage holds `spaces/{spaceId}/snapshots/{hlc}.json.gz` (a snapshot can pass Firestore's 1 MiB document limit) and `spaces/{spaceId}/photos/{photoId}`. Both are written once and never changed or deleted by the app: a new photo gets a new id, and old photos stay because recipe history can show them. Photos must be images under 10 MB. The web app downloads both from their download URLs, so the bucket's CORS (`storage.cors.json`, set by the backend deploy) must list the web app's origins; without it every download fails in the browser. Drive users keep photos in their app folder as `photos/{photoId}`. In `packages/sync`, `BlobStore` has a Drive and a Cloud Storage implementation (MEDIA-2) that share one contract suite.
 
 - A user's private space id on the server is `u_{uid}`, so a device can find it without a query. On the device it stays `private` (DATA-2), and the Firestore transport maps between the two, so signing in never rewrites local changes.
 - A push with more changes than fit in one document (about 500 or 900 KB) splits into several batches.
