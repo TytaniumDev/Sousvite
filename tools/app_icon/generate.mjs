@@ -15,14 +15,14 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const app = join(root, 'apps', 'sousvite');
 
-// Colors from docs/DESIGN_SYSTEM.md: terracotta (tertiary seed #C0603A),
-// cream (surface), herb green (primary in the dark scheme).
+// Colors from docs/DESIGN_SYSTEM.md §7.1: a tangerine tile (brighter than the
+// terracotta accent), cream (surface), herb green (primary, dark scheme).
 const colors = {
-  backgroundTop: '#cc6c45',
-  backgroundBottom: '#b5552f',
+  backgroundTop: '#ff8f4f',
+  backgroundBottom: '#f26b2c',
   spoon: '#fff8f2',
   leaf: '#a4d48c',
-  darkSpoon: '#e0784f',
+  darkSpoon: '#ff8f4f',
   darkLeaf: '#a4d48c',
   tintedSpoon: '#ffffff',
   tintedLeaf: '#bdbdbd',

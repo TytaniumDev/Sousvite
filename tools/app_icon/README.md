@@ -1,6 +1,6 @@
 # App icon
 
-The Sousvite icon is a cream spoon crossed with a herb-green leaf on a terracotta tile. `generate.mjs` holds the drawing and writes every icon file from it, so the platforms never drift apart. The design decision is in [DESIGN_SYSTEM.md §7.1](../../docs/DESIGN_SYSTEM.md).
+The Sousvite icon is a cream spoon crossed with a herb-green leaf on a tangerine tile. `generate.mjs` holds the drawing and writes every icon file from it, so the platforms never drift apart. The design decision is in [DESIGN_SYSTEM.md §7.1](../../docs/DESIGN_SYSTEM.md).
 
 ## Regenerate
 
@@ -16,7 +16,7 @@ Commit everything it changes. Never edit the generated files by hand.
 
 The mark is drawn upright in a 1024 grid: a spoon (an ellipse and a stadium) and a leaf (a blade with its midrib cut out, and a short stem below the crossing). The spoon turns 42° one way and the leaf 42° the other, and the pair is scaled about the center. Every shape becomes cubic Béziers, so the transforms are baked into plain path data that SVG and Android vector drawables both read.
 
-Colors come from the design system: terracotta `#cc6c45` to `#b5552f` (around the `#C0603A` seed), cream `#fff8f2`, and herb green `#a4d48c`.
+Colors come from the design system: tangerine `#ff8f4f` to `#f26b2c`, cream `#fff8f2`, and herb green `#a4d48c`.
 
 ## What it writes
 

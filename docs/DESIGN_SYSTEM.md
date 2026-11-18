@@ -41,7 +41,7 @@ Decisions are marked the same way as in the engineering doc:
 | Typography | Serif for recipe names and headings (Newsreader), sans for everything else (Plus Jakarta Sans), both bundled | Decided |
 | Density | Comfortable by default, compact for nutrition tables and long read-only lists | Decided |
 | Icons | Material Symbols Rounded | Decided |
-| App icon | Crossed spoon and leaf on terracotta (§7.1) | Decided |
+| App icon | Crossed spoon and leaf on tangerine (§7.1) | Decided |
 | Motion | Expressive: spring-based, with a little bounce on movement | Decided |
 | Accessibility | WCAG 2.2 AA app-wide, AAA contrast (7:1) in cooking mode | Decided |
 | Cooking mode theme | Follows the app's light or dark theme, using a high-contrast variant | Decided |
@@ -277,10 +277,10 @@ Buttons stay fully rounded (Material's default). Nested corners follow the rule 
 
 ### 7.1 App icon *(Decided by Tyler, 2026-11-18)*
 
-A cream spoon crossed with a herb-green leaf on a terracotta tile (`#cc6c45` to `#b5552f`, around the `#C0603A` seed). It started from an icon Tyler made with Gemini, simplified to the mark alone so it reads at 29 pt and in one color. The same mark is the web favicon and is meant for the splash screen.
+A cream spoon crossed with a herb-green leaf on a tangerine tile (`#ff8f4f` to `#f26b2c`). The tile is a brighter orange than the terracotta accent on purpose: Tyler found the terracotta tile too brown on the home screen (2026-11-18). It started from an icon Tyler made with Gemini, simplified to the mark alone so it reads at 29 pt and in one color. The same mark is the web favicon and is meant for the splash screen.
 
 - **One drawing:** `tools/app_icon/generate.mjs` holds the shapes and writes every platform file from them. Change the icon there and rerun it; never edit the generated files by hand. Its README lists the files.
-- **iOS:** one 1024 image per appearance (light, dark, tinted) in `AppIcon.appiconset`; Xcode makes every size. Dark keeps the brand colors on the system's dark background (terracotta spoon, green leaf). iOS 26 builds its clear and glass looks from these.
+- **iOS:** one 1024 image per appearance (light, dark, tinted) in `AppIcon.appiconset`; Xcode makes every size. Dark keeps the brand colors on the system's dark background (tangerine spoon, green leaf). iOS 26 builds its clear and glass looks from these.
 - **Android:** an adaptive icon (`mipmap-anydpi-v26`) with vector layers: the gradient background, the foreground inside the 66 dp safe zone, and a monochrome layer for themed icons. PNGs cover Android 7 and older.
 - **Web:** `favicon.svg` (the mark drawn bigger so it reads at 16 px) with a PNG fallback, home-screen and maskable icons, and an Apple touch icon.
 
