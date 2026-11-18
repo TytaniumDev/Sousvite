@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["https://sousvite.web.app", "https://sousvite.firebaseapp.com"],
+    "method": ["GET", "HEAD"],
+    "maxAgeSeconds": 3600
+  }
+]

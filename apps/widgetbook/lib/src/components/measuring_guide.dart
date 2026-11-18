@@ -17,6 +17,10 @@ final measuringGuideComponent = WidgetbookComponent(
                 .map((tool) => '${tool.quantity.format()} ${tool.unit}')
                 .join(' + '),
           ),
+          label: context.knobs.stringOrNull(
+            label: 'Label',
+            initialValue: 'Use',
+          ),
         ),
       ),
     ),

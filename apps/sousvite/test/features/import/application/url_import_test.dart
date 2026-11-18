@@ -19,15 +19,18 @@ import '../fakes.dart';
 void main() {
   late FakeUrlImporter importer;
   late FakeRecipeRepository recipes;
+  late FakeFolderRepository folders;
   late ProviderContainer container;
 
   setUp(() {
     importer = FakeUrlImporter();
     recipes = FakeRecipeRepository();
+    folders = FakeFolderRepository();
     container = ProviderContainer.test(
       overrides: [
         urlImporterProvider.overrideWithValue(importer),
         recipeRepositoryProvider.overrideWithValue(recipes),
+        folderRepositoryProvider.overrideWithValue(folders),
       ],
     )..listen(urlImportProvider, (_, _) {});
   });
@@ -58,6 +61,17 @@ void main() {
 
       notifier().reset();
       expect(container.read(urlImportProvider).value, isNull);
+    });
+
+    test('files the recipe into the folder it was added from', () async {
+      const soups = FolderId('soups');
+      importer.result = RecipeSnapshot(
+        recipe: RecipeFixtures.recipe(id: 'chili', title: 'Chili'),
+      );
+
+      await notifier().import('seriouseats.com/chili', folderId: soups);
+
+      expect(folders.recipeIdsIn(soups), [const RecipeId('chili')]);
     });
 
     test('rejects text that is not a link without fetching', () async {

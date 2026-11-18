@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
 import 'package:sousvite/features/recipe/application/recipe_outline.dart';
 import 'package:sousvite/features/recipe/presentation/section_title.dart';
+import 'package:sousvite/features/recipe/presentation/smart_step_text.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
@@ -70,7 +71,8 @@ class const _StepSectionHeader({
   );
 }
 
-/// One numbered step. Rebuilds only when its text or number changes.
+/// One numbered step, with amounts placed inline. Rebuilds only when its
+/// number changes; [SmartStepText] rebuilds for its words and amounts.
 class const RecipeStepTile({
   /// The recipe the step belongs to.
   required final RecipeId recipeId,
@@ -81,36 +83,33 @@ class const RecipeStepTile({
   /// Its number in the whole recipe, from 1.
   required final int number,
   super.key,
-}) extends ConsumerWidget {
+}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final text = ref.watch(
-      recipeStepProvider(recipeId, stepId).select((step) => step?.text ?? ''),
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.space3),
-      child: MergeSemantics(
-        child: Row(
-          crossAxisAlignment: .start,
-          children: [
-            SizedBox(
-              width: AppSpacing.space8,
-              child: Semantics(
-                label: context.l10n.recipe_stepLabel(number),
-                child: ExcludeSemantics(
-                  child: Text(
-                    '$number',
-                    style: context.textStyles.titleMedium?.copyWith(
-                      color: context.colors.primary,
-                    ),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: AppSpacing.space3),
+    child: MergeSemantics(
+      child: Row(
+        crossAxisAlignment: .start,
+        children: [
+          SizedBox(
+            width: AppSpacing.space8,
+            child: Semantics(
+              label: context.l10n.recipe_stepLabel(number),
+              child: ExcludeSemantics(
+                child: Text(
+                  '$number',
+                  style: context.textStyles.titleMedium?.copyWith(
+                    color: context.colors.primary,
                   ),
                 ),
               ),
             ),
-            Expanded(child: StepText(segments: [StepTextSegment(text)])),
-          ],
-        ),
+          ),
+          Expanded(
+            child: SmartStepText(recipeId: recipeId, stepId: stepId),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

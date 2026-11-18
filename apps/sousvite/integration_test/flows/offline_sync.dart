@@ -25,6 +25,8 @@ Future<void> offlineEditSyncs(WidgetTester tester) async {
   await laptop.sync();
   await phone.sync();
   await tester.pumpAndSettle();
+  // It is in no folder yet, so it waits under Unsorted.
+  await tapOn(tester, find.text('Unsorted'));
   expect(find.text('Cinnamon toast'), findsOneWidget);
 
   // Edited on the phone with no connection.

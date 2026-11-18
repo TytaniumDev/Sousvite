@@ -173,6 +173,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library_editFoldersHint => 'Edit folders';
 
   @override
+  String library_recipeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recipes',
+      one: '1 recipe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get library_unsorted => 'Unsorted';
+
+  @override
+  String get library_pickFolderTitle => 'Add to which folder?';
+
+  @override
+  String get library_lastFolder => 'A recipe needs at least one folder';
+
+  @override
+  String library_deleteFolderTitle(String name) {
+    return 'Delete $name?';
+  }
+
+  @override
+  String library_deleteFolderMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recipes are in no other folder and will be deleted too.',
+      one: '1 recipe is in no other folder and will be deleted too.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get library_deleteConfirm => 'Delete';
+
+  @override
+  String library_folderAndRecipesDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Folder and $count recipes deleted',
+      one: 'Folder and 1 recipe deleted',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get recipe_title => 'Recipe';
 
   @override
@@ -474,6 +524,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get import_umamiImporting => 'Importing…';
 
   @override
+  String get import_umamiImportingTitle => 'Importing from Umami';
+
+  @override
+  String get import_umamiReading => 'Reading the export…';
+
+  @override
+  String import_umamiSavingRecipes(int done, int total) {
+    return 'Saving recipes: $done of $total';
+  }
+
+  @override
+  String import_umamiSavingPhotos(int done, int total) {
+    return 'Saving photos: $done of $total';
+  }
+
+  @override
+  String get import_umamiKeepOpen => 'Keep Sousvite open until this finishes.';
+
+  @override
   String get import_umamiExport => 'Export for Umami';
 
   @override
@@ -693,6 +762,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cooking_stepIngredients => 'Ingredients for this step';
+
+  @override
+  String get cooking_measureWith => 'Use';
 
   @override
   String get cooking_timerDone => 'Time\'s up';

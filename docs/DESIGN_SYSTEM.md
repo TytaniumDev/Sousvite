@@ -298,7 +298,7 @@ All springs have mass 1. In Flutter these are `SpringDescription.withDampingRati
 
 ### 8.2 Signature moments
 
-- **Checking an ingredient:** the check mark pops in (`spatialFast`), the row fades to `on-surface-variant` and gets a strike-through (`effectsDefault`).
+- **Checking off an ingredient while cooking:** the check mark pops in (`spatialFast`), the row fades to `on-surface-variant` and gets a strike-through (`effectsDefault`). Choosing ingredients to add to the grocery list only ticks the box.
 - **Reordering sections and steps:** the dragged item lifts (scale 1.02, shadow), neighbors make room, and it settles with `spatialDefault`.
 - **Add to grocery list:** the grocery nav badge bumps its count with a small overshoot.
 - **Cooking step change:** the step follows the finger while swiping, then settles with `spatialDefault`. Buttons trigger the same motion.
@@ -331,8 +331,8 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `RecipeCard` | Photo, recipe name (serif), total time, calories per serving, optional badges | `title`, `image` (`ImageProvider`), `totalTimeLabel` ("45 min"), `caloriesLabel` ("520 kcal"), `badges`, `onTap` |
 | `AmountText` | A formatted amount with fraction glyphs and an optional screen-reader label | `quantity` (`Quantity` from `units`), `unit` (localized word), `semanticsLabel`, `style` |
 | `StepText` | Step text with amounts placed inline and emphasized | `segments` (`StepTextSegment` words and `StepAmountSegment` quantity and unit), `style`, `amountStyle`, `highlightAmounts` (editor) |
-| `MeasuringGuide` | Which measuring tools to use: `½ cup` `+` `¼ cup` | `tools` (quantity and unit word of each tool), `style` |
-| `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox | `quantity`, `unit`, `name`, `preparation`, `checked`, `onChanged` (null for read-only) |
+| `MeasuringGuide` | Which measuring tools to use: Use `½ cup` `+` `¼ cup` | `tools` (quantity and unit word of each tool), `label` (words before the tools), `style` |
+| `IngredientRow` | Amount column, ingredient name, preparation note; optional checkbox and guide under the name | `quantity`, `unit`, `name`, `preparation`, `checked`, `onChanged` (null for read-only), `checkStyle` (`checkOff` strikes a checked line through; `select` leaves the text alone), `guide` |
 | `IngredientSplitPreview` | How a typed line was split: amount, ingredient, and preparation as chips the user can fix | `quantity`, `unit`, `name`, `preparation`, a spoken label for each part, `onEdit(part)` |
 | `MacroBar` | Horizontal bar of protein, carbs, and fat by calories, with small gaps between segments | `protein`, `carbs`, `fat` (grams) |
 | `MacroSummary` | Calories plus P / C / F grams, with the macro bar | `calories`, `protein`, `carbs`, `fat`, `basisLabel` ("Per serving"), `labels` (`MacroLabels`) |
@@ -358,7 +358,7 @@ Details that matter:
 - **MacroBar** segments are always labeled nearby (by `MacroSummary` or a legend). Segments are separated by 2 dp gaps in the surface color so they read without relying on hue alone.
 - **MatchStatusChip** pairs color with an icon and a word: USDA and Open Food Facts are neutral (`surface-container-high` with an icon), Edited uses `secondary-container`, Not matched uses `warning-container` with a warning icon.
 - **TimerChip** is idle in `secondary-container`, running in `tertiary-container` with a live countdown, and done with a pulse (§8.2). The feature owns whether a timer runs and passes `startedAt`, so running timers survive step changes and collect in the tray; the chip only ticks its own countdown. Sound and vibration are the feature's job.
-- **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Read-only rows follow the theme's density (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp and toggle when tapped anywhere.
+- **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Rows follow the theme's density: read-only rows are 48 dp (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp (48 dp inside `CompactDensity`) and toggle when tapped anywhere. A checkbox that means "done" (cooking) uses `checkOff`, which strikes the line through; one that means "include" (choosing lines for the grocery list) uses `select`, which leaves the text alone.
 - **MeasuringGuide** shows each tool as a `surface-container-high` pill joined by `+`, wrapping onto more lines when space runs out.
 - **Nutrition numbers** are whole for calories and milligrams, and keep one decimal below 10 g (`2.5 g`, `31 g`), dropping a trailing `.0`. `NutrientPrecision` holds this rule so every nutrition widget rounds the same way.
 - **ServingStepper** steps by whole servings: from 2½, minus goes to 2 and plus goes to 3. A fractional serving size typed elsewhere is kept until the next step.
@@ -389,9 +389,10 @@ Cooking mode is the signature feature, so it gets its own rules.
 
 - **Theme:** the current light or dark theme, switched to its high-contrast scheme (`cooking-light` or `cooking-dark`). Every text pair is at least 7:1. *(Decided)*
 - **Screen stays awake** while cooking mode is open (`wakelock_plus`), and is released when it closes.
-- **One step at a time,** in `cookingStep` style with amounts in `cookingAmount`. A `MeasuringGuide` for each amount sits under the step.
+- **One step at a time,** in `cookingStep` style with amounts in `cookingAmount`.
 - **Where you are:** a header shows the section and progress ("Prep · Step 2 of 5") in `cookingSection`, with a thin progress bar across the whole recipe.
-- **Ingredients for this step:** a checklist of just this step's ingredients, with checkboxes. On compact screens it's a panel under the step; on medium and expanded screens in landscape, it's a side pane (two panes: step on the left, ingredients on the right).
+- **Ingredients for this step:** a compact checklist (`CompactDensity`) of just this step's ingredients, with checkboxes, so you know what to get ready. On compact screens it sits above the step; on medium and expanded screens in landscape, it's a side pane (two panes: step on the left, ingredients on the right).
+- **Measuring guides:** an ingredient row whose amount takes a different tool, or more than one, shows a `MeasuringGuide` under its name: "Use ½ Tbsp" for 1 ½ tsp. An amount that is exactly one of your tools, a range, or a mass gets none.
 - **Navigation for messy hands:** swipe left or right anywhere, plus large **Back** and **Next** buttons at the bottom, at least 64 dp tall and spanning the width, inside the thumb zone. No small targets, and no invisible tap zones that can be hit by accident. The last step's Next becomes **Done**.
 - **Timers:** each time in a step is a `TimerChip`. Running timers collect in a tray pinned above the Back and Next buttons, so they stay visible on every step. A finished timer alerts with sound, vibration, and a pulse.
 - **Leaving:** a close button in the top corner; leaving keeps your place, and reopening the recipe offers "Resume cooking".
@@ -423,7 +424,7 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 
 ### 10.8 Feedback
 
-- **Undo over confirm.** Reversible actions (delete a recipe, remove a grocery item, uncheck all) happen immediately with an Undo snackbar. Dialogs are only for things that can't be undone.
+- **Undo over confirm.** Reversible actions (delete a recipe, remove a grocery item, uncheck all) happen immediately with an Undo snackbar. Dialogs are only for things that can't be undone, and for deleting a folder that takes recipes with it (§10.11), which confirms and still offers Undo.
 - **Snackbars** use `inverse-surface`, say what happened in a few words ("Recipe deleted"), and have at most one action.
 - **Loading** waits 300 ms before showing a progress indicator, so fast loads don't flash. Recipe lists use placeholder cards in `surface-container-low`, not spinners.
 - **Empty states** use `EmptyState`: what this space is for and the one action that fills it ("No recipes yet. Paste a link or write your own.").
@@ -437,6 +438,16 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 
 - Pro features show `ProBadge` where they're offered (sync through Sousvite, sharing). Tapping one explains what Pro does and its price in one sheet.
 - No nagging: no upsell pop-ups on launch, and no features shown and then locked mid-task.
+
+### 10.11 Library *(Decided by Tyler, 2026-11-18)*
+
+- **Folders lead.** Every recipe belongs in a folder, so the Library tab lists only folders, as a grid of tiles (three across a phone, more on wider windows), with a "New folder" tile last. A tile shows a square collage of up to four of the folder's newest photos (one fills it, two split it, three put the newest on the left, four make a 2 by 2 grid), the folder name, and its recipe count. No photos shows a folder icon.
+- **Unsorted** is a tile, first in the grid, shown only while some recipes are in no folder (from before folders were required). It opens their page, where press and hold files them.
+- Tapping a tile opens the folder's own page under the library: its recipe cards, its own search, and rename and delete in the app bar menu.
+- **Adding** a recipe happens from a folder: Add recipe on a folder page files the import or new recipe there. On the main page it first asks "Add to which folder?" (with New folder). The Unsorted page has no Add button. A duplicate goes into the original's folders. A link shared from another app, and Umami recipes without a book, arrive unsorted.
+- **Removing:** the folders sheet won't untick a recipe's only folder ("A recipe needs at least one folder"). Deleting a folder deletes the recipes in no other folder too, after a dialog saying how many, and Undo brings back the folder and those recipes.
+- The search field on the main page searches every recipe; while it has words, matching recipe cards replace the tiles.
+- `FolderTile` lives in the library feature until a second feature shows folders.
 
 ## 11. Content and voice
 

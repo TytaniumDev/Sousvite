@@ -322,6 +322,54 @@ abstract class AppLocalizations {
   /// **'Edit folders'**
   String get library_editFoldersHint;
 
+  /// How many recipes a folder holds, under its tile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 recipe} other{{count} recipes}}'**
+  String library_recipeCount(int count);
+
+  /// Tile and page title for recipes that are in no folder yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsorted'**
+  String get library_unsorted;
+
+  /// Title of the sheet that picks a folder for a new recipe, from the library's main page.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to which folder?'**
+  String get library_pickFolderTitle;
+
+  /// Under a recipe's only folder in the folders sheet, explaining why it can't be unticked.
+  ///
+  /// In en, this message translates to:
+  /// **'A recipe needs at least one folder'**
+  String get library_lastFolder;
+
+  /// Title of the dialog confirming a folder delete that also deletes recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}?'**
+  String library_deleteFolderTitle(String name);
+
+  /// Body of the dialog confirming a folder delete: how many recipes go with it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 recipe is in no other folder and will be deleted too.} other{{count} recipes are in no other folder and will be deleted too.}}'**
+  String library_deleteFolderMessage(int count);
+
+  /// Button that confirms deleting a folder and its recipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get library_deleteConfirm;
+
+  /// Snackbar after deleting a folder along with recipes in no other folder.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Folder and 1 recipe deleted} other{Folder and {count} recipes deleted}}'**
+  String library_folderAndRecipesDeleted(int count);
+
   /// Title of the recipe page before its name loads.
   ///
   /// In en, this message translates to:
@@ -838,6 +886,36 @@ abstract class AppLocalizations {
   /// **'Importing…'**
   String get import_umamiImporting;
 
+  /// Title of the dialog shown while an Umami import runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing from Umami'**
+  String get import_umamiImportingTitle;
+
+  /// Umami import dialog status while the export file is read.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the export…'**
+  String get import_umamiReading;
+
+  /// Umami import dialog status while recipes are saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving recipes: {done} of {total}'**
+  String import_umamiSavingRecipes(int done, int total);
+
+  /// Umami import dialog status while recipe photos download. Recipes are already saved and show in the library.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving photos: {done} of {total}'**
+  String import_umamiSavingPhotos(int done, int total);
+
+  /// Umami import dialog note: leaving the app pauses the import.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Sousvite open until this finishes.'**
+  String get import_umamiKeepOpen;
+
   /// Button that exports recipes in Umami's format.
   ///
   /// In en, this message translates to:
@@ -1197,6 +1275,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ingredients for this step'**
   String get cooking_stepIngredients;
+
+  /// Shown before the measuring cups and spoons to fill for an ingredient's amount in cooking mode, as in 'Use ½ Tbsp' for 1 ½ tsp of salt.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get cooking_measureWith;
 
   /// Shown on a timer chip when its time has run out.
   ///

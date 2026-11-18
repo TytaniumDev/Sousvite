@@ -343,12 +343,15 @@ class EditorDraft() extends _$EditorDraft {
   // Saving.
 
   /// Writes the draft in one transaction, removing the parts deleted
-  /// while editing. Blank lines and steps are dropped. Does nothing
-  /// without a title.
-  Future<bool> save() async {
+  /// while editing, and puts the recipe in [folderId] when given. Blank
+  /// lines and steps are dropped. Does nothing without a title.
+  Future<bool> save({FolderId? folderId}) async {
     final draft = state.value?.draft;
     if (draft == null || draft.recipe.title.trim().isEmpty) return false;
     final repository = ref.read(recipeRepositoryProvider);
+    final folders = folderId == null
+        ? null
+        : ref.read(folderRepositoryProvider);
     final saved = state.value?.saved;
     final cleaned = draft.copyWith(
       recipe: draft.recipe.copyWith(
@@ -391,6 +394,7 @@ class EditorDraft() extends _$EditorDraft {
       }
     }
     await repository.saveSnapshot(cleaned);
+    await folders?.addRecipeToFolder(folderId!, cleaned.recipe.id);
     state = AsyncData((draft: cleaned, saved: cleaned));
     return true;
   }

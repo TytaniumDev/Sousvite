@@ -8,86 +8,38 @@ part of 'library_filter.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The folder the library shows, or null for every recipe.
-
-@ProviderFor(LibraryFolder)
-final libraryFolderProvider = LibraryFolderProvider._();
-
-/// The folder the library shows, or null for every recipe.
-final class LibraryFolderProvider
-    extends $NotifierProvider<LibraryFolder, FolderId?> {
-  /// The folder the library shows, or null for every recipe.
-  LibraryFolderProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'libraryFolderProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$libraryFolderHash();
-
-  @$internal
-  @override
-  LibraryFolder create() => LibraryFolder();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(FolderId? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<FolderId?>(value),
-    );
-  }
-}
-
-String _$libraryFolderHash() => r'7fa3cf964d50d30a156cb452cdcbb954e36a9fb7';
-
-/// The folder the library shows, or null for every recipe.
-
-abstract class _$LibraryFolder extends $Notifier<FolderId?> {
-  FolderId? build();
-  @$mustCallSuper
-  @override
-  WhenComplete runBuild() {
-    final ref = this.ref as $Ref<FolderId?, FolderId?>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<FolderId?, FolderId?>,
-              FolderId?,
-              Object?,
-              Object?
-            >;
-    return element.handleCreate(ref, build);
-  }
-}
-
-/// What the user typed into the library's search field.
+/// What the user typed into the search field of the page showing [scope].
+/// Each page keeps its own search.
 
 @ProviderFor(LibraryQuery)
-final libraryQueryProvider = LibraryQueryProvider._();
+final libraryQueryProvider = LibraryQueryFamily._();
 
-/// What the user typed into the library's search field.
+/// What the user typed into the search field of the page showing [scope].
+/// Each page keeps its own search.
 final class LibraryQueryProvider
     extends $NotifierProvider<LibraryQuery, String> {
-  /// What the user typed into the library's search field.
-  LibraryQueryProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'libraryQueryProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  /// What the user typed into the search field of the page showing [scope].
+  /// Each page keeps its own search.
+  LibraryQueryProvider._({
+    required LibraryQueryFamily super.from,
+    required LibraryScope super.argument,
+  }) : super(
+         retry: null,
+         name: r'libraryQueryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$libraryQueryHash();
+
+  @override
+  String toString() {
+    return r'libraryQueryProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -100,14 +52,59 @@ final class LibraryQueryProvider
       providerOverride: $SyncValueProvider<String>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LibraryQueryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$libraryQueryHash() => r'68667dbd5bdd5f2d1436b5fadeb63c7800f3fa16';
+String _$libraryQueryHash() => r'35a0d9c4f9bca9f37fc9f60fc13de8d7d599202a';
 
-/// What the user typed into the library's search field.
+/// What the user typed into the search field of the page showing [scope].
+/// Each page keeps its own search.
+
+final class LibraryQueryFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          LibraryQuery,
+          String,
+          String,
+          String,
+          LibraryScope
+        > {
+  LibraryQueryFamily._()
+    : super(
+        retry: null,
+        name: r'libraryQueryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// What the user typed into the search field of the page showing [scope].
+  /// Each page keeps its own search.
+
+  LibraryQueryProvider call(LibraryScope scope) =>
+      LibraryQueryProvider._(argument: scope, from: this);
+
+  @override
+  String toString() => r'libraryQueryProvider';
+}
+
+/// What the user typed into the search field of the page showing [scope].
+/// Each page keeps its own search.
 
 abstract class _$LibraryQuery extends $Notifier<String> {
-  String build();
+  late final _$args = ref.$arg as LibraryScope;
+  LibraryScope get scope => _$args;
+
+  String build(LibraryScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
@@ -120,6 +117,91 @@ abstract class _$LibraryQuery extends $Notifier<String> {
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, build);
+    return element.handleCreate(ref, () => build(_$args));
   }
+}
+
+/// Whether the search field of the page showing [scope] has words in it.
+
+@ProviderFor(isSearching)
+final isSearchingProvider = IsSearchingFamily._();
+
+/// Whether the search field of the page showing [scope] has words in it.
+
+final class IsSearchingProvider extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  /// Whether the search field of the page showing [scope] has words in it.
+  IsSearchingProvider._({
+    required IsSearchingFamily super.from,
+    required LibraryScope super.argument,
+  }) : super(
+         retry: null,
+         name: r'isSearchingProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$isSearchingHash();
+
+  @override
+  String toString() {
+    return r'isSearchingProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    final argument = this.argument as LibraryScope;
+    return isSearching(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is IsSearchingProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$isSearchingHash() => r'cbc6fcd7ad01ee9709ee4bf196115f1d2a2af920';
+
+/// Whether the search field of the page showing [scope] has words in it.
+
+final class IsSearchingFamily extends $Family
+    with $FunctionalFamilyOverride<bool, LibraryScope> {
+  IsSearchingFamily._()
+    : super(
+        retry: null,
+        name: r'isSearchingProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Whether the search field of the page showing [scope] has words in it.
+
+  IsSearchingProvider call(LibraryScope scope) =>
+      IsSearchingProvider._(argument: scope, from: this);
+
+  @override
+  String toString() => r'isSearchingProvider';
 }

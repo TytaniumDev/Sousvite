@@ -21,6 +21,10 @@ import 'package:sousvite/shared/widgets/async_value_view.dart';
 class const EditorScreen({
   /// The recipe to edit. An id that isn't saved yet starts a new recipe.
   required final RecipeId recipeId,
+
+  /// The folder a new recipe goes into when saved, or null to leave its
+  /// folders as they are.
+  final FolderId? folderId,
   super.key,
 }) extends ConsumerWidget {
   @override
@@ -35,7 +39,7 @@ class const EditorScreen({
         appBar: AppBar(
           title: _EditorTitle(recipeId: recipeId),
           actions: [
-            _SaveButton(recipeId: recipeId),
+            _SaveButton(recipeId: recipeId, folderId: folderId),
             EditorMenu(recipeId: recipeId),
           ],
         ),
@@ -92,15 +96,17 @@ class const _EditorTitle({required final RecipeId recipeId})
 }
 
 /// Saves the draft and goes to the recipe.
-class const _SaveButton({required final RecipeId recipeId})
-    extends ConsumerWidget {
+class const _SaveButton({
+  required final RecipeId recipeId,
+  required final FolderId? folderId,
+}) extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => TextButton(
     onPressed: () async {
       final messenger = ScaffoldMessenger.of(context);
       final saved = await ref
           .read(editorDraftProvider(recipeId).notifier)
-          .save();
+          .save(folderId: folderId);
       if (!context.mounted) return;
       if (!saved) {
         messenger.showSnackBar(

@@ -10,20 +10,22 @@ part of 'step_parts.dart';
 // ignore_for_file: type=lint, type=warning
 /// Every step's words with its ingredient mentions found (smart step text,
 /// ENGINEERING.md §13), by step. Each ingredient's amount goes at its
-/// first mention in cooking order.
+/// first mention in cooking order: loose steps, then each section.
 ///
-/// Amounts are as written; screens show them with [shownAmount], so steps
-/// scale and convert exactly like the ingredient list.
+/// Amounts are as written; screens show them with `shownAmount`, so steps
+/// scale and convert exactly like the ingredient list. The recipe page and
+/// cooking mode both read these.
 
 @ProviderFor(smartStepParts)
 final smartStepPartsProvider = SmartStepPartsFamily._();
 
 /// Every step's words with its ingredient mentions found (smart step text,
 /// ENGINEERING.md §13), by step. Each ingredient's amount goes at its
-/// first mention in cooking order.
+/// first mention in cooking order: loose steps, then each section.
 ///
-/// Amounts are as written; screens show them with [shownAmount], so steps
-/// scale and convert exactly like the ingredient list.
+/// Amounts are as written; screens show them with `shownAmount`, so steps
+/// scale and convert exactly like the ingredient list. The recipe page and
+/// cooking mode both read these.
 
 final class SmartStepPartsProvider
     extends
@@ -35,10 +37,11 @@ final class SmartStepPartsProvider
     with $Provider<AsyncValue<Map<RecipeStepId, List<StepPart>>>> {
   /// Every step's words with its ingredient mentions found (smart step text,
   /// ENGINEERING.md §13), by step. Each ingredient's amount goes at its
-  /// first mention in cooking order.
+  /// first mention in cooking order: loose steps, then each section.
   ///
-  /// Amounts are as written; screens show them with [shownAmount], so steps
-  /// scale and convert exactly like the ingredient list.
+  /// Amounts are as written; screens show them with `shownAmount`, so steps
+  /// scale and convert exactly like the ingredient list. The recipe page and
+  /// cooking mode both read these.
   SmartStepPartsProvider._({
     required SmartStepPartsFamily super.from,
     required RecipeId super.argument,
@@ -95,14 +98,15 @@ final class SmartStepPartsProvider
   }
 }
 
-String _$smartStepPartsHash() => r'0f42edb175e7df2937eff703ab14d2412e514d40';
+String _$smartStepPartsHash() => r'f0bdaaaf54ede123d306c6d0384fb2e1628947e0';
 
 /// Every step's words with its ingredient mentions found (smart step text,
 /// ENGINEERING.md §13), by step. Each ingredient's amount goes at its
-/// first mention in cooking order.
+/// first mention in cooking order: loose steps, then each section.
 ///
-/// Amounts are as written; screens show them with [shownAmount], so steps
-/// scale and convert exactly like the ingredient list.
+/// Amounts are as written; screens show them with `shownAmount`, so steps
+/// scale and convert exactly like the ingredient list. The recipe page and
+/// cooking mode both read these.
 
 final class SmartStepPartsFamily extends $Family
     with
@@ -121,10 +125,11 @@ final class SmartStepPartsFamily extends $Family
 
   /// Every step's words with its ingredient mentions found (smart step text,
   /// ENGINEERING.md §13), by step. Each ingredient's amount goes at its
-  /// first mention in cooking order.
+  /// first mention in cooking order: loose steps, then each section.
   ///
-  /// Amounts are as written; screens show them with [shownAmount], so steps
-  /// scale and convert exactly like the ingredient list.
+  /// Amounts are as written; screens show them with `shownAmount`, so steps
+  /// scale and convert exactly like the ingredient list. The recipe page and
+  /// cooking mode both read these.
 
   SmartStepPartsProvider call(RecipeId recipeId) =>
       SmartStepPartsProvider._(argument: recipeId, from: this);

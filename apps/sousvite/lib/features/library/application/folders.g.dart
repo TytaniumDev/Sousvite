@@ -55,7 +55,7 @@ String _$foldersHash() => r'0c51c5d69c9ec3612721337150f498290d3cad98';
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 
 @ProviderFor(FolderIds)
 final folderIdsProvider = FolderIdsProvider._();
@@ -63,13 +63,13 @@ final folderIdsProvider = FolderIdsProvider._();
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 final class FolderIdsProvider
     extends $NotifierProvider<FolderIds, List<FolderId>?> {
   /// The folder ids, in order. Null while loading.
   ///
   /// Notifies only when folders are added, removed, or reordered, not when
-  /// one is renamed, so the chip row doesn't rebuild for a new name.
+  /// one is renamed, so the folder grid doesn't rebuild for a new name.
   FolderIdsProvider._()
     : super(
         from: null,
@@ -102,7 +102,7 @@ String _$folderIdsHash() => r'e8d29986b7f6caf32e5ac32b840f53de82a07279';
 /// The folder ids, in order. Null while loading.
 ///
 /// Notifies only when folders are added, removed, or reordered, not when
-/// one is renamed, so the chip row doesn't rebuild for a new name.
+/// one is renamed, so the folder grid doesn't rebuild for a new name.
 
 abstract class _$FolderIds extends $Notifier<List<FolderId>?> {
   List<FolderId>? build();
@@ -206,6 +206,180 @@ final class FolderNameFamily extends $Family
 
   @override
   String toString() => r'folderNameProvider';
+}
+
+/// The folders one recipe is in.
+
+@ProviderFor(recipeFolderIds)
+final recipeFolderIdsProvider = RecipeFolderIdsFamily._();
+
+/// The folders one recipe is in.
+
+final class RecipeFolderIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Set<FolderId>>,
+          Set<FolderId>,
+          Stream<Set<FolderId>>
+        >
+    with $FutureModifier<Set<FolderId>>, $StreamProvider<Set<FolderId>> {
+  /// The folders one recipe is in.
+  RecipeFolderIdsProvider._({
+    required RecipeFolderIdsFamily super.from,
+    required RecipeId super.argument,
+  }) : super(
+         retry: null,
+         name: r'recipeFolderIdsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$recipeFolderIdsHash();
+
+  @override
+  String toString() {
+    return r'recipeFolderIdsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Set<FolderId>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<Set<FolderId>> create(Ref ref) {
+    final argument = this.argument as RecipeId;
+    return recipeFolderIds(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RecipeFolderIdsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$recipeFolderIdsHash() => r'24488e1cd1d763a62b92cdf4c7532b854ba3380b';
+
+/// The folders one recipe is in.
+
+final class RecipeFolderIdsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Set<FolderId>>, RecipeId> {
+  RecipeFolderIdsFamily._()
+    : super(
+        retry: null,
+        name: r'recipeFolderIdsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The folders one recipe is in.
+
+  RecipeFolderIdsProvider call(RecipeId recipeId) =>
+      RecipeFolderIdsProvider._(argument: recipeId, from: this);
+
+  @override
+  String toString() => r'recipeFolderIdsProvider';
+}
+
+/// Whether [folderId] is the only folder [recipeId] is in, so taking the
+/// recipe out would leave it in none. False while loading.
+
+@ProviderFor(isOnlyFolder)
+final isOnlyFolderProvider = IsOnlyFolderFamily._();
+
+/// Whether [folderId] is the only folder [recipeId] is in, so taking the
+/// recipe out would leave it in none. False while loading.
+
+final class IsOnlyFolderProvider extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  /// Whether [folderId] is the only folder [recipeId] is in, so taking the
+  /// recipe out would leave it in none. False while loading.
+  IsOnlyFolderProvider._({
+    required IsOnlyFolderFamily super.from,
+    required (FolderId, RecipeId) super.argument,
+  }) : super(
+         retry: null,
+         name: r'isOnlyFolderProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$isOnlyFolderHash();
+
+  @override
+  String toString() {
+    return r'isOnlyFolderProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    final argument = this.argument as (FolderId, RecipeId);
+    return isOnlyFolder(ref, argument.$1, argument.$2);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is IsOnlyFolderProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$isOnlyFolderHash() => r'3a19e3c45d0d3dd96c98444300fe22268ab3246f';
+
+/// Whether [folderId] is the only folder [recipeId] is in, so taking the
+/// recipe out would leave it in none. False while loading.
+
+final class IsOnlyFolderFamily extends $Family
+    with $FunctionalFamilyOverride<bool, (FolderId, RecipeId)> {
+  IsOnlyFolderFamily._()
+    : super(
+        retry: null,
+        name: r'isOnlyFolderProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Whether [folderId] is the only folder [recipeId] is in, so taking the
+  /// recipe out would leave it in none. False while loading.
+
+  IsOnlyFolderProvider call(FolderId folderId, RecipeId recipeId) =>
+      IsOnlyFolderProvider._(argument: (folderId, recipeId), from: this);
+
+  @override
+  String toString() => r'isOnlyFolderProvider';
 }
 
 /// Whether one recipe is in one folder. Null while loading.
@@ -332,7 +506,7 @@ final class FolderEditorProvider extends $NotifierProvider<FolderEditor, void> {
   }
 }
 
-String _$folderEditorHash() => r'b756160c20b0895b1bd89c70a661f484f1c50579';
+String _$folderEditorHash() => r'37bc397460f377ec1bec8d3267a805a478c0f126';
 
 /// Creates, renames, and deletes folders, and moves recipes in and out
 /// of them. A recipe can be in several folders (PRD 7.1).

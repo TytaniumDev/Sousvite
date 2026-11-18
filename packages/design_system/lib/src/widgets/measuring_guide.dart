@@ -18,9 +18,12 @@ class const MeasuringGuide({
   /// The tools in the order to use them: ½ cup, then ¼ cup.
   required final List<MeasuringGuideTool> tools,
 
-  /// The style of the tool labels. Defaults to `labelLarge`; cooking mode
-  /// passes `context.appText.cookingIngredient`.
+  /// The style of the tool labels and [label]. Defaults to `labelLarge`.
   final TextStyle? style,
+
+  /// Words before the tools that say what they are for, already
+  /// localized: "Use". Null shows the tools alone.
+  final String? label,
   super.key,
 }) extends StatelessWidget {
   @override
@@ -31,6 +34,11 @@ class const MeasuringGuide({
       runSpacing: AppSpacing.space2,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
+        if (label case final label?)
+          Text(
+            label,
+            style: textStyle?.copyWith(color: context.colors.onSurfaceVariant),
+          ),
         for (final (index, tool) in tools.indexed) ...[
           if (index > 0) _Plus(style: textStyle),
           _Tool(tool: tool, style: textStyle),

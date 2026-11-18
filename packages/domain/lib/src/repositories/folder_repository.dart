@@ -11,6 +11,13 @@ abstract interface class FolderRepository() {
 
   Stream<List<RecipeId>> watchRecipeIdsInFolder(FolderId folderId);
 
+  /// The ids of recipes in at least one folder, in no particular order.
+  /// The library lists recipes left out of it as unsorted.
+  Stream<Set<RecipeId>> watchRecipeIdsInAnyFolder();
+
+  /// The folders [recipeId] is in, in no particular order.
+  Stream<Set<FolderId>> watchFolderIdsOf(RecipeId recipeId);
+
   Future<Folder?> getFolder(FolderId id);
 
   Future<void> saveFolder(Folder folder);
