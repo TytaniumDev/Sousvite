@@ -17,6 +17,9 @@ APP_IDENTIFIER = "com.tytaniumdev.sousvite"
 # The share extension (ios/ShareExtension) is its own bundle with its own
 # profile.
 EXTENSION_IDENTIFIER = "#{APP_IDENTIFIER}.ShareExtension"
+# The TestFlight group every build goes to.
+TESTER_GROUP = "Internal"
+
 TEAM_ID = "F2HXQGU2CC"
 
 # Each target, by Xcode target name: its bundle id and match's profile name.
@@ -130,9 +133,13 @@ platform :ios do
       output_name: "Sousvite.ipa"
     )
 
+    # App Store Connect only distributes Xcode Cloud builds to a group on
+    # its own, so the lane adds each build to the Internal group. That needs
+    # the build processed first, which takes Apple 10 to 20 minutes.
     upload_to_testflight(
       api_key: api_key,
-      skip_waiting_for_build_processing: true
+      groups: [TESTER_GROUP],
+      distribute_external: false
     )
   end
 end
