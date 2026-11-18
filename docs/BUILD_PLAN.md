@@ -276,8 +276,11 @@ The order below is the order to do them in, because later items depend on earlie
 ### 8.0 Decide first
 
 - [x] **App name and id.** The app is **Sousvite** (Tyler, 2026-11-14; briefly Sousline on 2026-11-13), with app id `com.tytaniumdev.sousvite` on iOS and Android, matching Tyler's other `com.tytaniumdev.*` apps (it was `dev.tytanium.sousvite` until 2026-11-14, before any store record existed). The id becomes permanent once the App Store and Play records exist.
-- [x] **Contact email** for the stores, the OAuth consent screen, and the Open Food Facts `User-Agent`: Tyler's developer address (2026-11-13), the one on the privacy policy page.
-- [x] **Privacy policy URL.** Needed by both stores and the OAuth consent screen: `https://sousvite.web.app/privacy/` once the web app is deployed (`REL-1`); until then the stores can link the file on GitHub. The page is `apps/sousvite/web/privacy/index.html`, so every web deploy (`REL-1`) publishes it with the app. Update it when a feature changes what data leaves the device.
+- [x] **Contact email** for the stores, the OAuth consent screen, and the Open Food Facts `User-Agent`: Tyler's developer address (2026-11-13). The public pages and the consent screen use Tyler's Google account address (2026-11-18), because the consent screen only offers the signed-in account's email.
+- [x] **Public pages.** Needed by both stores and the OAuth consent screen's Branding. Static pages in `apps/sousvite/web/`, so every web deploy (`REL-1`) publishes them with the app, sharing `web/site.css`:
+  - Home page: `https://sousvite.web.app/about/` (`about/index.html`). The app's own `/` is a Flutter canvas with no readable text or links, so Google's checks can't use it.
+  - Privacy policy: `https://sousvite.web.app/privacy/` (`privacy/index.html`). Update it when a feature changes what data leaves the device.
+  - Terms of service: `https://sousvite.web.app/terms/` (`terms/index.html`).
 
 ### 8.1 Firebase (needed by `BE-*`, `SYN-5`, `SHR-1`, `APP-ACC`, `PRO-1`, `REL-1`)
 
@@ -326,7 +329,7 @@ Costs $99 a year. Enrollment can take a day or two, so start early.
 These live in the Google Cloud project that Firebase created.
 
 - [x] Firebase Auth → Sign-in method → turn on **Google**.
-- [x] Google Cloud console → **OAuth consent screen**: app name, support email, privacy policy URL, and the scopes `openid`, `email`, `profile`, and `drive.appdata`. Done 2026-11-14 in Testing mode with Tyler as a test user. The console classifies `drive.appdata` as **non-sensitive**, so no sensitive-scope review is needed. **Branding** (home page and privacy policy links) waits for the real website. Google lists `drive.appdata` among its recommended Drive scopes, so it should only need basic verification, but check how the console classifies it when you add it.
+- [x] Google Cloud console → **OAuth consent screen**: app name, support email, privacy policy URL, and the scopes `openid`, `email`, `profile`, and `drive.appdata`. Done 2026-11-14 in Testing mode with Tyler as a test user. The console classifies `drive.appdata` as **non-sensitive**, so no sensitive-scope review is needed. **Branding** uses the public pages from §8.0 (2026-11-18), with `sousvite.web.app` under Authorized domains. Google lists `drive.appdata` among its recommended Drive scopes, so it should only need basic verification, but check how the console classifies it when you add it.
 - [ ] Move the consent screen from **Testing** to **In production** before the beta. In Testing mode Google expires sign-ins after 7 days, which would break Drive sync for testers every week.
 - [x] Turn on the **Google Drive API** for the project.
 - [ ] Add your Android **SHA-1 and SHA-256 fingerprints** to the Firebase Android app: the debug key, your upload key (§8.5), and the Play app signing key (shown in Play Console after the first upload). Google sign-in fails on Android without them. The upload key's fingerprints were added 2026-11-14; the debug key and Play app signing key are still to add.
