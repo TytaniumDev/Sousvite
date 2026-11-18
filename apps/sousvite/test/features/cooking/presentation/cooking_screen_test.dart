@@ -255,6 +255,23 @@ void main() {
     expect(ingredients.dx, greaterThan(step.dx));
   });
 
+  testWidgets('keeps Back and Next to the reading column on a wide window', (
+    tester,
+  ) async {
+    tester.setWindowWidth(1600);
+    await pumpCooking(tester);
+
+    tester
+      ..expectInCenteredColumn(
+        find.byType(FilledButton),
+        ReadingColumn.readingWidth,
+      )
+      ..expectInCenteredColumn(
+        find.byType(OutlinedButton),
+        ReadingColumn.readingWidth,
+      );
+  });
+
   group('leaving', () {
     late List<String> visited;
 

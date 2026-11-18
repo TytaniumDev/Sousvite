@@ -35,20 +35,27 @@ class const ImportScreen({
                 onPressed: () => context.go(LibraryRoutes.path),
               ),
       ),
-      body: ListView(
-        children: [
-          SectionHeader(title: l10n.import_fromWeb),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-            child: UrlImportForm(sharedText: sharedText),
-          ),
-          const SizedBox(height: AppSpacing.space6),
-          SectionHeader(title: l10n.import_umami),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-            child: UmamiSection(sharedArchive: sharedArchive),
-          ),
-        ],
+      body: ReadingColumn(
+        builder: (context, insets) => ListView(
+          padding: insets,
+          children: [
+            SectionHeader(title: l10n.import_fromWeb),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space4,
+              ),
+              child: UrlImportForm(sharedText: sharedText),
+            ),
+            const SizedBox(height: AppSpacing.space6),
+            SectionHeader(title: l10n.import_umami),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space4,
+              ),
+              child: UmamiSection(sharedArchive: sharedArchive),
+            ),
+          ],
+        ),
       ),
     );
   }

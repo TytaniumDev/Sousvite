@@ -46,22 +46,33 @@ class const _Groups({required final GroceryLayout layout})
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return CustomScrollView(
-      slivers: [
-        for (final section in layout.sections)
-          _Group(
-            key: ValueKey(section.name),
-            title: l10n.storeSectionName(section.name),
-            entryKeys: section.entryKeys,
+    return ReadingColumn(
+      builder: (context, insets) => CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: insets,
+            sliver: SliverMainAxisGroup(
+              slivers: [
+                for (final section in layout.sections)
+                  _Group(
+                    key: ValueKey(section.name),
+                    title: l10n.storeSectionName(section.name),
+                    entryKeys: section.entryKeys,
+                  ),
+                if (layout.checkedKeys.isNotEmpty)
+                  _Group(
+                    key: const ValueKey(_Group.checkedKey),
+                    title: l10n.grocery_checkedSection,
+                    entryKeys: layout.checkedKeys,
+                  ),
+                const SliverPadding(
+                  padding: EdgeInsets.only(bottom: _fabClearance),
+                ),
+              ],
+            ),
           ),
-        if (layout.checkedKeys.isNotEmpty)
-          _Group(
-            key: const ValueKey(_Group.checkedKey),
-            title: l10n.grocery_checkedSection,
-            entryKeys: layout.checkedKeys,
-          ),
-        const SliverPadding(padding: EdgeInsets.only(bottom: _fabClearance)),
-      ],
+        ],
+      ),
     );
   }
 }

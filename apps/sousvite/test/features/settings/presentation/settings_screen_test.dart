@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,22 @@ void main() {
   setUp(() => settings = FakeAppSettingsRepository());
 
   group(SettingsScreen, () {
+    testWidgets('keeps settings to the reading column on a wide window', (
+      tester,
+    ) async {
+      tester.setWindowWidth(1600);
+      await tester.pumpApp(
+        const SettingsScreen(),
+        overrides: [appSettingsRepositoryProvider.overrideWithValue(settings)],
+      );
+      await tester.pump();
+
+      tester.expectInCenteredColumn(
+        find.byType(ListTile),
+        ReadingColumn.readingWidth,
+      );
+    });
+
     testWidgets('changing the theme rebuilds only the theme setting', (
       tester,
     ) async {

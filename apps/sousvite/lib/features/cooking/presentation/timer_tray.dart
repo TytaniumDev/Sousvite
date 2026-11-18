@@ -17,25 +17,28 @@ class const TimerTray({
     final running = ref.watch(cookingTimersProvider(recipeId));
     if (running.isEmpty) return const SizedBox.shrink();
     final timers = ref.read(cookingTimersProvider(recipeId).notifier);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-      child: Align(
-        alignment: .centerLeft,
-        child: Wrap(
-          spacing: AppSpacing.space2,
-          runSpacing: AppSpacing.space2,
-          children: [
-            for (final MapEntry(:key, :value) in running.entries)
-              TimerChip(
-                key: ValueKey(key),
-                label: value.label,
-                duration: value.duration,
-                startedAt: value.startedAt,
-                doneLabel: context.l10n.cooking_timerDone,
-                onStart: () {},
-                onStop: () => timers.stop(key),
-              ),
-          ],
+    return ReadingColumn(
+      builder: (context, insets) => Padding(
+        padding:
+            insets + const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
+        child: Align(
+          alignment: .centerLeft,
+          child: Wrap(
+            spacing: AppSpacing.space2,
+            runSpacing: AppSpacing.space2,
+            children: [
+              for (final MapEntry(:key, :value) in running.entries)
+                TimerChip(
+                  key: ValueKey(key),
+                  label: value.label,
+                  duration: value.duration,
+                  startedAt: value.startedAt,
+                  doneLabel: context.l10n.cooking_timerDone,
+                  onStart: () {},
+                  onStop: () => timers.stop(key),
+                ),
+            ],
+          ),
         ),
       ),
     );

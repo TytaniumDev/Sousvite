@@ -11,14 +11,17 @@ import 'package:sousvite/l10n/l10n.dart';
 /// The signed-in account, sign out, and delete account.
 class const SignedInView({super.key}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.symmetric(vertical: AppSpacing.space4),
-    children: const [
-      _AccountSummary(),
-      _SignOutButton(),
-      SizedBox(height: AppSpacing.space8),
-      DeleteAccountButton(),
-    ],
+  Widget build(BuildContext context) => ReadingColumn(
+    maxWidth: ReadingColumn.formWidth,
+    builder: (context, insets) => ListView(
+      padding: insets + const EdgeInsets.symmetric(vertical: AppSpacing.space4),
+      children: const [
+        _AccountSummary(),
+        _SignOutButton(),
+        SizedBox(height: AppSpacing.space8),
+        DeleteAccountButton(),
+      ],
+    ),
   );
 }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:design_system/design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/services/auth_service.dart';
@@ -26,6 +27,26 @@ void main() {
   }
 
   group(AccountScreen, () {
+    testWidgets('keeps sign-in to a narrow column on a wide window', (
+      tester,
+    ) async {
+      tester.setWindowWidth(1600);
+      await pumpScreen(tester);
+
+      tester
+        ..expectInCenteredColumn(
+          find.byType(FilledButton),
+          ReadingColumn.formWidth,
+        )
+        ..expectInCenteredColumn(
+          find.descendant(
+            of: find.byType(SignInView),
+            matching: find.byType(Text),
+          ),
+          ReadingColumn.formWidth,
+        );
+    });
+
     testWidgets('offers Google and Apple when signed out', (tester) async {
       await pumpScreen(tester);
 
