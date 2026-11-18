@@ -404,6 +404,8 @@
   "@cooking_done": {"description": "Button on the last step that finishes cooking."},
   "cooking_stepIngredients": "Ingredients for this step",
   "@cooking_stepIngredients": {"description": "Heading of the checklist of the ingredients a step uses."},
+  "cooking_measureWith": "Use",
+  "@cooking_measureWith": {"description": "Shown before the measuring cups and spoons to fill for an ingredient's amount in cooking mode, as in 'Use ½ Tbsp' for 1 ½ tsp of salt."},
   "cooking_timerDone": "Time's up",
   "@cooking_timerDone": {"description": "Shown on a timer chip when its time has run out."},
   "cooking_noStepsTitle": "No steps yet",
