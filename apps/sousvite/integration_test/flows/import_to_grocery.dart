@@ -35,7 +35,12 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   // Saving goes back to the import screen; the recipe is in the library.
   await tapOn(tester, find.byTooltip('Back'));
   await tapOn(tester, find.text('Tomato basil soup'));
-  expect(find.textContaining('crushed tomatoes'), findsOneWidget);
+  expect(find.text('crushed tomatoes'), findsOneWidget);
+  // The steps show the amounts inline on the recipe page too.
+  expect(
+    _text(RegExp(r'Add 2\s+cups\s+crushed tomatoes and simmer')),
+    findsOneWidget,
+  );
 
   // Cook it step by step, with the amounts in each step.
   await tapOn(tester, find.text('Start cooking'));
