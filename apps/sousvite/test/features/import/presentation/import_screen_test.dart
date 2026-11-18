@@ -28,11 +28,13 @@ void main() {
     WidgetTester tester, {
     String initialLocation = ImportRoutes.path,
     RecipeSnapshot? result,
+    int? umamiCount,
   }) async {
     importer = FakeUrlImporter()..result = result;
-    umami = FakeUmamiTransfer();
+    umami = FakeUmamiTransfer()..outcome = () => umamiCount;
     final router = GoRouter(
       initialLocation: initialLocation,
+      redirect: ImportRoutes.redirect,
       routes: [
         ...ImportRoutes.routes,
         GoRoute(
@@ -163,6 +165,28 @@ void main() {
       umami.gate!.complete();
       await tester.pumpAndSettle();
       expect(find.text('Imported 12 recipes'), findsOneWidget);
+    });
+
+    testWidgets('imports an Umami export shared from another app', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        initialLocation: ImportRoutes.archiveLocation('/cache/Umami.zip'),
+        umamiCount: 3,
+      );
+
+      expect(umami.sharedArchives, ['/cache/Umami.zip']);
+      expect(find.text('Imported 3 recipes'), findsOneWidget);
+    });
+
+    testWidgets('sends a zip file opened in the app to the import', (
+      tester,
+    ) async {
+      await pump(tester, initialLocation: '/private/Inbox/Umami%20Export.ZIP');
+
+      expect(find.byType(UmamiSection), findsOneWidget);
+      expect(umami.sharedArchives, ['/private/Inbox/Umami Export.ZIP']);
     });
 
     testWidgets('exports for Umami', (tester) async {

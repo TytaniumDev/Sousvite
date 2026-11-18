@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -9,9 +11,41 @@ import 'package:sousvite/l10n/l10n.dart';
 
 /// Import an Umami library, or export recipes for Umami (PRD 7.2). The
 /// outcome shows in a snackbar.
-class const UmamiSection({super.key}) extends ConsumerWidget {
+///
+/// An export shared from another app arrives as [sharedArchive] and starts
+/// importing right away.
+class const UmamiSection({
+  /// Where the platform left an Umami export shared from another app.
+  final String? sharedArchive,
+  super.key,
+}) extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UmamiSection> createState() => _UmamiSectionState();
+}
+
+class _UmamiSectionState() extends ConsumerState<UmamiSection> {
+  @override
+  void initState() {
+    super.initState();
+    final archive = widget.sharedArchive;
+    if (archive == null) return;
+    // Providers can't change while the tree builds.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(
+        _run(
+          context,
+          () => ref
+              .read(umamiActionsProvider.notifier)
+              .importSharedArchive(archive),
+          context.l10n.import_umamiImported,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final task = ref.watch(umamiActionsProvider);
     final l10n = context.l10n;
     final actions = ref.read(umamiActionsProvider.notifier);

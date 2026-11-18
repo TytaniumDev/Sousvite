@@ -12,14 +12,19 @@ import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 
-/// Hands over [picked] and keeps what is saved.
+/// Hands over [picked] and the [shared] files, and keeps what is saved.
 class _FakeFiles() implements UmamiFiles {
   Uint8List? picked;
+  final shared = <String, Uint8List>{};
   bool saves = true;
   final saved = <String, Uint8List>{};
 
   @override
   Future<Uint8List?> pickArchive() async => picked;
+
+  @override
+  Future<Uint8List?> takeSharedArchive(String path) async =>
+      shared.remove(path);
 
   @override
   Future<bool> saveArchive(String fileName, Uint8List bytes) async {
@@ -130,6 +135,35 @@ void main() {
           ),
         ),
       );
+    });
+  });
+
+  group('importSharedArchive', () {
+    test('saves the recipes in the shared file, then removes it', () async {
+      files.shared['/inbox/Umami.zip'] = writeUmamiArchive([
+        _umami('a', 'Scones', 'Baking'),
+      ]);
+
+      expect(await transfer.importSharedArchive('/inbox/Umami.zip'), 1);
+
+      final saved = recipes.writes.whereType<RecipeSnapshot>().single;
+      expect(saved.recipe.title, 'Scones');
+      expect(folders.allFolders.single.name, 'Baking');
+      expect(files.shared, isEmpty);
+    });
+
+    test('fails with invalidFile when the file is gone', () async {
+      await expectLater(
+        transfer.importSharedArchive('/inbox/missing.zip'),
+        throwsA(
+          isA<ImportFailure>().having(
+            (f) => f.reason,
+            'reason',
+            ImportFailureReason.invalidFile,
+          ),
+        ),
+      );
+      expect(recipes.writes, isEmpty);
     });
   });
 

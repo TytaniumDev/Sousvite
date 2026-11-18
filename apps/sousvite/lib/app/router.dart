@@ -23,6 +23,8 @@ part 'router.g.dart';
 GoRouter router(Ref ref) {
   final router = GoRouter(
     initialLocation: LibraryRoutes.path,
+    // Files opened in the app arrive as locations of their own.
+    redirect: ImportRoutes.redirect,
     routes: [
       // Top-level destinations keep their own navigation stacks.
       StatefulShellRoute.indexedStack(
