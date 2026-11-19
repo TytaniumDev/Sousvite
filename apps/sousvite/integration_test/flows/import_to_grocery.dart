@@ -44,13 +44,16 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   await tapOn(tester, find.text('Soups'));
   await tapOn(tester, find.text('Tomato basil soup'));
   expect(find.text('crushed tomatoes'), findsOneWidget);
-  // The steps show the amounts inline on the recipe page too.
-  expect(
-    _text(RegExp(r'Add 2\s+cups\s+crushed tomatoes and simmer')),
-    findsOneWidget,
+  // The steps show the amounts inline on the recipe page too. On a phone
+  // they're below the ingredients, so scroll down to them.
+  final addTomatoes = _text(
+    RegExp(r'Add 2\s+cups\s+crushed tomatoes and simmer'),
   );
+  await scrollTo(tester, addTomatoes);
+  expect(addTomatoes, findsOneWidget);
 
   // Cook it step by step, with the amounts in each step.
+  await scrollTo(tester, find.text('Start cooking'), up: true);
   await tapOn(tester, find.text('Start cooking'));
   expect(find.text('Step 1 of 2'), findsOneWidget);
   expect(
