@@ -63,16 +63,18 @@ class const _Lines({required final RecipeId recipeId}) extends ConsumerWidget {
             padding: const EdgeInsets.all(AppSpacing.space6),
             child: Text(context.l10n.grocery_noIngredients),
           )
-        : ListView(
-            shrinkWrap: true,
-            children: [
-              for (final lineId in lineIds)
-                _LineRow(
-                  key: ValueKey(lineId),
-                  recipeId: recipeId,
-                  lineId: lineId,
-                ),
-            ],
+        : FadingEdges(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                for (final lineId in lineIds)
+                  _LineRow(
+                    key: ValueKey(lineId),
+                    recipeId: recipeId,
+                    lineId: lineId,
+                  ),
+              ],
+            ),
           ),
   );
 }

@@ -22,45 +22,47 @@ class const NutritionScreen({required final RecipeId recipeId, super.key})
     return Scaffold(
       appBar: AppBar(title: Text(l10n.nutrition_title)),
       body: ReadingColumn(
-        builder: (context, insets) => CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: insets,
-              sliver: SliverMainAxisGroup(
-                slivers: [
-                  SliverPadding(
-                    padding: padding,
-                    sliver: SliverList.list(
-                      children: [
-                        NutritionSummary(
-                          recipeId: recipeId,
-                          showFixLink: false,
-                        ),
-                        const SizedBox(height: AppSpacing.space4),
-                        _Servings(recipeId: recipeId),
-                      ],
+        builder: (context, insets) => FadingEdges(
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: insets,
+                sliver: SliverMainAxisGroup(
+                  slivers: [
+                    SliverPadding(
+                      padding: padding,
+                      sliver: SliverList.list(
+                        children: [
+                          NutritionSummary(
+                            recipeId: recipeId,
+                            showFixLink: false,
+                          ),
+                          const SizedBox(height: AppSpacing.space4),
+                          _Servings(recipeId: recipeId),
+                        ],
+                      ),
                     ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: SectionHeader(title: l10n.nutrition_nutrients),
-                  ),
-                  SliverPadding(
-                    padding: padding,
-                    sliver: SliverToBoxAdapter(
-                      child: NutrientTable(recipeId: recipeId),
+                    SliverToBoxAdapter(
+                      child: SectionHeader(title: l10n.nutrition_nutrients),
                     ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: SectionHeader(title: l10n.nutrition_ingredients),
-                  ),
-                  _MatchList(recipeId: recipeId),
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: AppSpacing.space8),
-                  ),
-                ],
+                    SliverPadding(
+                      padding: padding,
+                      sliver: SliverToBoxAdapter(
+                        child: NutrientTable(recipeId: recipeId),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: SectionHeader(title: l10n.nutrition_ingredients),
+                    ),
+                    _MatchList(recipeId: recipeId),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: AppSpacing.space8),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

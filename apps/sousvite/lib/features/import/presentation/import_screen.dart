@@ -41,25 +41,30 @@ class const ImportScreen({
               ),
       ),
       body: ReadingColumn(
-        builder: (context, insets) => ListView(
-          padding: insets,
-          children: [
-            SectionHeader(title: l10n.import_fromWeb),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space4,
+        builder: (context, insets) => FadingEdges(
+          child: ListView(
+            padding: insets,
+            children: [
+              SectionHeader(title: l10n.import_fromWeb),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.space4,
+                ),
+                child: UrlImportForm(
+                  sharedText: sharedText,
+                  folderId: folderId,
+                ),
               ),
-              child: UrlImportForm(sharedText: sharedText, folderId: folderId),
-            ),
-            const SizedBox(height: AppSpacing.space6),
-            SectionHeader(title: l10n.import_umami),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space4,
+              const SizedBox(height: AppSpacing.space6),
+              SectionHeader(title: l10n.import_umami),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.space4,
+                ),
+                child: UmamiSection(sharedArchive: sharedArchive),
               ),
-              child: UmamiSection(sharedArchive: sharedArchive),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

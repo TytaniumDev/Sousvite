@@ -47,15 +47,17 @@ class const _Options({required final RecipeId recipeId})
     extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ReadingColumn(
-    builder: (context, insets) => ListView(
-      padding: insets + const EdgeInsets.all(AppSpacing.space4),
-      children: [
-        JointShareOption(recipeId: recipeId),
-        const SizedBox(height: AppSpacing.space4),
-        CopyLinkOption(recipeId: recipeId),
-        const SizedBox(height: AppSpacing.space4),
-        ViewOnlyLinkOption(recipeId: recipeId),
-      ],
+    builder: (context, insets) => FadingEdges(
+      child: ListView(
+        padding: insets + const EdgeInsets.all(AppSpacing.space4),
+        children: [
+          JointShareOption(recipeId: recipeId),
+          const SizedBox(height: AppSpacing.space4),
+          CopyLinkOption(recipeId: recipeId),
+          const SizedBox(height: AppSpacing.space4),
+          ViewOnlyLinkOption(recipeId: recipeId),
+        ],
+      ),
     ),
   );
 }

@@ -59,45 +59,47 @@ class const _RecipeBody({required final RecipeId recipeId})
       maxWidth: sideBySide
           ? ReadingColumn.twoPaneWidth
           : ReadingColumn.readingWidth,
-      builder: (context, insets) => ListView(
-        padding: insets + const EdgeInsets.only(bottom: AppSpacing.space12),
-        children: [
-          // Full width on phones, so it sits outside the page's side padding.
-          RecipePhoto(recipeId: recipeId),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.space4,
-              AppSpacing.space4,
-              AppSpacing.space4,
-              0,
-            ),
-            child: Column(
-              crossAxisAlignment: .stretch,
-              children: [
-                RecipeHeader(recipeId: recipeId),
-                const SizedBox(height: AppSpacing.space4),
-                RecipeActions(recipeId: recipeId),
-                const SizedBox(height: AppSpacing.space8),
-                if (sideBySide)
-                  Row(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Expanded(child: IngredientsSection(recipeId: recipeId)),
-                      const SizedBox(width: AppSpacing.space8),
-                      Expanded(child: StepsSection(recipeId: recipeId)),
-                    ],
-                  )
-                else ...[
-                  IngredientsSection(recipeId: recipeId),
+      builder: (context, insets) => FadingEdges(
+        child: ListView(
+          padding: insets + const EdgeInsets.only(bottom: AppSpacing.space12),
+          children: [
+            // Full width on phones, so it sits outside the page's side padding.
+            RecipePhoto(recipeId: recipeId),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.space4,
+                AppSpacing.space4,
+                AppSpacing.space4,
+                0,
+              ),
+              child: Column(
+                crossAxisAlignment: .stretch,
+                children: [
+                  RecipeHeader(recipeId: recipeId),
+                  const SizedBox(height: AppSpacing.space4),
+                  RecipeActions(recipeId: recipeId),
                   const SizedBox(height: AppSpacing.space8),
-                  StepsSection(recipeId: recipeId),
+                  if (sideBySide)
+                    Row(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Expanded(child: IngredientsSection(recipeId: recipeId)),
+                        const SizedBox(width: AppSpacing.space8),
+                        Expanded(child: StepsSection(recipeId: recipeId)),
+                      ],
+                    )
+                  else ...[
+                    IngredientsSection(recipeId: recipeId),
+                    const SizedBox(height: AppSpacing.space8),
+                    StepsSection(recipeId: recipeId),
+                  ],
+                  NutritionSection(recipeId: recipeId),
+                  RecipeNotes(recipeId: recipeId),
                 ],
-                NutritionSection(recipeId: recipeId),
-                RecipeNotes(recipeId: recipeId),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

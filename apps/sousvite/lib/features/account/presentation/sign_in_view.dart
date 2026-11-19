@@ -16,28 +16,30 @@ class const SignInView({super.key}) extends ConsumerWidget {
     final controller = ref.read(accountControllerProvider.notifier);
     return ReadingColumn(
       maxWidth: ReadingColumn.formWidth,
-      builder: (context, insets) => ListView(
-        padding: insets + const EdgeInsets.all(AppSpacing.space4),
-        children: [
-          Text(l10n.account_signInBody, style: context.textStyles.bodyLarge),
-          const SizedBox(height: AppSpacing.space6),
-          FilledButton.tonal(
-            onPressed: busy ? null : controller.signInWithGoogle,
-            child: Text(l10n.account_signInWithGoogle),
-          ),
-          const SizedBox(height: AppSpacing.space3),
-          FilledButton.tonal(
-            onPressed: busy ? null : controller.signInWithApple,
-            child: Text(l10n.account_signInWithApple),
-          ),
-          const SizedBox(height: AppSpacing.space4),
-          Text(
-            l10n.account_driveNeedsGoogle,
-            style: context.textStyles.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
+      builder: (context, insets) => FadingEdges(
+        child: ListView(
+          padding: insets + const EdgeInsets.all(AppSpacing.space4),
+          children: [
+            Text(l10n.account_signInBody, style: context.textStyles.bodyLarge),
+            const SizedBox(height: AppSpacing.space6),
+            FilledButton.tonal(
+              onPressed: busy ? null : controller.signInWithGoogle,
+              child: Text(l10n.account_signInWithGoogle),
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.space3),
+            FilledButton.tonal(
+              onPressed: busy ? null : controller.signInWithApple,
+              child: Text(l10n.account_signInWithApple),
+            ),
+            const SizedBox(height: AppSpacing.space4),
+            Text(
+              l10n.account_driveNeedsGoogle,
+              style: context.textStyles.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

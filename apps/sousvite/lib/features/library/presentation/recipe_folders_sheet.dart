@@ -53,16 +53,18 @@ class const RecipeFoldersSheet({
               ),
             ),
           Flexible(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                for (final id in ids)
-                  _FolderCheckbox(
-                    key: ValueKey(id),
-                    folderId: id,
-                    recipeId: recipeId,
-                  ),
-              ],
+            child: FadingEdges(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (final id in ids)
+                    _FolderCheckbox(
+                      key: ValueKey(id),
+                      folderId: id,
+                      recipeId: recipeId,
+                    ),
+                ],
+              ),
             ),
           ),
           _NewFolderTile(recipeId: recipeId),

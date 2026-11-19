@@ -55,47 +55,54 @@ class const _Snapshot({
     final l10n = context.l10n;
     final textStyles = context.textStyles;
     return ReadingColumn(
-      builder: (context, insets) => ListView(
-        padding:
-            insets + const EdgeInsets.symmetric(vertical: AppSpacing.space4),
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-            child: Text(snapshot.recipe.title, style: textStyles.headlineLarge),
-          ),
-          SectionHeader(title: l10n.experiments_ingredients),
-          CompactDensity(
-            child: Column(
-              children: [
-                for (final line in snapshot.ingredientLines)
-                  IngredientRow(
-                    key: ValueKey(line.id),
-                    name: line.name ?? line.rawText,
-                    quantity: line.quantity,
-                    unit: line.quantity == null
-                        ? null
-                        : l10n.unitWord(
-                            line.unit,
-                            line.quantity!,
-                            countWord: line.countWord,
-                          ),
-                    preparation: line.preparation,
-                  ),
-              ],
+      builder: (context, insets) => FadingEdges(
+        child: ListView(
+          padding:
+              insets + const EdgeInsets.symmetric(vertical: AppSpacing.space4),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space4,
+              ),
+              child: Text(
+                snapshot.recipe.title,
+                style: textStyles.headlineLarge,
+              ),
             ),
-          ),
-          SectionHeader(title: l10n.experiments_steps),
-          for (final (index, step) in snapshot.steps.indexed)
-            ListTile(
-              key: ValueKey(step.id),
-              leading: Text('${index + 1}', style: textStyles.titleMedium),
-              title: Text(step.text),
+            SectionHeader(title: l10n.experiments_ingredients),
+            CompactDensity(
+              child: Column(
+                children: [
+                  for (final line in snapshot.ingredientLines)
+                    IngredientRow(
+                      key: ValueKey(line.id),
+                      name: line.name ?? line.rawText,
+                      quantity: line.quantity,
+                      unit: line.quantity == null
+                          ? null
+                          : l10n.unitWord(
+                              line.unit,
+                              line.quantity!,
+                              countWord: line.countWord,
+                            ),
+                      preparation: line.preparation,
+                    ),
+                ],
+              ),
             ),
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.space4),
-            child: _RestoreButton(versionId: versionId),
-          ),
-        ],
+            SectionHeader(title: l10n.experiments_steps),
+            for (final (index, step) in snapshot.steps.indexed)
+              ListTile(
+                key: ValueKey(step.id),
+                leading: Text('${index + 1}', style: textStyles.titleMedium),
+                title: Text(step.text),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.space4),
+              child: _RestoreButton(versionId: versionId),
+            ),
+          ],
+        ),
       ),
     );
   }

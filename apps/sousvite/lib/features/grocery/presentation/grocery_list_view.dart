@@ -47,31 +47,36 @@ class const _Groups({required final GroceryLayout layout})
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return ReadingColumn(
-      builder: (context, insets) => CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: insets,
-            sliver: SliverMainAxisGroup(
-              slivers: [
-                for (final section in layout.sections)
-                  _Group(
-                    key: ValueKey(section.name),
-                    title: l10n.storeSectionName(section.name),
-                    entryKeys: section.entryKeys,
+      builder: (context, insets) => FadingEdges(
+        // Each section's header is pinned at the top, and fading it would
+        // wash it out.
+        fadeStart: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: insets,
+              sliver: SliverMainAxisGroup(
+                slivers: [
+                  for (final section in layout.sections)
+                    _Group(
+                      key: ValueKey(section.name),
+                      title: l10n.storeSectionName(section.name),
+                      entryKeys: section.entryKeys,
+                    ),
+                  if (layout.checkedKeys.isNotEmpty)
+                    _Group(
+                      key: const ValueKey(_Group.checkedKey),
+                      title: l10n.grocery_checkedSection,
+                      entryKeys: layout.checkedKeys,
+                    ),
+                  const SliverPadding(
+                    padding: EdgeInsets.only(bottom: _fabClearance),
                   ),
-                if (layout.checkedKeys.isNotEmpty)
-                  _Group(
-                    key: const ValueKey(_Group.checkedKey),
-                    title: l10n.grocery_checkedSection,
-                    entryKeys: layout.checkedKeys,
-                  ),
-                const SliverPadding(
-                  padding: EdgeInsets.only(bottom: _fabClearance),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

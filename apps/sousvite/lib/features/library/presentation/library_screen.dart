@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/account/account.dart';
@@ -20,13 +21,15 @@ class const LibraryScreen({super.key}) extends StatelessWidget {
       title: Text(context.l10n.library_title),
       actions: const [SyncStatusButton()],
     ),
-    body: const CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(child: SignInCalloutCard()),
-        SliverToBoxAdapter(child: LibrarySearchField(scope: AllRecipes())),
-        _FoldersOrResults(),
-        RecipeGridEndSpace(),
-      ],
+    body: const FadingEdges(
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: SignInCalloutCard()),
+          SliverToBoxAdapter(child: LibrarySearchField(scope: AllRecipes())),
+          _FoldersOrResults(),
+          RecipeGridEndSpace(),
+        ],
+      ),
     ),
     floatingActionButton: const AddRecipeButton(folderId: null),
   );

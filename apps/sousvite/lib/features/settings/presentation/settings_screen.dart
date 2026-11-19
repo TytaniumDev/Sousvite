@@ -19,22 +19,24 @@ class const SettingsScreen({super.key}) extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings_title)),
       body: ReadingColumn(
-        builder: (context, insets) => ListView(
-          padding: insets,
-          children: [
-            SectionTitle(l10n.settings_appearance),
-            const ThemeSetting(),
-            SectionTitle(l10n.settings_recipes),
-            const UnitSystemSetting(),
-            const _MeasuringToolsTile(),
-            const MatchLibraryTile(),
-            SectionTitle(l10n.settings_account),
-            const SignInCalloutTile(),
-            const _AccountTile(),
-            const SyncSourceSetting(),
-            SectionTitle(l10n.settings_about),
-            const AboutSection(),
-          ],
+        builder: (context, insets) => FadingEdges(
+          child: ListView(
+            padding: insets,
+            children: [
+              SectionTitle(l10n.settings_appearance),
+              const ThemeSetting(),
+              SectionTitle(l10n.settings_recipes),
+              const UnitSystemSetting(),
+              const _MeasuringToolsTile(),
+              const MatchLibraryTile(),
+              SectionTitle(l10n.settings_account),
+              const SignInCalloutTile(),
+              const _AccountTile(),
+              const SyncSourceSetting(),
+              SectionTitle(l10n.settings_about),
+              const AboutSection(),
+            ],
+          ),
         ),
       ),
     );

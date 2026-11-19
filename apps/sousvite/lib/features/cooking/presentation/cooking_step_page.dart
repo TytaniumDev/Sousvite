@@ -37,9 +37,11 @@ class const CookingStepPage({
     const padding = EdgeInsets.all(AppSpacing.space6);
     if (!twoPanes) {
       return ReadingColumn(
-        builder: (context, insets) => ListView(
-          padding: insets + padding,
-          children: [ingredients, ...step],
+        builder: (context, insets) => FadingEdges(
+          child: ListView(
+            padding: insets + padding,
+            children: [ingredients, ...step],
+          ),
         ),
       );
     }
@@ -51,15 +53,19 @@ class const CookingStepPage({
         crossAxisAlignment: .start,
         children: [
           Expanded(
-            child: ListView(
-              padding: padding + EdgeInsets.only(left: insets.left),
-              children: step,
+            child: FadingEdges(
+              child: ListView(
+                padding: padding + EdgeInsets.only(left: insets.left),
+                children: step,
+              ),
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: padding + EdgeInsets.only(right: insets.right),
-              children: [ingredients],
+            child: FadingEdges(
+              child: ListView(
+                padding: padding + EdgeInsets.only(right: insets.right),
+                children: [ingredients],
+              ),
             ),
           ),
         ],
