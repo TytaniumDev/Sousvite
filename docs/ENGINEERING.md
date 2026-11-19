@@ -385,7 +385,7 @@ Everything Pro-only is still built and tested with the gate both on and off, so 
 | Sync | One shared contract suite run against both transports, plus randomized multi-device merge tests that check every device converges | `package:test`, Firestore emulator |
 | Widget | Behavior of each widget **and rebuild counts**, using the `BuildCounter` helper (§5) | `flutter_test` |
 | Golden | Design-system widgets and key screens, in light and dark themes | `alchemist` *(Default)* |
-| Integration | A few end-to-end flows through the real app: import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device. Devices share an in-memory cloud instead of Firebase. Web gates every PR; Android runs on pushes to `main` (`.github/workflows/e2e.yaml`) | `integration_test` |
+| Integration | A few end-to-end flows through the real app: import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device. Devices share an in-memory cloud instead of Firebase. They gate every PR in Chrome and on the headless `flutter-tester` device at a 320×568 phone and a 1280×800 tablet size, with native SQLite (`.github/workflows/e2e.yaml`). An Android emulator run was dropped as slow and noisy (Tyler, 2026-11-19); the Release workflow still builds Android | `integration_test` |
 | Database | Drift migrations against generated schema snapshots | `drift_dev` |
 | Backend | Security rules and Cloud Functions | Firebase emulators, Vitest, `@firebase/rules-unit-testing` |
 

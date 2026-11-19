@@ -47,7 +47,7 @@ very_good test --coverage --min-coverage 90 \
                                                  # in a package; 70 for apps/sousvite
 ```
 
-End-to-end flows live in `apps/sousvite/integration_test/`. On a machine without a device, run them with `flutter test integration_test/app_test.dart -d flutter-tester --dart-define=E2E_NO_WAKELOCK=true` in `apps/sousvite`; CI runs them in Chrome with `flutter drive` and on an Android emulator.
+End-to-end flows live in `apps/sousvite/integration_test/`. On a machine without a device, run them with `flutter test integration_test/app_test.dart -d flutter-tester --dart-define=E2E_NO_WAKELOCK=true` in `apps/sousvite`; CI runs them in Chrome with `flutter drive`, and that way at a phone and a tablet size with `--dart-define=E2E_SCREEN_SIZE=320x568` and `1280x800`. A page builds only what's near the screen, so a flow scrolls to what it checks with `scrollTo` (`integration_test/helpers/pump_device.dart`).
 
 Cloud Functions and security rules are a Node project in `functions/` (Node version in its `package.json`; the emulators need Java 21). In `functions/`:
 

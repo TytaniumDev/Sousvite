@@ -14,9 +14,8 @@ description: >-
 inputs:
   name:
     description: >-
-      Which build the cache is for. Builds that need different libraries,
-      like the release bundle and the end-to-end test app, keep separate
-      caches.
+      Which build the cache is for. Builds that need different libraries
+      keep separate caches.
     required: true
 
 runs:

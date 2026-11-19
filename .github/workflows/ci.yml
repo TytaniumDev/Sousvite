@@ -139,8 +139,8 @@ jobs:
     name: Functions
     uses: ./.github/workflows/functions.yaml
 
-  # End-to-end flows through the whole app: web on every change, Android on
-  # pushes to main.
+  # End-to-end flows through the whole app, in Chrome and at phone and tablet
+  # sizes on the headless test device.
   e2e:
     name: End-to-end
     uses: ./.github/workflows/e2e.yaml
