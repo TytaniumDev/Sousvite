@@ -255,7 +255,7 @@ Each feature task owns `app/lib/features/<name>/**` and `app/test/features/<name
 | ID | Task | Owns | Depends on | Done when |
 |---|---|---|---|---|
 | REL-1 | **Release pipeline.** Signed iOS and Android builds, TestFlight and Play internal testing uploads, Sentry symbol and source-map upload. (The web deploy to Firebase Hosting already runs on every push to `main` from `.github/workflows/deploy_web.yaml`.) Uses the single Firebase project (§8.1) and fastlane on GitHub Actions (§9.2) | `.github/workflows/release*.yaml`, `apps/sousvite/ios/fastlane/`, `apps/sousvite/android/fastlane/`, `apps/sousvite/Gemfile`, release signing in `app/android/app/build.gradle.kts` | §8 accounts, OBS-1 | Every push to `main` produces builds testers can install (Tyler, 2026-11-16) |
-| E2E-1 | **Integration tests.** Import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device (ENGINEERING §15) | `app/integration_test/**` | All features | Runs in CI on web and one mobile target |
+| E2E-1 | **Integration tests.** Import → edit → cook → grocery list; offline edit → sync on two devices; share jointly → edit → see on the other device (ENGINEERING §15) | `app/integration_test/**` | All features | Runs in CI on web and at phone and tablet sizes on the headless test device (Tyler, 2026-11-19; was an Android emulator) |
 
 ## 7. Beta readiness
 
