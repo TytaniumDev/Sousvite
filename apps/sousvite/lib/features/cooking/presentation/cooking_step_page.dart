@@ -12,9 +12,9 @@ import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/units/unit_words.dart';
 
 /// One step: the ingredients it uses, its text, and its timers. The
-/// ingredients come first so you can get them ready. On medium and
-/// expanded windows in landscape they sit in a side pane instead
-/// (DESIGN_SYSTEM.md §10.3).
+/// ingredients come first so you can get them ready. With room for two
+/// panes they sit in a side pane after the step instead (DESIGN_SYSTEM.md
+/// §10.3).
 class const CookingStepPage({
   /// The recipe being cooked.
   required final RecipeId recipeId,
@@ -23,52 +23,28 @@ class const CookingStepPage({
   required final RecipeStepId stepId,
   super.key,
 }) extends StatelessWidget {
+  static const _padding = EdgeInsets.all(AppSpacing.space6);
+
   @override
   Widget build(BuildContext context) {
-    final twoPanes =
-        WindowSizeClass.of(context) != .compact &&
-        MediaQuery.orientationOf(context) == .landscape;
     final step = [
       CookingStepText(recipeId: recipeId, stepId: stepId),
       const SizedBox(height: AppSpacing.space4),
       StepTimers(recipeId: recipeId, stepId: stepId),
     ];
     final ingredients = StepIngredients(recipeId: recipeId, stepId: stepId);
-    const padding = EdgeInsets.all(AppSpacing.space6);
-    if (!twoPanes) {
-      return ReadingColumn(
-        builder: (context, insets) => FadingEdges(
-          child: ListView(
-            padding: insets + padding,
-            children: [ingredients, ...step],
-          ),
+    return PaneLayout(
+      main: (context, insets) => FadingEdges(
+        child: ListView(padding: insets + _padding, children: step),
+      ),
+      side: (context, insets) => FadingEdges(
+        child: ListView(padding: insets + _padding, children: [ingredients]),
+      ),
+      onePane: (context, insets) => FadingEdges(
+        child: ListView(
+          padding: insets + _padding,
+          children: [ingredients, ...step],
         ),
-      );
-    }
-    // Each pane takes its outer inset, so both scroll from the window's
-    // edges while the panes stay together in the middle.
-    return ReadingColumn(
-      maxWidth: ReadingColumn.twoPaneWidth,
-      builder: (context, insets) => Row(
-        crossAxisAlignment: .start,
-        children: [
-          Expanded(
-            child: FadingEdges(
-              child: ListView(
-                padding: padding + EdgeInsets.only(left: insets.left),
-                children: step,
-              ),
-            ),
-          ),
-          Expanded(
-            child: FadingEdges(
-              child: ListView(
-                padding: padding + EdgeInsets.only(right: insets.right),
-                children: [ingredients],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -66,6 +66,21 @@ void main() {
       expect(find.byIcon(Symbols.restaurant_rounded), findsOneWidget);
     });
 
+    testWidgets('pads the photo and text inside its ink, like a card', (
+      tester,
+    ) async {
+      await pumpTile(tester, countLabel: '3 recipes');
+
+      final ink = tester.getRect(find.byType(InkWell));
+      final photo = tester.getRect(find.byType(AspectRatio));
+      final count = tester.getRect(find.text('3 recipes'));
+      expect(ink.width, 160);
+      expect(photo.left - ink.left, FolderTile.inset);
+      expect(photo.top - ink.top, FolderTile.inset);
+      expect(ink.right - photo.right, FolderTile.inset);
+      expect(ink.bottom - count.bottom, FolderTile.inset);
+    });
+
     testWidgets('reads as one button', (tester) async {
       await pumpTile(tester, countLabel: '3 recipes');
 

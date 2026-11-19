@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -40,6 +41,11 @@ class const FolderGrid({super.key}) extends ConsumerWidget {
     return SliverCardRows(
       itemCount: scopes.length + 1,
       minItemWidth: minTileWidth,
+      // Tiles pad themselves inside their ink, so the grid adds no gap, and
+      // the sides give back the tiles' inset to line the photos up with the
+      // search field.
+      gap: 0,
+      sidePadding: AppSpacing.space4 - FolderTile.inset,
       itemBuilder: (context, index) => index == scopes.length
           ? const _NewFolderTile()
           : LibraryFolderTile(

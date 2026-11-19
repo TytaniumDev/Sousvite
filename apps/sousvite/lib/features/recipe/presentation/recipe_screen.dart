@@ -49,58 +49,88 @@ class const RecipeScreen({
   }
 }
 
+/// One column on phones. With room for two panes, the photo, name,
+/// actions, and ingredients sit in a side pane beside the steps, nutrition,
+/// and notes, and each scrolls on its own (DESIGN_SYSTEM.md §10.1).
 class const _RecipeBody({required final RecipeId recipeId})
     extends StatelessWidget {
+  static const _bottom = EdgeInsets.only(bottom: AppSpacing.space12);
+
   @override
-  Widget build(BuildContext context) {
-    final sideBySide = WindowSizeClass.of(context) == .expanded;
-    return ReadingColumn(
-      // Ingredients and steps side by side need more room than one column.
-      maxWidth: sideBySide
-          ? ReadingColumn.twoPaneWidth
-          : ReadingColumn.readingWidth,
-      builder: (context, insets) => FadingEdges(
-        child: ListView(
-          padding: insets + const EdgeInsets.only(bottom: AppSpacing.space12),
+  Widget build(BuildContext context) => PaneLayout(
+    sideAt: .start,
+    side: (context, insets) => FadingEdges(
+      child: ListView(
+        padding: insets + _bottom,
+        children: [_RecipeOverview(recipeId: recipeId)],
+      ),
+    ),
+    main: (context, insets) => FadingEdges(
+      child: ListView(
+        // Lines the first section up with the name when there's no photo.
+        padding:
+            insets + _bottom + const EdgeInsets.only(top: AppSpacing.space4),
+        children: [_RecipeDetails(recipeId: recipeId)],
+      ),
+    ),
+    onePane: (context, insets) => FadingEdges(
+      child: ListView(
+        padding: insets + _bottom,
+        children: [
+          _RecipeOverview(recipeId: recipeId),
+          const SizedBox(height: AppSpacing.space8),
+          _RecipeDetails(recipeId: recipeId),
+        ],
+      ),
+    ),
+  );
+}
+
+/// The photo, name, actions, and ingredients: what you need before you
+/// start.
+class const _RecipeOverview({required final RecipeId recipeId})
+    extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: .stretch,
+    children: [
+      // Full width on phones, so it sits outside the page's side padding.
+      RecipePhoto(recipeId: recipeId),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.space4,
+          AppSpacing.space4,
+          AppSpacing.space4,
+          0,
+        ),
+        child: Column(
+          crossAxisAlignment: .stretch,
           children: [
-            // Full width on phones, so it sits outside the page's side padding.
-            RecipePhoto(recipeId: recipeId),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.space4,
-                AppSpacing.space4,
-                AppSpacing.space4,
-                0,
-              ),
-              child: Column(
-                crossAxisAlignment: .stretch,
-                children: [
-                  RecipeHeader(recipeId: recipeId),
-                  const SizedBox(height: AppSpacing.space4),
-                  RecipeActions(recipeId: recipeId),
-                  const SizedBox(height: AppSpacing.space8),
-                  if (sideBySide)
-                    Row(
-                      crossAxisAlignment: .start,
-                      children: [
-                        Expanded(child: IngredientsSection(recipeId: recipeId)),
-                        const SizedBox(width: AppSpacing.space8),
-                        Expanded(child: StepsSection(recipeId: recipeId)),
-                      ],
-                    )
-                  else ...[
-                    IngredientsSection(recipeId: recipeId),
-                    const SizedBox(height: AppSpacing.space8),
-                    StepsSection(recipeId: recipeId),
-                  ],
-                  NutritionSection(recipeId: recipeId),
-                  RecipeNotes(recipeId: recipeId),
-                ],
-              ),
-            ),
+            RecipeHeader(recipeId: recipeId),
+            const SizedBox(height: AppSpacing.space4),
+            RecipeActions(recipeId: recipeId),
+            const SizedBox(height: AppSpacing.space8),
+            IngredientsSection(recipeId: recipeId),
           ],
         ),
       ),
-    );
-  }
+    ],
+  );
+}
+
+/// The steps, nutrition, and notes.
+class const _RecipeDetails({required final RecipeId recipeId})
+    extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
+    child: Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        StepsSection(recipeId: recipeId),
+        NutritionSection(recipeId: recipeId),
+        RecipeNotes(recipeId: recipeId),
+      ],
+    ),
+  );
 }

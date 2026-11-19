@@ -4,11 +4,15 @@ import 'package:material_ui/material_ui.dart';
 
 void main() {
   group(ReadingColumn, () {
-    test('adds no insets when the space is narrower than the column', () {
+    test('adds no insets on a phone', () {
       expect(ReadingColumn.insetsFor(360), EdgeInsets.zero);
+    });
+
+    test('keeps the 24 dp window margin on wider windows', () {
+      // The content pads itself by 16 dp, so the column adds 8 dp.
       expect(
         ReadingColumn.insetsFor(ReadingColumn.readingWidth),
-        EdgeInsets.zero,
+        const EdgeInsets.symmetric(horizontal: 8),
       );
     });
 
@@ -18,8 +22,8 @@ void main() {
         const EdgeInsets.symmetric(horizontal: 140),
       );
       expect(
-        ReadingColumn.insetsFor(1600, maxWidth: ReadingColumn.twoPaneWidth),
-        const EdgeInsets.symmetric(horizontal: 200),
+        ReadingColumn.insetsFor(1600, maxWidth: ReadingColumn.formWidth),
+        const EdgeInsets.symmetric(horizontal: 600),
       );
     });
 

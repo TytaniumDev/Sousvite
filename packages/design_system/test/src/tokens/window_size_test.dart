@@ -9,6 +9,23 @@ void main() {
       expect(WindowSizeClass.fromWidth(600), WindowSizeClass.medium);
       expect(WindowSizeClass.fromWidth(839), WindowSizeClass.medium);
       expect(WindowSizeClass.fromWidth(840), WindowSizeClass.expanded);
+      expect(WindowSizeClass.fromWidth(1199), WindowSizeClass.expanded);
+      expect(WindowSizeClass.fromWidth(1200), WindowSizeClass.large);
+      expect(WindowSizeClass.fromWidth(1599), WindowSizeClass.large);
+      expect(WindowSizeClass.fromWidth(1600), WindowSizeClass.extraLarge);
+    });
+
+    test('keeps a 16 dp margin on phones and 24 dp on wider windows', () {
+      expect(WindowSizeClass.compact.margin, 16);
+      for (final sizeClass in WindowSizeClass.values.skip(1)) {
+        expect(sizeClass.margin, 24, reason: '$sizeClass');
+      }
+    });
+
+    test('compares size classes by width', () {
+      expect(WindowSizeClass.large.isAtLeast(.expanded), isTrue);
+      expect(WindowSizeClass.large.isAtLeast(.large), isTrue);
+      expect(WindowSizeClass.large.isAtLeast(.extraLarge), isFalse);
     });
 
     testWidgets('reads the window width from the context', (tester) async {

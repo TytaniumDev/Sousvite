@@ -31,7 +31,7 @@ jobs:
       - name: 🧭 Every package with tests is in the CI matrix
         run: .github/scripts/check_ci_matrix.sh
 
-      - name: 🎨 App code uses design tokens
+      - name: 🎨 App code uses design tokens and size classes
         run: .github/scripts/check_design_tokens.sh
 
       - name: 🔒 pubspec.lock is up to date

@@ -264,12 +264,10 @@ void main() {
     );
   });
 
-  testWidgets('shows ingredients beside the step on a landscape tablet', (
+  testWidgets('shows ingredients beside the step on a wide window', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(1200, 800);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
+    tester.setWindowWidth(PaneLayout.twoPaneMinWidth);
     await pumpCooking(tester);
 
     final step = tester.getTopLeft(
@@ -279,6 +277,22 @@ void main() {
       find.text('Ingredients for this step'),
     );
     expect(ingredients.dx, greaterThan(step.dx));
+  });
+
+  testWidgetsAtEverySize('lays out a step', (tester, sizeClass) async {
+    await pumpCooking(tester);
+
+    final step = tester.getTopLeft(
+      find.textContaining('Whisk', findRichText: true),
+    );
+    final ingredients = tester.getTopLeft(
+      find.text('Ingredients for this step'),
+    );
+    if (sizeClass.isAtLeast(.expanded)) {
+      expect(ingredients.dx, greaterThan(step.dx));
+    } else {
+      expect(ingredients.dy, lessThan(step.dy));
+    }
   });
 
   testWidgets('keeps Back and Next to the reading column on a wide window', (

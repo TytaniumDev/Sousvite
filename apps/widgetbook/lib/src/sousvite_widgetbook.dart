@@ -33,8 +33,8 @@ class const SousviteWidgetbook({
     ],
   );
 
-  /// A phone, a tablet in each size class, and a laptop, to check layouts
-  /// at each window size class (DESIGN_SYSTEM.md §6.3). None shows the
+  /// A phone, tablets, and a laptop, so every window size class
+  /// (DESIGN_SYSTEM.md §6.3) has at least one. None shows the
   /// use case in the whole workbench.
   static const List<ViewportData> viewports = [
     Viewports.none,
@@ -42,6 +42,7 @@ class const SousviteWidgetbook({
     IosViewports.iPad,
     IosViewports.iPad12InchesGen4,
     AndroidViewports.mediumTablet,
+    AndroidViewports.largeTablet,
     MacosViewports.macbookPro,
   ];
 
