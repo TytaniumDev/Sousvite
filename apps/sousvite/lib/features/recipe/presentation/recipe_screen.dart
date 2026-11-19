@@ -15,7 +15,7 @@ import 'package:sousvite/features/recipe/presentation/steps_section.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
 
-/// The recipe page: photo, name, actions, ingredients, steps, nutrition,
+/// The recipe page: photo, name, actions, ingredients, nutrition, steps,
 /// and notes (DESIGN_SYSTEM.md §10.1).
 ///
 /// This widget only watches whether the recipe exists; each part below
@@ -50,7 +50,7 @@ class const RecipeScreen({
 }
 
 /// One column on phones. With room for two panes, the photo, name,
-/// actions, and ingredients sit in a side pane beside the steps, nutrition,
+/// actions, ingredients, and nutrition sit in a side pane beside the steps
 /// and notes, and each scrolls on its own (DESIGN_SYSTEM.md §10.1).
 class const _RecipeBody({required final RecipeId recipeId})
     extends StatelessWidget {
@@ -86,8 +86,8 @@ class const _RecipeBody({required final RecipeId recipeId})
   );
 }
 
-/// The photo, name, actions, and ingredients: what you need before you
-/// start.
+/// The photo, name, actions, ingredients, and nutrition: what you need to
+/// decide on a recipe and get ready.
 class const _RecipeOverview({required final RecipeId recipeId})
     extends StatelessWidget {
   @override
@@ -111,6 +111,7 @@ class const _RecipeOverview({required final RecipeId recipeId})
             RecipeActions(recipeId: recipeId),
             const SizedBox(height: AppSpacing.space8),
             IngredientsSection(recipeId: recipeId),
+            NutritionSection(recipeId: recipeId),
           ],
         ),
       ),
@@ -118,7 +119,7 @@ class const _RecipeOverview({required final RecipeId recipeId})
   );
 }
 
-/// The steps, nutrition, and notes.
+/// The steps and notes.
 class const _RecipeDetails({required final RecipeId recipeId})
     extends StatelessWidget {
   @override
@@ -128,7 +129,6 @@ class const _RecipeDetails({required final RecipeId recipeId})
       crossAxisAlignment: .stretch,
       children: [
         StepsSection(recipeId: recipeId),
-        NutritionSection(recipeId: recipeId),
         RecipeNotes(recipeId: recipeId),
       ],
     ),
