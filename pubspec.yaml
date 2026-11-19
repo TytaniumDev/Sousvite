@@ -17,4 +17,5 @@ workspace:
   - packages/recipe_import
   - packages/sync
   - packages/units
+  - tools/sousvite_lints
   - tools/usda_builder
