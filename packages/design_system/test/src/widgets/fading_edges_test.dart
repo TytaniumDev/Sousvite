@@ -59,11 +59,11 @@ void main() {
       await tester.pumpDesignSystem(fadedList());
       await tester.pump();
 
-      expect(fades(tester), (direction: AxisDirection.down, start: 0, end: 1));
+      expect(fades(tester), (direction: AxisDirection.down, start: 0, end: 32));
       expect(mask(tester).debugLayer, isA<ShaderMaskLayer>());
     });
 
-    testWidgets('fades the start in over the first extent scrolled', (
+    testWidgets('grows the start fade over the first extent scrolled', (
       tester,
     ) async {
       await tester.pumpDesignSystem(fadedList());
@@ -71,11 +71,15 @@ void main() {
 
       await tester.drag(find.byType(ListView), const Offset(0, -16));
       await tester.pump();
-      expect(fades(tester).start, closeTo(0.5, 0.01));
+      expect(fades(tester).start, closeTo(16, 0.5));
 
       await tester.drag(find.byType(ListView), const Offset(0, -100));
       await tester.pump();
-      expect(fades(tester), (direction: AxisDirection.down, start: 1, end: 1));
+      expect(fades(tester), (
+        direction: AxisDirection.down,
+        start: 32,
+        end: 32,
+      ));
     });
 
     testWidgets('leaves the end sharp at the bottom of the list', (
@@ -84,7 +88,7 @@ void main() {
       await tester.pumpDesignSystem(fadedList(initialOffset: 800));
       await tester.pump();
 
-      expect(fades(tester), (direction: AxisDirection.down, start: 1, end: 0));
+      expect(fades(tester), (direction: AxisDirection.down, start: 32, end: 0));
     });
 
     testWidgets('keeps the start sharp when asked to', (tester) async {
@@ -102,21 +106,25 @@ void main() {
       );
       await tester.pump();
 
-      expect(fades(tester), (direction: AxisDirection.down, start: 0, end: 1));
+      expect(fades(tester), (direction: AxisDirection.down, start: 0, end: 32));
     });
 
     testWidgets('follows a reversed list', (tester) async {
       await tester.pumpDesignSystem(fadedList(reverse: true));
       await tester.pump();
 
-      expect(fades(tester), (direction: AxisDirection.up, start: 0, end: 1));
+      expect(fades(tester), (direction: AxisDirection.up, start: 0, end: 32));
     });
 
     testWidgets('fades a horizontal list at its sides', (tester) async {
       await tester.pumpDesignSystem(fadedList(axis: .horizontal));
       await tester.pump();
 
-      expect(fades(tester), (direction: AxisDirection.right, start: 0, end: 1));
+      expect(fades(tester), (
+        direction: AxisDirection.right,
+        start: 0,
+        end: 32,
+      ));
     });
 
     testWidgets('ignores a scroll view nested inside its own', (tester) async {
@@ -158,7 +166,7 @@ void main() {
       await tester.pumpDesignSystem(fadedList());
       await tester.pump();
 
-      expect(fades(tester).end, 1);
+      expect(fades(tester).end, 32);
     });
 
     testWidgets('repaints instead of rebuilding while scrolling', (
@@ -185,40 +193,32 @@ void main() {
       await tester.pump();
 
       expect(builds, 0);
-      expect(fades(tester).start, 1);
+      expect(fades(tester).start, 32);
     });
 
-    testWidgets('uses a new extent', (tester) async {
-      await tester.pumpDesignSystem(fadedList(initialOffset: 16));
+    testWidgets('never fades taller than the content scrolled past', (
+      tester,
+    ) async {
+      await tester.pumpDesignSystem(fadedList(initialOffset: 10));
       await tester.pump();
-      expect(mask(tester).extent, FadingEdges.defaultExtent);
 
-      await tester.pumpDesignSystem(fadedList(initialOffset: 16, extent: 64));
-
-      expect(mask(tester).extent, 64);
-    });
-
-    testWidgets('repaints from a new source of fades', (tester) async {
-      await tester.pumpDesignSystem(fadedList());
-      await tester.pump();
-      final renderMask = mask(tester);
-      final old = renderMask.fades;
-      final replacement = ValueNotifier<EdgeFades>((
-        direction: .down,
-        start: 0,
-        end: 0,
+      expect(fades(tester), (
+        direction: AxisDirection.down,
+        start: 10,
+        end: 32,
       ));
-      addTearDown(replacement.dispose);
+      expect(mask(tester).debugLayer, isA<ShaderMaskLayer>());
+    });
 
-      renderMask.fades = replacement;
+    testWidgets('fades as tall as a longer extent', (tester) async {
+      await tester.pumpDesignSystem(fadedList(initialOffset: 100, extent: 64));
       await tester.pump();
-      replacement.value = (direction: .down, start: 1, end: 0);
-      expect(renderMask.debugNeedsPaint, isTrue);
-      await tester.pump();
-      expect(renderMask.debugLayer, isA<ShaderMaskLayer>());
 
-      renderMask.fades = old;
-      await tester.pump();
+      expect(fades(tester), (
+        direction: AxisDirection.down,
+        start: 64,
+        end: 64,
+      ));
     });
 
     testWidgets('keeps the fades from crossing in a short list', (
@@ -238,8 +238,8 @@ void main() {
 
       expect(fades(tester), (
         direction: AxisDirection.down,
-        start: 0.9375,
-        end: 0.9375,
+        start: 30,
+        end: 30,
       ));
       expect(mask(tester).debugLayer, isA<ShaderMaskLayer>());
     });
@@ -259,6 +259,7 @@ void main() {
       width: 200,
       scenarios: {
         'top of the list': fadedList(),
+        'just scrolled': fadedList(initialOffset: 20),
         'middle of the list': fadedList(initialOffset: 325),
         'bottom of the list': fadedList(initialOffset: 800),
         'fits': fadedList(count: 3),

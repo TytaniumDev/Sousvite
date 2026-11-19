@@ -3,8 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-/// How far [FadingEdges] fades each edge of a scroll view, from 0 (sharp)
-/// to 1 (fully faded), and which way the scroll view runs.
+/// How tall (or wide) [FadingEdges] makes the fade at each edge of a scroll
+/// view, in logical pixels, and which way the scroll view runs. 0 is a
+/// sharp edge.
 typedef EdgeFades = ({AxisDirection direction, double start, double end});
 
 /// Fades a scroll view's content out at an edge while more of it is
@@ -19,9 +20,11 @@ typedef EdgeFades = ({AxisDirection direction, double start, double end});
 /// )
 /// ```
 ///
-/// Each edge fades in over the first [extent] of content scrolled past it,
-/// so an edge is sharp at the very top or bottom of the list and a short
-/// list that doesn't scroll has no fade at all. Only the scroll view
+/// Each edge always fades to fully transparent, so nothing is ever cut off
+/// in a visible line. The fade is as tall as the content scrolled past that
+/// edge, up to [extent]: an edge is sharp at the very top or bottom of the
+/// list, the fade grows over the first [extent] scrolled, and a short list
+/// that doesn't scroll has no fade at all. Only the scroll view
 /// directly below it counts: a horizontal list inside a vertical one gets
 /// its own [FadingEdges].
 ///
@@ -66,8 +69,10 @@ class _FadingEdgesState() extends State<FadingEdges> {
     return false;
   }
 
+  /// The fade is never taller than the content hidden past the edge, so
+  /// whatever the edge cuts through is always fully faded.
   double _amount(double scrolledPast) =>
-      clampDouble(scrolledPast / widget.extent, 0, 1);
+      clampDouble(scrolledPast, 0, widget.extent);
 
   @override
   Widget build(BuildContext context) =>
@@ -77,11 +82,7 @@ class _FadingEdgesState() extends State<FadingEdges> {
         onNotification: (n) => _onMetrics(n.metrics, n.depth),
         child: NotificationListener<ScrollUpdateNotification>(
           onNotification: (n) => _onMetrics(n.metrics, n.depth),
-          child: _FadeMask(
-            fades: _fades,
-            extent: widget.extent,
-            child: widget.child,
-          ),
+          child: _FadeMask(fades: _fades, child: widget.child),
         ),
       );
 }
@@ -89,20 +90,13 @@ class _FadingEdgesState() extends State<FadingEdges> {
 /// Paints [child] through a mask that fades it out at its edges by
 /// [fades].
 class const _FadeMask({
+  /// The state's notifier, the same one for this widget's whole life.
   required final ValueListenable<EdgeFades> fades,
-  required final double extent,
   required super.child,
 }) extends SingleChildRenderObjectWidget {
   @override
   RenderFadeMask createRenderObject(BuildContext context) =>
-      RenderFadeMask(fades: fades, extent: extent);
-
-  @override
-  void updateRenderObject(BuildContext context, RenderFadeMask renderObject) {
-    renderObject
-      ..fades = fades
-      ..extent = extent;
-  }
+      RenderFadeMask(fades);
 }
 
 /// Paints its child through a gradient mask that fades it out at the
@@ -110,42 +104,19 @@ class const _FadeMask({
 ///
 /// Public only so tests can read the fades it paints.
 @visibleForTesting
-class RenderFadeMask({
-  /// How far each edge is faded.
-  required var ValueListenable<EdgeFades> _fades,
-
-  /// How tall (or wide) each fade is.
-  required var double _extent,
-}) extends RenderProxyBox {
-  /// How far each edge is faded.
-  ValueListenable<EdgeFades> get fades => _fades;
-  set fades(ValueListenable<EdgeFades> value) {
-    if (value == _fades) return;
-    if (attached) {
-      _fades.removeListener(markNeedsPaint);
-      value.addListener(markNeedsPaint);
-    }
-    _fades = value;
-    markNeedsPaint();
-  }
-
-  /// How tall (or wide) each fade is.
-  double get extent => _extent;
-  set extent(double value) {
-    if (value == _extent) return;
-    _extent = value;
-    markNeedsPaint();
-  }
-
+class RenderFadeMask(
+  /// How tall each edge's fade is.
+  final ValueListenable<EdgeFades> fades,
+) extends RenderProxyBox {
   @override
   void attach(PipelineOwner owner) {
     super.attach(owner);
-    _fades.addListener(markNeedsPaint);
+    fades.addListener(markNeedsPaint);
   }
 
   @override
   void detach() {
-    _fades.removeListener(markNeedsPaint);
+    fades.removeListener(markNeedsPaint);
     super.detach();
   }
 
@@ -157,30 +128,32 @@ class RenderFadeMask({
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    final fades = _fades.value;
+    final value = fades.value;
     if (child == null) return;
-    if (fades.start == 0 && fades.end == 0) {
+    if (value.start == 0 && value.end == 0) {
       layer = null;
       context.paintChild(child!, offset);
       return;
     }
     layer = (layer ?? ShaderMaskLayer())
-      ..shader = _gradient(fades).createShader(Offset.zero & size)
+      ..shader = _gradient(value).createShader(Offset.zero & size)
       ..maskRect = offset & size
       ..blendMode = .dstIn;
     context.pushLayer(layer!, super.paint, offset);
   }
 
-  /// Opaque in the middle, fading towards each edge by how far that edge
-  /// is faded. Runs from the scroll view's start to its end.
-  LinearGradient _gradient(EdgeFades fades) {
-    final length = axisDirectionToAxis(fades.direction) == .vertical
+  /// Opaque in the middle and fully transparent at each faded edge, over
+  /// that edge's fade. Runs from the scroll view's start to its end.
+  LinearGradient _gradient(EdgeFades value) {
+    final length = axisDirectionToAxis(value.direction) == .vertical
         ? size.height
         : size.width;
     // Each fade takes at most half the scroll view, so they never cross.
-    final stop = length == 0 ? 0.5 : clampDouble(extent / length, 0, 0.5);
+    double stop(double fade) =>
+        length == 0 ? 0.5 : clampDouble(fade / length, 0, 0.5);
     const opaque = Color(0xFF000000);
-    final (begin, end) = switch (fades.direction) {
+    const clear = Color(0x00000000);
+    final (begin, end) = switch (value.direction) {
       .down => (Alignment.topCenter, Alignment.bottomCenter),
       .up => (Alignment.bottomCenter, Alignment.topCenter),
       .right => (Alignment.centerLeft, Alignment.centerRight),
@@ -190,12 +163,12 @@ class RenderFadeMask({
       begin: begin,
       end: end,
       colors: [
-        opaque.withValues(alpha: 1 - fades.start),
+        if (value.start > 0) clear else opaque,
         opaque,
         opaque,
-        opaque.withValues(alpha: 1 - fades.end),
+        if (value.end > 0) clear else opaque,
       ],
-      stops: [0, stop, 1 - stop, 1],
+      stops: [0, stop(value.start), 1 - stop(value.end), 1],
     );
   }
 }
