@@ -19,24 +19,27 @@ class const SliverCardRows({
 
   /// Builds the item at an index.
   required final IndexedWidgetBuilder itemBuilder,
+
+  /// The space between items, across and down. Zero suits items that
+  /// carry their own space, like a tile whose ink reaches past its content.
+  final double gap = AppSpacing.space3,
+
+  /// The space between the screen edges and the rows.
+  final double sidePadding = AppSpacing.space4,
   super.key,
 }) extends StatelessWidget {
-  /// The space between items, across and down.
-  static const double gap = AppSpacing.space3;
-
-  /// How many items fit in a row [width] wide.
-  static int columnsFor(double width, double minItemWidth) =>
-      math.max(1, (width + gap) ~/ (minItemWidth + gap));
-
   @override
   Widget build(BuildContext context) => SliverPadding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
+    padding: EdgeInsets.symmetric(horizontal: sidePadding),
     sliver: SliverLayoutBuilder(
       builder: (context, constraints) {
-        final columns = columnsFor(constraints.crossAxisExtent, minItemWidth);
+        final columns = math.max(
+          1,
+          (constraints.crossAxisExtent + gap) ~/ (minItemWidth + gap),
+        );
         return SliverList.separated(
           itemCount: (itemCount / columns).ceil(),
-          separatorBuilder: (_, _) => const SizedBox(height: gap),
+          separatorBuilder: (_, _) => SizedBox(height: gap),
           itemBuilder: (context, row) {
             final start = row * columns;
             final end = math.min(start + columns, itemCount);
