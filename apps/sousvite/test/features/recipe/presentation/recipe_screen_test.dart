@@ -204,17 +204,23 @@ void main() {
     tester,
     sizeClass,
   ) async {
+    // Tall enough that one column builds every section.
+    tester.setWindowWidth(sampleWidthOf(sizeClass), height: 2000);
     await pumpRecipe(tester);
 
     final ingredients = tester.getTopLeft(find.text('Ingredients'));
+    final nutrition = tester.getTopLeft(find.text('Nutrition'));
     final steps = tester.getTopLeft(find.text('Steps'));
+    // Nutrition follows the ingredients it comes from.
+    expect(nutrition.dx, ingredients.dx);
+    expect(nutrition.dy, greaterThan(ingredients.dy));
     if (sizeClass.isAtLeast(.expanded)) {
       // Ingredients in the side pane, steps beside them from the top.
       expect(steps.dx, greaterThan(ingredients.dx + PaneLayout.sideWidth));
       expect(steps.dy, lessThan(ingredients.dy));
     } else {
       expect(steps.dx, ingredients.dx);
-      expect(steps.dy, greaterThan(ingredients.dy));
+      expect(steps.dy, greaterThan(nutrition.dy));
     }
   });
 

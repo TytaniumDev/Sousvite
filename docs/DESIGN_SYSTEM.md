@@ -259,7 +259,7 @@ The column sets the width, never the widgets in it: buttons, fields, and rows fi
 
 | Screen | One pane (under 840 dp) | Two panes (840 dp and up) |
 |---|---|---|
-| Recipe page (§10.1) | Photo, name, actions, ingredients, then steps, nutrition, and notes | Side pane first: photo, name, actions, and ingredients. Main pane: steps, nutrition, and notes |
+| Recipe page (§10.1) | Photo, name, actions, ingredients, nutrition, then steps and notes | Side pane first: photo, name, actions, ingredients, and nutrition. Main pane: steps and notes |
 | Cooking mode (§10.3) | This step's ingredients above the step | Main pane: the step and its timers. Side pane after it: this step's ingredients |
 | Everything else | One `ReadingColumn` | One `ReadingColumn` |
 
@@ -406,8 +406,8 @@ Details that matter:
 
 - Photo at the top (full width on phones, 16:10 ratio, `radiusLg` corners on wider screens), then the recipe name in `headlineLarge`, source and times in `bodySmall`, and badges.
 - Actions in this order: **Cook** (`FilledButton`, the screen's one primary action), **Add to grocery list** (tonal), then share, experiment, and edit in an overflow menu or icon buttons.
-- Sections: Ingredients (with `ServingStepper`), Steps (grouped by section), Nutrition (`MacroSummary` with `BasisToggle`, then the detailed table in compact density), Notes, History.
-- With room for two panes (§6.3), the photo, name, actions, and ingredients sit in a 360 dp side pane on the left, and the steps, nutrition, and notes in the main pane beside it. Each pane scrolls on its own, so the ingredients stay in view while you read the steps. *(Decided by Tyler, 2026-11-19)*
+- Sections: Ingredients (with `ServingStepper`), Nutrition (`MacroSummary` with `BasisToggle`, then the detailed table in compact density), Steps (grouped by section), Notes, History. Nutrition follows the ingredients it's computed from, before the steps. *(Decided by Tyler, 2026-11-19)*
+- With room for two panes (§6.3), the photo, name, actions, ingredients, and nutrition sit in a 360 dp side pane on the left, and the steps and notes in the main pane beside it. Each pane scrolls on its own, so the ingredients stay in view while you read the steps. *(Decided by Tyler, 2026-11-19)*
 
 ### 10.2 Recipe editor and import review
 

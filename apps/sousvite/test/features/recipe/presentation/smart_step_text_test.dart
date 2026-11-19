@@ -75,6 +75,9 @@ void main() {
   testWidgets('scales amounts and rebuilds only steps that have one', (
     tester,
   ) async {
+    // Tall enough that every step is built before counting, so scrolling
+    // to one doesn't count as a rebuild.
+    tester.setWindowWidth(400, height: 2000);
     final builds = BuildCounter.start();
     await pumpRecipe(tester);
     builds.reset();
