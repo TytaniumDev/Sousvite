@@ -17,6 +17,7 @@ export 'src/widgets/compact_density.dart';
 export 'src/widgets/empty_state.dart';
 export 'src/widgets/error_state.dart';
 export 'src/widgets/experiment_badge.dart';
+export 'src/widgets/fading_edges.dart' show EdgeFades, FadingEdges;
 export 'src/widgets/grocery_item_row.dart';
 export 'src/widgets/ingredient_row.dart';
 export 'src/widgets/ingredient_split_preview.dart';
