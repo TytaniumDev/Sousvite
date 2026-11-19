@@ -81,9 +81,7 @@ class const _SideNavigation({
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final extended =
-        MediaQuery.sizeOf(context).width >=
-        WindowSizeClass.extendedRailMinWidth;
+    final extended = WindowSizeClass.of(context).isAtLeast(.large);
     return NavigationRail(
       selectedIndex: selectedIndex,
       onDestinationSelected: onSelected,
