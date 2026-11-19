@@ -59,22 +59,29 @@ class const _RecipeBody({required final RecipeId recipeId})
   @override
   Widget build(BuildContext context) => PaneLayout(
     sideAt: .start,
-    side: (context, insets) => ListView(
-      padding: insets + _bottom,
-      children: [_RecipeOverview(recipeId: recipeId)],
+    side: (context, insets) => FadingEdges(
+      child: ListView(
+        padding: insets + _bottom,
+        children: [_RecipeOverview(recipeId: recipeId)],
+      ),
     ),
-    main: (context, insets) => ListView(
-      // Lines the first section up with the name when there's no photo.
-      padding: insets + _bottom + const EdgeInsets.only(top: AppSpacing.space4),
-      children: [_RecipeDetails(recipeId: recipeId)],
+    main: (context, insets) => FadingEdges(
+      child: ListView(
+        // Lines the first section up with the name when there's no photo.
+        padding:
+            insets + _bottom + const EdgeInsets.only(top: AppSpacing.space4),
+        children: [_RecipeDetails(recipeId: recipeId)],
+      ),
     ),
-    onePane: (context, insets) => ListView(
-      padding: insets + _bottom,
-      children: [
-        _RecipeOverview(recipeId: recipeId),
-        const SizedBox(height: AppSpacing.space8),
-        _RecipeDetails(recipeId: recipeId),
-      ],
+    onePane: (context, insets) => FadingEdges(
+      child: ListView(
+        padding: insets + _bottom,
+        children: [
+          _RecipeOverview(recipeId: recipeId),
+          const SizedBox(height: AppSpacing.space8),
+          _RecipeDetails(recipeId: recipeId),
+        ],
+      ),
     ),
   );
 }

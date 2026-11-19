@@ -62,12 +62,14 @@ class const _PickFolderSheet() extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.space2),
           Flexible(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                for (final id in ids)
-                  _FolderOption(key: ValueKey(id), folderId: id),
-              ],
+            child: FadingEdges(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  for (final id in ids)
+                    _FolderOption(key: ValueKey(id), folderId: id),
+                ],
+              ),
             ),
           ),
           const _NewFolderOption(),

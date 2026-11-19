@@ -4,6 +4,7 @@ import 'package:sousvite_widgetbook/src/components/compact_density.dart';
 import 'package:sousvite_widgetbook/src/components/empty_state.dart';
 import 'package:sousvite_widgetbook/src/components/error_state.dart';
 import 'package:sousvite_widgetbook/src/components/experiment_badge.dart';
+import 'package:sousvite_widgetbook/src/components/fading_edges.dart';
 import 'package:sousvite_widgetbook/src/components/grocery_item_row.dart';
 import 'package:sousvite_widgetbook/src/components/ingredient_row.dart';
 import 'package:sousvite_widgetbook/src/components/ingredient_split_preview.dart';
@@ -70,7 +71,11 @@ final List<WidgetbookNode> directories = [
   ),
   WidgetbookFolder(
     name: 'Layout',
-    children: [readingColumnComponent, paneLayoutComponent],
+    children: [
+      readingColumnComponent,
+      paneLayoutComponent,
+      fadingEdgesComponent,
+    ],
   ),
   WidgetbookFolder(
     name: 'States',

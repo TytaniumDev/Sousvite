@@ -36,28 +36,30 @@ class const ExperimentScreen({
         value: ref.watch(provider.select((e) => e.whenData((e) => e != null))),
         data: (exists) => exists
             ? ReadingColumn(
-                builder: (context, insets) => ListView(
-                  padding: insets + const EdgeInsets.all(AppSpacing.space4),
-                  children: [
-                    _Outcome(provider: provider),
-                    const SizedBox(height: AppSpacing.space4),
-                    ExperimentTextField(
-                      recipeId: recipeId,
-                      experimentId: experimentId,
-                      field: .changeDescription,
-                    ),
-                    const SizedBox(height: AppSpacing.space4),
-                    ExperimentTextField(
-                      recipeId: recipeId,
-                      experimentId: experimentId,
-                      field: .notes,
-                    ),
-                    _ShareWithOthers(recipeId: recipeId, provider: provider),
-                    const SizedBox(height: AppSpacing.space6),
-                    _WorkingCopyActions(provider: provider),
-                    const SizedBox(height: AppSpacing.space6),
-                    _Decision(provider: provider),
-                  ],
+                builder: (context, insets) => FadingEdges(
+                  child: ListView(
+                    padding: insets + const EdgeInsets.all(AppSpacing.space4),
+                    children: [
+                      _Outcome(provider: provider),
+                      const SizedBox(height: AppSpacing.space4),
+                      ExperimentTextField(
+                        recipeId: recipeId,
+                        experimentId: experimentId,
+                        field: .changeDescription,
+                      ),
+                      const SizedBox(height: AppSpacing.space4),
+                      ExperimentTextField(
+                        recipeId: recipeId,
+                        experimentId: experimentId,
+                        field: .notes,
+                      ),
+                      _ShareWithOthers(recipeId: recipeId, provider: provider),
+                      const SizedBox(height: AppSpacing.space6),
+                      _WorkingCopyActions(provider: provider),
+                      const SizedBox(height: AppSpacing.space6),
+                      _Decision(provider: provider),
+                    ],
+                  ),
                 ),
               )
             : Center(child: Text(l10n.experiments_notFound)),

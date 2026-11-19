@@ -46,26 +46,28 @@ class const EditorScreen({
         body: AsyncValueView(
           value: loaded,
           data: (_) => ReadingColumn(
-            builder: (context, insets) => ListView(
-              padding:
-                  insets +
-                  const EdgeInsets.fromLTRB(
-                    AppSpacing.space4,
-                    AppSpacing.space2,
-                    AppSpacing.space4,
-                    AppSpacing.space16,
-                  ),
-              children: [
-                RecipeDetailsEditor(recipeId: recipeId),
-                const SizedBox(height: AppSpacing.space8),
-                _Heading(l10n.editor_ingredients),
-                IngredientsEditor(recipeId: recipeId),
-                const SizedBox(height: AppSpacing.space8),
-                _Heading(l10n.editor_steps),
-                StepsEditor(recipeId: recipeId),
-                const SizedBox(height: AppSpacing.space8),
-                RecipeNotesEditor(recipeId: recipeId),
-              ],
+            builder: (context, insets) => FadingEdges(
+              child: ListView(
+                padding:
+                    insets +
+                    const EdgeInsets.fromLTRB(
+                      AppSpacing.space4,
+                      AppSpacing.space2,
+                      AppSpacing.space4,
+                      AppSpacing.space16,
+                    ),
+                children: [
+                  RecipeDetailsEditor(recipeId: recipeId),
+                  const SizedBox(height: AppSpacing.space8),
+                  _Heading(l10n.editor_ingredients),
+                  IngredientsEditor(recipeId: recipeId),
+                  const SizedBox(height: AppSpacing.space8),
+                  _Heading(l10n.editor_steps),
+                  StepsEditor(recipeId: recipeId),
+                  const SizedBox(height: AppSpacing.space8),
+                  RecipeNotesEditor(recipeId: recipeId),
+                ],
+              ),
             ),
           ),
         ),

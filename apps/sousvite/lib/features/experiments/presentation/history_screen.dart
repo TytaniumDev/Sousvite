@@ -68,23 +68,25 @@ class const _Timeline({required final RecipeId recipeId})
               message: l10n.experiments_emptyMessage,
             )
           : ReadingColumn(
-              builder: (context, insets) => ListView(
-                padding: insets,
-                children: [
-                  for (final entry in timeline.entries)
-                    switch (entry) {
-                      VersionRef(:final id) => _VersionTile(
-                        key: ValueKey(id),
-                        recipeId: recipeId,
-                        versionId: id,
-                      ),
-                      ExperimentRef(:final id) => _ExperimentTile(
-                        key: ValueKey(id),
-                        recipeId: recipeId,
-                        experimentId: id,
-                      ),
-                    },
-                ],
+              builder: (context, insets) => FadingEdges(
+                child: ListView(
+                  padding: insets,
+                  children: [
+                    for (final entry in timeline.entries)
+                      switch (entry) {
+                        VersionRef(:final id) => _VersionTile(
+                          key: ValueKey(id),
+                          recipeId: recipeId,
+                          versionId: id,
+                        ),
+                        ExperimentRef(:final id) => _ExperimentTile(
+                          key: ValueKey(id),
+                          recipeId: recipeId,
+                          experimentId: id,
+                        ),
+                      },
+                  ],
+                ),
               ),
             ),
     );

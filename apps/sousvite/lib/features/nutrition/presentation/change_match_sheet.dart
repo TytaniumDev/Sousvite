@@ -168,26 +168,28 @@ class const _Results({
     value: ref.watch(foodSearchProvider(query)),
     data: (choices) => choices.isEmpty
         ? Text(context.l10n.nutrition_noFoods)
-        : ListView.builder(
-            shrinkWrap: true,
-            itemCount: choices.length,
-            itemBuilder: (context, index) {
-              final choice = choices[index];
-              final food = choice.food;
-              final source = food.source == .openFoodFacts
-                  ? MatchStatus.openFoodFacts
-                  : MatchStatus.usda;
-              return ListTile(
-                key: ValueKey(food.id),
-                title: Text(food.name),
-                subtitle: food.brand == null ? null : Text(food.brand!),
-                trailing: MatchStatusChip(
-                  status: source,
-                  label: context.l10n.matchStatus(source),
-                ),
-                onTap: () => onChoose(choice),
-              );
-            },
+        : FadingEdges(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: choices.length,
+              itemBuilder: (context, index) {
+                final choice = choices[index];
+                final food = choice.food;
+                final source = food.source == .openFoodFacts
+                    ? MatchStatus.openFoodFacts
+                    : MatchStatus.usda;
+                return ListTile(
+                  key: ValueKey(food.id),
+                  title: Text(food.name),
+                  subtitle: food.brand == null ? null : Text(food.brand!),
+                  trailing: MatchStatusChip(
+                    status: source,
+                    label: context.l10n.matchStatus(source),
+                  ),
+                  onTap: () => onChoose(choice),
+                );
+              },
+            ),
           ),
   );
 }

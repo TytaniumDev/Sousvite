@@ -269,6 +269,8 @@ The column sets the width, never the widgets in it: buttons, fields, and rows fi
 
 **Tests.** `testWidgetsAtEverySize` (in the app's test helpers) runs a widget test at a width in each size class. Use it for any screen whose layout changes with width. Widgetbook's Viewport addon has a viewport in each size class.
 
+**Scroll views fade at their edges.** Every scroll view is the `child` of a `FadingEdges`, so content scrolled past an edge fades out over 32 dp instead of being cut off in a hard line under an app bar or above a bottom button. The edge always fades to fully transparent, and the fade is as tall as the content scrolled past it, up to 32 dp: the top of a list is sharp until you scroll, and a row the edge cuts through never shows a hard line. A list with a pinned header at the top (the grocery list's sections) turns off the start fade, because the header already makes that edge. Pagers (`PageView`) and lists with `NeverScrollableScrollPhysics` don't fade. The `fade_scroll_views` lint (`tools/sousvite_lints`) checks this; with a `ReadingColumn` or `PaneLayout`, the `FadingEdges` goes inside each builder, around the scroll view.
+
 ### 6.4 Shape
 
 Soft and rounded, but not bubbly.
@@ -379,6 +381,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
+| `FadingEdges` | Fades a scroll view's content out at an edge while more of it is scrolled past that edge, over `space8` (32 dp); a list that fits has sharp edges (§10) | `child` (the scroll view), `extent`, `fadeStart` (off under a pinned header) |
 | `ReadingColumn` | Centers a page's content in a column at most `maxWidth` wide by handing its builder side insets for a scroll view's padding (§6.3) | `builder(context, insets)`, `maxWidth` (`readingWidth` 720, `formWidth` 400) |
 | `PaneLayout` | A flexible main pane beside a fixed 360 dp side pane once it has 840 dp, otherwise one centered column; each builder gets insets for its scroll view's padding (§6.3) | `main`, `side`, `onePane` (each `(context, insets)`), `sideAt` (`start` or `end`), `mainMaxWidth` |
 

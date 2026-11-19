@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/library/application/library_scope.dart';
@@ -26,12 +27,14 @@ class const FolderScreen({
             FolderMenu(folderId: folderId),
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: LibrarySearchField(scope: scope)),
-          RecipeGrid(scope: scope),
-          const RecipeGridEndSpace(),
-        ],
+      body: FadingEdges(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: LibrarySearchField(scope: scope)),
+            RecipeGrid(scope: scope),
+            const RecipeGridEndSpace(),
+          ],
+        ),
       ),
       // New recipes go into a folder, so the unsorted page has no button.
       floatingActionButton: switch (scope) {

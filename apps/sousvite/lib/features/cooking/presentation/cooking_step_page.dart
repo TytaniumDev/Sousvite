@@ -34,13 +34,17 @@ class const CookingStepPage({
     ];
     final ingredients = StepIngredients(recipeId: recipeId, stepId: stepId);
     return PaneLayout(
-      main: (context, insets) =>
-          ListView(padding: insets + _padding, children: step),
-      side: (context, insets) =>
-          ListView(padding: insets + _padding, children: [ingredients]),
-      onePane: (context, insets) => ListView(
-        padding: insets + _padding,
-        children: [ingredients, ...step],
+      main: (context, insets) => FadingEdges(
+        child: ListView(padding: insets + _padding, children: step),
+      ),
+      side: (context, insets) => FadingEdges(
+        child: ListView(padding: insets + _padding, children: [ingredients]),
+      ),
+      onePane: (context, insets) => FadingEdges(
+        child: ListView(
+          padding: insets + _padding,
+          children: [ingredients, ...step],
+        ),
       ),
     );
   }

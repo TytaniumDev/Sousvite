@@ -16,27 +16,29 @@ class const MeasuringToolsScreen({super.key}) extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings_measuringTools)),
       body: ReadingColumn(
-        builder: (context, insets) => ListView(
-          padding: insets,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space4,
-              ),
-              child: Text(
-                l10n.settings_measuringToolsDescription,
-                style: context.textStyles.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
+        builder: (context, insets) => FadingEdges(
+          child: ListView(
+            padding: insets,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.space4,
+                ),
+                child: Text(
+                  l10n.settings_measuringToolsDescription,
+                  style: context.textStyles.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
-            SectionTitle(l10n.settings_measuringCups),
-            for (final tool in measuringCups)
-              MeasuringToolTile(key: ValueKey(tool.id), tool: tool),
-            SectionTitle(l10n.settings_measuringSpoons),
-            for (final tool in measuringSpoons)
-              MeasuringToolTile(key: ValueKey(tool.id), tool: tool),
-          ],
+              SectionTitle(l10n.settings_measuringCups),
+              for (final tool in measuringCups)
+                MeasuringToolTile(key: ValueKey(tool.id), tool: tool),
+              SectionTitle(l10n.settings_measuringSpoons),
+              for (final tool in measuringSpoons)
+                MeasuringToolTile(key: ValueKey(tool.id), tool: tool),
+            ],
+          ),
         ),
       ),
     );

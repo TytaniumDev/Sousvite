@@ -12,3 +12,6 @@ analyzer:
 
 plugins:
   riverpod_lint: ^3.2.0
+  # Our own rules, such as fade_scroll_views (ENGINEERING.md §16).
+  sousvite_lints:
+    path: ../../tools/sousvite_lints

@@ -13,14 +13,17 @@ class const SignedInView({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ReadingColumn(
     maxWidth: ReadingColumn.formWidth,
-    builder: (context, insets) => ListView(
-      padding: insets + const EdgeInsets.symmetric(vertical: AppSpacing.space4),
-      children: const [
-        _AccountSummary(),
-        _SignOutButton(),
-        SizedBox(height: AppSpacing.space8),
-        DeleteAccountButton(),
-      ],
+    builder: (context, insets) => FadingEdges(
+      child: ListView(
+        padding:
+            insets + const EdgeInsets.symmetric(vertical: AppSpacing.space4),
+        children: const [
+          _AccountSummary(),
+          _SignOutButton(),
+          SizedBox(height: AppSpacing.space8),
+          DeleteAccountButton(),
+        ],
+      ),
     ),
   );
 }
