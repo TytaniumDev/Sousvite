@@ -1,0 +1,35 @@
+name: Cache Gradle downloads
+description: >-
+  Restores and saves Gradle's downloaded plugins and libraries, so Android
+  builds rarely fetch from Maven Central. Maven Central rate limits and
+  sometimes fails GitHub's shared runners, which fails the build.
+
+# Why not gradle/actions/setup-gradle with cache-provider: basic: its key
+# hashes only *.gradle files and is shared by every job. A Flutter app's
+# native dependencies come from plugin versions in pubspec.lock, so that key
+# never changed, and whichever job saved first (a release bundle, without
+# the test libraries) kept the cache forever. Every other run then fetched
+# the rest from Maven Central. The default setup-gradle provider is a
+# commercial service.
+inputs:
+  name:
+    description: >-
+      Which build the cache is for. Builds that need different libraries,
+      like the release bundle and the end-to-end test app, keep separate
+      caches.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: 🐘 Cache Gradle downloads
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        # A new key whenever a plugin or Gradle file changes, so the saved
+        # cache keeps up. The prefix restores the latest older cache first,
+        # so only what changed is downloaded.
+        key: gradle-${{ inputs.name }}-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'apps/sousvite/android/**/*.gradle*', 'apps/sousvite/android/gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: gradle-${{ inputs.name }}-${{ runner.os }}-

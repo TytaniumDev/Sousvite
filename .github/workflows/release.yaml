@@ -24,6 +24,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/release.yaml
+      - .github/actions/cache-gradle/**
       - apps/sousvite/Gemfile
       - apps/sousvite/Gemfile.lock
       # Plugin versions decide the native dependencies (Swift packages, Gradle).
@@ -154,22 +155,17 @@ jobs:
         uses: actions/checkout@v7
 
       - name: ☕ Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           # Android lint in the current Gradle plugin calls JDK 21 APIs
           # (List.removeLast) and crashes on 17. The app still targets 17.
           java-version: "21"
 
-      - name: 🐘 Setup Gradle
-        # Caches Gradle's downloads between runs. Without it every build
-        # fetches all plugins and libraries from Maven Central, which rate
-        # limits GitHub's shared runners (HTTP 429) and fails the build.
-        # "basic" is the open-source GitHub Actions cache; the default
-        # provider is a commercial service.
-        uses: gradle/actions/setup-gradle@v6
+      - name: 🐘 Cache Gradle downloads
+        uses: ./.github/actions/cache-gradle
         with:
-          cache-provider: basic
+          name: release-android
 
       - name: 🐦 Setup Flutter
         uses: subosito/flutter-action@v2.23.0
