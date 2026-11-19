@@ -36,7 +36,7 @@ All under `apps/sousvite/lib/features/<name>/`:
 - No widget-returning helper methods; write a private `_Part` class instead.
 - `ref.watch` in `build`, `ref.read` in callbacks.
 - Navigate with `context.go(<Name>Routes.location(id))`, never a string.
-- Layout by `WindowSizeClass.of(context)`; spacing, colors, and text only from design_system tokens (`AppSpacing.*`, `context.colors`, `context.appText`, ...). CI rejects `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`.
+- Layout with `ReadingColumn` (one column) or `PaneLayout` (a side pane), and `WindowSizeClass.of(context)` only for whole-window choices (DESIGN_SYSTEM.md §6.3); test width-dependent layouts with `testWidgetsAtEverySize`. Spacing, colors, and text only from design_system tokens (`AppSpacing.*`, `context.colors`, `context.appText`, ...). CI rejects `Color(0x`, `fontSize:`, `EdgeInsets.all(<number>)`, and `MediaQuery.sizeOf` in `apps/`.
 
 ## 4. Use design_system widgets, and feed them words and quantities
 

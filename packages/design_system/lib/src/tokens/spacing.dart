@@ -13,16 +13,17 @@ abstract final class AppSpacing() {
   /// 12 dp. Gap inside list items, compact row padding.
   static const double space3 = 12;
 
-  /// 16 dp. Default padding, phone page gutter, card padding.
+  /// 16 dp. Default padding, the window margin on phones, card padding.
   static const double space4 = 16;
 
   /// 20 dp. Between a section title and its content.
   static const double space5 = 20;
 
-  /// 24 dp. Between sections, tablet page gutter.
+  /// 24 dp. Between sections, the window margin from medium up, between
+  /// panes.
   static const double space6 = 24;
 
-  /// 32 dp. Large section breaks, desktop page gutter.
+  /// 32 dp. Large section breaks.
   static const double space8 = 32;
 
   /// 40 dp. Cooking mode outer padding.

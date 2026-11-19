@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -25,3 +26,28 @@ extension WindowSize on WidgetTester {
     }
   }
 }
+
+/// Runs [body] once in a window of each size class (DESIGN_SYSTEM.md §6.3),
+/// so a screen is checked on phones, tablets, and desktops. A layout that
+/// overflows fails the test.
+void testWidgetsAtEverySize(
+  String description,
+  Future<void> Function(WidgetTester tester, WindowSizeClass sizeClass) body,
+) {
+  for (final sizeClass in WindowSizeClass.values) {
+    testWidgets('$description (${sizeClass.name})', (tester) async {
+      tester.setWindowWidth(sampleWidthOf(sizeClass));
+      await body(tester, sizeClass);
+    });
+  }
+}
+
+/// A typical window width in [sizeClass]: a phone, a small tablet, a
+/// tablet in landscape, a laptop, and a desktop browser.
+double sampleWidthOf(WindowSizeClass sizeClass) => switch (sizeClass) {
+  .compact => 400,
+  .medium => 700,
+  .expanded => 1000,
+  .large => 1400,
+  .extraLarge => 1800,
+};

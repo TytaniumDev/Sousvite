@@ -212,10 +212,10 @@ A 4 dp base grid. Use the tokens, never raw numbers.
 | `space1` | 4 | Icon-to-label gap inside chips |
 | `space2` | 8 | Gap between related items, chip spacing |
 | `space3` | 12 | Gap inside list items, compact row padding |
-| `space4` | 16 | Default padding, phone page gutter, card padding |
+| `space4` | 16 | Default padding, the window margin on phones, card padding |
 | `space5` | 20 | Between a section title and its content |
-| `space6` | 24 | Between sections, tablet page gutter |
-| `space8` | 32 | Large section breaks, desktop page gutter |
+| `space6` | 24 | Between sections, the window margin from medium up, between panes |
+| `space8` | 32 | Large section breaks |
 | `space10` | 40 | Cooking mode outer padding |
 | `space12` | 48 | Empty-state spacing |
 | `space16` | 64 | Top of onboarding and hero layouts |
@@ -226,29 +226,48 @@ A 4 dp base grid. Use the tokens, never raw numbers.
 - **Compact (data):** the detailed nutrients table, the ingredient match review list, and the read-only ingredient list on the recipe page. Rows are 36 to 40 dp with `space3` vertical padding. Wrap these in the `CompactDensity` widget, which applies `VisualDensity.compact` and the compact row height. Anything tappable still keeps a 48 dp hit area.
 - Grocery lists stay comfortable, since they're used one-handed in a store.
 
-### 6.3 Adaptive layout
+### 6.3 Adaptive layout *(Decided by Tyler, 2026-11-19)*
 
-We use Material's window size classes, applied the same way on phones, tablets, and web.
+We follow Material 3's layout model, the same way on phones, tablets, and web: the window's **size class** picks the navigation, **panes** split the space, and each pane keeps its content in a **readable column**. We don't use a 12-column grid; Material 3 replaced it with panes. Apple's readable content width and the web's max-width containers are the same idea as our column.
 
-| Class | Width | Navigation | Layout |
-|---|---|---|---|
-| Compact | < 600 dp | Bottom navigation bar | One pane |
-| Medium | 600 to 839 dp | Navigation rail | One pane, wider margins; cooking mode goes two-pane in landscape |
-| Expanded | ≥ 840 dp | Navigation rail (extended at ≥ 1200 dp) | List and detail side by side (library + recipe, grocery list + recipes) |
+**Size classes** (`WindowSizeClass`, Material's breakpoints including the large and extra-large classes added in 2025):
+
+| Class | Width | Typical device | Navigation | Margin |
+|---|---|---|---|---|
+| Compact | < 600 dp | Phone in portrait | Bottom navigation bar | 16 dp |
+| Medium | 600 to 839 dp | Small tablet, foldable | Navigation rail | 24 dp |
+| Expanded | 840 to 1199 dp | Tablet in landscape, small browser window | Navigation rail | 24 dp |
+| Large | 1200 to 1599 dp | Large tablet, laptop | Navigation rail with labels | 24 dp |
+| Extra-large | ≥ 1600 dp | Desktop browser | Navigation rail with labels | 24 dp |
 
 Top-level destinations: **Library**, **Grocery list**, and **Settings**. Cooking mode, the editor, and import review are full-screen routes on top.
 
-Page gutters are `space4` (compact), `space6` (medium), and `space8` (expanded). Reading columns max out at 720 dp.
+Use `WindowSizeClass.of(context)` only for decisions about the whole window, like the navigation and cooking mode's larger text. Decide panes and columns from the space a widget gets (`PaneLayout`, `ReadingColumn`), so a screen works beside a navigation rail or inside another pane. CI rejects reading the window size directly (`MediaQuery.sizeOf` and friends) in `apps/`.
 
-Every page keeps its content in a centered column with `ReadingColumn`, so nothing stretches across a tablet or a browser window:
+**Margins.** The margin is the least space between the window's edge and the content: 16 dp on compact windows and 24 dp from medium up (`WindowSizeClass.margin`). Content in a column pads itself by 16 dp (`ReadingColumn.contentPadding`, as a `ListTile` does), so a column's insets add the other 8 dp on wider windows.
+
+**Columns.** Every page keeps its content in a centered column with `ReadingColumn`, so nothing stretches across a tablet or a browser window:
 
 | Column | Max width | Used for |
 |---|---|---|
-| `readingWidth` | 720 dp | Most pages: settings, editor, grocery list, nutrition, import, sharing, history, cooking steps |
+| `readingWidth` | 720 dp | Most pages: settings, editor, grocery list, nutrition, import, sharing, history, and the main pane of a two-pane page |
 | `formWidth` | 400 dp | Short forms that are mostly buttons: sign in, the account page |
-| `twoPaneWidth` | 1200 dp | Two panes side by side: the recipe page's ingredients and steps, cooking mode's step and ingredients |
 
-The column sets the width, never the widgets in it: buttons, fields, and rows fill whatever width their parent gives them. `ReadingColumn` pads the scroll view rather than shrinking it, so the page still scrolls from anywhere in the window and the scrollbar stays at the window's edge. The library's recipe grid is the exception: it fills the window and adds columns as it grows.
+The column sets the width, never the widgets in it: buttons, fields, and rows fill whatever width their parent gives them. `ReadingColumn` pads the scroll view rather than shrinking it, so the page still scrolls from anywhere in the window and the scrollbar stays at the window's edge.
+
+**Panes.** `PaneLayout` is Material's supporting pane layout: a flexible main pane, at most `readingWidth`, beside a fixed 360 dp side pane, with a 24 dp spacer between them (`WindowSizeClass.paneSpacer`). It shows two panes once it has 840 dp (the expanded size class) and one centered column below that. The two panes stay together in the middle of wide windows, and each scrolls on its own.
+
+| Screen | One pane (under 840 dp) | Two panes (840 dp and up) |
+|---|---|---|
+| Recipe page (§10.1) | Photo, name, actions, ingredients, then steps, nutrition, and notes | Side pane first: photo, name, actions, and ingredients. Main pane: steps, nutrition, and notes |
+| Cooking mode (§10.3) | This step's ingredients above the step | Main pane: the step and its timers. Side pane after it: this step's ingredients |
+| Everything else | One `ReadingColumn` | One `ReadingColumn` |
+
+**Feed.** The library's folder and recipe grids are Material's feed layout: they fill the window and add columns as it grows.
+
+**List-detail** (a list beside the item you picked, like the grocery list beside its recipes, or settings beside a settings page) is future work. The library stays a feed with full-page recipes, so the recipe page keeps the whole width for its two panes.
+
+**Tests.** `testWidgetsAtEverySize` (in the app's test helpers) runs a widget test at a width in each size class. Use it for any screen whose layout changes with width. Widgetbook's Viewport addon has a viewport in each size class.
 
 ### 6.4 Shape
 
@@ -360,7 +379,8 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
-| `ReadingColumn` | Centers a page's content in a column at most `maxWidth` wide by handing its builder side insets for a scroll view's padding (§6.3) | `builder(context, insets)`, `maxWidth` (`readingWidth` 720, `formWidth` 400, `twoPaneWidth` 1200) |
+| `ReadingColumn` | Centers a page's content in a column at most `maxWidth` wide by handing its builder side insets for a scroll view's padding (§6.3) | `builder(context, insets)`, `maxWidth` (`readingWidth` 720, `formWidth` 400) |
+| `PaneLayout` | A flexible main pane beside a fixed 360 dp side pane once it has 840 dp, otherwise one centered column; each builder gets insets for its scroll view's padding (§6.3) | `main`, `side`, `onePane` (each `(context, insets)`), `sideAt` (`start` or `end`), `mainMaxWidth` |
 
 Details that matter:
 
@@ -384,7 +404,7 @@ Details that matter:
 - Photo at the top (full width on phones, 16:10 ratio, `radiusLg` corners on wider screens), then the recipe name in `headlineLarge`, source and times in `bodySmall`, and badges.
 - Actions in this order: **Cook** (`FilledButton`, the screen's one primary action), **Add to grocery list** (tonal), then share, experiment, and edit in an overflow menu or icon buttons.
 - Sections: Ingredients (with `ServingStepper`), Steps (grouped by section), Nutrition (`MacroSummary` with `BasisToggle`, then the detailed table in compact density), Notes, History.
-- On expanded screens, ingredients and steps sit side by side.
+- With room for two panes (§6.3), the photo, name, actions, and ingredients sit in a 360 dp side pane on the left, and the steps, nutrition, and notes in the main pane beside it. Each pane scrolls on its own, so the ingredients stay in view while you read the steps. *(Decided by Tyler, 2026-11-19)*
 
 ### 10.2 Recipe editor and import review
 
@@ -401,7 +421,7 @@ Cooking mode is the signature feature, so it gets its own rules.
 - **Screen stays awake** while cooking mode is open (`wakelock_plus`), and is released when it closes.
 - **One step at a time,** in `cookingStep` style with amounts in `cookingAmount`.
 - **Where you are:** a header shows the section and progress ("Prep · Step 2 of 5") in `cookingSection`, with a thin progress bar across the whole recipe.
-- **Ingredients for this step:** a compact checklist (`CompactDensity`) of just this step's ingredients, with checkboxes, so you know what to get ready. On compact screens it sits above the step; on medium and expanded screens in landscape, it's a side pane (two panes: step on the left, ingredients on the right).
+- **Ingredients for this step:** a compact checklist (`CompactDensity`) of just this step's ingredients, with checkboxes, so you know what to get ready. With one pane it sits above the step; with room for two panes (§6.3), it's the side pane: step on the left, ingredients on the right.
 - **Measuring guides:** an ingredient row whose amount takes a different tool, or more than one, shows a `MeasuringGuide` under its name: "Use ½ Tbsp" for 1 ½ tsp. An amount that is exactly one of your tools, a range, or a mass gets none.
 - **Navigation for messy hands:** swipe left or right anywhere, plus large **Back** and **Next** buttons at the bottom, at least 64 dp tall and spanning the width, inside the thumb zone. No small targets, and no invisible tap zones that can be hit by accident. The last step's Next becomes **Done**.
 - **Timers:** each time in a step is a `TimerChip`. Running timers collect in a tray pinned above the Back and Next buttons, so they stay visible on every step. A finished timer alerts with sound, vibration, and a pulse.
@@ -528,7 +548,7 @@ packages/design_system/
 
 ### 13.3 Rules
 
-- No hex colors, raw font sizes, or raw spacing numbers outside `packages/design_system`. A custom lint (or a `grep` check in CI) flags `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`.
+- No hex colors, raw font sizes, or raw spacing numbers outside `packages/design_system`. A `grep` check in CI flags `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`, and also `MediaQuery.sizeOf`, `widthOf`, and `orientationOf`, since layouts use size classes, panes, and columns (§6.3).
 - `design_system` depends only on Flutter, `material_ui`, `material_symbols_icons`, `units` (pure Dart: `Quantity` and its formatting), `clock` (so `TimerChip`'s countdown follows the test clock), and its own fonts. Never on `domain`, Riverpod, or any feature.
 - New shared widgets go into `design_system` only once two features need them. Until then they live in the feature folder.
 - Every public component gets use cases in `apps/widgetbook/lib/src/components/`, listed in `directories.dart`. A test there counts the components, so it fails until the new one is added.

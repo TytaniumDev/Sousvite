@@ -200,18 +200,35 @@ void main() {
     expect(find.byTooltip('More options'), findsNothing);
   });
 
-  testWidgets('lays ingredients and steps side by side on wide windows', (
+  testWidgetsAtEverySize('lays out the whole recipe', (
     tester,
+    sizeClass,
   ) async {
-    tester.view.physicalSize = const Size(1200, 900);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
     await pumpRecipe(tester);
 
     final ingredients = tester.getTopLeft(find.text('Ingredients'));
     final steps = tester.getTopLeft(find.text('Steps'));
-    expect(ingredients.dy, steps.dy);
-    expect(steps.dx, greaterThan(ingredients.dx));
+    if (sizeClass.isAtLeast(.expanded)) {
+      // Ingredients in the side pane, steps beside them from the top.
+      expect(steps.dx, greaterThan(ingredients.dx + PaneLayout.sideWidth));
+      expect(steps.dy, lessThan(ingredients.dy));
+    } else {
+      expect(steps.dx, ingredients.dx);
+      expect(steps.dy, greaterThan(ingredients.dy));
+    }
+  });
+
+  testWidgets('scrolls the steps without moving the ingredients', (
+    tester,
+  ) async {
+    tester.setWindowWidth(1400);
+    await pumpRecipe(tester);
+    final ingredients = tester.getTopLeft(find.text('Ingredients'));
+
+    await tester.drag(find.text('Steps'), const Offset(0, -200));
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(find.text('Ingredients')), ingredients);
   });
 
   testWidgets('keeps the two panes together on a very wide window', (
@@ -220,12 +237,13 @@ void main() {
     tester.setWindowWidth(2000);
     await pumpRecipe(tester);
 
+    const panesWidth =
+        PaneLayout.sideWidth +
+        WindowSizeClass.paneSpacer +
+        ReadingColumn.readingWidth;
     tester
-      ..expectInCenteredColumn(
-        find.text('Ingredients'),
-        ReadingColumn.twoPaneWidth,
-      )
-      ..expectInCenteredColumn(find.text('Steps'), ReadingColumn.twoPaneWidth);
+      ..expectInCenteredColumn(find.text('Ingredients'), panesWidth)
+      ..expectInCenteredColumn(find.text('Steps'), panesWidth);
   });
 
   group('navigation', () {

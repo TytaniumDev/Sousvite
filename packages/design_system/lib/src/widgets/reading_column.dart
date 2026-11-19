@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:design_system/src/tokens/spacing.dart';
+import 'package:design_system/src/tokens/window_size.dart';
 import 'package:flutter/widgets.dart';
 
 /// Keeps a page's content in a centered column, at most [maxWidth] wide
@@ -20,8 +22,9 @@ import 'package:flutter/widgets.dart';
 /// )
 /// ```
 ///
-/// On a window narrower than [maxWidth] the insets are zero, so phones look
-/// the same as without it.
+/// The content pads itself by [contentPadding], as list tiles do, so the
+/// insets only add what's left of the window margin: none on a phone, and
+/// 8 dp on wider windows, for 24 dp in all.
 class const ReadingColumn({
   /// Builds the content with the side [EdgeInsets] that center it.
   required final Widget Function(BuildContext context, EdgeInsets insets)
@@ -38,14 +41,20 @@ class const ReadingColumn({
   /// and the buttons under them.
   static const double formWidth = 400;
 
-  /// The widest a page with two panes side by side gets, such as the
-  /// recipe page's ingredients and steps.
-  static const double twoPaneWidth = 1200;
+  /// The padding content inside a column gives itself, as a `ListTile` does.
+  static const double contentPadding = AppSpacing.space4;
+
+  /// The least inset on each side of a column [width] wide, so the content
+  /// keeps the window margin for its size class.
+  static double minInsetFor(double width) =>
+      WindowSizeClass.fromWidth(width).margin - contentPadding;
 
   /// The side insets that center a column at most [maxWidth] wide in a
   /// space [width] wide.
   static EdgeInsets insetsFor(double width, {double maxWidth = readingWidth}) =>
-      EdgeInsets.symmetric(horizontal: math.max(0, (width - maxWidth) / 2));
+      EdgeInsets.symmetric(
+        horizontal: math.max(minInsetFor(width), (width - maxWidth) / 2),
+      );
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(

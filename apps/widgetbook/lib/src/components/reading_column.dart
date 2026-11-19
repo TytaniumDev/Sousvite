@@ -12,14 +12,9 @@ final readingColumnComponent = WidgetbookComponent(
       builder: (context) => ReadingColumn(
         maxWidth: context.knobs.object.dropdown(
           label: 'Max width',
-          options: const [
-            ReadingColumn.readingWidth,
-            ReadingColumn.formWidth,
-            ReadingColumn.twoPaneWidth,
-          ],
+          options: const [ReadingColumn.readingWidth, ReadingColumn.formWidth],
           labelBuilder: (width) => switch (width) {
             ReadingColumn.formWidth => 'Form (400)',
-            ReadingColumn.twoPaneWidth => 'Two panes (1200)',
             _ => 'Reading (720)',
           },
         ),

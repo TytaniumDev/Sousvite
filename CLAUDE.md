@@ -120,7 +120,7 @@ ENGINEERING.md §5 is the rule. In practice:
 - Colors: `context.colors.primary` (Material roles) and `context.appColors.protein` (macros, warning).
 - Text: `context.textStyles.titleLarge` (Material roles) and `context.appText.numberHero` (app styles).
 - Spacing, radii, motion are constants: `AppSpacing.space4`, `AppRadii.borderMd`, `AppMotion.spatialDefault`, `SpringCurve(...)`.
-- Layout: `WindowSizeClass.of(context)` for compact, medium, and expanded.
+- Layout (DESIGN_SYSTEM.md §6.3): `WindowSizeClass.of(context)` (compact, medium, expanded, large, extra-large) only for whole-window choices like navigation; `ReadingColumn` for one column and `PaneLayout` for a side pane, both sized from the space they get. Never read `MediaQuery.sizeOf` in `apps/` (CI greps for it).
 - Icons: `Symbols.<name>_rounded` from `material_symbols_icons`; `fill: 1` for selected states.
 - A shared widget moves into `design_system` only once two features need it, takes plain values (never entities or providers), and gets golden tests in all four schemes plus 200% text scale.
 - `design_system` has no l10n: every label is a parameter, and features pass `context.l10n.*`. Amount widgets (`AmountText`, `IngredientRow`) take a `Quantity` plus a unit word from `l10n.unitWord(unit, quantity, countWord:)` in `lib/shared/units/unit_words.dart`.
