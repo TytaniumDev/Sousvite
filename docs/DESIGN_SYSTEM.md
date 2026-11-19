@@ -248,6 +248,8 @@ Every page keeps its content in a centered column with `ReadingColumn`, so nothi
 | `formWidth` | 400 dp | Short forms that are mostly buttons: sign in, the account page |
 | `twoPaneWidth` | 1200 dp | Two panes side by side: the recipe page's ingredients and steps, cooking mode's step and ingredients |
 
+**Scroll views fade at their edges.** Every scroll view is the `child` of a `FadingEdges`, so content scrolled past an edge fades out over 32 dp instead of being cut off in a hard line under an app bar or above a bottom button. The fade grows over the first 32 dp scrolled, so the top of a list is sharp until you scroll. A list with a pinned header at the top (the grocery list's sections) turns off the start fade, because the header already makes that edge. Pagers (`PageView`) and lists with `NeverScrollableScrollPhysics` don't fade. The `fade_scroll_views` lint (`tools/sousvite_lints`) checks this; with a `ReadingColumn`, the `FadingEdges` goes inside its builder, around the scroll view.
+
 The column sets the width, never the widgets in it: buttons, fields, and rows fill whatever width their parent gives them. `ReadingColumn` pads the scroll view rather than shrinking it, so the page still scrolls from anywhere in the window and the scrollbar stays at the window's edge. The library's recipe grid is the exception: it fills the window and adds columns as it grows.
 
 ### 6.4 Shape
@@ -360,6 +362,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
+| `FadingEdges` | Fades a scroll view's content out at an edge while more of it is scrolled past that edge, over `space8` (32 dp); a list that fits has sharp edges (§10) | `child` (the scroll view), `extent`, `fadeStart` (off under a pinned header) |
 | `ReadingColumn` | Centers a page's content in a column at most `maxWidth` wide by handing its builder side insets for a scroll view's padding (§6.3) | `builder(context, insets)`, `maxWidth` (`readingWidth` 720, `formWidth` 400, `twoPaneWidth` 1200) |
 
 Details that matter:

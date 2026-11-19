@@ -36,6 +36,7 @@ All under `apps/sousvite/lib/features/<name>/`:
 - No widget-returning helper methods; write a private `_Part` class instead.
 - `ref.watch` in `build`, `ref.read` in callbacks.
 - Navigate with `context.go(<Name>Routes.location(id))`, never a string.
+- Every scroll view is the `child` of a `FadingEdges` (inside `ReadingColumn`'s builder), so its edges fade; the `fade_scroll_views` lint flags one that isn't.
 - Layout by `WindowSizeClass.of(context)`; spacing, colors, and text only from design_system tokens (`AppSpacing.*`, `context.colors`, `context.appText`, ...). CI rejects `Color(0x`, `fontSize:`, and `EdgeInsets.all(<number>)` in `apps/`.
 
 ## 4. Use design_system widgets, and feed them words and quantities
