@@ -5,6 +5,10 @@ import 'package:material_ui/material_ui.dart';
 /// A folder in the library's grid: a square collage of up to four recipe
 /// photos, the folder name, and how many recipes it holds.
 ///
+/// The tile pads its content by [inset] inside its ink, so the highlight
+/// on hover, focus, and press sits around the photo and text like a card.
+/// That padding is the space between tiles, so a grid of them needs no gap.
+///
 /// Takes plain values, so it can move into design_system once a second
 /// feature shows folders. The parent sets the width. A screen reader reads
 /// the tile as one button.
@@ -27,6 +31,14 @@ class const FolderTile({
   final IconData placeholderIcon = Symbols.folder_rounded,
   super.key,
 }) extends StatelessWidget {
+  /// The space between the edge of the ink and the content.
+  static const double inset = AppSpacing.space1;
+
+  /// The collage's corners, kept concentric with the ink's corners.
+  static const _collageRadius = BorderRadius.all(
+    Radius.circular(AppRadii.lg - inset),
+  );
+
   @override
   Widget build(BuildContext context) {
     final countLabel = this.countLabel;
@@ -37,7 +49,7 @@ class const FolderTile({
           onTap: onTap,
           borderRadius: AppRadii.borderLg,
           child: Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.space2),
+            padding: const EdgeInsets.all(inset),
             child: Column(
               crossAxisAlignment: .stretch,
               mainAxisSize: .min,
@@ -45,7 +57,7 @@ class const FolderTile({
                 AspectRatio(
                   aspectRatio: 1,
                   child: ClipRRect(
-                    borderRadius: AppRadii.borderLg,
+                    borderRadius: _collageRadius,
                     child: images.isEmpty
                         ? _Placeholder(icon: placeholderIcon)
                         : _Collage(images: images),

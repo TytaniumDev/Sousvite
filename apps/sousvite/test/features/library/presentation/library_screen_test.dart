@@ -164,6 +164,29 @@ void main() {
       expect(tops.toSet(), hasLength(1));
     });
 
+    testWidgets('tiles touch, and their photos line up with the search', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await pumpLibrary(tester);
+
+      final inks = [
+        for (final element in find.byType(FolderTile).evaluate())
+          tester.getRect(
+            find.descendant(
+              of: find.byWidget(element.widget),
+              matching: find.byType(InkWell),
+            ),
+          ),
+      ];
+      expect(inks[1].left, inks[0].right);
+      expect(inks[2].left, inks[1].right);
+      final firstPhoto = tester.getRect(find.byType(AspectRatio).first);
+      expect(firstPhoto.left, tester.getRect(find.byType(SearchBar)).left);
+    });
+
     testWidgets('a tile opens its folder, and unsorted opens its own page', (
       tester,
     ) async {
