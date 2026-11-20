@@ -26,15 +26,14 @@ class const SyncStatusButton({super.key}) extends ConsumerWidget {
       .signInAgain => (SyncIconStatus.error, l10n.account_syncSignInAgain),
     };
     if (status == null) return const SizedBox.shrink();
-    final icon = SyncStatusIcon(status: status, label: label);
-    if (phase != SyncPhase.signInAgain) return icon;
-    return Semantics(
-      button: true,
-      child: InkResponse(
-        onTap: () =>
-            unawaited(ref.read(syncControllerProvider.notifier).signInAgain()),
-        child: icon,
-      ),
+    return SyncStatusIcon(
+      status: status,
+      label: label,
+      onTap: phase == SyncPhase.signInAgain
+          ? () => unawaited(
+              ref.read(syncControllerProvider.notifier).signInAgain(),
+            )
+          : null,
     );
   }
 }

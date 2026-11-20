@@ -13,6 +13,7 @@ import 'package:sousvite_widgetbook/src/components/macro_summary.dart';
 import 'package:sousvite_widgetbook/src/components/match_status_chip.dart';
 import 'package:sousvite_widgetbook/src/components/measuring_guide.dart';
 import 'package:sousvite_widgetbook/src/components/nutrient_row.dart';
+import 'package:sousvite_widgetbook/src/components/padded_ink_well.dart';
 import 'package:sousvite_widgetbook/src/components/pane_layout.dart';
 import 'package:sousvite_widgetbook/src/components/pro_badge.dart';
 import 'package:sousvite_widgetbook/src/components/reading_column.dart';
@@ -77,6 +78,7 @@ final List<WidgetbookNode> directories = [
       fadingEdgesComponent,
     ],
   ),
+  WidgetbookFolder(name: 'Touch', children: [paddedInkWellComponent]),
   WidgetbookFolder(
     name: 'States',
     children: [emptyStateComponent, errorStateComponent],

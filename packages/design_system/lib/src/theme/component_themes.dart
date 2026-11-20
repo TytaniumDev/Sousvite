@@ -5,7 +5,45 @@ import 'package:material_ui/material_ui.dart';
 /// Component themes that give Material widgets our shapes and surfaces
 /// (DESIGN_SYSTEM.md §6.4, §9.1). Buttons keep Material's fully rounded
 /// default.
+///
+/// Every button pads its content evenly inside its ink, at least 4 dp on
+/// each side and at every text size (§6.5). Material pads the icon side of
+/// `.icon` buttons less and drops the padding toward nothing at large
+/// text, so these set it.
 abstract final class AppComponentThemes() {
+  /// The padding inside a button's ink: [horizontal] on the left and the
+  /// right, and 4 dp on the top and the bottom, which only shows once the
+  /// text outgrows the button's 40 dp height.
+  static ButtonStyle _padded(double horizontal) => const ButtonStyle().copyWith(
+    padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(horizontal: horizontal, vertical: AppSpacing.space1),
+    ),
+  );
+
+  /// Text buttons, with Material's 12 dp on both sides.
+  static TextButtonThemeData textButton(ColorScheme scheme) =>
+      TextButtonThemeData(style: _padded(AppSpacing.space3));
+
+  /// Filled and tonal buttons, with Material's 24 dp on both sides.
+  static FilledButtonThemeData filledButton(ColorScheme scheme) =>
+      FilledButtonThemeData(style: _padded(AppSpacing.space6));
+
+  /// Outlined buttons, with Material's 24 dp on both sides.
+  static OutlinedButtonThemeData outlinedButton(ColorScheme scheme) =>
+      OutlinedButtonThemeData(style: _padded(AppSpacing.space6));
+
+  /// Elevated buttons, with Material's 24 dp on both sides.
+  static ElevatedButtonThemeData elevatedButton(ColorScheme scheme) =>
+      ElevatedButtonThemeData(style: _padded(AppSpacing.space6));
+
+  /// Segmented buttons, with Material's 12 dp on both sides of a segment.
+  static SegmentedButtonThemeData segmentedButton(ColorScheme scheme) =>
+      SegmentedButtonThemeData(style: _padded(AppSpacing.space3));
+
+  /// Menu items, with Material's 12 dp on both sides.
+  static MenuButtonThemeData menuButton(ColorScheme scheme) =>
+      MenuButtonThemeData(style: _padded(AppSpacing.space3));
+
   static CardThemeData card(ColorScheme scheme) => CardThemeData(
     color: scheme.surfaceContainerLow,
     elevation: 0,

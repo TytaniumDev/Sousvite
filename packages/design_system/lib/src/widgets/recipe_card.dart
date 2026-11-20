@@ -1,5 +1,7 @@
 import 'package:design_system/src/theme/context_ext.dart';
+import 'package:design_system/src/tokens/radii.dart';
 import 'package:design_system/src/tokens/spacing.dart';
+import 'package:design_system/src/widgets/padded_ink_well.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -7,8 +9,9 @@ import 'package:material_ui/material_ui.dart';
 /// calories per serving, and optional badges (DESIGN_SYSTEM.md §9.2).
 ///
 /// The parent sets the width; the photo keeps a 4:3 shape and the name
-/// wraps onto two lines at most. A screen reader reads the card as one
-/// button.
+/// wraps onto two lines at most. The photo sits [inset] inside the card's
+/// ink, with corners kept concentric with the card's (§6.4). A screen
+/// reader reads the card as one button.
 class const RecipeCard({
   /// The recipe name.
   required final String title,
@@ -34,11 +37,20 @@ class const RecipeCard({
   /// The photo's width to height.
   static const double photoAspectRatio = 4 / 3;
 
+  /// The space between the edge of the card's ink and the photo:
+  /// [PaddedInkWell]'s default padding.
+  static const double inset = PaddedInkWell.minPadding;
+
+  /// The photo's corners, kept concentric with the card's corners.
+  static const _photoRadius = BorderRadius.all(
+    Radius.circular(AppRadii.md - inset),
+  );
+
   @override
   Widget build(BuildContext context) => Card(
     clipBehavior: .antiAlias,
     child: MergeSemantics(
-      child: InkWell(
+      child: PaddedInkWell(
         onTap: onTap,
         child: Column(
           crossAxisAlignment: .stretch,
@@ -46,10 +58,14 @@ class const RecipeCard({
           children: [
             AspectRatio(
               aspectRatio: photoAspectRatio,
-              child: _Photo(image: image),
+              child: ClipRRect(
+                borderRadius: _photoRadius,
+                child: _Photo(image: image),
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.space3),
+              // With the inset, 12 dp from the card's edge.
+              padding: const EdgeInsets.all(AppSpacing.space2),
               child: _Details(
                 title: title,
                 totalTimeLabel: totalTimeLabel,

@@ -104,6 +104,16 @@ void main() {
       expect(find.byIcon(Symbols.restaurant_rounded), findsOneWidget);
     });
 
+    testWidgets('insets the photo inside the ink', (tester) async {
+      await tester.pumpDesignSystem(sized(card(onTap: () {})));
+
+      final ink = tester.getRect(find.byType(InkWell));
+      final photo = tester.getRect(find.byType(AspectRatio));
+      expect(photo.left - ink.left, RecipeCard.inset);
+      expect(ink.right - photo.right, RecipeCard.inset);
+      expect(photo.top - ink.top, RecipeCard.inset);
+    });
+
     testWidgets('opens the recipe when tapped', (tester) async {
       var taps = 0;
       await tester.pumpDesignSystem(sized(card(onTap: () => taps++)));

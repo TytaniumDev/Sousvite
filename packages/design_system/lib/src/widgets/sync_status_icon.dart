@@ -1,4 +1,5 @@
 import 'package:design_system/src/theme/context_ext.dart';
+import 'package:design_system/src/widgets/padded_ink_well.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -23,6 +24,9 @@ enum SyncIconStatus() {
 /// Offline is not an error: it is shown in the same quiet color as synced.
 /// Only [SyncIconStatus.error] uses the error color. While syncing, the
 /// icon turns, unless the platform asks for reduced motion (§8.3).
+///
+/// With [onTap] it is a round button, such as one that asks the user to
+/// sign in again; its ink keeps the icon centered with even padding.
 class const SyncStatusIcon({
   /// The state to show.
   required final SyncIconStatus status,
@@ -30,10 +34,19 @@ class const SyncStatusIcon({
   /// The words for [status], already localized: "Synced", "Offline". The
   /// tooltip shows them and a screen reader reads them.
   required final String label,
+
+  /// Called when the icon is tapped. Null for an icon that only shows the
+  /// state.
+  final VoidCallback? onTap,
   super.key,
 }) extends StatelessWidget {
   /// The size of the area that opens the tooltip, a full tap target.
   static const double size = kMinInteractiveDimension;
+
+  static const double _glyphSize = 24;
+
+  /// The space around the glyph inside [size].
+  static const double _inset = (size - _glyphSize) / 2;
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +57,26 @@ class const SyncStatusIcon({
       .offline => (Symbols.cloud_off_rounded, colors.onSurfaceVariant),
       .error => (Symbols.sync_problem_rounded, colors.error),
     };
-    final glyph = Icon(icon, color: color);
+    final glyph = Icon(icon, color: color, size: _glyphSize);
+    final shown = status == .syncing ? _Turning(child: glyph) : glyph;
+    final onTap = this.onTap;
     return Tooltip(
       message: label,
-      child: SizedBox.square(
-        dimension: size,
-        child: Center(
-          child: status == .syncing ? _Turning(child: glyph) : glyph,
-        ),
-      ),
+      child: onTap == null
+          ? SizedBox.square(
+              dimension: size,
+              child: Center(child: shown),
+            )
+          : Semantics(
+              button: true,
+              child: PaddedInkWell(
+                onTap: onTap,
+                horizontal: _inset,
+                vertical: _inset,
+                customBorder: const CircleBorder(),
+                child: shown,
+              ),
+            ),
     );
   }
 }

@@ -38,7 +38,7 @@ void main() {
       ]) {
         await pump(tester, phase);
         expect(find.byType(SyncStatusIcon), findsOneWidget);
-        expect(find.byType(InkResponse), findsNothing);
+        expect(find.byType(InkWell), findsNothing);
       }
     });
 

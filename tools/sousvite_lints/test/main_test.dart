@@ -2,6 +2,7 @@ import 'package:analysis_server_plugin/registry.dart';
 import 'package:analyzer/analysis_rule/analysis_rule.dart';
 import 'package:sousvite_lints/main.dart';
 import 'package:sousvite_lints/src/fade_scroll_views.dart';
+import 'package:sousvite_lints/src/padded_ink_wells.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -13,7 +14,10 @@ void main() {
     test('registers every rule as a warning', () {
       final registry = _RecordingRegistry();
       plugin.register(registry);
-      expect(registry.warningRules, [isA<FadeScrollViews>()]);
+      expect(registry.warningRules, [
+        isA<FadeScrollViews>(),
+        isA<PaddedInkWells>(),
+      ]);
     });
   });
 }

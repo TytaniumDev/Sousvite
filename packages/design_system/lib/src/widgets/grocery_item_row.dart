@@ -2,6 +2,7 @@ import 'package:design_system/src/theme/context_ext.dart';
 import 'package:design_system/src/tokens/motion.dart';
 import 'package:design_system/src/tokens/spacing.dart';
 import 'package:design_system/src/widgets/amount_text.dart';
+import 'package:design_system/src/widgets/padded_ink_well.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
 
@@ -69,53 +70,52 @@ class const GroceryItemRow({
             semanticsLabel: amountSemanticsLabel,
           );
     return MergeSemantics(
-      child: InkWell(
-        onTap: () => onChanged(!checked),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: minHeight),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-            child: AnimatedDefaultTextStyle(
-              duration: duration,
-              curve: _fade,
-              style: body.copyWith(
-                color: checked ? colors.onSurfaceVariant : colors.onSurface,
-                decoration: checked ? TextDecoration.lineThrough : null,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) => Row(
-                  children: [
-                    Checkbox(
-                      value: checked,
-                      onChanged: (value) => onChanged(value ?? false),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: minHeight),
+        child: PaddedInkWell(
+          onTap: () => onChanged(!checked),
+          horizontal: AppSpacing.space4,
+          child: AnimatedDefaultTextStyle(
+            duration: duration,
+            curve: _fade,
+            style: body.copyWith(
+              color: checked ? colors.onSurfaceVariant : colors.onSurface,
+              decoration: checked ? TextDecoration.lineThrough : null,
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) => Row(
+                children: [
+                  Checkbox(
+                    value: checked,
+                    onChanged: (value) => onChanged(value ?? false),
+                    // The whole row takes the tap, so the box needs no hit
+                    // area of its own around it.
+                    materialTapTargetSize: .shrinkWrap,
+                  ),
+                  const SizedBox(width: AppSpacing.space2),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.space1,
+                      ),
+                      child: _Details(
+                        name: name,
+                        amount: stacked ? amount : null,
+                        sourcesLabel: sourcesLabel,
+                      ),
                     ),
-                    const SizedBox(width: AppSpacing.space2),
-                    Expanded(
+                  ),
+                  if (amount != null && !stacked)
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * maxAmountShare,
+                      ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.space2,
-                        ),
-                        child: _Details(
-                          name: name,
-                          amount: stacked ? amount : null,
-                          sourcesLabel: sourcesLabel,
-                        ),
+                        padding: const EdgeInsets.only(left: AppSpacing.space3),
+                        child: amount,
                       ),
                     ),
-                    if (amount != null && !stacked)
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: constraints.maxWidth * maxAmountShare,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: AppSpacing.space3,
-                          ),
-                          child: amount,
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),

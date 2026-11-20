@@ -31,8 +31,9 @@ class const FolderTile({
   final IconData placeholderIcon = Symbols.folder_rounded,
   super.key,
 }) extends StatelessWidget {
-  /// The space between the edge of the ink and the content.
-  static const double inset = AppSpacing.space1;
+  /// The space between the edge of the ink and the content:
+  /// [PaddedInkWell]'s default padding.
+  static const double inset = PaddedInkWell.minPadding;
 
   /// The collage's corners, kept concentric with the ink's corners.
   static const _collageRadius = BorderRadius.all(
@@ -45,40 +46,37 @@ class const FolderTile({
     return MergeSemantics(
       child: Semantics(
         button: true,
-        child: InkWell(
+        child: PaddedInkWell(
           onTap: onTap,
           borderRadius: AppRadii.borderLg,
-          child: Padding(
-            padding: const EdgeInsets.all(inset),
-            child: Column(
-              crossAxisAlignment: .stretch,
-              mainAxisSize: .min,
-              children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: ClipRRect(
-                    borderRadius: _collageRadius,
-                    child: images.isEmpty
-                        ? _Placeholder(icon: placeholderIcon)
-                        : _Collage(images: images),
-                  ),
+          child: Column(
+            crossAxisAlignment: .stretch,
+            mainAxisSize: .min,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: ClipRRect(
+                  borderRadius: _collageRadius,
+                  child: images.isEmpty
+                      ? _Placeholder(icon: placeholderIcon)
+                      : _Collage(images: images),
                 ),
-                const SizedBox(height: AppSpacing.space2),
+              ),
+              const SizedBox(height: AppSpacing.space2),
+              Text(
+                title,
+                style: context.textStyles.titleSmall,
+                maxLines: 2,
+                overflow: .ellipsis,
+              ),
+              if (countLabel != null)
                 Text(
-                  title,
-                  style: context.textStyles.titleSmall,
-                  maxLines: 2,
-                  overflow: .ellipsis,
-                ),
-                if (countLabel != null)
-                  Text(
-                    countLabel,
-                    style: context.textStyles.bodySmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
-                    ),
+                  countLabel,
+                  style: context.textStyles.bodySmall?.copyWith(
+                    color: context.colors.onSurfaceVariant,
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
