@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:domain/domain.dart';
 import 'package:nutrition/src/online/fetched_food.dart';
+import 'package:nutrition/src/online/serving_text.dart';
 
 /// Fetches [url] with [headers] and returns the response body, throwing
 /// on a network error or a status other than 200.
@@ -136,13 +137,22 @@ FetchedFood? _product(Map<String, Object?> json) {
     ],
     portions: [
       if (serving is num && serving > 0)
-        FoodPortion(
-          id: FoodPortionId('off-serving:$code'),
-          foodId: id,
-          amount: Quantity.one,
-          gramWeight: serving.toDouble(),
-          description: json['serving_size'] as String? ?? '',
-        ),
+        _serving(id, code, serving, json['serving_size'] as String?),
     ],
+  );
+}
+
+/// The label serving weighing [grams]: "2 tbsp" when [text] starts with a
+/// household volume, as in "2 tbsp (32 g)", else one serving as a count.
+FoodPortion _serving(FoodId id, String code, num grams, String? text) {
+  final household = parseServingText(text?.split('(').first);
+  final volume = household?.unit?.dimension == .volume ? household : null;
+  return FoodPortion(
+    id: FoodPortionId('off-serving:$code'),
+    foodId: id,
+    amount: volume?.quantity ?? Quantity.one,
+    unit: volume?.unit,
+    gramWeight: grams.toDouble(),
+    description: text ?? '',
   );
 }

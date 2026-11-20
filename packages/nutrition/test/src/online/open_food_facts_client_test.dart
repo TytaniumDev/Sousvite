@@ -73,6 +73,34 @@ void main() {
       expect(food!.food.externalId, '7394376616228');
     });
 
+    test('reads a household volume from the label serving', () {
+      Map<String, Object?> product(String servingSize) => {
+        'code': '1',
+        'product_name': 'Peanut butter',
+        'nutriments': {'energy-kcal_100g': 600},
+        'serving_quantity': 32,
+        'serving_quantity_unit': 'g',
+        'serving_size': servingSize,
+      };
+      List<FoodPortion> portions(String servingSize) => parseOffSearch({
+        'products': [product(servingSize)],
+      }).single.portions;
+
+      final spoons = portions('2 tbsp (32 g)').single;
+      expect(spoons.amount, Quantity(2));
+      expect(spoons.unit, Unit.tablespoon);
+      expect(spoons.gramWeight, 32);
+      expect(spoons.description, '2 tbsp (32 g)');
+
+      // A serving that is a count or a weight stays one serving, so
+      // counted lines ("1 bar") can still be weighed with it.
+      for (final text in ['1 serving (32 g)', '32 g', '1 bar']) {
+        final serving = portions(text).single;
+        expect(serving.amount, Quantity.one, reason: text);
+        expect(serving.unit, isNull, reason: text);
+      }
+    });
+
     test('is null for an unknown barcode', () async {
       body = '{"code":"00000000","status":0}';
       expect(await client().lookupBarcode('0'), isNull);
