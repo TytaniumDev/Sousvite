@@ -12,6 +12,18 @@ void main() {
         ? fixtureText('off_product_oatly.json')
         : fixtureText('off_search_oat_milk.json'),
   );
+  final oatlyPhoto = Uri.parse(
+    'https://images.openfoodfacts.org/images/products/739/437/661/6228/'
+    'front_en.197.400.jpg',
+  );
+
+  /// USDA, knowing its first oat milk by [barcode].
+  UsdaBrandedClient usdaKnowing(String barcode) => UsdaBrandedClient((_) async {
+    final response = fixture('usda_search_oat_milk.json')! as Map;
+    final foods = response['foods'] as List;
+    (foods.first as Map)['gtinUpc'] = barcode;
+    return response;
+  });
   final failingUsda = UsdaBrandedClient((_) async => throw StateError('down'));
   final failingOff = OpenFoodFactsClient(
     (_, _) async => throw StateError('offline'),
@@ -59,12 +71,43 @@ void main() {
     });
 
     test('looks up a barcode in the first source that knows it', () async {
-      final food = await OnlineFoods(
+      final product = await OnlineFoods(
         usda: usda,
         openFoodFacts: off,
       ).lookupBarcode('7394376616228');
 
-      expect(food!.food.id.value, 'off:7394376616228');
+      expect(product!.food.food.id.value, 'off:7394376616228');
+      expect(product.imageUrl, oatlyPhoto);
+    });
+
+    test("prefers USDA's nutrition, with Open Food Facts' photo", () async {
+      final product = await OnlineFoods(
+        usda: usdaKnowing('7394376616228'),
+        openFoodFacts: off,
+      ).lookupBarcode('7394376616228');
+
+      expect(product!.food.food.id.value, startsWith('usda:'));
+      expect(product.imageUrl, oatlyPhoto);
+    });
+
+    test('keeps USDA without a photo when Open Food Facts fails', () async {
+      final product = await OnlineFoods(
+        usda: usdaKnowing('7394376616228'),
+        openFoodFacts: failingOff,
+      ).lookupBarcode('7394376616228');
+
+      expect(product!.food.food.id.value, startsWith('usda:'));
+      expect(product.imageUrl, isNull);
+    });
+
+    test('fails a barcode lookup only when every source does', () async {
+      await expectLater(
+        OnlineFoods(
+          usda: failingUsda,
+          openFoodFacts: failingOff,
+        ).lookupBarcode('1'),
+        throwsStateError,
+      );
     });
   });
 }

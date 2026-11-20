@@ -140,7 +140,7 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
 - **Amount and ingredient are separated:** Each ingredient line is split into its amount ("1 ½ cups") and the ingredient itself ("rolled oats"), along with any preparation notes ("chopped"). This is what powers smart step text and measuring guidance in cooking mode (7.5), as well as scaling, unit conversion, nutrition, and grocery lists. The same separation applies to recipes imported from URLs and Umami.
 - Users can see how each line was split and correct it if it's wrong.
 - Fast entry on both phone and web, including pasting a whole ingredient list at once.
-- **Barcode scanning:** Scanning a packaged ingredient's barcode adds it as a line with one label serving ("32 g Creamy Peanut Butter"), matched to that product's nutrition, so only the amount needs changing.
+- **Barcode scanning:** Scanning a packaged ingredient's barcode first shows what was found: the package photo, name, brand, where the nutrition comes from, calories and macros in one label serving, and the line it will add. "Add to recipe" adds it as a line with one label serving ("32 g Creamy Peanut Butter"), matched to that product's nutrition, so only the amount needs changing; "Scan again" goes back to the camera.
 - **Recipe sections:** Steps can be grouped into named sections, such as "Prep", "Sauce", or "Assembly", and sections are easy to reorder. A typical use is a "Prep" section first, listing everything that can be done ahead of time (chopping, measuring, preheating) before the time-sensitive cooking starts.
 
 ### 7.4 Nutrition and macros

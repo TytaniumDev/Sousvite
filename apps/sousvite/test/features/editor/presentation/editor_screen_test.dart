@@ -216,6 +216,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Camera'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Add to recipe'));
+      await tester.pumpAndSettle();
     }
 
     testWidgets('scans a barcode into a line, matched on save', (tester) async {

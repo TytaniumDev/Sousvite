@@ -26,4 +26,24 @@ void main() {
       );
     });
   });
+
+  group('labelServingGrams', () {
+    test('is the label serving in grams', () {
+      expect(labelServingGrams(_F.packaged('Granola', servingGrams: 40)), 40);
+    });
+
+    test('is null without a serving that weighs something', () {
+      expect(labelServingGrams(_F.packaged('Oat Milk')), isNull);
+      expect(
+        labelServingGrams(_F.packaged('Oat Milk', servingGrams: 0)),
+        isNull,
+      );
+    });
+  });
+
+  test('formatGrams keeps one decimal at most', () {
+    expect(formatGrams(32), '32');
+    expect(formatGrams(12.5), '12.5');
+    expect(formatGrams(12.54), '12.5');
+  });
 }

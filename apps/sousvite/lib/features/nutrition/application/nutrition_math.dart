@@ -20,11 +20,19 @@ NutrientAmounts batchTotals(
         nutrients: nutrientsByFood[match.foodId] ?? const <FoodNutrient>[],
       ),
   ]);
-  return {
-    for (final MapEntry(:key, :value) in totals.entries)
-      ?Nutrient.fromCode(key): value,
-  };
+  return _shown(totals);
 }
+
+/// The nutrients in [grams] of one food with these [nutrients] per 100 g,
+/// such as one label serving of a scanned product.
+NutrientAmounts nutrientsIn(double grams, List<FoodNutrient> nutrients) =>
+    _shown(nutrition.batchTotals([(grams: grams, nutrients: nutrients)]));
+
+/// The [totals], keyed by USDA nutrient number, that the app shows.
+NutrientAmounts _shown(Map<String, double> totals) => {
+  for (final MapEntry(:key, :value) in totals.entries)
+    ?Nutrient.fromCode(key): value,
+};
 
 /// [batch] divided into [servings] equal servings.
 NutrientAmounts perServing(NutrientAmounts batch, Quantity servings) =>

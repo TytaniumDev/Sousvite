@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:domain/domain.dart';
 import 'package:nutrition/nutrition.dart';
 import 'package:test/test.dart';
@@ -67,10 +69,45 @@ void main() {
     test('looks up a barcode', () async {
       body = fixtureText('off_product_oatly.json');
 
-      final food = await client().lookupBarcode('7394376616228');
+      final product = await client().lookupBarcode('7394376616228');
 
       expect(requests.single.$1.path, '/api/v2/product/7394376616228');
-      expect(food!.food.externalId, '7394376616228');
+      expect(
+        requests.single.$1.queryParameters['fields'],
+        endsWith(',image_front_url'),
+      );
+      expect(product!.food.food.externalId, '7394376616228');
+      expect(
+        product.imageUrl,
+        Uri.parse(
+          'https://images.openfoodfacts.org/images/products/739/437/661/6228/'
+          'front_en.197.400.jpg',
+        ),
+      );
+    });
+
+    test('looks up a barcode without a usable photo', () async {
+      for (final photo in ['null', '"not a url"', '"ftp://x/y.jpg"', '3']) {
+        body = jsonEncode({
+          'status': 1,
+          'product': {
+            'code': '1',
+            'product_name': 'Peanut butter',
+            'nutriments': {'energy-kcal_100g': 600},
+            'image_front_url': jsonDecode(photo),
+          },
+        });
+
+        final product = await client().lookupBarcode('1');
+
+        expect(product!.food.food.name, 'Peanut butter', reason: photo);
+        expect(product.imageUrl, isNull, reason: photo);
+      }
+    });
+
+    test('is null for a barcode product it cannot use', () async {
+      body = '{"status":1,"product":{"code":"1","product_name":"Water"}}';
+      expect(await client().lookupBarcode('1'), isNull);
     });
 
     test('reads a household volume from the label serving', () {

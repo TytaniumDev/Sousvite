@@ -3,6 +3,7 @@
  "product": {
   "brands": "Oatly",
   "code": "7394376616228",
+  "image_front_url": "https://images.openfoodfacts.org/images/products/739/437/661/6228/front_en.197.400.jpg",
   "nutriments": {
    "added-sugars_100g": 0,
    "calcium_100g": 0.12,

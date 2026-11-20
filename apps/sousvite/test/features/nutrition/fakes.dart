@@ -164,10 +164,11 @@ class FakeRecipeRepository() extends Fake implements RecipeRepository {
 }
 
 /// A [NutritionApi] that returns [results] for every search, and the food
-/// in [barcodes] for a barcode.
+/// in [barcodes] for a barcode, with its photo in [photos].
 class FakeNutritionApi(
   final List<OnlineFood> results, {
   final Map<String, OnlineFood> barcodes = const {},
+  final Map<String, Uri> photos = const {},
 }) implements NutritionApi {
   /// Thrown by the next barcode lookup, as when offline, then cleared.
   Exception? lookupError;
@@ -179,13 +180,16 @@ class FakeNutritionApi(
   Future<List<OnlineFood>> search(String query) async => results;
 
   @override
-  Future<OnlineFood?> lookupBarcode(String barcode) async {
+  Future<ScannedProduct?> lookupBarcode(String barcode) async {
     lookups.add(barcode);
     if (lookupError case final error?) {
       lookupError = null;
       throw error;
     }
-    return barcodes[barcode];
+    return switch (barcodes[barcode]) {
+      final food? => (food: food, imageUrl: photos[barcode]),
+      null => null,
+    };
   }
 }
 
@@ -218,18 +222,32 @@ abstract final class NutritionFixtures() {
   }) => Food(id: FoodId(id), source: source, externalId: id, name: id);
 
   /// A packaged food from Open Food Facts whose label serving weighs
-  /// [servingGrams], if given.
-  static OnlineFood packaged(String name, {double? servingGrams}) {
+  /// [servingGrams], if given, with 600 kcal per 100 g and the macros
+  /// given, per 100 g.
+  static OnlineFood packaged(
+    String name, {
+    double? servingGrams,
+    String? brand,
+    double? protein,
+    double? carbs,
+    double? fat,
+  }) {
     final id = FoodId('off:$name');
+    FoodNutrient nutrient(String code, double per100g) =>
+        FoodNutrient(foodId: id, nutrientCode: code, amountPer100g: per100g);
     return (
       food: Food(
         id: id,
         source: NutritionSource.openFoodFacts,
         externalId: name,
         name: name,
+        brand: brand,
       ),
       nutrients: [
-        FoodNutrient(foodId: id, nutrientCode: '208', amountPer100g: 600),
+        nutrient('208', 600),
+        if (protein != null) nutrient('203', protein),
+        if (carbs != null) nutrient('205', carbs),
+        if (fat != null) nutrient('204', fat),
       ],
       portions: [
         if (servingGrams != null)
