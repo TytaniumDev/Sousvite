@@ -5,3 +5,9 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - build/**
+
+plugins:
+  # Our own rules (ENGINEERING.md §16). padded_ink_wells keeps every ripple
+  # in PaddedInkWell.
+  sousvite_lints:
+    path: ../../tools/sousvite_lints

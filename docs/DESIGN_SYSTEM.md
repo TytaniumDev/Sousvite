@@ -286,6 +286,16 @@ Soft and rounded, but not bubbly.
 
 Buttons stay fully rounded (Material's default). Nested corners follow the rule *inner radius = outer radius − padding*, so a photo inside a `radiusLg` card with 4 dp padding uses 12 dp.
 
+### 6.5 Ink and touch *(Decided by Tyler, 2026-11-20)*
+
+Every ripple sits around its content with room to spare: the ink fills the surface, then padding, then the content.
+
+- **At least 4 dp on every side, and the same on both sides of each axis.** Left equals right and top equals bottom, so the highlight on hover, focus, and press never hugs the content on one side.
+- **`PaddedInkWell`** is the one way to make a ripple. It takes the padding per axis (`horizontal`, `vertical`, 4 dp by default), so uneven padding can't be written. The `padded_ink_wells` lint flags a bare `InkWell` or `InkResponse` in `lib/`.
+- **48 dp tap area.** A `PaddedInkWell` smaller than 48 dp still lays out 48 by 48 dp and takes taps across all of it, the way Material's buttons do, without growing the ink. `tapTargetAlignment` places the ink in that area; `centerStart` keeps it lined up with text above and below.
+- **Material's own buttons, chips, menus, and list tiles** get even padding from the theme (`AppComponentThemes`): `.icon` buttons pad both sides alike instead of less on the icon side, and buttons keep 4 dp above and below once large text outgrows their 40 dp height. A test in design_system measures each of them at 100%, 200%, and 300% text.
+- A list row's ink is the row: its horizontal padding is the row's 16 dp, with 4 dp above and below. A row's checkbox needs no hit area of its own, since the row takes the tap.
+
 ## 7. Iconography *(Decided)*
 
 - **Material Symbols Rounded**, through the `material_symbols_icons` package, so built-in Material widgets and our own icons match.
@@ -359,6 +369,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 
 | Component | What it shows | Key inputs |
 |---|---|---|
+| `PaddedInkWell` | A ripple with even padding of at least 4 dp between the ink and its content, and a 48 dp tap area (§6.5) | `onTap`, `child`, `horizontal`, `vertical`, `borderRadius` or `customBorder`, `tapTargetAlignment`, `excludeFromSemantics` |
 | `RecipeCard` | Photo, recipe name (serif), total time, calories per serving, optional badges | `title`, `image` (`ImageProvider`), `totalTimeLabel` ("45 min"), `caloriesLabel` ("520 kcal"), `badges`, `onTap` |
 | `AmountText` | A formatted amount with fraction glyphs and an optional screen-reader label | `quantity` (`Quantity` from `units`), `unit` (localized word), `semanticsLabel`, `style` |
 | `StepText` | Step text with amounts placed inline and emphasized | `segments` (`StepTextSegment` words and `StepAmountSegment` quantity and unit), `style`, `amountStyle`, `highlightAmounts` (editor) |
@@ -377,7 +388,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `ShareBadge` | "Shared" (joint share) or "Copy" so people know which they're editing | `kind` (`ShareBadgeKind`), `label` |
 | `ExperimentBadge` | Marks an experiment, in terracotta | `label` |
 | `ProBadge` | Marks a Pro feature | `label` |
-| `SyncStatusIcon` | Synced, syncing, offline, or error, as a small icon with a tooltip | `status` (`SyncIconStatus`), `label` |
+| `SyncStatusIcon` | Synced, syncing, offline, or error, as a small icon with a tooltip; a round button with `onTap` | `status` (`SyncIconStatus`), `label`, `onTap` |
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
@@ -391,13 +402,14 @@ Details that matter:
 - **MacroBar** segments are always labeled nearby (by `MacroSummary` or a legend). Segments are separated by 2 dp gaps in the surface color so they read without relying on hue alone.
 - **MatchStatusChip** pairs color with an icon and a word: USDA and Open Food Facts are neutral (`surface-container-high` with an icon), Edited uses `secondary-container`, Not matched uses `warning-container` with a warning icon.
 - **TimerChip** is idle in `secondary-container`, running in `tertiary-container` with a live countdown, and done with a pulse (§8.2). The feature owns whether a timer runs and passes `startedAt`, so running timers survive step changes and collect in the tray; the chip only ticks its own countdown. Sound and vibration are the feature's job.
-- **IngredientRow** keeps its amount column at least 88 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Rows follow the theme's density: read-only rows are 48 dp (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp (48 dp inside `CompactDensity`) and toggle when tapped anywhere. A checkbox that means "done" (cooking) uses `checkOff`, which strikes the line through; one that means "include" (choosing lines for the grocery list) uses `select`, which leaves the text alone. With `onAmountTap`, the amount is its own button with a 48 dp hit area, apart from the row's checkbox (tapping garlic cloves shows them as jarred garlic); screen readers get it as a custom action named `amountTapLabel`, since a row with a checkbox merges its semantics.
+- **IngredientRow** keeps its amount column at least 96 dp wide so names line up down a list, but never more than 40% of the row, so 200% text still leaves room for the name. Rows follow the theme's density: read-only rows are 48 dp (40 dp inside `CompactDensity`); rows with a checkbox are 56 dp (48 dp inside `CompactDensity`) and toggle when tapped anywhere. A checkbox that means "done" (cooking) uses `checkOff`, which strikes the line through; one that means "include" (choosing lines for the grocery list) uses `select`, which leaves the text alone. With `onAmountTap`, the amount is its own button with a 48 dp hit area, apart from the row's checkbox (tapping garlic cloves shows them as jarred garlic); screen readers get it as a custom action named `amountTapLabel`, since a row with a checkbox merges its semantics. Its ink sits 8 dp around the amount on every side (§6.5), and every amount keeps that 8 dp at its start, so tappable and plain amounts line up.
 - **MeasuringGuide** shows each tool as a `surface-container-high` pill joined by `+`, wrapping onto more lines when space runs out.
 - **Nutrition numbers** are whole for calories and milligrams, and keep one decimal below 10 g (`2.5 g`, `31 g`), dropping a trailing `.0`. `NutrientPrecision` holds this rule so every nutrition widget rounds the same way.
 - **ServingStepper** steps by whole servings: from 2½, minus goes to 2 and plus goes to 3. A fractional serving size typed elsewhere is kept until the next step.
 - **Badges and status chips share one shape:** a small icon and a word on a fill with `radiusSm`. `ShareBadge` is sage for a joint share and neutral for a copy, `ExperimentBadge` is terracotta, and `ProBadge` uses `primary-container`.
 - **GroceryItemRow** puts the amount at the end of the row, taking at most half of it. From 150% text, the amount moves under the name, so neither breaks mid-word.
-- **SyncStatusIcon** is quiet (`on-surface-variant`) for synced, syncing, and offline; only an error uses `error`. While syncing, the icon turns, and holds still under reduced motion. Its tooltip area is a full 48 dp target.
+- **SyncStatusIcon** is quiet (`on-surface-variant`) for synced, syncing, and offline; only an error uses `error`. While syncing, the icon turns, and holds still under reduced motion. Its tooltip area is a full 48 dp target. With `onTap` (sign in again), the 48 dp circle is its ink, with the icon centered.
+- **RecipeCard** pads its photo 4 dp inside the card's ink, with 8 dp corners (concentric with the card's 12 dp), like the library's folder tiles (§6.5).
 - **EmptyState and ErrorState** share one centered layout, at most 360 dp wide, with the title marked as a heading. ErrorState's icon is in `error` and its retry is a tonal button.
 
 ## 10. Patterns

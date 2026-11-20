@@ -39,5 +39,11 @@ abstract final class AppTheme() {
     navigationBarTheme: AppComponentThemes.navigationBar(scheme),
     navigationRailTheme: AppComponentThemes.navigationRail(scheme),
     listTileTheme: AppComponentThemes.listTile(scheme),
+    textButtonTheme: AppComponentThemes.textButton(scheme),
+    filledButtonTheme: AppComponentThemes.filledButton(scheme),
+    outlinedButtonTheme: AppComponentThemes.outlinedButton(scheme),
+    elevatedButtonTheme: AppComponentThemes.elevatedButton(scheme),
+    segmentedButtonTheme: AppComponentThemes.segmentedButton(scheme),
+    menuButtonTheme: AppComponentThemes.menuButton(scheme),
   );
 }

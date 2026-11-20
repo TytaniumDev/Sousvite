@@ -132,17 +132,63 @@ void main() {
         expect(changes, [true]);
       });
 
-      testWidgets('has a 48 dp hit area', (tester) async {
+      Finder amountInk() => find.ancestor(
+        of: find.byType(AmountText),
+        matching: find.byType(InkWell),
+      );
+
+      testWidgets('pads the amount evenly inside its ink', (tester) async {
         await tester.pumpDesignSystem(tappable(onAmountTap: () {}));
 
-        final ink = tester.getSize(
-          find.ancestor(
-            of: find.byType(AmountText),
-            matching: find.byType(InkWell),
+        final ink = tester.getRect(amountInk());
+        final amount = tester.getRect(find.byType(AmountText));
+        const padding = IngredientRow.amountPadding;
+        expect(amount.left - ink.left, padding);
+        expect(ink.right - amount.right, padding);
+        expect(amount.top - ink.top, padding);
+        expect(ink.bottom - amount.bottom, padding);
+      });
+
+      testWidgets('lines up with a plain amount', (tester) async {
+        await tester.pumpDesignSystem(
+          Column(
+            children: [
+              tappable(onAmountTap: () {}),
+              IngredientRow(name: 'salt', quantity: Quantity(1), unit: 'tsp'),
+            ],
           ),
         );
-        expect(ink.width, greaterThanOrEqualTo(kMinInteractiveDimension));
-        expect(ink.height, greaterThanOrEqualTo(kMinInteractiveDimension));
+
+        final amounts = find.byType(AmountText);
+        expect(
+          tester.getTopLeft(amounts.first).dx,
+          tester.getTopLeft(amounts.last).dx,
+        );
+        expect(
+          tester.getTopLeft(find.text('garlic')).dx,
+          tester.getTopLeft(find.text('salt')).dx,
+        );
+      });
+
+      testWidgets('takes taps across 48 dp from a short amount', (
+        tester,
+      ) async {
+        var taps = 0;
+        await tester.pumpDesignSystem(
+          IngredientRow(
+            name: 'garlic cloves',
+            quantity: Quantity(2),
+            onAmountTap: () => taps++,
+            amountTapLabel: 'Show as jarred garlic',
+          ),
+        );
+
+        final ink = tester.getRect(amountInk());
+        expect(ink.width, lessThan(kMinInteractiveDimension));
+        await tester.tapAt(
+          ink.centerLeft + const Offset(kMinInteractiveDimension - 2, 0),
+        );
+        expect(taps, 1);
       });
 
       testWidgets('offers the tap as a screen reader action', (tester) async {
@@ -248,6 +294,38 @@ void main() {
         ),
       );
     });
+
+    designSystemGoldenTest(
+      'lines tappable amounts up with plain ones',
+      fileName: 'ingredient_row_amounts',
+      width: 320,
+      scenarios: {
+        'short and long amounts': Column(
+          children: [
+            IngredientRow(name: 'red onion', quantity: Quantity(1, 2)),
+            IngredientRow(
+              name: 'garlic cloves',
+              quantity: Quantity(2),
+              onAmountTap: () {},
+              amountTapLabel: 'Show as jarred garlic',
+            ),
+            IngredientRow(
+              name: 'garlic',
+              preparation: 'minced',
+              quantity: Quantity(2),
+              unit: 'tsp',
+              onAmountTap: () {},
+              amountTapLabel: 'Show as garlic cloves',
+            ),
+            IngredientRow(
+              name: 'brown rice',
+              quantity: Quantity(3, 4),
+              unit: 'cup',
+            ),
+          ],
+        ),
+      },
+    );
 
     designSystemGoldenTest(
       'renders in every variant',

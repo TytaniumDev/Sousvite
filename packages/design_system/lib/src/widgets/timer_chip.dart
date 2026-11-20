@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:clock/clock.dart';
 import 'package:design_system/src/theme/context_ext.dart';
 import 'package:design_system/src/tokens/motion.dart';
+import 'package:design_system/src/tokens/spacing.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -43,6 +44,9 @@ class _TimerChipState()
     extends State<TimerChip>
     with SingleTickerProviderStateMixin {
   static final _pulseCurve = SpringCurve(AppMotion.spatialFast);
+
+  /// Material's 18 dp chip icon, which would otherwise grow with the text.
+  static const _avatarBox = BoxConstraints.tightFor(width: 18, height: 18);
 
   late final AnimationController _pulse = AnimationController(
     vsync: this,
@@ -133,6 +137,10 @@ class _TimerChipState()
     };
     final chip = ActionChip(
       avatar: Icon(icon, color: foreground, fill: remaining == null ? 0 : 1),
+      // The icon keeps its size at large text, and the label adds no space
+      // at its end, so the ink pads the content evenly (§6.5).
+      avatarBoxConstraints: _avatarBox,
+      labelPadding: const EdgeInsetsDirectional.only(start: AppSpacing.space2),
       label: Text(text),
       labelStyle: context.appText.number.copyWith(color: foreground),
       backgroundColor: background,

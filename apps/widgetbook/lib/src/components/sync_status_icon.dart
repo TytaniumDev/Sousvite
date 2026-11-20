@@ -15,7 +15,11 @@ final syncStatusIconComponent = WidgetbookComponent(
         );
         return Preview(
           maxWidth: null,
-          child: SyncStatusIcon(status: status, label: _labels[status]!),
+          child: SyncStatusIcon(
+            status: status,
+            label: _labels[status]!,
+            onTap: context.knobs.boolean(label: 'Tappable') ? () {} : null,
+          ),
         );
       },
     ),

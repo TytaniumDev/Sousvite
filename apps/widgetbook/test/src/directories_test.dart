@@ -9,9 +9,9 @@ void main() {
         .map((node) => node.name);
 
     test('lists each design_system component once', () {
-      // DESIGN_SYSTEM.md §9.2 has 25 components. When you add one to
+      // DESIGN_SYSTEM.md §9.2 has 26 components. When you add one to
       // design_system, add its use cases here too.
-      expect(components, hasLength(25));
+      expect(components, hasLength(26));
       expect(components.toSet(), hasLength(components.length));
     });
   });

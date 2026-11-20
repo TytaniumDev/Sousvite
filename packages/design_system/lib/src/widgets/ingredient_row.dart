@@ -5,6 +5,7 @@ import 'package:design_system/src/tokens/motion.dart';
 import 'package:design_system/src/tokens/radii.dart';
 import 'package:design_system/src/tokens/spacing.dart';
 import 'package:design_system/src/widgets/amount_text.dart';
+import 'package:design_system/src/widgets/padded_ink_well.dart';
 import 'package:flutter/semantics.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
@@ -36,8 +37,10 @@ enum IngredientCheckStyle() {
 ///
 /// With [onAmountTap] the amount itself is a button with a 48 dp hit area,
 /// apart from the row's checkbox: tapping it can show the amount another
-/// way, such as garlic cloves as teaspoons of jarred garlic. Screen readers
-/// offer it as a custom action named [amountTapLabel].
+/// way, such as garlic cloves as teaspoons of jarred garlic. Its ink sits
+/// [amountPadding] around the amount on every side. Every amount keeps
+/// that space at its start, so tappable and plain amounts line up. Screen
+/// readers offer it as a custom action named [amountTapLabel].
 class const IngredientRow({
   /// The ingredient: "flour".
   required final String name,
@@ -81,7 +84,20 @@ class const IngredientRow({
   super.key,
 }) extends StatelessWidget {
   /// The narrowest the amount column gets, so names line up in a list.
-  static const double amountColumnWidth = 88;
+  static const double amountColumnWidth = 96;
+
+  /// The space between a tappable amount and the edge of its ink, on every
+  /// side. Plain amounts keep it on the left and right too, so they line
+  /// up with tappable ones.
+  static const double amountPadding = AppSpacing.space2;
+
+  /// The space between the amount's ink and the name.
+  static const double amountGap = AppSpacing.space1;
+
+  // The space between the row's edge and its content, which is the ink's
+  // padding when the row is tappable. The name keeps 8 dp above and below
+  // either way.
+  static const double _rowPadding = AppSpacing.space4;
 
   /// The height of a row with a checkbox at standard density (§6.2).
   static const double interactiveMinHeight = 56;
@@ -108,52 +124,67 @@ class const IngredientRow({
         (onChanged == null ? kMinInteractiveDimension : interactiveMinHeight) +
         density.baseSizeAdjustment.dy;
 
-    final row = ConstrainedBox(
-      constraints: BoxConstraints(minHeight: minHeight),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space4),
-        child: AnimatedDefaultTextStyle(
-          duration: duration,
-          curve: _fade,
-          style: body.copyWith(color: color, decoration: decoration),
-          child: Row(
-            children: [
-              if (onChanged != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.space2),
-                  child: Checkbox(
-                    value: checked,
-                    onChanged: (value) => onChanged(value ?? false),
-                  ),
-                ),
-              _AmountColumn(
-                quantity: quantity,
-                unit: unit,
-                semanticsLabel: amountSemanticsLabel,
-                onTap: onAmountTap,
-                tapLabel: amountTapLabel,
+    // A tappable row's ink keeps 4 dp above and below its content.
+    final inkVertical = onChanged == null ? 0.0 : PaddedInkWell.minPadding;
+    final content = AnimatedDefaultTextStyle(
+      duration: duration,
+      curve: _fade,
+      style: body.copyWith(color: color, decoration: decoration),
+      child: Row(
+        children: [
+          if (onChanged != null)
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.space2),
+              child: Checkbox(
+                value: checked,
+                onChanged: (value) => onChanged(value ?? false),
+                // The whole row takes the tap, so the box needs no hit area
+                // of its own around it.
+                materialTapTargetSize: .shrinkWrap,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.space2,
-                  ),
-                  child: _NameAndGuide(
-                    name: name,
-                    preparation: preparation,
-                    guide: guide,
-                  ),
-                ),
-              ),
-            ],
+            ),
+          _AmountColumn(
+            quantity: quantity,
+            unit: unit,
+            semanticsLabel: amountSemanticsLabel,
+            onTap: onAmountTap,
+            tapLabel: amountTapLabel,
           ),
-        ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: AppSpacing.space2 - inkVertical,
+              ),
+              child: _NameAndGuide(
+                name: name,
+                preparation: preparation,
+                guide: guide,
+              ),
+            ),
+          ),
+        ],
       ),
     );
 
-    if (onChanged == null) return row;
+    final constraints = BoxConstraints(minHeight: minHeight);
+    if (onChanged == null) {
+      return ConstrainedBox(
+        constraints: constraints,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _rowPadding),
+          child: content,
+        ),
+      );
+    }
     return MergeSemantics(
-      child: InkWell(onTap: () => onChanged(!checked), child: row),
+      child: ConstrainedBox(
+        constraints: constraints,
+        child: PaddedInkWell(
+          onTap: () => onChanged(!checked),
+          horizontal: _rowPadding,
+          child: content,
+        ),
+      ),
     );
   }
 }
@@ -180,7 +211,9 @@ class const _AmountColumn({
           maxWidth: max,
         ),
         child: Padding(
-          padding: const EdgeInsets.only(right: AppSpacing.space3),
+          padding: const EdgeInsetsDirectional.only(
+            end: IngredientRow.amountGap,
+          ),
           child: _TappableAmount(
             onTap: onTap,
             tapLabel: tapLabel,
@@ -196,7 +229,8 @@ class const _AmountColumn({
   );
 }
 
-/// The amount as a button when [onTap] is set, or [child] alone.
+/// The amount with [IngredientRow.amountPadding] on each side: plain, or
+/// as a button inside its ink when [onTap] is set.
 ///
 /// The ink is left out of the semantics tree, because a row with a
 /// checkbox merges its semantics and has its own tap. Screen readers get
@@ -206,28 +240,33 @@ class const _TappableAmount({
   required final String? tapLabel,
   required final Widget child,
 }) extends StatelessWidget {
+  static const double _padding = IngredientRow.amountPadding;
+
   @override
   Widget build(BuildContext context) {
     final onTap = this.onTap;
     final tapLabel = this.tapLabel;
-    if (onTap == null || tapLabel == null) return child;
+    if (onTap == null || tapLabel == null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: _padding),
+        child: child,
+      );
+    }
     return Semantics(
       customSemanticsActions: {CustomSemanticsAction(label: tapLabel): onTap},
-      child: InkWell(
-        onTap: onTap,
-        excludeFromSemantics: true,
-        borderRadius: AppRadii.borderSm,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: kMinInteractiveDimension,
-            minHeight: kMinInteractiveDimension,
-          ),
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            widthFactor: 1,
-            heightFactor: 1,
-            child: child,
-          ),
+      // Loose, so the ink hugs the amount instead of filling the column.
+      child: Align(
+        alignment: AlignmentDirectional.centerStart,
+        widthFactor: 1,
+        heightFactor: 1,
+        child: PaddedInkWell(
+          onTap: onTap,
+          horizontal: _padding,
+          vertical: _padding,
+          borderRadius: AppRadii.borderSm,
+          tapTargetAlignment: AlignmentDirectional.centerStart,
+          excludeFromSemantics: true,
+          child: child,
         ),
       ),
     );
