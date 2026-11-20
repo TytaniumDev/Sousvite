@@ -24,13 +24,28 @@ final class OnlineFoods({
     return [for (final foods in results) ...foods];
   }
 
-  /// The product with [barcode] from the first source that knows it.
-  Future<FetchedFood?> lookupBarcode(String barcode) async {
-    final results = await _all([
-      if (usda case final usda?) () => usda.lookupBarcode(barcode),
+  /// The product with [barcode] from the first source that knows it. Its
+  /// photo comes from Open Food Facts even when USDA has the nutrition,
+  /// since USDA has no photos.
+  Future<BarcodeProduct?> lookupBarcode(String barcode) async {
+    final products = (await _all<BarcodeProduct?>([
+      if (usda case final usda?)
+        () async => switch (await usda.lookupBarcode(barcode)) {
+          final food? => (food: food, imageUrl: null),
+          null => null,
+        },
       if (openFoodFacts case final off?) () => off.lookupBarcode(barcode),
-    ]);
-    return results.nonNulls.firstOrNull;
+    ])).nonNulls;
+    if (products.firstOrNull case (:final food, imageUrl: _)) {
+      return (
+        food: food,
+        imageUrl: products
+            .map((product) => product.imageUrl)
+            .nonNulls
+            .firstOrNull,
+      );
+    }
+    return null;
   }
 
   /// Runs [calls] together and returns the results of those that succeed,

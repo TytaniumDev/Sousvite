@@ -35,6 +35,19 @@ void main() {
     });
   });
 
+  test('nutrientsIn scales one food to a weight', () {
+    const butter = FoodId('butter');
+    expect(
+      nutrientsIn(32, const [
+        FoodNutrient(foodId: butter, nutrientCode: '208', amountPer100g: 600),
+        FoodNutrient(foodId: butter, nutrientCode: '204', amountPer100g: 50),
+        // Not a nutrient the app shows.
+        FoodNutrient(foodId: butter, nutrientCode: '999', amountPer100g: 1),
+      ]),
+      {Nutrient.calories: 192, Nutrient.fat: 16},
+    );
+  });
+
   group('perServing', () {
     test('divides the batch', () {
       expect(perServing({Nutrient.calories: 600}, Quantity(4)), {

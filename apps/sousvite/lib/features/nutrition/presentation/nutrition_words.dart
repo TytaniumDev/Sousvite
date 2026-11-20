@@ -61,6 +61,11 @@ extension NutritionWords on AppLocalizations {
 MatchStatus matchStatusOf(NutritionMatch? match) => switch (match) {
   null => .notMatched,
   NutritionMatch(userConfirmed: true) => .edited,
-  NutritionMatch(source: NutritionSource.openFoodFacts) => .openFoodFacts,
-  NutritionMatch(source: NutritionSource.usda) => .usda,
+  NutritionMatch(:final source) => matchStatusOfSource(source),
+};
+
+/// The [MatchStatusChip] status for nutrition from [source].
+MatchStatus matchStatusOfSource(NutritionSource source) => switch (source) {
+  .openFoodFacts => .openFoodFacts,
+  .usda => .usda,
 };

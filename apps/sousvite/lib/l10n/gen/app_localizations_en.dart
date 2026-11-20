@@ -801,6 +801,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutrition_scanAgain => 'Scan again';
 
   @override
+  String nutrition_productPhoto(String product) {
+    return 'Photo of $product';
+  }
+
+  @override
+  String nutrition_perServingGrams(String grams) {
+    return 'Per serving ($grams g)';
+  }
+
+  @override
+  String get nutrition_per100Grams => 'Per 100 g';
+
+  @override
+  String nutrition_scanAddsLine(String line) {
+    return 'Adds “$line” to the ingredients. You can change the amount after.';
+  }
+
+  @override
+  String nutrition_scanAddsLineNoServing(String line) {
+    return 'Adds “$line” to the ingredients. The label has no serving in grams, so type the amount in front of it.';
+  }
+
+  @override
+  String get nutrition_addProduct => 'Add to recipe';
+
+  @override
   String get cooking_title => 'Cooking';
 
   @override

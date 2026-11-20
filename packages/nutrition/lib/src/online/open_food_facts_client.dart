@@ -50,15 +50,18 @@ final class OpenFoodFactsClient(
     return parseOffSearch(jsonDecode(await _get(url, _headers)));
   }
 
-  /// The product with [barcode], or null if Open Food Facts doesn't know it.
-  Future<FetchedFood?> lookupBarcode(String barcode) async {
+  /// The product with [barcode], with a photo of its front, or null if
+  /// Open Food Facts doesn't know it.
+  Future<BarcodeProduct?> lookupBarcode(String barcode) async {
     final url = _base.replace(
       path: '/api/v2/product/${Uri.encodeComponent(barcode)}',
-      queryParameters: {'fields': _fields},
+      queryParameters: {'fields': '$_fields,image_front_url'},
     );
     final response = jsonDecode(await _get(url, _headers));
     if (response case {'status': 1, 'product': final Map<String, Object?> p}) {
-      return _product(p);
+      if (_product(p) case final food?) {
+        return (food: food, imageUrl: _imageUrl(p['image_front_url']));
+      }
     }
     return null;
   }
@@ -141,6 +144,15 @@ FetchedFood? _product(Map<String, Object?> json) {
     ],
   );
 }
+
+/// The photo at [value], if it is a web address.
+Uri? _imageUrl(Object? value) => switch (value) {
+  final String text => switch (Uri.tryParse(text)) {
+    final Uri url when url.isScheme('https') || url.isScheme('http') => url,
+    _ => null,
+  },
+  _ => null,
+};
 
 /// The label serving weighing [grams]: "2 tbsp" when [text] starts with a
 /// household volume, as in "2 tbsp (32 g)", else one serving as a count.

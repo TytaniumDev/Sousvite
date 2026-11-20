@@ -153,11 +153,11 @@ AsyncValue<List<IngredientLineId>> unmatchedLineIds(
   };
 }
 
-/// The packaged food with [barcode], from USDA branded foods or Open Food
-/// Facts, or null when neither knows it. A failed lookup isn't retried on
-/// its own: the scanner says so at once and offers "Try again".
+/// The packaged product with [barcode], from USDA branded foods or Open
+/// Food Facts, or null when neither knows it. A failed lookup isn't retried
+/// on its own: the scanner says so at once and offers "Try again".
 @Riverpod(retry: _noRetry)
-Future<OnlineFood?> barcodeFood(Ref ref, String barcode) =>
+Future<ScannedProduct?> barcodeProduct(Ref ref, String barcode) =>
     ref.watch(nutritionApiProvider).lookupBarcode(barcode);
 
 /// Foods matching [query] for changing a match: bundled and cached foods

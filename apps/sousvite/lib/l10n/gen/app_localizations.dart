@@ -1312,6 +1312,42 @@ abstract class AppLocalizations {
   /// **'Scan again'**
   String get nutrition_scanAgain;
 
+  /// Screen reader label of a scanned product's package photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo of {product}'**
+  String nutrition_productPhoto(String product);
+
+  /// Says what a scanned product's nutrition covers: one serving from its label, in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Per serving ({grams} g)'**
+  String nutrition_perServingGrams(String grams);
+
+  /// Says what a scanned product's nutrition covers when its label gives no serving in grams.
+  ///
+  /// In en, this message translates to:
+  /// **'Per 100 g'**
+  String get nutrition_per100Grams;
+
+  /// Under a scanned product: the ingredient line that adding it creates.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds “{line}” to the ingredients. You can change the amount after.'**
+  String nutrition_scanAddsLine(String line);
+
+  /// Under a scanned product whose label has no serving in grams: the line adding it creates, which still needs an amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds “{line}” to the ingredients. The label has no serving in grams, so type the amount in front of it.'**
+  String nutrition_scanAddsLineNoServing(String line);
+
+  /// Button that adds a scanned product to the recipe as an ingredient line.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to recipe'**
+  String get nutrition_addProduct;
+
   /// Title of cooking mode.
   ///
   /// In en, this message translates to:

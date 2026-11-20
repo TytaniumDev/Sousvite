@@ -1088,64 +1088,64 @@ final class UnmatchedLineIdsFamily extends $Family
   String toString() => r'unmatchedLineIdsProvider';
 }
 
-/// The packaged food with [barcode], from USDA branded foods or Open Food
-/// Facts, or null when neither knows it. A failed lookup isn't retried on
-/// its own: the scanner says so at once and offers "Try again".
+/// The packaged product with [barcode], from USDA branded foods or Open
+/// Food Facts, or null when neither knows it. A failed lookup isn't retried
+/// on its own: the scanner says so at once and offers "Try again".
 
-@ProviderFor(barcodeFood)
-final barcodeFoodProvider = BarcodeFoodFamily._();
+@ProviderFor(barcodeProduct)
+final barcodeProductProvider = BarcodeProductFamily._();
 
-/// The packaged food with [barcode], from USDA branded foods or Open Food
-/// Facts, or null when neither knows it. A failed lookup isn't retried on
-/// its own: the scanner says so at once and offers "Try again".
+/// The packaged product with [barcode], from USDA branded foods or Open
+/// Food Facts, or null when neither knows it. A failed lookup isn't retried
+/// on its own: the scanner says so at once and offers "Try again".
 
-final class BarcodeFoodProvider
+final class BarcodeProductProvider
     extends
         $FunctionalProvider<
-          AsyncValue<OnlineFood?>,
-          OnlineFood?,
-          FutureOr<OnlineFood?>
+          AsyncValue<ScannedProduct?>,
+          ScannedProduct?,
+          FutureOr<ScannedProduct?>
         >
-    with $FutureModifier<OnlineFood?>, $FutureProvider<OnlineFood?> {
-  /// The packaged food with [barcode], from USDA branded foods or Open Food
-  /// Facts, or null when neither knows it. A failed lookup isn't retried on
-  /// its own: the scanner says so at once and offers "Try again".
-  BarcodeFoodProvider._({
-    required BarcodeFoodFamily super.from,
+    with $FutureModifier<ScannedProduct?>, $FutureProvider<ScannedProduct?> {
+  /// The packaged product with [barcode], from USDA branded foods or Open
+  /// Food Facts, or null when neither knows it. A failed lookup isn't retried
+  /// on its own: the scanner says so at once and offers "Try again".
+  BarcodeProductProvider._({
+    required BarcodeProductFamily super.from,
     required String super.argument,
   }) : super(
          retry: _noRetry,
-         name: r'barcodeFoodProvider',
+         name: r'barcodeProductProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$barcodeFoodHash();
+  String debugGetCreateSourceHash() => _$barcodeProductHash();
 
   @override
   String toString() {
-    return r'barcodeFoodProvider'
+    return r'barcodeProductProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $FutureProviderElement<OnlineFood?> $createElement(
+  $FutureProviderElement<ScannedProduct?> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<OnlineFood?> create(Ref ref) {
+  FutureOr<ScannedProduct?> create(Ref ref) {
     final argument = this.argument as String;
-    return barcodeFood(ref, argument);
+    return barcodeProduct(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is BarcodeFoodProvider && other.argument == argument;
+    return other is BarcodeProductProvider && other.argument == argument;
   }
 
   @override
@@ -1154,32 +1154,32 @@ final class BarcodeFoodProvider
   }
 }
 
-String _$barcodeFoodHash() => r'9d412e6b3d6ee35395f2a44bf8a2b939ed5cf11c';
+String _$barcodeProductHash() => r'45be9fb769bc664f296ac872459bab2d3e34d263';
 
-/// The packaged food with [barcode], from USDA branded foods or Open Food
-/// Facts, or null when neither knows it. A failed lookup isn't retried on
-/// its own: the scanner says so at once and offers "Try again".
+/// The packaged product with [barcode], from USDA branded foods or Open
+/// Food Facts, or null when neither knows it. A failed lookup isn't retried
+/// on its own: the scanner says so at once and offers "Try again".
 
-final class BarcodeFoodFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<OnlineFood?>, String> {
-  BarcodeFoodFamily._()
+final class BarcodeProductFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ScannedProduct?>, String> {
+  BarcodeProductFamily._()
     : super(
         retry: _noRetry,
-        name: r'barcodeFoodProvider',
+        name: r'barcodeProductProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// The packaged food with [barcode], from USDA branded foods or Open Food
-  /// Facts, or null when neither knows it. A failed lookup isn't retried on
-  /// its own: the scanner says so at once and offers "Try again".
+  /// The packaged product with [barcode], from USDA branded foods or Open
+  /// Food Facts, or null when neither knows it. A failed lookup isn't retried
+  /// on its own: the scanner says so at once and offers "Try again".
 
-  BarcodeFoodProvider call(String barcode) =>
-      BarcodeFoodProvider._(argument: barcode, from: this);
+  BarcodeProductProvider call(String barcode) =>
+      BarcodeProductProvider._(argument: barcode, from: this);
 
   @override
-  String toString() => r'barcodeFoodProvider';
+  String toString() => r'barcodeProductProvider';
 }
 
 /// Foods matching [query] for changing a match: bundled and cached foods

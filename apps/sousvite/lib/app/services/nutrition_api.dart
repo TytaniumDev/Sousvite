@@ -12,12 +12,16 @@ part 'nutrition_api.g.dart';
 /// A food found online, with everything needed to cache it.
 typedef OnlineFood = FetchedFood;
 
+/// A packaged product found by its barcode: its [OnlineFood], and a photo
+/// of the package when one is known.
+typedef ScannedProduct = BarcodeProduct;
+
 /// Online food lookups: USDA branded foods through our proxy and Open Food
 /// Facts (ENGINEERING.md §11.1).
 abstract interface class NutritionApi() {
   Future<List<OnlineFood>> search(String query);
 
-  Future<OnlineFood?> lookupBarcode(String barcode);
+  Future<ScannedProduct?> lookupBarcode(String barcode);
 }
 
 /// Finds nothing, as if offline. Bundled generic foods still work.
@@ -26,7 +30,7 @@ class const OfflineNutritionApi() implements NutritionApi {
   Future<List<OnlineFood>> search(String query) async => const [];
 
   @override
-  Future<OnlineFood?> lookupBarcode(String barcode) async => null;
+  Future<ScannedProduct?> lookupBarcode(String barcode) async => null;
 }
 
 /// Searches USDA Branded Foods and Open Food Facts with `nutrition`'s
@@ -37,7 +41,7 @@ class const OnlineNutritionApi(final OnlineFoods _foods)
   Future<List<OnlineFood>> search(String query) => _foods.search(query);
 
   @override
-  Future<OnlineFood?> lookupBarcode(String barcode) =>
+  Future<ScannedProduct?> lookupBarcode(String barcode) =>
       _foods.lookupBarcode(barcode);
 }
 
