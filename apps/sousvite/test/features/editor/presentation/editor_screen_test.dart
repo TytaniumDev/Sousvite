@@ -6,25 +6,44 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/providers/repositories.dart';
+import 'package:sousvite/app/services/nutrition_api.dart';
 import 'package:sousvite/features/editor/editor.dart';
 import 'package:sousvite/features/editor/presentation/editor_screen.dart';
 import 'package:sousvite/features/editor/presentation/ingredients_editor.dart';
 import 'package:sousvite/features/editor/presentation/steps_editor.dart';
 import 'package:sousvite/features/library/library.dart';
+import 'package:sousvite/features/nutrition/presentation/barcode_camera.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 
 import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
+import '../../nutrition/fakes.dart'
+    show
+        FakeFoodRepository,
+        FakeNutritionApi,
+        FakeUserRecipePrefsRepository,
+        NutritionFixtures;
 
 void main() {
   const recipeId = RecipeId('r1');
   const flour = IngredientLineId('flour');
   late FakeRecipeRepository recipes;
   final folders = FakeFolderRepository();
+  late FakeFoodRepository foods;
+  final butter = NutritionFixtures.packaged(
+    'Creamy Peanut Butter',
+    servingGrams: 32,
+  );
+  final oatMilk = NutritionFixtures.packaged('Oat Milk');
+
+  /// The barcode the fake camera reads when tapped.
+  var scanned = 'butter';
 
   setUp(() {
+    foods = FakeFoodRepository();
+    scanned = 'butter';
     recipes = FakeRecipeRepository()
       ..seed(
         recipe: RecipeFixtures.recipe().copyWith(sourceName: 'Grandma'),
@@ -73,6 +92,22 @@ void main() {
       overrides: [
         recipeRepositoryProvider.overrideWithValue(recipes),
         folderRepositoryProvider.overrideWithValue(folders),
+        foodRepositoryProvider.overrideWithValue(foods),
+        userRecipePrefsRepositoryProvider.overrideWithValue(
+          FakeUserRecipePrefsRepository(),
+        ),
+        nutritionApiProvider.overrideWithValue(
+          FakeNutritionApi(
+            const [],
+            barcodes: {'butter': butter, 'milk': oatMilk},
+          ),
+        ),
+        barcodeCameraProvider.overrideWithValue(
+          (onBarcode) => TextButton(
+            onPressed: () => onBarcode(scanned),
+            child: const Text('Camera'),
+          ),
+        ),
       ],
     );
     unawaited(router.push(location ?? EditorRoutes.location(id)));
@@ -174,6 +209,67 @@ void main() {
       await tester.enterText(lineField(flour), 'flour\n');
       await tester.pumpAndSettle();
       expect(find.byType(IngredientLineEditor), findsNWidgets(6));
+    });
+
+    Future<void> scanBarcode(WidgetTester tester, {int section = 0}) async {
+      await tester.tap(find.text('Scan barcode').at(section));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Camera'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('scans a barcode into a line, matched on save', (tester) async {
+      await pumpEditor(tester);
+
+      await scanBarcode(tester, section: 1);
+
+      expect(find.byType(IngredientLineEditor), findsNWidgets(4));
+      // Nothing is written until Save.
+      expect(recipes.linesOf(recipeId), hasLength(3));
+      expect(
+        find.widgetWithText(TextField, '32 g Creamy Peanut Butter'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      final saved = recipes
+          .linesOf(recipeId)
+          .firstWhere((l) => l.rawText == '32 g Creamy Peanut Butter');
+      expect(saved.sectionId, const IngredientSectionId('sauce'));
+      final match = foods.matches.values.single;
+      expect(match.ingredientLineId, saved.id);
+      expect(match.gramWeight, 32);
+    });
+
+    testWidgets('a scanned line without a serving waits for its amount', (
+      tester,
+    ) async {
+      scanned = 'milk';
+      await pumpEditor(tester);
+
+      await scanBarcode(tester);
+
+      final field = tester.widget<TextField>(
+        find.widgetWithText(TextField, 'Oat Milk'),
+      );
+      expect(field.focusNode?.hasFocus ?? field.autofocus, isTrue);
+      expect(
+        field.controller!.selection,
+        const TextSelection.collapsed(offset: 0),
+      );
+    });
+
+    testWidgets('closing the scanner adds nothing', (tester) async {
+      await pumpEditor(tester);
+
+      await tester.tap(find.text('Scan barcode').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CloseButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(IngredientLineEditor), findsNWidgets(3));
     });
 
     testWidgets('adds and removes lines, sections, and steps', (tester) async {

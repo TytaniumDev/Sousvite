@@ -604,6 +604,12 @@ abstract class AppLocalizations {
   /// **'Add ingredient'**
   String get editor_addIngredient;
 
+  /// Button under the ingredients that scans a packaged food's barcode to add it as an ingredient.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan barcode'**
+  String get editor_scanBarcode;
+
   /// Tooltip of the button that removes an ingredient line.
   ///
   /// In en, this message translates to:
@@ -1257,6 +1263,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No foods found'**
   String get nutrition_noFoods;
+
+  /// Title of the camera screen that scans a packaged food's barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a barcode'**
+  String get nutrition_scanTitle;
+
+  /// Under the camera view while scanning a barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the barcode on the package'**
+  String get nutrition_scanHint;
+
+  /// Shown in place of the camera view when the camera is missing or access was denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Sousvite can\'t use the camera. Allow camera access in your settings, then try again.'**
+  String get nutrition_cameraUnavailable;
+
+  /// Shown when neither USDA nor Open Food Facts knows a scanned barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'No product found for barcode {barcode}. Scan it again, or type the ingredient instead.'**
+  String nutrition_productNotFound(String barcode);
+
+  /// Shown when looking up a scanned barcode fails, usually offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t look up this barcode. Check your connection and try again.'**
+  String get nutrition_lookupFailed;
+
+  /// Button that goes back to the camera to scan another barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan again'**
+  String get nutrition_scanAgain;
 
   /// Title of cooking mode.
   ///

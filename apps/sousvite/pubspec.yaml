@@ -41,6 +41,7 @@ dependencies:
   material_symbols_icons: ^4.2960.0
   material_ui: ^1.11.0
   measuring: any
+  mobile_scanner: ^7.5.0
   nutrition: any
   path_provider: ^2.1.6
   recipe_import: any

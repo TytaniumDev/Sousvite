@@ -369,6 +369,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editor_addIngredient => 'Add ingredient';
 
   @override
+  String get editor_scanBarcode => 'Scan barcode';
+
+  @override
   String get editor_removeIngredient => 'Remove ingredient';
 
   @override
@@ -767,6 +770,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nutrition_noFoods => 'No foods found';
+
+  @override
+  String get nutrition_scanTitle => 'Scan a barcode';
+
+  @override
+  String get nutrition_scanHint =>
+      'Point the camera at the barcode on the package';
+
+  @override
+  String get nutrition_cameraUnavailable =>
+      'Sousvite can\'t use the camera. Allow camera access in your settings, then try again.';
+
+  @override
+  String nutrition_productNotFound(String barcode) {
+    return 'No product found for barcode $barcode. Scan it again, or type the ingredient instead.';
+  }
+
+  @override
+  String get nutrition_lookupFailed =>
+      'Couldn\'t look up this barcode. Check your connection and try again.';
+
+  @override
+  String get nutrition_scanAgain => 'Scan again';
 
   @override
   String get cooking_title => 'Cooking';

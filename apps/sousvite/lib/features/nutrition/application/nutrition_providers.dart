@@ -153,6 +153,13 @@ AsyncValue<List<IngredientLineId>> unmatchedLineIds(
   };
 }
 
+/// The packaged food with [barcode], from USDA branded foods or Open Food
+/// Facts, or null when neither knows it. A failed lookup isn't retried on
+/// its own: the scanner says so at once and offers "Try again".
+@Riverpod(retry: _noRetry)
+Future<OnlineFood?> barcodeFood(Ref ref, String barcode) =>
+    ref.watch(nutritionApiProvider).lookupBarcode(barcode);
+
 /// Foods matching [query] for changing a match: bundled and cached foods
 /// first, since generic USDA data is the most accurate, then branded
 /// products found online (PRD 7.4).
@@ -171,3 +178,5 @@ Future<List<FoodChoice>> foodSearch(Ref ref, String query) async {
       if (!savedIds.contains(food.food.id)) OnlineFoodChoice(food),
   ];
 }
+
+Duration? _noRetry(int retryCount, Object error) => null;

@@ -1088,6 +1088,100 @@ final class UnmatchedLineIdsFamily extends $Family
   String toString() => r'unmatchedLineIdsProvider';
 }
 
+/// The packaged food with [barcode], from USDA branded foods or Open Food
+/// Facts, or null when neither knows it. A failed lookup isn't retried on
+/// its own: the scanner says so at once and offers "Try again".
+
+@ProviderFor(barcodeFood)
+final barcodeFoodProvider = BarcodeFoodFamily._();
+
+/// The packaged food with [barcode], from USDA branded foods or Open Food
+/// Facts, or null when neither knows it. A failed lookup isn't retried on
+/// its own: the scanner says so at once and offers "Try again".
+
+final class BarcodeFoodProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<OnlineFood?>,
+          OnlineFood?,
+          FutureOr<OnlineFood?>
+        >
+    with $FutureModifier<OnlineFood?>, $FutureProvider<OnlineFood?> {
+  /// The packaged food with [barcode], from USDA branded foods or Open Food
+  /// Facts, or null when neither knows it. A failed lookup isn't retried on
+  /// its own: the scanner says so at once and offers "Try again".
+  BarcodeFoodProvider._({
+    required BarcodeFoodFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: _noRetry,
+         name: r'barcodeFoodProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$barcodeFoodHash();
+
+  @override
+  String toString() {
+    return r'barcodeFoodProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<OnlineFood?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<OnlineFood?> create(Ref ref) {
+    final argument = this.argument as String;
+    return barcodeFood(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is BarcodeFoodProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$barcodeFoodHash() => r'9d412e6b3d6ee35395f2a44bf8a2b939ed5cf11c';
+
+/// The packaged food with [barcode], from USDA branded foods or Open Food
+/// Facts, or null when neither knows it. A failed lookup isn't retried on
+/// its own: the scanner says so at once and offers "Try again".
+
+final class BarcodeFoodFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<OnlineFood?>, String> {
+  BarcodeFoodFamily._()
+    : super(
+        retry: _noRetry,
+        name: r'barcodeFoodProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The packaged food with [barcode], from USDA branded foods or Open Food
+  /// Facts, or null when neither knows it. A failed lookup isn't retried on
+  /// its own: the scanner says so at once and offers "Try again".
+
+  BarcodeFoodProvider call(String barcode) =>
+      BarcodeFoodProvider._(argument: barcode, from: this);
+
+  @override
+  String toString() => r'barcodeFoodProvider';
+}
+
 /// Foods matching [query] for changing a match: bundled and cached foods
 /// first, since generic USDA data is the most accurate, then branded
 /// products found online (PRD 7.4).
