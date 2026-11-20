@@ -42,6 +42,7 @@ Each decision is marked:
 | Sign-in | Optional; Google and Apple via Firebase Auth | PRD |
 | USDA nutrition data | Generic foods bundled; branded foods fetched through our proxy and cached | Decided |
 | Open Food Facts | Fetched online and cached | Decided |
+| Barcode scanning | `mobile_scanner` (iOS, Android, web; actively maintained) | Default |
 | URL import | On device; web goes through a thin fetch proxy | Decided |
 | Ingredient parsing | Our own rule-based Dart parser | Decided |
 | Code structure | Pub workspace: Flutter app plus pure-Dart core packages | Decided |
@@ -329,6 +330,7 @@ Everything Pro-only is still built and tested with the gate both on and off, so 
 - **Bundled:** USDA FoodData Central *Foundation Foods* and *SR Legacy* (generic ingredients), with nutrients and household portions. `tools/usda_builder` turns the official CSV releases into a compact SQLite file, about 9 MB on disk and under 2 MB compressed (schema in `tools/usda_builder/README.md`). The file is committed to the repo as a normal file (no Git LFS) and regenerated only with the tool. On web it's downloaded once on first launch and cached.
 - **Online, then cached:** USDA *Branded Foods* through our Cloud Function proxy, and Open Food Facts via its public API. Looked-up foods are saved to Drift, so recipes using them keep working offline.
 - The USDA proxy is the `usdaProxy` callable function (`functions/src/usda_proxy/`), with App Check enforced. It takes `{action: 'search', query, pageNumber?, pageSize?}` (Branded Foods only; page size 25 by default, at most 50) or `{action: 'food', fdcId}`, and returns FoodData Central's JSON unchanged. The `USDA_API_KEY` secret goes upstream in a header and never reaches the client. Responses are cached in the server-only `usdaCache` Firestore collection (searches 7 days, foods 30 days, case-insensitive searches share an entry), and a TTL policy on `expiresAt` deletes old entries. Errors: `invalid-argument`, `not-found`, `resource-exhausted` (USDA's rate limit), `unavailable`.
+- **Barcode scanning (PRD 7.3):** the editor's "Scan barcode" opens the camera through `mobile_scanner` (EAN and UPC only), behind `barcodeCameraProvider` so widget tests use a fake camera. The barcode is looked up with `NutritionApi.lookupBarcode`, USDA first, then Open Food Facts, with no automatic retry so an offline lookup says so at once. The new line starts with one label serving in grams, or the name alone without one. The draft remembers the scanned food per line and matches it on Save, weighing whatever amount the line has by then; a line it can't weigh stays unmatched with the food cached. Open Food Facts servings like "2 tbsp (32 g)" keep the household volume, so "1 tbsp" weighs right too.
 - **Licensing:** USDA data is public domain. Open Food Facts data is ODbL (share-alike), so we keep attribution and keep OFF data separate from our own data.
 
 ### 11.2 Matching and math
@@ -427,6 +429,7 @@ We track the latest stable Flutter and Dart and use nothing that is deprecated. 
 | Localization | ARB files with `flutter gen-l10n` and `material_ui` delegates (§16.1), English only at launch | Avoids retrofitting strings later |
 | Crash reporting | Sentry | One tool across iOS, Android, and web |
 | Subscriptions | RevenueCat | Handles both stores and web billing |
+| Barcode scanning | `mobile_scanner` | The most used Flutter scanner, released monthly; one widget for iOS (Vision), Android (bundled ML Kit, works without Play services), and web (the browser's barcode reader, else ZXing) |
 
 ## 18. Open questions
 
