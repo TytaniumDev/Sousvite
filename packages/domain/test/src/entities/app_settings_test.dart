@@ -8,6 +8,7 @@ void main() {
 
       expect(settings.theme, ThemePreference.system);
       expect(settings.unitSystem, UnitSystem.original);
+      expect(settings.jarredGarlic, isFalse);
     });
 
     test('has value equality', () {

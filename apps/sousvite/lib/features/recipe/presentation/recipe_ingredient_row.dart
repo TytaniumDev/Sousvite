@@ -2,8 +2,10 @@ import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sousvite/features/recipe/application/jarred_garlic.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
 import 'package:sousvite/features/recipe/application/recipe_scale.dart';
+import 'package:sousvite/features/settings/settings.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/units/unit_words.dart';
 
@@ -12,6 +14,9 @@ import 'package:sousvite/shared/units/unit_words.dart';
 ///
 /// Cooking mode sets [onChanged] to check lines off, and a [guide] with
 /// the measuring tools for the amount.
+///
+/// A garlic clove amount can be tapped to show it as jarred garlic, and
+/// back, in every recipe.
 class const RecipeIngredientRow({
   /// The recipe the line belongs to.
   required final RecipeId recipeId,
@@ -40,6 +45,11 @@ class const RecipeIngredientRow({
                 name: line.name ?? line.rawText,
                 preparation: line.preparation,
                 countWord: line.countWord,
+                garlic: isGarlicCloves(
+                  name: line.name ?? line.rawText,
+                  unit: line.unit,
+                  countWord: line.countWord,
+                ),
               ),
       ),
     );
@@ -70,6 +80,11 @@ class const RecipeIngredientRow({
         guide: guide,
       );
     }
+    // Only a garlic clove amount watches the jarred garlic setting, and
+    // tapping it flips the setting for every recipe.
+    final jarred = text.garlic && amount != null
+        ? ref.watch(jarredGarlicControllerProvider)
+        : null;
     return IngredientRow(
       name: text.name,
       quantity: amount?.quantity,
@@ -84,6 +99,14 @@ class const RecipeIngredientRow({
       checked: checked,
       onChanged: onChanged,
       guide: guide,
+      onAmountTap: jarred == null
+          ? null
+          : () => ref.read(jarredGarlicControllerProvider.notifier).toggle(),
+      amountTapLabel: switch (jarred) {
+        null => null,
+        true => l10n.recipe_showGarlicCloves,
+        false => l10n.recipe_showJarredGarlic,
+      },
     );
   }
 }

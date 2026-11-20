@@ -1,8 +1,10 @@
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/features/recipe/application/jarred_garlic.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
 import 'package:sousvite/features/recipe/application/recipe_units.dart';
+import 'package:sousvite/features/settings/settings.dart';
 
 part 'recipe_scale.g.dart';
 
@@ -59,6 +61,8 @@ typedef LineAmount = ({Amount amount, Amount? upTo});
 ///
 /// As written, amounts are shown exactly as the recipe has them. Once
 /// scaled or converted, they are rounded to something people can measure.
+/// Garlic cloves are shown as jarred garlic while that is on; only those
+/// lines watch the setting.
 @riverpod
 LineAmount? lineAmount(Ref ref, RecipeId recipeId, IngredientLineId lineId) {
   final written = ref.watch(
@@ -70,28 +74,47 @@ LineAmount? lineAmount(Ref ref, RecipeId recipeId, IngredientLineId lineId) {
               upTo: line.quantityMax == null
                   ? null
                   : Amount(line.quantityMax!, line.unit),
+              garlic: isGarlicCloves(
+                name: line.name ?? line.rawText,
+                unit: line.unit,
+                countWord: line.countWord,
+              ),
             ),
     ),
   );
   if (written == null) return null;
   final factor = ref.watch(recipeScaleProvider(recipeId));
   final system = ref.watch(recipeUnitSystemProvider(recipeId));
+  final jarred = written.garlic && ref.watch(jarredGarlicControllerProvider);
+  Amount shown(Amount amount) => shownAmount(
+    amount,
+    factor: factor,
+    system: system,
+    asJarredGarlic: jarred,
+  );
   final upTo = written.upTo;
   return (
-    amount: shownAmount(written.amount, factor: factor, system: system),
-    upTo: upTo == null
-        ? null
-        : shownAmount(upTo, factor: factor, system: system),
+    amount: shown(written.amount),
+    upTo: upTo == null ? null : shown(upTo),
   );
 }
 
 /// An amount as the recipe has it, shown at [factor] in [system]: exactly
 /// as written until scaled or converted, then rounded to something people
 /// can measure. Cooking mode shows amounts in steps the same way.
+///
+/// With [asJarredGarlic], the amount is a count of garlic cloves shown as
+/// teaspoons of jarred garlic, always rounded, so 6 cloves show as 1 Tbsp.
 Amount shownAmount(
   Amount written, {
   required Quantity factor,
   required UnitSystem system,
-}) => factor == Quantity.one && system == .original
-    ? written
-    : written.scaled(factor).measurableIn(system);
+  bool asJarredGarlic = false,
+}) {
+  if (asJarredGarlic) {
+    return written.asJarredGarlic.scaled(factor).measurableIn(system);
+  }
+  return factor == Quantity.one && system == .original
+      ? written
+      : written.scaled(factor).measurableIn(system);
+}

@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
@@ -100,6 +101,70 @@ void main() {
       expect(changes.last, isFalse);
     });
 
+    group('with a tappable amount', () {
+      IngredientRow tappable({
+        required VoidCallback onAmountTap,
+        ValueChanged<bool>? onChanged,
+      }) => IngredientRow(
+        name: 'garlic',
+        quantity: Quantity(2),
+        unit: 'cloves',
+        onChanged: onChanged,
+        onAmountTap: onAmountTap,
+        amountTapLabel: 'Show as jarred garlic',
+      );
+
+      testWidgets('calls onAmountTap and leaves the row unchecked', (
+        tester,
+      ) async {
+        var taps = 0;
+        final changes = <bool>[];
+        await tester.pumpDesignSystem(
+          tappable(onAmountTap: () => taps++, onChanged: changes.add),
+        );
+
+        await tester.tap(find.byType(AmountText));
+        expect(taps, 1);
+        expect(changes, isEmpty);
+
+        await tester.tap(find.text('garlic'));
+        expect(taps, 1);
+        expect(changes, [true]);
+      });
+
+      testWidgets('has a 48 dp hit area', (tester) async {
+        await tester.pumpDesignSystem(tappable(onAmountTap: () {}));
+
+        final ink = tester.getSize(
+          find.ancestor(
+            of: find.byType(AmountText),
+            matching: find.byType(InkWell),
+          ),
+        );
+        expect(ink.width, greaterThanOrEqualTo(kMinInteractiveDimension));
+        expect(ink.height, greaterThanOrEqualTo(kMinInteractiveDimension));
+      });
+
+      testWidgets('offers the tap as a screen reader action', (tester) async {
+        final handle = tester.ensureSemantics();
+        var taps = 0;
+        await tester.pumpDesignSystem(
+          tappable(onAmountTap: () => taps++, onChanged: (_) {}),
+        );
+
+        // The row merges its semantics, so the action is on the row.
+        final row = tester.getSemantics(find.byType(IngredientRow));
+        final action = row.getSemanticsData().customSemanticsActionIds!.single;
+        expect(
+          CustomSemanticsAction.getAction(action)?.label,
+          'Show as jarred garlic',
+        );
+        row.owner!.performAction(row.id, SemanticsAction.customAction, action);
+        expect(taps, 1);
+        handle.dispose();
+      });
+    });
+
     testWidgets('strikes through a checked line', (tester) async {
       await tester.pumpDesignSystem(
         IngredientRow(name: 'eggs', checked: true, onChanged: (_) {}),
@@ -171,6 +236,15 @@ void main() {
           unit: 'cup',
           checked: true,
           onChanged: (_) {},
+        ),
+      );
+      await tester.expectMeetsGuidelines(
+        IngredientRow(
+          name: 'butter',
+          quantity: Quantity(2),
+          unit: 'Tbsp',
+          onAmountTap: () {},
+          amountTapLabel: 'Show as jarred garlic',
         ),
       );
     });

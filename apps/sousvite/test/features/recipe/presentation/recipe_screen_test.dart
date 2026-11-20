@@ -15,11 +15,13 @@ import '../../../helpers/fakes/fake_user_recipe_prefs_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
 import '../../nutrition/fakes.dart' show FakeFoodRepository;
+import '../../settings/fakes.dart' show FakeAppSettingsRepository;
 
 void main() {
   const recipeId = RecipeId('r1');
   late FakeRecipeRepository recipes;
   late FakeUserRecipePrefsRepository prefs;
+  late FakeAppSettingsRepository settings;
 
   final flour = RecipeFixtures.line(
     'flour',
@@ -64,6 +66,7 @@ void main() {
         ],
       );
     prefs = FakeUserRecipePrefsRepository();
+    settings = FakeAppSettingsRepository();
   });
 
   Future<void> pumpRecipe(WidgetTester tester, {Widget? screen}) async {
@@ -74,6 +77,7 @@ void main() {
         userRecipePrefsRepositoryProvider.overrideWithValue(prefs),
         folderRepositoryProvider.overrideWithValue(FakeFolderRepository()),
         foodRepositoryProvider.overrideWithValue(FakeFoodRepository()),
+        appSettingsRepositoryProvider.overrideWithValue(settings),
       ],
     );
     await tester.pumpAndSettle();
@@ -138,6 +142,71 @@ void main() {
 
     expect(find.text('1\u00a0clove'), findsOneWidget);
     expect(find.textContaining('2–3\u00a0sprigs thyme'), findsOneWidget);
+  });
+
+  testWidgets('tapping garlic cloves shows jarred garlic everywhere', (
+    tester,
+  ) async {
+    final garlic = RecipeFixtures.line(
+      'garlic',
+      sortKey: 'c',
+      quantity: Quantity(4),
+      name: 'garlic cloves',
+    ).copyWith(preparation: 'minced');
+    recipes = FakeRecipeRepository()
+      ..seed(
+        recipe: RecipeFixtures.recipe(),
+        lines: [flour, garlic],
+        steps: [RecipeFixtures.step('fry', text: 'Fry the garlic cloves.')],
+      );
+    final builds = BuildCounter.start();
+    await pumpRecipe(tester);
+    builds.reset();
+    final garlicAmount = find.descendant(
+      of: find.byKey(ValueKey(garlic.id)),
+      matching: find.byType(AmountText),
+    );
+
+    await tester.tap(garlicAmount);
+    await tester.pumpAndSettle();
+
+    expect(find.text('2\u00a0tsp'), findsOneWidget);
+    expect(builds.ofKey(ValueKey(garlic.id)), 1);
+    expect(builds.ofKey(ValueKey(flour.id)), 0);
+    expect(settings.current.jarredGarlic, isTrue);
+    await tester.scrollUntilVisible(
+      find.textContaining('Fry', findRichText: true),
+      100,
+    );
+    expect(
+      find.text('Fry 2\u00a0tsp garlic cloves.', findRichText: true),
+      findsOneWidget,
+    );
+
+    await tester.scrollUntilVisible(garlicAmount, -100);
+    await tester.tap(garlicAmount);
+    await tester.pumpAndSettle();
+    expect(find.text('4'), findsOneWidget);
+    expect(settings.current.jarredGarlic, isFalse);
+  });
+
+  testWidgets('remembers jarred garlic across recipes', (tester) async {
+    settings = FakeAppSettingsRepository(const AppSettings(jarredGarlic: true));
+    recipes = FakeRecipeRepository()
+      ..seed(
+        recipe: RecipeFixtures.recipe(),
+        lines: [
+          RecipeFixtures.line(
+            'garlic',
+            quantity: Quantity(1),
+            countWord: 'clove',
+            name: 'garlic',
+          ),
+        ],
+      );
+    await pumpRecipe(tester);
+
+    expect(find.text('½\u00a0tsp'), findsOneWidget);
   });
 
   testWidgets('scaling servings changes amounts and rebuilds only rows', (

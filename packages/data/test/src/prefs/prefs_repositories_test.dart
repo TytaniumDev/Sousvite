@@ -191,8 +191,52 @@ void main() {
       );
     });
 
+    test('saves jarred garlic and records only that field', () async {
+      final phone = device('phone');
+
+      await phone.settings.saveSettings(const AppSettings(jarredGarlic: true));
+
+      expect(
+        await phone.settings.watchSettings().first,
+        const AppSettings(jarredGarlic: true),
+      );
+      expect(
+        [for (final change in await phone.changes()) change.field],
+        ['jarredGarlic'],
+      );
+    });
+
+    test('syncs jarred garlic', () async {
+      final phone = device('phone');
+      final laptop = device('laptop');
+      await phone.settings.saveSettings(const AppSettings(jarredGarlic: true));
+
+      await phone.engine.sync();
+      await laptop.engine.sync();
+
+      expect(
+        await laptop.settings.watchSettings().first,
+        const AppSettings(jarredGarlic: true),
+      );
+    });
+
     test('ignores synced settings it cannot read', () {
       expect(SyncedSettingsCodec().decode('user', {}), isNull);
+      expect(
+        SyncedSettingsCodec().decode('user', {'jarredGarlic': 'yes'}),
+        isNull,
+      );
+    });
+
+    test('reads synced settings with only some fields', () {
+      expect(
+        SyncedSettingsCodec().decode('user', {'jarredGarlic': true}),
+        const AppSettings(jarredGarlic: true),
+      );
+      expect(
+        SyncedSettingsCodec().decode('user', {'unitSystem': 'us'}),
+        const AppSettings(unitSystem: UnitSystem.us),
+      );
     });
   });
 }

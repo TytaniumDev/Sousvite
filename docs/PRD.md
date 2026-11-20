@@ -165,6 +165,7 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
 ### 7.6 Scaling and unit conversion
 - Scale any recipe by servings or by a multiplier.
 - Choose between US customary and metric units, with sensible rounding to amounts people can actually measure.
+- **Jarred garlic:** tapping a garlic clove amount shows it as teaspoons or tablespoons of jarred minced garlic (½ tsp per clove, as jar labels say), in the ingredient list and the steps. Tapping again shows cloves. The choice applies to every recipe and syncs like the unit choice.
 
 ### 7.7 Grocery lists
 - Every recipe has an **Add to grocery list** button.

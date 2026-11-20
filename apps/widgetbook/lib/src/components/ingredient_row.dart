@@ -64,5 +64,23 @@ final ingredientRowComponent = WidgetbookComponent(
         ),
       ),
     ),
+    WidgetbookUseCase(
+      name: 'With tappable amount',
+      builder: (context) => Preview(
+        child: Interactive(
+          initialValue: false,
+          builder: (context, jarred, onChanged) => IngredientRow(
+            name: 'garlic',
+            quantity: jarred ? Quantity(3, 2) : Quantity(3),
+            unit: jarred ? 'tsp' : 'cloves',
+            preparation: 'minced',
+            onAmountTap: () => onChanged(!jarred),
+            amountTapLabel: jarred
+                ? 'Show as garlic cloves'
+                : 'Show as jarred garlic',
+          ),
+        ),
+      ),
+    ),
   ],
 );
