@@ -58,6 +58,38 @@ void main() {
       expect(match.source, NutritionSource.openFoodFacts);
     });
 
+    test(
+      'matches a scanned food, weighing the line with its serving',
+      () async {
+        final butter = _F.packaged('peanut butter', servingGrams: 32);
+
+        final matched = await actions.matchScannedFood(
+          _F.line('l1', quantity: Quantity(2)),
+          butter,
+        );
+
+        expect(matched, isTrue);
+        expect(foods.foods[butter.food.id], butter.food);
+        final match = foods.matches.values.single;
+        expect(match.foodId, butter.food.id);
+        expect(match.source, NutritionSource.openFoodFacts);
+        // Two servings of 32 g.
+        expect(match.gramWeight, 64);
+        expect(match.userConfirmed, isTrue);
+      },
+    );
+
+    test('caches a scanned food it cannot weigh, leaving the line', () async {
+      final butter = _F.packaged('peanut butter');
+
+      final matched = await actions.matchScannedFood(line, butter);
+
+      expect(matched, isFalse);
+      expect(foods.foods[butter.food.id], butter.food);
+      expect(foods.portions[butter.food.id], isEmpty);
+      expect(foods.matches, isEmpty);
+    });
+
     test('corrects the weight and removes a match', () async {
       final match = _F.match('l1', 'oats', 80);
       await foods.saveMatch(match);

@@ -163,13 +163,30 @@ class FakeRecipeRepository() extends Fake implements RecipeRepository {
   }
 }
 
-/// A [NutritionApi] that returns [results] for every search.
-class FakeNutritionApi(final List<OnlineFood> results) implements NutritionApi {
+/// A [NutritionApi] that returns [results] for every search, and the food
+/// in [barcodes] for a barcode.
+class FakeNutritionApi(
+  final List<OnlineFood> results, {
+  final Map<String, OnlineFood> barcodes = const {},
+}) implements NutritionApi {
+  /// Thrown by the next barcode lookup, as when offline, then cleared.
+  Exception? lookupError;
+
+  /// Every barcode looked up, in order.
+  final List<String> lookups = [];
+
   @override
   Future<List<OnlineFood>> search(String query) async => results;
 
   @override
-  Future<OnlineFood?> lookupBarcode(String barcode) async => null;
+  Future<OnlineFood?> lookupBarcode(String barcode) async {
+    lookups.add(barcode);
+    if (lookupError case final error?) {
+      lookupError = null;
+      throw error;
+    }
+    return barcodes[barcode];
+  }
 }
 
 /// Test data builders.
@@ -199,6 +216,32 @@ abstract final class NutritionFixtures() {
     String id, {
     NutritionSource source = NutritionSource.usda,
   }) => Food(id: FoodId(id), source: source, externalId: id, name: id);
+
+  /// A packaged food from Open Food Facts whose label serving weighs
+  /// [servingGrams], if given.
+  static OnlineFood packaged(String name, {double? servingGrams}) {
+    final id = FoodId('off:$name');
+    return (
+      food: Food(
+        id: id,
+        source: NutritionSource.openFoodFacts,
+        externalId: name,
+        name: name,
+      ),
+      nutrients: [
+        FoodNutrient(foodId: id, nutrientCode: '208', amountPer100g: 600),
+      ],
+      portions: [
+        if (servingGrams != null)
+          FoodPortion(
+            id: FoodPortionId('off-serving:$name'),
+            foodId: id,
+            amount: Quantity.one,
+            gramWeight: servingGrams,
+          ),
+      ],
+    );
+  }
 
   static NutritionMatch match(String lineId, String foodId, double grams) =>
       NutritionMatch(

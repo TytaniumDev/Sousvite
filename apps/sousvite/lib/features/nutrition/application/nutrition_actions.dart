@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
+import 'package:sousvite/app/services/nutrition_api.dart';
 import 'package:sousvite/features/nutrition/application/food_choice.dart';
 import 'package:sousvite/features/nutrition/application/nutrition_math.dart';
 import 'package:uuid/uuid.dart';
@@ -52,6 +53,26 @@ class NutritionActions({
         userConfirmed: true,
       ),
     );
+  }
+
+  /// Matches [line] to [food], which the user scanned from its package,
+  /// weighing the line's amount with the food's label serving. Without an
+  /// amount it can weigh, the line stays unmatched and only the food is
+  /// cached, so it can still be picked when fixing the match. Returns
+  /// whether the line was matched.
+  Future<bool> matchScannedFood(IngredientLine line, OnlineFood food) async {
+    final choice = OnlineFoodChoice(food);
+    final grams = await estimateWeight(line, choice);
+    if (grams == null || grams <= 0) {
+      await foods.saveFood(
+        food.food,
+        nutrients: food.nutrients,
+        portions: food.portions,
+      );
+      return false;
+    }
+    await chooseFood(line, choice, gramWeight: grams);
+    return true;
   }
 
   /// Corrects how much a matched line weighs.

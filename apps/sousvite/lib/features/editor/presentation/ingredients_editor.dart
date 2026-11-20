@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/application/editor_outline.dart';
 import 'package:sousvite/features/editor/presentation/draft_text_field.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/units/unit_words.dart';
 
@@ -95,7 +96,8 @@ class const _IngredientSectionEditor({
   }
 }
 
-/// The lines of one section (or the loose lines), plus "Add ingredient".
+/// The lines of one section (or the loose lines), plus "Add ingredient"
+/// and "Scan barcode".
 class const _LineGroup({
   required final RecipeId recipeId,
   final IngredientSectionId? sectionId,
@@ -112,19 +114,42 @@ class const _LineGroup({
             recipeId: recipeId,
             lineId: lineId,
           ),
-        Align(
-          alignment: .centerLeft,
-          child: TextButton.icon(
-            icon: const Icon(Symbols.add_rounded),
-            label: Text(context.l10n.editor_addIngredient),
-            onPressed: () => ref
-                .read(editorDraftProvider(recipeId).notifier)
-                .addLines([''], sectionId: sectionId),
-          ),
+        Wrap(
+          spacing: AppSpacing.space2,
+          children: [
+            TextButton.icon(
+              icon: const Icon(Symbols.add_rounded),
+              label: Text(context.l10n.editor_addIngredient),
+              onPressed: () => ref
+                  .read(editorDraftProvider(recipeId).notifier)
+                  .addLines([''], sectionId: sectionId),
+            ),
+            _ScanBarcodeButton(recipeId: recipeId, sectionId: sectionId),
+          ],
         ),
       ],
     );
   }
+}
+
+/// Scans a packaged food's barcode and adds it as a line at the end of
+/// [sectionId] (or of the loose lines), matched to the food on save.
+class const _ScanBarcodeButton({
+  required final RecipeId recipeId,
+  final IngredientSectionId? sectionId,
+}) extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => TextButton.icon(
+    icon: const Icon(Symbols.barcode_scanner_rounded),
+    label: Text(context.l10n.editor_scanBarcode),
+    onPressed: () async {
+      final food = await showScanFoodDialog(context);
+      if (food == null || !context.mounted) return;
+      ref
+          .read(editorDraftProvider(recipeId).notifier)
+          .addScannedFood(food, sectionId: sectionId);
+    },
+  );
 }
 
 /// One ingredient line. Pasting several lines splits them into one line
@@ -143,10 +168,29 @@ class const IngredientLineEditor({
 }
 
 class _IngredientLineEditorState() extends ConsumerState<IngredientLineEditor> {
-  late final String _initialText =
-      ref.read(editorLineProvider(widget.recipeId, widget.lineId))?.rawText ??
-      '';
-  late final _controller = TextEditingController(text: _initialText);
+  late final IngredientLine? _initialLine = ref.read(
+    editorLineProvider(widget.recipeId, widget.lineId),
+  );
+  late final String _initialText = _initialLine?.rawText ?? '';
+
+  /// Whether this line was just scanned from a label with no serving, so
+  /// it still needs its amount, typed in front of the product's name.
+  late final bool _needsAmount =
+      _initialLine?.quantity == null &&
+      (ref
+              .read(editorDraftProvider(widget.recipeId))
+              .value
+              ?.scannedFoods
+              .containsKey(widget.lineId) ??
+          false);
+  late final _controller = TextEditingController.fromValue(
+    TextEditingValue(
+      text: _initialText,
+      selection: TextSelection.collapsed(
+        offset: _needsAmount ? 0 : _initialText.length,
+      ),
+    ),
+  );
 
   @override
   void dispose() {
@@ -184,7 +228,7 @@ class _IngredientLineEditorState() extends ConsumerState<IngredientLineEditor> {
               Expanded(
                 child: TextField(
                   controller: _controller,
-                  autofocus: _initialText.isEmpty,
+                  autofocus: _initialText.isEmpty || _needsAmount,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(

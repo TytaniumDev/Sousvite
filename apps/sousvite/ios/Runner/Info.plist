@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Sousvite uses the camera when you take a photo of a recipe.</string>
+	<string>Sousvite uses the camera when you take a photo of a recipe or scan the barcode on a food package.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Sousvite opens your photos when you choose a photo for a recipe.</string>
 	<key>FlutterDeepLinkingEnabled</key>

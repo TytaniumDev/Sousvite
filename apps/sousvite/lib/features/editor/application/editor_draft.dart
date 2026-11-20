@@ -6,13 +6,20 @@ import 'package:ingredient_parser/ingredient_parser.dart';
 import 'package:recipe_import/recipe_import.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
+import 'package:sousvite/app/services/nutrition_api.dart';
 import 'package:sousvite/features/editor/application/ingredient_line_parser.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:uuid/uuid.dart';
 
 part 'editor_draft.g.dart';
 
-/// The recipe being edited, and how it was saved (null for a new one).
-typedef EditorState = ({RecipeSnapshot draft, RecipeSnapshot? saved});
+/// The recipe being edited, how it was saved (null for a new one), and
+/// the foods scanned for lines added since, which saving matches them to.
+typedef EditorState = ({
+  RecipeSnapshot draft,
+  RecipeSnapshot? saved,
+  Map<IngredientLineId, OnlineFood> scannedFoods,
+});
 
 /// The recipe being edited. Changes stay in this draft until [save]
 /// writes them in one transaction; leaving without saving drops them.
@@ -25,7 +32,13 @@ class EditorDraft() extends _$EditorDraft {
   Future<EditorState> build(RecipeId recipeId) async {
     final repository = ref.watch(recipeRepositoryProvider);
     final recipe = await repository.getRecipe(recipeId);
-    if (recipe == null) return (draft: _blank(recipeId), saved: null);
+    if (recipe == null) {
+      return (
+        draft: _blank(recipeId),
+        saved: null,
+        scannedFoods: const <IngredientLineId, OnlineFood>{},
+      );
+    }
     final snapshot = RecipeSnapshot(
       recipe: recipe,
       ingredientSections: await repository
@@ -35,7 +48,11 @@ class EditorDraft() extends _$EditorDraft {
       stepSections: await repository.watchStepSections(recipeId).first,
       steps: await repository.watchSteps(recipeId).first,
     );
-    return (draft: snapshot, saved: snapshot);
+    return (
+      draft: snapshot,
+      saved: snapshot,
+      scannedFoods: const <IngredientLineId, OnlineFood>{},
+    );
   }
 
   RecipeSnapshot _blank(RecipeId recipeId) {
@@ -64,7 +81,11 @@ class EditorDraft() extends _$EditorDraft {
   void _edit(RecipeSnapshot Function(RecipeSnapshot draft) change) {
     final current = state.value;
     if (current == null) return;
-    state = AsyncData((draft: change(current.draft), saved: current.saved));
+    state = AsyncData((
+      draft: change(current.draft),
+      saved: current.saved,
+      scannedFoods: current.scannedFoods,
+    ));
   }
 
   // Recipe fields.
@@ -180,6 +201,25 @@ class EditorDraft() extends _$EditorDraft {
       ),
     );
     return [for (final line in added) line.id];
+  }
+
+  /// Adds a line for [food], scanned from its package's barcode, at the
+  /// end of [sectionId]: one label serving of it (`scannedLineText`), for
+  /// the user to change. Saving matches the line to [food]. Returns the
+  /// line's id.
+  IngredientLineId? addScannedFood(
+    OnlineFood food, {
+    IngredientSectionId? sectionId,
+  }) {
+    if (state.value == null) return null;
+    final [lineId] = addLines([scannedLineText(food)], sectionId: sectionId);
+    final current = state.requireValue;
+    state = AsyncData((
+      draft: current.draft,
+      saved: current.saved,
+      scannedFoods: {...current.scannedFoods, lineId: food},
+    ));
+    return lineId;
   }
 
   static String _capitalized(String text) =>
@@ -395,8 +435,26 @@ class EditorDraft() extends _$EditorDraft {
     }
     await repository.saveSnapshot(cleaned);
     await folders?.addRecipeToFolder(folderId!, cleaned.recipe.id);
-    state = AsyncData((draft: cleaned, saved: cleaned));
+    await _matchScannedFoods(cleaned.ingredientLines);
+    state = AsyncData((
+      draft: cleaned,
+      saved: cleaned,
+      scannedFoods: const <IngredientLineId, OnlineFood>{},
+    ));
     return true;
+  }
+
+  /// Matches each scanned line still in [lines] to its food, weighing the
+  /// amount typed in front of it.
+  Future<void> _matchScannedFoods(List<IngredientLine> lines) async {
+    final scanned = state.value?.scannedFoods ?? const {};
+    if (scanned.isEmpty) return;
+    final nutrition = ref.read(nutritionActionsProvider);
+    for (final line in lines) {
+      if (scanned[line.id] case final food?) {
+        await nutrition.matchScannedFood(line, food);
+      }
+    }
   }
 
   static Iterable<I> _removed<T, I>(

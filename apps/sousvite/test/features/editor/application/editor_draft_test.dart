@@ -9,6 +9,8 @@ import 'package:sousvite/features/editor/application/recipe_copies.dart';
 import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
+import '../../nutrition/fakes.dart'
+    show FakeFoodRepository, FakeUserRecipePrefsRepository, NutritionFixtures;
 
 void main() {
   const recipeId = RecipeId('r1');
@@ -17,6 +19,7 @@ void main() {
   late FakeFolderRepository folders;
   const soups = FolderId('soups');
   late ProviderContainer container;
+  late FakeFoodRepository foods;
 
   setUp(() {
     recipes = FakeRecipeRepository()
@@ -41,10 +44,15 @@ void main() {
       ..seed(
         Folder(id: soups, name: 'Soups', createdAt: RecipeFixtures.createdAt),
       );
+    foods = FakeFoodRepository();
     container = ProviderContainer.test(
       overrides: [
         recipeRepositoryProvider.overrideWithValue(recipes),
         folderRepositoryProvider.overrideWithValue(folders),
+        foodRepositoryProvider.overrideWithValue(foods),
+        userRecipePrefsRepositoryProvider.overrideWithValue(
+          FakeUserRecipePrefsRepository(),
+        ),
       ],
     );
   });
@@ -259,6 +267,66 @@ void main() {
     editor.setTitle('Soup');
     expect(await editor.save(folderId: soups), isTrue);
     expect(folders.recipeIdsIn(soups), [id]);
+  });
+
+  group('scanned foods', () {
+    final butter = NutritionFixtures.packaged(
+      'Creamy Peanut Butter',
+      servingGrams: 32,
+    );
+    final milk = NutritionFixtures.packaged('Oat Milk');
+
+    test('adds a line with one label serving, at the section end', () async {
+      final editor = await load();
+
+      final id = editor.addScannedFood(
+        butter,
+        sectionId: const IngredientSectionId('sauce'),
+      )!;
+
+      final line = draft().ingredientLines.last;
+      expect(line.id, id);
+      expect(line.rawText, '32 g Creamy Peanut Butter');
+      expect(line.quantity, Quantity(32));
+      expect(line.unit, Unit.gram);
+      expect(line.name, 'Creamy Peanut Butter');
+      expect(line.sectionId, const IngredientSectionId('sauce'));
+      expect(hasChanges(), isTrue);
+    });
+
+    test('matches each kept line to its food on save', () async {
+      final editor = await load();
+      final butterLine = editor.addScannedFood(butter)!;
+      final milkLine = editor.addScannedFood(milk)!;
+      final removed = editor.addScannedFood(butter)!;
+      editor
+        ..setLineText(milkLine, '1 carton Oat Milk')
+        ..removeLine(removed);
+
+      expect(await editor.save(), isTrue);
+
+      final match = foods.matches.values.single;
+      expect(match.ingredientLineId, butterLine);
+      expect(match.foodId, butter.food.id);
+      expect(match.gramWeight, 32);
+      // Oat milk's label has no serving to weigh a carton with, so the
+      // line is left unmatched but the food is kept for fixing it.
+      expect(foods.foods.keys, {butter.food.id, milk.food.id});
+      expect(
+        container.read(editorDraftProvider(recipeId)).requireValue.scannedFoods,
+        isEmpty,
+      );
+
+      // Saving again doesn't match again.
+      foods.matches.clear();
+      expect(await editor.save(), isTrue);
+      expect(foods.matches, isEmpty);
+    });
+
+    test('adds nothing before the draft loads', () {
+      final editor = container.read(editorDraftProvider(recipeId).notifier);
+      expect(editor.addScannedFood(butter), isNull);
+    });
   });
 
   group(RecipeCopies, () {
