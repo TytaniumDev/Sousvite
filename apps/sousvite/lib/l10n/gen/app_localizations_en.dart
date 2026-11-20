@@ -306,6 +306,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recipe_unitsMetric => 'Metric';
 
   @override
+  String get recipe_showJarredGarlic => 'Show as jarred garlic';
+
+  @override
+  String get recipe_showGarlicCloves => 'Show as garlic cloves';
+
+  @override
   String get recipe_steps => 'Steps';
 
   @override

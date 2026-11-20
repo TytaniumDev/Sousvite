@@ -57,8 +57,9 @@ final class MeasuringToolCodec() implements EntityCodec<MeasuringTool> {
   }
 }
 
-/// The [AppSettings] that sync, under the single id [settingsId]. The
-/// theme is left out: it stays on each device.
+/// The [AppSettings] that sync, under the single id [settingsId]: the unit
+/// system and jarred garlic. The theme is left out: it stays on each
+/// device.
 final class SyncedSettingsCodec() implements EntityCodec<AppSettings> {
   /// The id the user's settings are stored under.
   static const settingsId = 'user';
@@ -72,11 +73,19 @@ final class SyncedSettingsCodec() implements EntityCodec<AppSettings> {
   @override
   Map<String, Object?> encode(AppSettings value) => {
     'unitSystem': encodeEnum(value.unitSystem),
+    'jarredGarlic': value.jarredGarlic,
   };
 
+  /// The settings from whichever fields have arrived, each one missing
+  /// left at its default. Null when none can be read.
   @override
   AppSettings? decode(String id, Map<String, Object?> fields) {
     final unitSystem = decodeEnum(UnitSystem.values, fields['unitSystem']);
-    return unitSystem == null ? null : AppSettings(unitSystem: unitSystem);
+    final jarredGarlic = fields['jarredGarlic'];
+    if (unitSystem == null && jarredGarlic is! bool) return null;
+    return AppSettings(
+      unitSystem: unitSystem ?? UnitSystem.original,
+      jarredGarlic: jarredGarlic is bool && jarredGarlic,
+    );
   }
 }

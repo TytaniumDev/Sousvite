@@ -502,6 +502,18 @@ abstract class AppLocalizations {
   /// **'Metric'**
   String get recipe_unitsMetric;
 
+  /// Screen reader action on a garlic clove amount. Shows it as teaspoons of jarred minced garlic instead, in every recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Show as jarred garlic'**
+  String get recipe_showJarredGarlic;
+
+  /// Screen reader action on a garlic amount shown as jarred garlic. Shows it as cloves again, in every recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Show as garlic cloves'**
+  String get recipe_showGarlicCloves;
+
   /// Heading of the steps section.
   ///
   /// In en, this message translates to:

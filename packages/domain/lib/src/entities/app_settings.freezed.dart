@@ -16,7 +16,9 @@ T _$identity<T>(T value) => value;
 mixin _$AppSettings {
 
  ThemePreference get theme;/// How amounts are shown in recipes that have no choice of their own.
- UnitSystem get unitSystem;
+ UnitSystem get unitSystem;/// Whether garlic cloves are shown as spoons of jarred minced garlic,
+/// ½ tsp per clove. Toggled by tapping a clove amount.
+ bool get jarredGarlic;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +30,20 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 @override
 bool operator ==(Object other) {
   final _this = this as AppSettings;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.theme, _this.theme) || other.theme == _this.theme)&&(identical(other.unitSystem, _this.unitSystem) || other.unitSystem == _this.unitSystem));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.theme, _this.theme) || other.theme == _this.theme)&&(identical(other.unitSystem, _this.unitSystem) || other.unitSystem == _this.unitSystem)&&(identical(other.jarredGarlic, _this.jarredGarlic) || other.jarredGarlic == _this.jarredGarlic));
 }
 
 
 @override
 int get hashCode {
   final _this = this as AppSettings;
-  return Object.hash(runtimeType,_this.theme,_this.unitSystem);
+  return Object.hash(runtimeType,_this.theme,_this.unitSystem,_this.jarredGarlic);
 }
 
 @override
 String toString() {
   final _this = this as AppSettings;
-  return 'AppSettings(theme: ${_this.theme}, unitSystem: ${_this.unitSystem})';
+  return 'AppSettings(theme: ${_this.theme}, unitSystem: ${_this.unitSystem}, jarredGarlic: ${_this.jarredGarlic})';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- ThemePreference theme, UnitSystem unitSystem
+ ThemePreference theme, UnitSystem unitSystem, bool jarredGarlic
 });
 
 
@@ -69,11 +71,12 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? theme = null,Object? unitSystem = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? theme = null,Object? unitSystem = null,Object? jarredGarlic = null,}) {
   return _then(AppSettings(
 theme: null == theme ? _self.theme : theme // ignore: cast_nullable_to_non_nullable
 as ThemePreference,unitSystem: null == unitSystem ? _self.unitSystem : unitSystem // ignore: cast_nullable_to_non_nullable
-as UnitSystem,
+as UnitSystem,jarredGarlic: null == jarredGarlic ? _self.jarredGarlic : jarredGarlic // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -158,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemePreference theme,  UnitSystem unitSystem)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemePreference theme,  UnitSystem unitSystem,  bool jarredGarlic)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.theme,_that.unitSystem);case _:
+return $default(_that.theme,_that.unitSystem,_that.jarredGarlic);case _:
   return orElse();
 
 }
@@ -179,10 +182,10 @@ return $default(_that.theme,_that.unitSystem);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemePreference theme,  UnitSystem unitSystem)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemePreference theme,  UnitSystem unitSystem,  bool jarredGarlic)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.theme,_that.unitSystem);case _:
+return $default(_that.theme,_that.unitSystem,_that.jarredGarlic);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +202,10 @@ return $default(_that.theme,_that.unitSystem);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemePreference theme,  UnitSystem unitSystem)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemePreference theme,  UnitSystem unitSystem,  bool jarredGarlic)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.theme,_that.unitSystem);case _:
+return $default(_that.theme,_that.unitSystem,_that.jarredGarlic);case _:
   return null;
 
 }
@@ -214,12 +217,15 @@ return $default(_that.theme,_that.unitSystem);case _:
 
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({this.theme = ThemePreference.system, this.unitSystem = UnitSystem.original});
+  const _AppSettings({this.theme = ThemePreference.system, this.unitSystem = UnitSystem.original, this.jarredGarlic = false});
   
 
 @override@JsonKey() final  ThemePreference theme;
 /// How amounts are shown in recipes that have no choice of their own.
 @override@JsonKey() final  UnitSystem unitSystem;
+/// Whether garlic cloves are shown as spoons of jarred minced garlic,
+/// ½ tsp per clove. Toggled by tapping a clove amount.
+@override@JsonKey() final  bool jarredGarlic;
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -231,18 +237,18 @@ _$AppSettingsCopyWith<_AppSettings> get copyWith => __$AppSettingsCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.unitSystem, unitSystem) || other.unitSystem == unitSystem));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.theme, theme) || other.theme == theme)&&(identical(other.unitSystem, unitSystem) || other.unitSystem == unitSystem)&&(identical(other.jarredGarlic, jarredGarlic) || other.jarredGarlic == jarredGarlic));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,theme,unitSystem);
+    return Object.hash(runtimeType,theme,unitSystem,jarredGarlic);
 }
 
 @override
 String toString() {
-    return 'AppSettings(theme: $theme, unitSystem: $unitSystem)';
+    return 'AppSettings(theme: $theme, unitSystem: $unitSystem, jarredGarlic: $jarredGarlic)';
 }
 
 
@@ -253,7 +259,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- ThemePreference theme, UnitSystem unitSystem
+ ThemePreference theme, UnitSystem unitSystem, bool jarredGarlic
 });
 
 
@@ -270,11 +276,12 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? theme = null,Object? unitSystem = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? theme = null,Object? unitSystem = null,Object? jarredGarlic = null,}) {
   return _then(_AppSettings(
 theme: null == theme ? _self.theme : theme // ignore: cast_nullable_to_non_nullable
 as ThemePreference,unitSystem: null == unitSystem ? _self.unitSystem : unitSystem // ignore: cast_nullable_to_non_nullable
-as UnitSystem,
+as UnitSystem,jarredGarlic: null == jarredGarlic ? _self.jarredGarlic : jarredGarlic // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

@@ -19,7 +19,8 @@ import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/fake_user_recipe_prefs_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
 import '../../../helpers/helpers.dart';
-import '../../settings/fakes.dart' show FakeMeasuringToolRepository;
+import '../../settings/fakes.dart'
+    show FakeAppSettingsRepository, FakeMeasuringToolRepository;
 import '../fake_screen_awake.dart';
 
 void main() {
@@ -46,7 +47,10 @@ void main() {
     name: 'sugar',
   );
 
+  late FakeAppSettingsRepository settings;
+
   setUp(() {
+    settings = FakeAppSettingsRepository();
     screen = FakeScreenAwake();
     recipes = FakeRecipeRepository()
       ..seed(
@@ -73,6 +77,7 @@ void main() {
     measuringToolRepositoryProvider.overrideWithValue(
       FakeMeasuringToolRepository(),
     ),
+    appSettingsRepositoryProvider.overrideWithValue(settings),
   ];
 
   Future<void> pumpCooking(WidgetTester tester) async {
@@ -160,6 +165,36 @@ void main() {
       find.text('Add 6\u00a0cloves garlic.', findRichText: true),
       findsOneWidget,
     );
+  });
+
+  testWidgets('tapping garlic cloves shows jarred garlic, not checked', (
+    tester,
+  ) async {
+    recipes = FakeRecipeRepository()
+      ..seed(
+        recipe: RecipeFixtures.recipe(),
+        lines: [
+          RecipeFixtures.line(
+            'garlic',
+            quantity: Quantity(3),
+            countWord: 'clove',
+            name: 'garlic',
+          ),
+        ],
+        steps: [RecipeFixtures.step('fry', text: 'Add the garlic.')],
+      );
+    await pumpCooking(tester);
+
+    await tester.tap(find.byType(AmountText));
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 ½\u00a0tsp'), findsOneWidget);
+    expect(
+      find.text('Add 1 ½\u00a0tsp garlic.', findRichText: true),
+      findsOneWidget,
+    );
+    expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isFalse);
+    expect(settings.current.jarredGarlic, isTrue);
   });
 
   testWidgets('moves with Next and Back, and by swiping', (tester) async {

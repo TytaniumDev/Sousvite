@@ -2,8 +2,10 @@ import 'dart:math' as math;
 
 import 'package:design_system/src/theme/context_ext.dart';
 import 'package:design_system/src/tokens/motion.dart';
+import 'package:design_system/src/tokens/radii.dart';
 import 'package:design_system/src/tokens/spacing.dart';
 import 'package:design_system/src/widgets/amount_text.dart';
+import 'package:flutter/semantics.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
 
@@ -31,6 +33,11 @@ enum IngredientCheckStyle() {
 ///
 /// A [guide] sits under the name, such as the `MeasuringGuide` cooking
 /// mode shows for the amount.
+///
+/// With [onAmountTap] the amount itself is a button with a 48 dp hit area,
+/// apart from the row's checkbox: tapping it can show the amount another
+/// way, such as garlic cloves as teaspoons of jarred garlic. Screen readers
+/// offer it as a custom action named [amountTapLabel].
 class const IngredientRow({
   /// The ingredient: "flour".
   required final String name,
@@ -63,6 +70,14 @@ class const IngredientRow({
   /// Shown under the name and preparation, such as a `MeasuringGuide`.
   /// Null shows nothing.
   final Widget? guide,
+
+  /// Called when the amount is tapped. Null leaves the amount as plain
+  /// text. Needs [amountTapLabel].
+  final VoidCallback? onAmountTap,
+
+  /// What tapping the amount does, as a screen reader action: "Show as
+  /// jarred garlic". Set with [onAmountTap].
+  final String? amountTapLabel,
   super.key,
 }) extends StatelessWidget {
   /// The narrowest the amount column gets, so names line up in a list.
@@ -75,6 +90,10 @@ class const IngredientRow({
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      (onAmountTap == null) == (amountTapLabel == null),
+      'A tappable amount needs its screen reader label.',
+    );
     final colors = context.colors;
     final body = context.textStyles.bodyLarge!;
     final checkedOff = checked && checkStyle == .checkOff;
@@ -111,6 +130,8 @@ class const IngredientRow({
                 quantity: quantity,
                 unit: unit,
                 semanticsLabel: amountSemanticsLabel,
+                onTap: onAmountTap,
+                tapLabel: amountTapLabel,
               ),
               Expanded(
                 child: Padding(
@@ -144,6 +165,8 @@ class const _AmountColumn({
   required final Quantity? quantity,
   required final String? unit,
   required final String? semanticsLabel,
+  required final VoidCallback? onTap,
+  required final String? tapLabel,
 }) extends StatelessWidget {
   static const _maxShare = 0.4;
 
@@ -158,15 +181,57 @@ class const _AmountColumn({
         ),
         child: Padding(
           padding: const EdgeInsets.only(right: AppSpacing.space3),
-          child: _Amount(
-            quantity: quantity,
-            unit: unit,
-            semanticsLabel: semanticsLabel,
+          child: _TappableAmount(
+            onTap: onTap,
+            tapLabel: tapLabel,
+            child: _Amount(
+              quantity: quantity,
+              unit: unit,
+              semanticsLabel: semanticsLabel,
+            ),
           ),
         ),
       );
     },
   );
+}
+
+/// The amount as a button when [onTap] is set, or [child] alone.
+///
+/// The ink is left out of the semantics tree, because a row with a
+/// checkbox merges its semantics and has its own tap. Screen readers get
+/// a custom action named [tapLabel] instead.
+class const _TappableAmount({
+  required final VoidCallback? onTap,
+  required final String? tapLabel,
+  required final Widget child,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final onTap = this.onTap;
+    final tapLabel = this.tapLabel;
+    if (onTap == null || tapLabel == null) return child;
+    return Semantics(
+      customSemanticsActions: {CustomSemanticsAction(label: tapLabel): onTap},
+      child: InkWell(
+        onTap: onTap,
+        excludeFromSemantics: true,
+        borderRadius: AppRadii.borderSm,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: kMinInteractiveDimension,
+            minHeight: kMinInteractiveDimension,
+          ),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            widthFactor: 1,
+            heightFactor: 1,
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class const _Amount({

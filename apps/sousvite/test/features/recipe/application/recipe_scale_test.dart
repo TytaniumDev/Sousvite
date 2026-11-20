@@ -5,10 +5,12 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/recipe/application/recipe_data.dart';
 import 'package:sousvite/features/recipe/application/recipe_scale.dart';
 import 'package:sousvite/features/recipe/application/recipe_units.dart';
+import 'package:sousvite/features/settings/settings.dart';
 
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/fake_user_recipe_prefs_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
+import '../../settings/fakes.dart';
 
 void main() {
   const recipeId = RecipeId('r1');
@@ -27,6 +29,12 @@ void main() {
             unit: Unit.cup,
           ),
           RecipeFixtures.line('l2', name: 'salt'),
+          RecipeFixtures.line(
+            'garlic',
+            quantity: Quantity(6),
+            countWord: 'clove',
+            name: 'garlic',
+          ),
         ],
       );
     container =
@@ -36,9 +44,13 @@ void main() {
               userRecipePrefsRepositoryProvider.overrideWithValue(
                 FakeUserRecipePrefsRepository(),
               ),
+              appSettingsRepositoryProvider.overrideWithValue(
+                FakeAppSettingsRepository(),
+              ),
             ],
           )
           ..listen(recipeProvider(recipeId), (_, _) {})
+          ..listen(jarredGarlicControllerProvider, (_, _) {})
           ..listen(ingredientLinesProvider(recipeId), (_, _) {});
     await container.read(recipeProvider(recipeId).future);
     await container.read(ingredientLinesProvider(recipeId).future);
@@ -109,6 +121,53 @@ void main() {
       final shown = container.read(lineAmountProvider(recipeId, lineId));
       expect(shown?.amount.unit, Unit.milliliter);
       expect(shown?.upTo?.unit, Unit.milliliter);
+    });
+  });
+
+  group('jarred garlic', () {
+    const garlic = IngredientLineId('garlic');
+
+    LineAmount? shown() => container.read(lineAmountProvider(recipeId, garlic));
+
+    test('shows cloves until it is turned on', () {
+      expect(shown(), (amount: Amount(Quantity(6), null), upTo: null));
+    });
+
+    test('shows cloves as rounded spoons of jarred garlic', () async {
+      await container.read(jarredGarlicControllerProvider.notifier).toggle();
+
+      // 6 cloves are 3 tsp, which rounds to 1 Tbsp.
+      expect(shown(), (
+        amount: const Amount(Quantity.one, Unit.tablespoon),
+        upTo: null,
+      ));
+
+      scale().scaleBy(Quantity(1, 2));
+      expect(shown(), (
+        amount: Amount(Quantity(3, 2), Unit.teaspoon),
+        upTo: null,
+      ));
+    });
+
+    test('leaves other lines as they are', () async {
+      await container.read(jarredGarlicControllerProvider.notifier).toggle();
+
+      expect(container.read(lineAmountProvider(recipeId, lineId)), (
+        amount: Amount(Quantity(3, 4), Unit.cup),
+        upTo: Amount(Quantity(1), Unit.cup),
+      ));
+    });
+
+    test('converts jarred garlic to the chosen unit system', () async {
+      container.listen(recipePrefsProvider(recipeId), (_, _) {});
+      await container.read(jarredGarlicControllerProvider.notifier).toggle();
+      await container
+          .read(recipeUnitSystemProvider(recipeId).notifier)
+          .select(UnitSystem.metric);
+      await container.pump();
+      await container.pump();
+
+      expect(shown()?.amount.unit, Unit.milliliter);
     });
   });
 

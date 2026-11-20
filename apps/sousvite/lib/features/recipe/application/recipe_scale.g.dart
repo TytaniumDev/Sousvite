@@ -248,6 +248,8 @@ final class ScaledServingsFamily extends $Family
 ///
 /// As written, amounts are shown exactly as the recipe has them. Once
 /// scaled or converted, they are rounded to something people can measure.
+/// Garlic cloves are shown as jarred garlic while that is on; only those
+/// lines watch the setting.
 
 @ProviderFor(lineAmount)
 final lineAmountProvider = LineAmountFamily._();
@@ -258,6 +260,8 @@ final lineAmountProvider = LineAmountFamily._();
 ///
 /// As written, amounts are shown exactly as the recipe has them. Once
 /// scaled or converted, they are rounded to something people can measure.
+/// Garlic cloves are shown as jarred garlic while that is on; only those
+/// lines watch the setting.
 
 final class LineAmountProvider
     extends $FunctionalProvider<LineAmount?, LineAmount?, LineAmount?>
@@ -268,6 +272,8 @@ final class LineAmountProvider
   ///
   /// As written, amounts are shown exactly as the recipe has them. Once
   /// scaled or converted, they are rounded to something people can measure.
+  /// Garlic cloves are shown as jarred garlic while that is on; only those
+  /// lines watch the setting.
   LineAmountProvider._({
     required LineAmountFamily super.from,
     required (RecipeId, IngredientLineId) super.argument,
@@ -319,7 +325,7 @@ final class LineAmountProvider
   }
 }
 
-String _$lineAmountHash() => r'6f08e8ba241f38b80c57674bdcb12f1cdc5b4be0';
+String _$lineAmountHash() => r'371130caf5835ae8b945b47dc1882b42d915f2d4';
 
 /// One line's amount at the current scale, in this recipe's unit system
 /// (PRD 7.6). Null while loading, once the line is gone, or when the line
@@ -327,6 +333,8 @@ String _$lineAmountHash() => r'6f08e8ba241f38b80c57674bdcb12f1cdc5b4be0';
 ///
 /// As written, amounts are shown exactly as the recipe has them. Once
 /// scaled or converted, they are rounded to something people can measure.
+/// Garlic cloves are shown as jarred garlic while that is on; only those
+/// lines watch the setting.
 
 final class LineAmountFamily extends $Family
     with $FunctionalFamilyOverride<LineAmount?, (RecipeId, IngredientLineId)> {
@@ -345,6 +353,8 @@ final class LineAmountFamily extends $Family
   ///
   /// As written, amounts are shown exactly as the recipe has them. Once
   /// scaled or converted, they are rounded to something people can measure.
+  /// Garlic cloves are shown as jarred garlic while that is on; only those
+  /// lines watch the setting.
 
   LineAmountProvider call(RecipeId recipeId, IngredientLineId lineId) =>
       LineAmountProvider._(argument: (recipeId, lineId), from: this);

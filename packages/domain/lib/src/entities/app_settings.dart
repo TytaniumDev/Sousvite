@@ -25,5 +25,9 @@ abstract class AppSettings with _$AppSettings {
 
     /// How amounts are shown in recipes that have no choice of their own.
     @Default(UnitSystem.original) UnitSystem unitSystem,
+
+    /// Whether garlic cloves are shown as spoons of jarred minced garlic,
+    /// ½ tsp per clove. Toggled by tapping a clove amount.
+    @Default(false) bool jarredGarlic,
   }) = _AppSettings;
 }
