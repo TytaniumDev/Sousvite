@@ -2,6 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:data/data.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/providers/sqlite/web_file_uri.dart';
 import 'package:sync/sync.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,8 +19,8 @@ AppDatabase appDatabase(Ref ref) {
     driftDatabase(
       name: 'sousvite',
       web: DriftWebOptions(
-        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-        driftWorker: Uri.parse('drift_worker.js'),
+        sqlite3Wasm: webFileUri('sqlite3.wasm'),
+        driftWorker: webFileUri('drift_worker.js'),
       ),
     ),
   );
