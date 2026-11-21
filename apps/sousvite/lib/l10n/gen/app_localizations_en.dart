@@ -1368,4 +1368,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get account_signInCalloutDismiss => 'Not now';
+
+  @override
+  String get feedback_tile => 'Send feedback';
+
+  @override
+  String get feedback_tileDescription => 'Report a bug or suggest an idea';
+
+  @override
+  String get feedback_title => 'Send feedback';
+
+  @override
+  String get feedback_intro =>
+      'Describe what happened and what you expected, or share an idea. A screenshot of the screen helps.';
+
+  @override
+  String get feedback_messageLabel => 'Your feedback';
+
+  @override
+  String get feedback_messageHint =>
+      'What you did, what you expected, and what happened instead';
+
+  @override
+  String get feedback_emailLabel => 'Email (optional)';
+
+  @override
+  String get feedback_emailHelper => 'Only if you\'d like a reply';
+
+  @override
+  String get feedback_addScreenshot => 'Add a screenshot';
+
+  @override
+  String get feedback_addScreenshotHelp =>
+      'Go to the screen with the problem, then tap Capture.';
+
+  @override
+  String get feedback_screenshotLabel =>
+      'Screenshot to send with your feedback';
+
+  @override
+  String get feedback_removeScreenshot => 'Remove screenshot';
+
+  @override
+  String get feedback_send => 'Send';
+
+  @override
+  String get feedback_sent => 'Feedback sent. Thanks.';
+
+  @override
+  String get feedback_failed => 'Couldn\'t send your feedback. Try again.';
+
+  @override
+  String get feedback_capture => 'Capture';
+
+  @override
+  String get feedback_captureCancel => 'Cancel';
 }

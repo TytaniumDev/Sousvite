@@ -10,6 +10,7 @@ import 'package:sousvite/features/cooking/cooking.dart';
 import 'package:sousvite/features/cooking/presentation/cooking_screen.dart';
 import 'package:sousvite/features/editor/editor.dart';
 import 'package:sousvite/features/experiments/experiments.dart';
+import 'package:sousvite/features/feedback/feedback.dart';
 import 'package:sousvite/features/grocery/grocery.dart';
 import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/library/library.dart';
@@ -28,6 +29,7 @@ void main() {
     SettingsRoutes.path: 'Settings',
     ImportRoutes.path: 'Import recipe',
     AccountRoutes.path: 'Account',
+    FeedbackRoutes.path: 'Send feedback',
     EditorRoutes.location(recipeId): 'Edit recipe',
     NutritionRoutes.location(recipeId): 'Nutrition',
     ExperimentsRoutes.location(recipeId): 'History',

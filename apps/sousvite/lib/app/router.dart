@@ -5,6 +5,7 @@ import 'package:sousvite/features/account/account.dart';
 import 'package:sousvite/features/cooking/cooking.dart';
 import 'package:sousvite/features/editor/editor.dart';
 import 'package:sousvite/features/experiments/experiments.dart';
+import 'package:sousvite/features/feedback/feedback.dart';
 import 'package:sousvite/features/grocery/grocery.dart';
 import 'package:sousvite/features/import/import.dart';
 import 'package:sousvite/features/library/library.dart';
@@ -45,6 +46,7 @@ GoRouter router(Ref ref) {
       ...ExperimentsRoutes.routes,
       ...SharingRoutes.routes,
       ...AccountRoutes.routes,
+      ...FeedbackRoutes.routes,
     ],
   );
   ref.onDispose(router.dispose);

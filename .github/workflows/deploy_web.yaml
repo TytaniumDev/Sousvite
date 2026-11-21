@@ -29,6 +29,9 @@ jobs:
       # A service account key for the Firebase project (BUILD_PLAN.md §8.9).
       # Until it is added, the build still runs and the deploy is skipped.
       FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      # Public by design (BUILD_PLAN.md §8.8): it only lets the app send
+      # crash reports and feedback. The same value as in release.yaml.
+      SENTRY_DSN: https://b2a333b66dcd479d1087e98242605f93@o4510951154712576.ingest.us.sentry.io/4512426129686528
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v7
@@ -44,7 +47,7 @@ jobs:
 
       - name: 🌐 Build
         working-directory: apps/sousvite
-        run: flutter build web --release
+        run: flutter build web --release --dart-define=SENTRY_DSN="$SENTRY_DSN"
 
       - name: ⚠️ Deploy credential missing
         if: env.FIREBASE_SERVICE_ACCOUNT == ''
