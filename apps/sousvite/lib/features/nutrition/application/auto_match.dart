@@ -101,10 +101,17 @@ Future<FoodMatcher> foodMatcher(Ref ref) async {
 }
 
 /// Automatic matching with the app's repositories and [foodMatcher].
+///
+/// Waits for the matcher before watching the repositories: the food
+/// repository rebuilds once the bundled foods load, and watching it before
+/// that would restart this mid-build and leave callers waiting.
 @Riverpod(keepAlive: true)
-Future<AutoMatch> autoMatch(Ref ref) async => AutoMatch(
-  foods: ref.watch(foodRepositoryProvider),
-  recipes: ref.watch(recipeRepositoryProvider),
-  matcher: await ref.watch(foodMatcherProvider.future),
-  newId: const Uuid().v4,
-);
+Future<AutoMatch> autoMatch(Ref ref) async {
+  final matcher = await ref.watch(foodMatcherProvider.future);
+  return AutoMatch(
+    foods: ref.watch(foodRepositoryProvider),
+    recipes: ref.watch(recipeRepositoryProvider),
+    matcher: matcher,
+    newId: const Uuid().v4,
+  );
+}

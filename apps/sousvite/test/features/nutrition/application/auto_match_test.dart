@@ -117,7 +117,11 @@ void main() {
     final container = ProviderContainer.test(
       overrides: [
         bundledFoodsProvider.overrideWith((ref) => bundled.future),
-        foodRepositoryProvider.overrideWithValue(foods),
+        // Rebuilds once the bundled foods load, as the app's does.
+        foodRepositoryProvider.overrideWith((ref) {
+          ref.watch(bundledFoodsProvider);
+          return foods;
+        }),
         recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
       ],
     );
