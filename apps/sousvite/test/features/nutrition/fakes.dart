@@ -1,9 +1,21 @@
 import 'dart:async';
 
+import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:mocktail/mocktail.dart';
+import 'package:sousvite/app/providers/bundled_foods.dart';
 import 'package:sousvite/app/services/nutrition_api.dart';
+import 'package:sqlite3/sqlite3.dart';
+
+/// An empty bundled foods file, for tests whose [FakeFoodRepository] holds
+/// the foods. Automatic matching waits for the bundled file to load.
+final Override emptyBundledFoods = bundledFoodsProvider.overrideWith((ref) {
+  final foods = BundledFoods(sqlite3.openInMemory());
+  ref.onDispose(foods.close);
+  return foods;
+});
 
 /// Emits [read]'s value on listen and after every [changes] event,
 /// skipping repeats like a Drift watch query with `distinct()`.
