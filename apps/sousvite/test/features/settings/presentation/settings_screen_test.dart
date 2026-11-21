@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/app/app.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/app/router.dart';
+import 'package:sousvite/features/feedback/presentation/feedback_screen.dart';
 import 'package:sousvite/features/settings/presentation/about_section.dart';
 import 'package:sousvite/features/settings/presentation/measuring_tools_screen.dart';
 import 'package:sousvite/features/settings/presentation/settings_screen.dart';
@@ -136,6 +137,16 @@ void main() {
           ),
           findsOneWidget,
         );
+      });
+
+      testWidgets('opens the feedback form', (tester) async {
+        await openSettings(tester);
+
+        await tester.scrollUntilVisible(find.text('Send feedback'), 100);
+        await tester.tap(find.text('Send feedback'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(FeedbackScreen), findsOneWidget);
       });
     });
   });

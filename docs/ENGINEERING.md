@@ -53,7 +53,7 @@ Each decision is marked:
 | Routing | `go_router` | Default |
 | Immutable models | `freezed` + `json_serializable` | Default |
 | Subscriptions | RevenueCat (App Store, Play, web via Stripe) | Default |
-| Crash and error reporting | Sentry (works on all three platforms) | Default |
+| Crash and error reporting, in-app feedback | Sentry (works on all three platforms). Feedback from Settings goes to Sentry User Feedback, with an optional screenshot | Default |
 | Release builds | fastlane on GitHub Actions; one Firebase project (no dev/prod split) | Decided |
 
 ## 4. Architecture

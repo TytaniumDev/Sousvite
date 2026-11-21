@@ -29,10 +29,11 @@ extension PumpApp on WidgetTester {
   );
 
   /// Like [pumpApp], but shows [router], so tests can check where a screen
-  /// navigates.
+  /// navigates. [builder] wraps every screen, as the app's does.
   Future<void> pumpRouterApp(
     GoRouter router, {
     List<Override> overrides = const [],
+    TransitionBuilder? builder,
   }) => pumpWidget(
     ProviderScope(
       overrides: overrides,
@@ -44,6 +45,7 @@ extension PumpApp on WidgetTester {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: router,
+        builder: builder,
       ),
     ),
   );

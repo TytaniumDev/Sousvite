@@ -90,7 +90,7 @@ npm test                   # builds, starts the emulators (demo-sousvite), runs 
 - **Features are folders, not packages:** `lib/features/<name>/` with `presentation/`, `application/`, and `data/` when needed.
 - **A feature's public surface is one file,** `lib/features/<name>/<name>.dart`. Other features import only that file.
 - **Routes live in the feature:** `<name>_routes.dart` exposes `<Name>Routes.path`, `.routes`, and `.location(...)` when the path has parameters. `lib/app/router.dart` only composes them. Navigate with `context.go(CookingRoutes.location(id))`, never a string literal.
-- External services sit behind interfaces in `lib/app/services/` with stub implementations (`SignedOutAuthService`, `FreeEntitlements`, `OfflineNutritionApi`, `DebugErrorReporter`). Real implementations replace the provider body; nothing else changes.
+- External services sit behind interfaces in `lib/app/services/` with stub implementations (`SignedOutAuthService`, `FreeEntitlements`, `OfflineNutritionApi`, `DebugErrorReporter`, `DebugFeedbackService`). Real implementations replace the provider body; nothing else changes.
 
 ## Widgets: small, and rebuild only when their data changes
 

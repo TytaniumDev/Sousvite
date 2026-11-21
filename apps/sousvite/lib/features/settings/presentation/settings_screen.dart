@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/account/account.dart';
+import 'package:sousvite/features/feedback/feedback.dart';
 import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/features/settings/presentation/about_section.dart';
 import 'package:sousvite/features/settings/presentation/section_title.dart';
@@ -11,7 +12,7 @@ import 'package:sousvite/features/settings/presentation/unit_system_setting.dart
 import 'package:sousvite/features/settings/settings_routes.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
-/// The Settings tab: appearance, recipes, account, and about.
+/// The Settings tab: appearance, recipes, account, about, and feedback.
 class const SettingsScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class const SettingsScreen({super.key}) extends StatelessWidget {
               const SyncSourceSetting(),
               SectionTitle(l10n.settings_about),
               const AboutSection(),
+              const SendFeedbackTile(),
             ],
           ),
         ),

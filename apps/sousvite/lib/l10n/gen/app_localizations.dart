@@ -2312,6 +2312,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not now'**
   String get account_signInCalloutDismiss;
+
+  /// Settings row that opens the bug report and suggestion form.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get feedback_tile;
+
+  /// Second line of the Send feedback settings row.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a bug or suggest an idea'**
+  String get feedback_tileDescription;
+
+  /// Title of the feedback form.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get feedback_title;
+
+  /// Short explanation at the top of the feedback form.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what happened and what you expected, or share an idea. A screenshot of the screen helps.'**
+  String get feedback_intro;
+
+  /// Label of the feedback message field.
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback'**
+  String get feedback_messageLabel;
+
+  /// Hint in the empty feedback message field.
+  ///
+  /// In en, this message translates to:
+  /// **'What you did, what you expected, and what happened instead'**
+  String get feedback_messageHint;
+
+  /// Label of the optional email field on the feedback form.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (optional)'**
+  String get feedback_emailLabel;
+
+  /// Explains why the feedback form asks for an email.
+  ///
+  /// In en, this message translates to:
+  /// **'Only if you\'d like a reply'**
+  String get feedback_emailHelper;
+
+  /// Button that closes the feedback form so the user can capture a screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a screenshot'**
+  String get feedback_addScreenshot;
+
+  /// Explains how adding a screenshot works. 'Capture' is the button on the capture bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the screen with the problem, then tap Capture.'**
+  String get feedback_addScreenshotHelp;
+
+  /// Screen reader label of the captured screenshot on the feedback form.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot to send with your feedback'**
+  String get feedback_screenshotLabel;
+
+  /// Button that removes the captured screenshot from the feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove screenshot'**
+  String get feedback_removeScreenshot;
+
+  /// Button that sends the feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get feedback_send;
+
+  /// Snackbar after the feedback is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback sent. Thanks.'**
+  String get feedback_sent;
+
+  /// Snackbar when sending the feedback fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send your feedback. Try again.'**
+  String get feedback_failed;
+
+  /// Button on the floating capture bar that takes a screenshot of the current screen for the feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture'**
+  String get feedback_capture;
+
+  /// Button on the floating capture bar that goes back to the feedback form without a screenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get feedback_captureCancel;
 }
 
 class _AppLocalizationsDelegate
