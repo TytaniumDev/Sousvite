@@ -1318,35 +1318,22 @@ abstract class AppLocalizations {
   /// **'Photo of {product}'**
   String nutrition_productPhoto(String product);
 
-  /// Says what a scanned product's nutrition covers: one serving from its label, in grams.
+  /// Under a scanned ingredient line: the nutrition in the amount the line gives, so it can be checked.
   ///
   /// In en, this message translates to:
-  /// **'Per serving ({grams} g)'**
-  String nutrition_perServingGrams(String grams);
+  /// **'{calories} kcal · {protein} g protein · {carbs} g carbs · {fat} g fat'**
+  String nutrition_scannedNutrition(
+    String calories,
+    String protein,
+    String carbs,
+    String fat,
+  );
 
-  /// Says what a scanned product's nutrition covers when its label gives no serving in grams.
+  /// Under a scanned ingredient line whose amount can't be weighed yet, such as a label with no serving in grams.
   ///
   /// In en, this message translates to:
-  /// **'Per 100 g'**
-  String get nutrition_per100Grams;
-
-  /// Under a scanned product: the ingredient line that adding it creates.
-  ///
-  /// In en, this message translates to:
-  /// **'Adds “{line}” to the ingredients. You can change the amount after.'**
-  String nutrition_scanAddsLine(String line);
-
-  /// Under a scanned product whose label has no serving in grams: the line adding it creates, which still needs an amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Adds “{line}” to the ingredients. The label has no serving in grams, so type the amount in front of it.'**
-  String nutrition_scanAddsLineNoServing(String line);
-
-  /// Button that adds a scanned product to the recipe as an ingredient line.
-  ///
-  /// In en, this message translates to:
-  /// **'Add to recipe'**
-  String get nutrition_addProduct;
+  /// **'Type the amount in grams to see its nutrition'**
+  String get nutrition_scannedNeedsAmount;
 
   /// Title of cooking mode.
   ///

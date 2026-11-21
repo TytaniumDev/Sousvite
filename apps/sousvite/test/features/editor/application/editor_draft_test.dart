@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sousvite/app/providers/repositories.dart';
+import 'package:sousvite/app/services/nutrition_api.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 import 'package:sousvite/features/editor/application/editor_outline.dart';
 import 'package:sousvite/features/editor/application/recipe_copies.dart';
@@ -269,18 +270,20 @@ void main() {
     expect(folders.recipeIdsIn(soups), [id]);
   });
 
-  group('scanned foods', () {
+  group('scanned products', () {
     final butter = NutritionFixtures.packaged(
       'Creamy Peanut Butter',
       servingGrams: 32,
     );
     final milk = NutritionFixtures.packaged('Oat Milk');
 
+    ScannedProduct scanned(OnlineFood food) => (food: food, imageUrl: null);
+
     test('adds a line with one label serving, at the section end', () async {
       final editor = await load();
 
-      final id = editor.addScannedFood(
-        butter,
+      final id = editor.addScannedProduct(
+        scanned(butter),
         sectionId: const IngredientSectionId('sauce'),
       )!;
 
@@ -296,9 +299,9 @@ void main() {
 
     test('matches each kept line to its food on save', () async {
       final editor = await load();
-      final butterLine = editor.addScannedFood(butter)!;
-      final milkLine = editor.addScannedFood(milk)!;
-      final removed = editor.addScannedFood(butter)!;
+      final butterLine = editor.addScannedProduct(scanned(butter))!;
+      final milkLine = editor.addScannedProduct(scanned(milk))!;
+      final removed = editor.addScannedProduct(scanned(butter))!;
       editor
         ..setLineText(milkLine, '1 carton Oat Milk')
         ..removeLine(removed);
@@ -313,7 +316,10 @@ void main() {
       // line is left unmatched but the food is kept for fixing it.
       expect(foods.foods.keys, {butter.food.id, milk.food.id});
       expect(
-        container.read(editorDraftProvider(recipeId)).requireValue.scannedFoods,
+        container
+            .read(editorDraftProvider(recipeId))
+            .requireValue
+            .scannedProducts,
         isEmpty,
       );
 
@@ -325,7 +331,7 @@ void main() {
 
     test('adds nothing before the draft loads', () {
       final editor = container.read(editorDraftProvider(recipeId).notifier);
-      expect(editor.addScannedFood(butter), isNull);
+      expect(editor.addScannedProduct(scanned(butter)), isNull);
     });
   });
 

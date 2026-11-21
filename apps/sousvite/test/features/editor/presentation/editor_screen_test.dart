@@ -12,6 +12,7 @@ import 'package:sousvite/features/editor/presentation/editor_screen.dart';
 import 'package:sousvite/features/editor/presentation/ingredients_editor.dart';
 import 'package:sousvite/features/editor/presentation/steps_editor.dart';
 import 'package:sousvite/features/library/library.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/features/nutrition/presentation/barcode_camera.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 
@@ -35,6 +36,10 @@ void main() {
   final butter = NutritionFixtures.packaged(
     'Creamy Peanut Butter',
     servingGrams: 32,
+    brand: 'Jif',
+    protein: 25,
+    carbs: 25,
+    fat: 50,
   );
   final oatMilk = NutritionFixtures.packaged('Oat Milk');
 
@@ -216,8 +221,6 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Camera'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Add to recipe'));
-      await tester.pumpAndSettle();
     }
 
     testWidgets('scans a barcode into a line, matched on save', (tester) async {
@@ -245,6 +248,45 @@ void main() {
       expect(match.gramWeight, 32);
     });
 
+    testWidgets('shows what a scanned line was matched to', (tester) async {
+      await pumpEditor(tester);
+
+      await scanBarcode(tester, section: 1);
+
+      final details = find.byType(ScannedFoodDetails);
+      expect(details, findsOneWidget);
+      Finder inDetails(Finder finder) =>
+          find.descendant(of: details, matching: finder);
+      expect(inDetails(find.text('Creamy Peanut Butter')), findsOneWidget);
+      expect(inDetails(find.text('Jif')), findsOneWidget);
+      expect(inDetails(find.text('Open Food Facts')), findsOneWidget);
+      // 32 g of a food with 600 kcal, 25 g protein and carbs, and 50 g fat
+      // in 100 g.
+      expect(
+        inDetails(find.text('192 kcal · 8 g protein · 8 g carbs · 16 g fat')),
+        findsOneWidget,
+      );
+
+      // The nutrition follows the amount, and only this line rebuilds.
+      final builds = BuildCounter.start();
+      final line = find.widgetWithText(TextField, '32 g Creamy Peanut Butter');
+      await tester.enterText(line, '64 g Creamy Peanut Butter');
+      await tester.pump();
+      expect(
+        inDetails(find.text('384 kcal · 16 g protein · 16 g carbs · 32 g fat')),
+        findsOneWidget,
+      );
+      expect(builds.of<ScannedFoodDetails>(), 1);
+    });
+
+    testWidgets('a line typed by hand shows no scanned details', (
+      tester,
+    ) async {
+      await pumpEditor(tester);
+
+      expect(find.byType(ScannedFoodDetails), findsNothing);
+    });
+
     testWidgets('a scanned line without a serving waits for its amount', (
       tester,
     ) async {
@@ -260,6 +302,20 @@ void main() {
       expect(
         field.controller!.selection,
         const TextSelection.collapsed(offset: 0),
+      );
+      expect(
+        find.text('Type the amount in grams to see its nutrition'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Oat Milk'),
+        '250 g Oat Milk',
+      );
+      await tester.pump();
+      expect(
+        find.text('1500 kcal · 0 g protein · 0 g carbs · 0 g fat'),
+        findsOneWidget,
       );
     });
 

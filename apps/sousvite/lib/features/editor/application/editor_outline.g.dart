@@ -459,6 +459,100 @@ abstract class _$EditorStepIds extends $Notifier<List<RecipeStepId>> {
   }
 }
 
+/// The product a draft line was scanned from in this edit, or null.
+
+@ProviderFor(editorScannedProduct)
+final editorScannedProductProvider = EditorScannedProductFamily._();
+
+/// The product a draft line was scanned from in this edit, or null.
+
+final class EditorScannedProductProvider
+    extends
+        $FunctionalProvider<ScannedProduct?, ScannedProduct?, ScannedProduct?>
+    with $Provider<ScannedProduct?> {
+  /// The product a draft line was scanned from in this edit, or null.
+  EditorScannedProductProvider._({
+    required EditorScannedProductFamily super.from,
+    required (RecipeId, IngredientLineId) super.argument,
+  }) : super(
+         retry: null,
+         name: r'editorScannedProductProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$editorScannedProductHash();
+
+  @override
+  String toString() {
+    return r'editorScannedProductProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<ScannedProduct?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  ScannedProduct? create(Ref ref) {
+    final argument = this.argument as (RecipeId, IngredientLineId);
+    return editorScannedProduct(ref, argument.$1, argument.$2);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ScannedProduct? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ScannedProduct?>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EditorScannedProductProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$editorScannedProductHash() =>
+    r'a7646f52ddf9476373fc0bfd76df899cf5b572df';
+
+/// The product a draft line was scanned from in this edit, or null.
+
+final class EditorScannedProductFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          ScannedProduct?,
+          (RecipeId, IngredientLineId)
+        > {
+  EditorScannedProductFamily._()
+    : super(
+        retry: null,
+        name: r'editorScannedProductProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The product a draft line was scanned from in this edit, or null.
+
+  EditorScannedProductProvider call(
+    RecipeId recipeId,
+    IngredientLineId lineId,
+  ) => EditorScannedProductProvider._(argument: (recipeId, lineId), from: this);
+
+  @override
+  String toString() => r'editorScannedProductProvider';
+}
+
 /// One draft line, or null once it is removed.
 
 @ProviderFor(editorLine)

@@ -10,3 +10,4 @@ export 'nutrition_routes.dart';
 export 'presentation/match_library_tile.dart' show MatchLibraryTile;
 export 'presentation/nutrition_summary.dart' show NutritionSummary;
 export 'presentation/scan_food_dialog.dart' show showScanFoodDialog;
+export 'presentation/scanned_food_details.dart' show ScannedFoodDetails;

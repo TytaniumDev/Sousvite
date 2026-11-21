@@ -14,11 +14,12 @@ import 'package:uuid/uuid.dart';
 part 'editor_draft.g.dart';
 
 /// The recipe being edited, how it was saved (null for a new one), and
-/// the foods scanned for lines added since, which saving matches them to.
+/// the products scanned for lines added since, which the editor shows
+/// under those lines and saving matches them to.
 typedef EditorState = ({
   RecipeSnapshot draft,
   RecipeSnapshot? saved,
-  Map<IngredientLineId, OnlineFood> scannedFoods,
+  Map<IngredientLineId, ScannedProduct> scannedProducts,
 });
 
 /// The recipe being edited. Changes stay in this draft until [save]
@@ -36,7 +37,7 @@ class EditorDraft() extends _$EditorDraft {
       return (
         draft: _blank(recipeId),
         saved: null,
-        scannedFoods: const <IngredientLineId, OnlineFood>{},
+        scannedProducts: const <IngredientLineId, ScannedProduct>{},
       );
     }
     final snapshot = RecipeSnapshot(
@@ -51,7 +52,7 @@ class EditorDraft() extends _$EditorDraft {
     return (
       draft: snapshot,
       saved: snapshot,
-      scannedFoods: const <IngredientLineId, OnlineFood>{},
+      scannedProducts: const <IngredientLineId, ScannedProduct>{},
     );
   }
 
@@ -84,7 +85,7 @@ class EditorDraft() extends _$EditorDraft {
     state = AsyncData((
       draft: change(current.draft),
       saved: current.saved,
-      scannedFoods: current.scannedFoods,
+      scannedProducts: current.scannedProducts,
     ));
   }
 
@@ -203,21 +204,23 @@ class EditorDraft() extends _$EditorDraft {
     return [for (final line in added) line.id];
   }
 
-  /// Adds a line for [food], scanned from its package's barcode, at the
-  /// end of [sectionId]: one label serving of it (`scannedLineText`), for
-  /// the user to change. Saving matches the line to [food]. Returns the
-  /// line's id.
-  IngredientLineId? addScannedFood(
-    OnlineFood food, {
+  /// Adds a line for [product], scanned from its package's barcode, at
+  /// the end of [sectionId]: one label serving of it (`scannedLineText`),
+  /// for the user to change. Saving matches the line to the product's
+  /// food. Returns the line's id.
+  IngredientLineId? addScannedProduct(
+    ScannedProduct product, {
     IngredientSectionId? sectionId,
   }) {
     if (state.value == null) return null;
-    final [lineId] = addLines([scannedLineText(food)], sectionId: sectionId);
+    final [lineId] = addLines([
+      scannedLineText(product.food),
+    ], sectionId: sectionId);
     final current = state.requireValue;
     state = AsyncData((
       draft: current.draft,
       saved: current.saved,
-      scannedFoods: {...current.scannedFoods, lineId: food},
+      scannedProducts: {...current.scannedProducts, lineId: product},
     ));
     return lineId;
   }
@@ -439,7 +442,7 @@ class EditorDraft() extends _$EditorDraft {
     state = AsyncData((
       draft: cleaned,
       saved: cleaned,
-      scannedFoods: const <IngredientLineId, OnlineFood>{},
+      scannedProducts: const <IngredientLineId, ScannedProduct>{},
     ));
     return true;
   }
@@ -447,11 +450,11 @@ class EditorDraft() extends _$EditorDraft {
   /// Matches each scanned line still in [lines] to its food, weighing the
   /// amount typed in front of it.
   Future<void> _matchScannedFoods(List<IngredientLine> lines) async {
-    final scanned = state.value?.scannedFoods ?? const {};
+    final scanned = state.value?.scannedProducts ?? const {};
     if (scanned.isEmpty) return;
     final nutrition = ref.read(nutritionActionsProvider);
     for (final line in lines) {
-      if (scanned[line.id] case final food?) {
+      if (scanned[line.id] case (:final food, imageUrl: _)) {
         await nutrition.matchScannedFood(line, food);
       }
     }
