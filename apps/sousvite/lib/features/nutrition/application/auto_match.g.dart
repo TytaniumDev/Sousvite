@@ -10,16 +10,20 @@ part of 'auto_match.dart';
 // ignore_for_file: type=lint, type=warning
 /// Picks foods for ingredient names from every bundled generic food.
 ///
-/// Kept alive because indexing the foods takes a moment and they never
-/// change; it's rebuilt once the bundled file has loaded.
+/// Waits for the bundled file, which takes a few seconds to load on web:
+/// matching before then would find nothing and report every line as
+/// unmatched. Kept alive because indexing the foods takes a moment and they
+/// never change.
 
 @ProviderFor(foodMatcher)
 final foodMatcherProvider = FoodMatcherProvider._();
 
 /// Picks foods for ingredient names from every bundled generic food.
 ///
-/// Kept alive because indexing the foods takes a moment and they never
-/// change; it's rebuilt once the bundled file has loaded.
+/// Waits for the bundled file, which takes a few seconds to load on web:
+/// matching before then would find nothing and report every line as
+/// unmatched. Kept alive because indexing the foods takes a moment and they
+/// never change.
 
 final class FoodMatcherProvider
     extends
@@ -31,8 +35,10 @@ final class FoodMatcherProvider
     with $FutureModifier<FoodMatcher>, $FutureProvider<FoodMatcher> {
   /// Picks foods for ingredient names from every bundled generic food.
   ///
-  /// Kept alive because indexing the foods takes a moment and they never
-  /// change; it's rebuilt once the bundled file has loaded.
+  /// Waits for the bundled file, which takes a few seconds to load on web:
+  /// matching before then would find nothing and report every line as
+  /// unmatched. Kept alive because indexing the foods takes a moment and they
+  /// never change.
   FoodMatcherProvider._()
     : super(
         from: null,
@@ -59,14 +65,22 @@ final class FoodMatcherProvider
   }
 }
 
-String _$foodMatcherHash() => r'd17eac02e716a45f59d23e1f31d26572333c3d93';
+String _$foodMatcherHash() => r'098d959ac8006439bb7e017a2d20d98ea5ef3547';
 
 /// Automatic matching with the app's repositories and [foodMatcher].
+///
+/// Waits for the matcher before watching the repositories: the food
+/// repository rebuilds once the bundled foods load, and watching it before
+/// that would restart this mid-build and leave callers waiting.
 
 @ProviderFor(autoMatch)
 final autoMatchProvider = AutoMatchProvider._();
 
 /// Automatic matching with the app's repositories and [foodMatcher].
+///
+/// Waits for the matcher before watching the repositories: the food
+/// repository rebuilds once the bundled foods load, and watching it before
+/// that would restart this mid-build and leave callers waiting.
 
 final class AutoMatchProvider
     extends
@@ -77,6 +91,10 @@ final class AutoMatchProvider
         >
     with $FutureModifier<AutoMatch>, $FutureProvider<AutoMatch> {
   /// Automatic matching with the app's repositories and [foodMatcher].
+  ///
+  /// Waits for the matcher before watching the repositories: the food
+  /// repository rebuilds once the bundled foods load, and watching it before
+  /// that would restart this mid-build and leave callers waiting.
   AutoMatchProvider._()
     : super(
         from: null,
@@ -102,4 +120,4 @@ final class AutoMatchProvider
   }
 }
 
-String _$autoMatchHash() => r'3b21ebe0176f1a68e566ce22e5e8ae41b1f01368';
+String _$autoMatchHash() => r'b33a7a1cb6ee0df2f4b084853c64bad66dd67ec0';

@@ -1,9 +1,14 @@
+import 'dart:async';
+
+import 'package:data/data.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrition/nutrition.dart';
+import 'package:sousvite/app/providers/bundled_foods.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/nutrition/application/auto_match.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 import '../fakes.dart';
 
@@ -106,16 +111,30 @@ void main() {
     });
   });
 
-  test('the app matches against every generic food', () async {
+  test('the app matches against every generic food once they load', () async {
     final foods = FakeFoodRepository()..addFood(garlic);
+    final bundled = Completer<BundledFoods>();
     final container = ProviderContainer.test(
       overrides: [
-        foodRepositoryProvider.overrideWithValue(foods),
+        bundledFoodsProvider.overrideWith((ref) => bundled.future),
+        // Rebuilds once the bundled foods load, as the app's does.
+        foodRepositoryProvider.overrideWith((ref) {
+          ref.watch(bundledFoodsProvider);
+          return foods;
+        }),
         recipeRepositoryProvider.overrideWithValue(FakeRecipeRepository()),
       ],
     );
 
-    final autoMatch = await container.read(autoMatchProvider.future);
+    final loading = container.read(autoMatchProvider.future);
+    await pumpEventQueue();
+    // Matching before the bundled foods load would find nothing.
+    expect(container.read(autoMatchProvider).isLoading, isTrue);
+
+    final emptyFile = BundledFoods(sqlite3.openInMemory());
+    addTearDown(emptyFile.close);
+    bundled.complete(emptyFile);
+    final autoMatch = await loading;
 
     expect(
       autoMatch.matcher.match('garlic'),

@@ -64,7 +64,7 @@ final class AppDatabaseProvider
   }
 }
 
-String _$appDatabaseHash() => r'b27e6488255b8a71afd4522f9b8014f1d365c563';
+String _$appDatabaseHash() => r'352d8cdd38b1cdcf8ba1c4ee8d740bef04b04d17';
 
 /// Records every local write in the change log for sync.
 ///

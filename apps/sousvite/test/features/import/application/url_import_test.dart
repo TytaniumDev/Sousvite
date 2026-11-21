@@ -14,7 +14,7 @@ import '../../../helpers/fakes/fake_folder_repository.dart';
 import '../../../helpers/fakes/fake_photo_store.dart';
 import '../../../helpers/fakes/fake_recipe_repository.dart';
 import '../../../helpers/fakes/recipe_fixtures.dart';
-import '../../nutrition/fakes.dart' show FakeFoodRepository;
+import '../../nutrition/fakes.dart' show FakeFoodRepository, emptyBundledFoods;
 import '../fakes.dart';
 
 void main() {
@@ -34,6 +34,7 @@ void main() {
         urlImporterProvider.overrideWithValue(importer),
         recipeRepositoryProvider.overrideWithValue(recipes),
         foodRepositoryProvider.overrideWithValue(foods),
+        emptyBundledFoods,
         folderRepositoryProvider.overrideWithValue(folders),
       ],
     )..listen(urlImportProvider, (_, _) {});

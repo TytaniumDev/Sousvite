@@ -1,6 +1,7 @@
 import 'package:domain/domain.dart';
 import 'package:nutrition/nutrition.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/providers/bundled_foods.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/nutrition/application/nutrition_math.dart';
 import 'package:uuid/uuid.dart';
@@ -89,17 +90,28 @@ class AutoMatch({
 
 /// Picks foods for ingredient names from every bundled generic food.
 ///
-/// Kept alive because indexing the foods takes a moment and they never
-/// change; it's rebuilt once the bundled file has loaded.
+/// Waits for the bundled file, which takes a few seconds to load on web:
+/// matching before then would find nothing and report every line as
+/// unmatched. Kept alive because indexing the foods takes a moment and they
+/// never change.
 @Riverpod(keepAlive: true)
-Future<FoodMatcher> foodMatcher(Ref ref) async =>
-    FoodMatcher(await ref.watch(foodRepositoryProvider).genericFoods());
+Future<FoodMatcher> foodMatcher(Ref ref) async {
+  await ref.watch(bundledFoodsProvider.future);
+  return FoodMatcher(await ref.watch(foodRepositoryProvider).genericFoods());
+}
 
 /// Automatic matching with the app's repositories and [foodMatcher].
+///
+/// Waits for the matcher before watching the repositories: the food
+/// repository rebuilds once the bundled foods load, and watching it before
+/// that would restart this mid-build and leave callers waiting.
 @Riverpod(keepAlive: true)
-Future<AutoMatch> autoMatch(Ref ref) async => AutoMatch(
-  foods: ref.watch(foodRepositoryProvider),
-  recipes: ref.watch(recipeRepositoryProvider),
-  matcher: await ref.watch(foodMatcherProvider.future),
-  newId: const Uuid().v4,
-);
+Future<AutoMatch> autoMatch(Ref ref) async {
+  final matcher = await ref.watch(foodMatcherProvider.future);
+  return AutoMatch(
+    foods: ref.watch(foodRepositoryProvider),
+    recipes: ref.watch(recipeRepositoryProvider),
+    matcher: matcher,
+    newId: const Uuid().v4,
+  );
+}
