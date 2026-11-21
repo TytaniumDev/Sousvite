@@ -24,3 +24,6 @@ test/failures/
 **/fastlane/report.xml
 **/fastlane/Preview.html
 **/fastlane/test_output/
+
+# very_good test writes this while it runs.
+.test_optimizer.dart

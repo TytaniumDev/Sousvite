@@ -143,11 +143,11 @@ class const _ScanBarcodeButton({
     icon: const Icon(Symbols.barcode_scanner_rounded),
     label: Text(context.l10n.editor_scanBarcode),
     onPressed: () async {
-      final food = await showScanFoodDialog(context);
-      if (food == null || !context.mounted) return;
+      final product = await showScanFoodDialog(context);
+      if (product == null || !context.mounted) return;
       ref
           .read(editorDraftProvider(recipeId).notifier)
-          .addScannedFood(food, sectionId: sectionId);
+          .addScannedProduct(product, sectionId: sectionId);
     },
   );
 }
@@ -180,7 +180,7 @@ class _IngredientLineEditorState() extends ConsumerState<IngredientLineEditor> {
       (ref
               .read(editorDraftProvider(widget.recipeId))
               .value
-              ?.scannedFoods
+              ?.scannedProducts
               .containsKey(widget.lineId) ??
           false);
   late final _controller = TextEditingController.fromValue(
@@ -247,8 +247,29 @@ class _IngredientLineEditorState() extends ConsumerState<IngredientLineEditor> {
             ],
           ),
           _SplitPreview(recipeId: widget.recipeId, lineId: widget.lineId),
+          _ScannedDetails(recipeId: widget.recipeId, lineId: widget.lineId),
         ],
       ),
+    );
+  }
+}
+
+/// The product a scanned line was matched to, with its photo and the
+/// nutrition in the line's amount, so it can be checked. Nothing for a
+/// line that wasn't scanned.
+class const _ScannedDetails({
+  required final RecipeId recipeId,
+  required final IngredientLineId lineId,
+}) extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final product = ref.watch(editorScannedProductProvider(recipeId, lineId));
+    if (product == null) return const SizedBox.shrink();
+    final line = ref.watch(editorLineProvider(recipeId, lineId));
+    if (line == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.space2),
+      child: ScannedFoodDetails(product: product, line: line),
     );
   }
 }

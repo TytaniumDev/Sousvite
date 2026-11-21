@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sousvite/app/services/nutrition_api.dart';
 import 'package:sousvite/features/editor/application/editor_draft.dart';
 
 part 'editor_outline.g.dart';
@@ -92,6 +93,17 @@ class EditorStepIds() extends _$EditorStepIds {
     List<RecipeStepId> next,
   ) => !const ListEquality<RecipeStepId>().equals(previous, next);
 }
+
+/// The product a draft line was scanned from in this edit, or null.
+@riverpod
+ScannedProduct? editorScannedProduct(
+  Ref ref,
+  RecipeId recipeId,
+  IngredientLineId lineId,
+) => ref.watch(
+  editorDraftProvider(recipeId)
+      .select((draft) => draft.value?.scannedProducts[lineId]),
+);
 
 /// One draft line, or null once it is removed.
 @riverpod
