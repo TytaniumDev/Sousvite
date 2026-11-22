@@ -97,7 +97,11 @@ void main() {
     expect(find.textContaining('sifted'), findsOneWidget);
     expect(find.textContaining('2–3\u00a0Tbsp milk'), findsOneWidget);
     expect(find.text('Topping'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Prep'), 100);
+    await tester.scrollUntilVisible(
+      find.text('Prep'),
+      100,
+      scrollable: pageScrollable,
+    );
     expect(find.text('Prep'), findsOneWidget);
     expect(find.text('1 step'), findsOneWidget);
 
@@ -110,7 +114,11 @@ void main() {
       ('mix', 2),
     ]);
 
-    await tester.scrollUntilVisible(find.text('Rest the batter.'), 100);
+    await tester.scrollUntilVisible(
+      find.text('Rest the batter.'),
+      100,
+      scrollable: pageScrollable,
+    );
     expect(find.text('Rest the batter.'), findsOneWidget);
   });
 
@@ -177,13 +185,18 @@ void main() {
     await tester.scrollUntilVisible(
       find.textContaining('Fry', findRichText: true),
       100,
+      scrollable: pageScrollable,
     );
     expect(
       find.text('Fry 2\u00a0tsp garlic cloves.', findRichText: true),
       findsOneWidget,
     );
 
-    await tester.scrollUntilVisible(garlicAmount, -100);
+    await tester.scrollUntilVisible(
+      garlicAmount,
+      -100,
+      scrollable: pageScrollable,
+    );
     await tester.tap(garlicAmount);
     await tester.pumpAndSettle();
     expect(find.text('4'), findsOneWidget);
@@ -299,11 +312,16 @@ void main() {
     tester.setWindowWidth(1400);
     await pumpRecipe(tester);
     final ingredients = tester.getTopLeft(find.text('Ingredients'));
+    final appBar = tester.getSize(find.byType(AppBar)).height;
 
     await tester.drag(find.text('Steps'), const Offset(0, -200));
     await tester.pumpAndSettle();
 
-    expect(tester.getTopLeft(find.text('Ingredients')), ingredients);
+    // Only the app bar sliding away moves the side pane.
+    expect(
+      tester.getTopLeft(find.text('Ingredients')),
+      ingredients - Offset(0, appBar),
+    );
   });
 
   testWidgets('keeps the two panes together on a very wide window', (
@@ -366,7 +384,11 @@ void main() {
 
     testWidgets('all nutrients opens the nutrition screen', (tester) async {
       await pumpWithRouter(tester);
-      await tester.scrollUntilVisible(find.text('All nutrients'), 100);
+      await tester.scrollUntilVisible(
+        find.text('All nutrients'),
+        100,
+        scrollable: pageScrollable,
+      );
       await tester.ensureVisible(find.text('All nutrients'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('All nutrients'));

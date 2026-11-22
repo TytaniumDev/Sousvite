@@ -47,6 +47,17 @@ Future<void> tapOn(WidgetTester tester, Finder finder) async {
   await tester.pumpAndSettle();
 }
 
+/// Taps the app bar button [finder] finds. If the app bar has slid away
+/// because the page scrolled down, first scrolls up a little to bring it
+/// back, as a person would (DESIGN_SYSTEM.md §10.12).
+Future<void> tapInAppBar(WidgetTester tester, Finder finder) async {
+  if (finder.evaluate().isEmpty) {
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, 40));
+    await tester.pumpAndSettle();
+  }
+  await tapOn(tester, finder);
+}
+
 /// Scrolls the page until [finder] is on screen, down unless [up] is set.
 /// A long page builds only what is on or near the screen, so on a phone a
 /// section further down doesn't exist until you scroll to it, and one you

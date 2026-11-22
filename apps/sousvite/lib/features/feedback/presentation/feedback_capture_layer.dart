@@ -16,10 +16,12 @@ import 'package:sousvite/l10n/l10n.dart';
 
 /// Wraps the whole app so a report can carry a screenshot of any screen.
 ///
-/// While a capture is on, a bar floats over the app. The user goes to the
-/// screen the report is about and taps Capture: the screen (without the
-/// bar) is attached to the draft and the form opens again. Rebuilds only
-/// when a capture starts or ends.
+/// [captureAndOpen] screenshots the screen showing now and opens the form,
+/// for the feedback button in every app bar. While a capture started from
+/// the form is on, a bar floats over the app instead: the user goes to the
+/// screen the report is about and taps Capture. Either way the screen
+/// (without the bar) is attached to the draft. Rebuilds only when a capture
+/// starts or ends.
 class const FeedbackCaptureLayer({
   /// The app's router, for the current location and to reopen the form.
   required final GoRouter router,
@@ -28,6 +30,18 @@ class const FeedbackCaptureLayer({
   required final Widget child,
   super.key,
 }) extends ConsumerStatefulWidget {
+  /// Attaches a screenshot of the screen showing now to the draft and opens
+  /// the form. Opens the form without one when there is no layer above
+  /// [context].
+  static Future<void> captureAndOpen(BuildContext context) async {
+    final scope = context.getInheritedWidgetOfExactType<_CaptureScope>();
+    if (scope == null) {
+      await context.push(FeedbackRoutes.path);
+      return;
+    }
+    await scope.captureAndOpen();
+  }
+
   @override
   ConsumerState<FeedbackCaptureLayer> createState() =>
       _FeedbackCaptureLayerState();
@@ -39,14 +53,30 @@ class _FeedbackCaptureLayerState() extends ConsumerState<FeedbackCaptureLayer> {
 
   final GlobalKey<State<StatefulWidget>> _app = GlobalKey();
 
+  /// Attaches a screenshot of the app to the draft, then opens the form.
   Future<void> _capture() async {
+    final png = await _screenshot();
+    if (!mounted) return;
+    if (png != null) {
+      ref
+          .read(feedbackDraftProvider.notifier)
+          .attachScreenshot(
+            png,
+            location: widget.router.routerDelegate.currentConfiguration.uri
+                .toString(),
+          );
+    }
+    _reopenForm();
+  }
+
+  /// The app as a PNG, or null if it can't be drawn.
+  Future<Uint8List?> _screenshot() async {
     final boundary = _app.currentContext?.findRenderObject();
-    if (boundary is! RenderRepaintBoundary) return;
+    if (boundary is! RenderRepaintBoundary) return null;
     final pixelRatio = math.min(
       MediaQuery.devicePixelRatioOf(context),
       _maxPixelRatio,
     );
-    final location = widget.router.routerDelegate.currentConfiguration.uri;
     final image = await boundary.toImage(pixelRatio: pixelRatio);
     final ByteData? png;
     try {
@@ -54,14 +84,7 @@ class _FeedbackCaptureLayerState() extends ConsumerState<FeedbackCaptureLayer> {
     } finally {
       image.dispose();
     }
-    if (png == null || !mounted) return;
-    ref
-        .read(feedbackDraftProvider.notifier)
-        .attachScreenshot(
-          png.buffer.asUint8List(),
-          location: location.toString(),
-        );
-    _reopenForm();
+    return png?.buffer.asUint8List();
   }
 
   void _reopenForm() {
@@ -70,17 +93,31 @@ class _FeedbackCaptureLayerState() extends ConsumerState<FeedbackCaptureLayer> {
   }
 
   @override
-  Widget build(BuildContext context) => Stack(
-    fit: .expand,
-    children: [
-      RepaintBoundary(key: _app, child: widget.child),
-      if (ref.watch(feedbackCaptureProvider))
-        _CaptureBar(
-          onCapture: () => unawaited(_capture()),
-          onCancel: _reopenForm,
-        ),
-    ],
+  Widget build(BuildContext context) => _CaptureScope(
+    captureAndOpen: _capture,
+    child: Stack(
+      fit: .expand,
+      children: [
+        RepaintBoundary(key: _app, child: widget.child),
+        if (ref.watch(feedbackCaptureProvider))
+          _CaptureBar(
+            onCapture: () => unawaited(_capture()),
+            onCancel: _reopenForm,
+          ),
+      ],
+    ),
   );
+}
+
+/// Lets [FeedbackCaptureLayer.captureAndOpen] reach the layer from any
+/// screen.
+class const _CaptureScope({
+  required final Future<void> Function() captureAndOpen,
+  required super.child,
+}) extends InheritedWidget {
+  // The callback is the layer's own method, which never changes.
+  @override
+  bool updateShouldNotify(_CaptureScope oldWidget) => false;
 }
 
 /// Capture and Cancel, at the top of the window.

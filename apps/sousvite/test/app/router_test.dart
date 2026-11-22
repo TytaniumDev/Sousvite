@@ -54,6 +54,14 @@ void main() {
           find.descendant(of: find.byType(AppBar), matching: find.text(title)),
           findsOneWidget,
         );
+        // Every page but the feedback form can send feedback.
+        expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.byTooltip('Send feedback'),
+          ),
+          location == FeedbackRoutes.path ? findsNothing : findsOneWidget,
+        );
       });
     }
 

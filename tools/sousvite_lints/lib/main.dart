@@ -2,6 +2,7 @@ import 'package:analysis_server_plugin/plugin.dart';
 import 'package:analysis_server_plugin/registry.dart';
 import 'package:sousvite_lints/src/fade_scroll_views.dart';
 import 'package:sousvite_lints/src/padded_ink_wells.dart';
+import 'package:sousvite_lints/src/page_scaffolds.dart';
 
 /// The plugin the analysis server loads from `analysis_options.yaml`.
 final plugin = SousviteLintsPlugin();
@@ -15,6 +16,7 @@ class SousviteLintsPlugin() extends Plugin {
   void register(PluginRegistry registry) {
     registry
       ..registerWarningRule(FadeScrollViews())
-      ..registerWarningRule(PaddedInkWells());
+      ..registerWarningRule(PaddedInkWells())
+      ..registerWarningRule(PageScaffolds());
   }
 }

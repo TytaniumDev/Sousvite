@@ -16,11 +16,9 @@ import 'package:sousvite/l10n/l10n.dart';
 /// searching, matching recipes replace the tiles.
 class const LibraryScreen({super.key}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(context.l10n.library_title),
-      actions: const [SyncStatusButton()],
-    ),
+  Widget build(BuildContext context) => PageScaffold(
+    title: Text(context.l10n.library_title),
+    actions: const [SyncStatusButton()],
     body: const FadingEdges(
       child: CustomScrollView(
         slivers: [

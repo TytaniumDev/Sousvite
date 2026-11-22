@@ -29,8 +29,8 @@ class const SharingScreen({required final RecipeId recipeId, super.key})
       ..listen(jointLinkProvider(recipeId), showFailure)
       ..listen(copyLinkProvider(recipeId), showFailure)
       ..listen(viewOnlyLinkProvider(recipeId), showFailure);
-    return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.sharing_title)),
+    return PageScaffold(
+      title: Text(context.l10n.sharing_title),
       body: AsyncValueView(
         value: ref.watch(
           authUserProvider.select((user) => user.whenData((u) => u != null)),

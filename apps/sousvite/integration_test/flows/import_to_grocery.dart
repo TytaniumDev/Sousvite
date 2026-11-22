@@ -40,7 +40,7 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   await tapOn(tester, find.text('Save'));
 
   // Saving goes back to the import screen; the recipe is in its folder.
-  await tapOn(tester, find.byTooltip('Back'));
+  await tapInAppBar(tester, find.byTooltip('Back'));
   await tapOn(tester, find.text('Soups'));
   await tapOn(tester, find.text('Tomato basil soup'));
   expect(find.text('crushed tomatoes'), findsOneWidget);
@@ -69,7 +69,7 @@ Future<void> importEditCookShop(WidgetTester tester) async {
   await tapOn(tester, find.text('Add to grocery list'));
   await tapOn(tester, find.text('Add to list'));
   expect(find.text('Added to grocery list'), findsOneWidget);
-  await tapOn(tester, find.byTooltip('Back'));
+  await tapInAppBar(tester, find.byTooltip('Back'));
   await tapOn(tester, find.text('Grocery list'));
   expect(find.textContaining('crushed tomatoes'), findsOneWidget);
   expect(find.textContaining('onion'), findsOneWidget);

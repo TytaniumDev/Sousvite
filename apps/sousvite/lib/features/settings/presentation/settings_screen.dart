@@ -17,8 +17,8 @@ class const SettingsScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings_title)),
+    return PageScaffold(
+      title: Text(l10n.settings_title),
       body: ReadingColumn(
         builder: (context, insets) => FadingEdges(
           child: ListView(

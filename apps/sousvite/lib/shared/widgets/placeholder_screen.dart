@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/l10n/l10n.dart';
 
@@ -6,8 +7,8 @@ import 'package:sousvite/l10n/l10n.dart';
 class const PlaceholderScreen({required final String title, super.key})
     extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
+  Widget build(BuildContext context) => PageScaffold(
+    title: Text(title),
     body: Center(child: Text(context.l10n.common_comingSoon)),
   );
 }

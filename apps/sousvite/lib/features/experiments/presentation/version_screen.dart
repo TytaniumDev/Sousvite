@@ -27,14 +27,13 @@ class const VersionScreen({
         versionId,
       ).select((v) => v.value?.createdAt),
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          createdAt == null
-              ? l10n.experiments_savedVersion
-              : MaterialLocalizations.of(context).formatMediumDate(createdAt),
-        ),
+    return PageScaffold(
+      title: Text(
+        createdAt == null
+            ? l10n.experiments_savedVersion
+            : MaterialLocalizations.of(context).formatMediumDate(createdAt),
       ),
+
       // A snapshot never changes, so the whole page reads it once.
       body: AsyncValueView(
         value: ref.watch(versionSnapshotProvider(versionId)),

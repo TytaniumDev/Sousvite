@@ -23,7 +23,7 @@ packages/domain/          Entities, value objects, repository interfaces. Pure D
 packages/data/            Drift schema, DAOs, repository implementations. Pure Dart
 packages/design_system/   Tokens, theme, shared widgets. Flutter only
 packages/<pure>/          sync, ingredient_parser, recipe_import, nutrition, measuring
-tools/sousvite_lints/     Our analyzer plugin (fade_scroll_views, padded_ink_wells), enabled in apps/sousvite and design_system
+tools/sousvite_lints/     Our analyzer plugin (fade_scroll_views, padded_ink_wells, page_scaffolds), enabled in apps/sousvite and design_system
 tools/usda_builder/       CLI that builds the bundled USDA SQLite file
 functions/                Cloud Functions (TypeScript) and the security rules tests
 firestore.rules, storage.rules   Security rules, tested in functions/test/rules/
@@ -123,6 +123,7 @@ ENGINEERING.md §5 is the rule. In practice:
 - Spacing, radii, motion are constants: `AppSpacing.space4`, `AppRadii.borderMd`, `AppMotion.spatialDefault`, `SpringCurve(...)`.
 - Layout (DESIGN_SYSTEM.md §6.3): `WindowSizeClass.of(context)` (compact, medium, expanded, large, extra-large) only for whole-window choices like navigation; `ReadingColumn` for one column and `PaneLayout` for a side pane, both sized from the space they get. Never read `MediaQuery.sizeOf` in `apps/` (CI greps for it).
 - Scroll views: every one is the `child` of a `FadingEdges` (the `fade_scroll_views` lint checks it). With `ReadingColumn` or `PaneLayout`, put it inside the builder: `(context, insets) => FadingEdges(child: ListView(...))`.
+- Pages: every one is a `PageScaffold` (the `page_scaffolds` lint checks it), never a `Scaffold` with an `AppBar`. Its app bar hides on scroll down, comes back on scroll up, and ends with the app's Send feedback button (DESIGN_SYSTEM.md §10.12). Pass `title`, `leading`, and `actions` to it.
 - Ripples: every one is a `PaddedInkWell` (the `padded_ink_wells` lint checks it): ink, then at least 4 dp of padding, the same on both sides of each axis, then the content. Material buttons get the same from the theme (DESIGN_SYSTEM.md §6.5).
 - Icons: `Symbols.<name>_rounded` from `material_symbols_icons`; `fill: 1` for selected states.
 - A shared widget moves into `design_system` only once two features need it, takes plain values (never entities or providers), and gets golden tests in all four schemes plus 200% text scale.

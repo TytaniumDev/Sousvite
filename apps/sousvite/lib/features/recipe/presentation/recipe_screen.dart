@@ -31,10 +31,8 @@ class const RecipeScreen({
       recipeProvider(recipeId)
           .select((recipe) => recipe.whenData((recipe) => recipe != null)),
     );
-    return Scaffold(
-      appBar: AppBar(
-        actions: [if (exists.value ?? false) RecipeMenu(recipeId: recipeId)],
-      ),
+    return PageScaffold(
+      actions: [if (exists.value ?? false) RecipeMenu(recipeId: recipeId)],
       body: AsyncValueView(
         value: exists,
         data: (exists) => exists

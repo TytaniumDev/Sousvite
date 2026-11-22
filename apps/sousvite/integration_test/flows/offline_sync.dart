@@ -32,7 +32,7 @@ Future<void> offlineEditSyncs(WidgetTester tester) async {
   // Edited on the phone with no connection.
   phone.online = false;
   await tapOn(tester, find.text('Cinnamon toast'));
-  await tapOn(tester, find.byTooltip('More options'));
+  await tapInAppBar(tester, find.byTooltip('More options'));
   await tapOn(tester, find.text('Edit recipe'));
   await tester.enterText(
     find.widgetWithText(TextField, 'Recipe name'),

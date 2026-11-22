@@ -29,8 +29,8 @@ class const ExperimentScreen({
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = historyExperimentProvider(recipeId, experimentId);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.experiments_badge)),
+    return PageScaffold(
+      title: Text(l10n.experiments_badge),
       body: AsyncValueView(
         // Only whether it exists: each part below watches its own fields.
         value: ref.watch(provider.select((e) => e.whenData((e) => e != null))),

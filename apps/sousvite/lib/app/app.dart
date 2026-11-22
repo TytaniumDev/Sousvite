@@ -20,9 +20,12 @@ class const SousviteApp({super.key}) extends ConsumerWidget {
       darkTheme: _darkTheme,
       themeMode: ref.watch(themeModeControllerProvider),
       routerConfig: router,
-      // Over every screen, so feedback can capture any of them.
-      builder: (context, child) =>
-          FeedbackCaptureLayer(router: router, child: child!),
+      // Over every screen, so feedback can capture any of them, and its
+      // button is in every page's app bar.
+      builder: (context, child) => FeedbackCaptureLayer(
+        router: router,
+        child: PageActions(actions: const [FeedbackButton()], child: child!),
+      ),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,

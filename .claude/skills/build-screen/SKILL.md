@@ -36,6 +36,7 @@ All under `apps/sousvite/lib/features/<name>/`:
 - No widget-returning helper methods; write a private `_Part` class instead.
 - `ref.watch` in `build`, `ref.read` in callbacks.
 - Navigate with `context.go(<Name>Routes.location(id))`, never a string.
+- The screen is a `PageScaffold` (`title`, `leading`, `actions`, `body`), not a `Scaffold` with an `AppBar`; the `page_scaffolds` lint flags one. It adds the Send feedback button and hides the app bar on scroll. In tests, scroll a page with `scrollUntilVisible(..., scrollable: pageScrollable)` (`test/helpers/page_scroll.dart`).
 - Every scroll view is the `child` of a `FadingEdges` (inside `ReadingColumn`'s or `PaneLayout`'s builders), so its edges fade; the `fade_scroll_views` lint flags one that isn't.
 - Layout with `ReadingColumn` (one column) or `PaneLayout` (a side pane), and `WindowSizeClass.of(context)` only for whole-window choices (DESIGN_SYSTEM.md §6.3); test width-dependent layouts with `testWidgetsAtEverySize`. Spacing, colors, and text only from design_system tokens (`AppSpacing.*`, `context.colors`, `context.appText`, ...). CI rejects `Color(0x`, `fontSize:`, `EdgeInsets.all(<number>)`, and `MediaQuery.sizeOf` in `apps/`.
 

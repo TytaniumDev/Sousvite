@@ -3,5 +3,6 @@
 library;
 
 export 'feedback_routes.dart';
+export 'presentation/feedback_button.dart';
 export 'presentation/feedback_capture_layer.dart';
 export 'presentation/send_feedback_tile.dart';

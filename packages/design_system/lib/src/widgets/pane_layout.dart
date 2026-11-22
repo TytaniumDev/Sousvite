@@ -27,7 +27,8 @@ enum PaneSide() {
 /// `ReadingColumn`. The panes stay together in the middle of the space,
 /// and each scroll view fills its pane out to the edge, so it scrolls from
 /// anywhere and its scrollbar stays at the edge. Each pane scrolls on its
-/// own.
+/// own; in a `PageScaffold`, only the main pane slides the app bar away, as
+/// the side pane gets no primary scroll controller.
 ///
 /// ```dart
 /// PaneLayout(
@@ -84,7 +85,13 @@ class const PaneLayout({
           : EdgeInsets.only(right: outer);
       final sidePane = SizedBox(
         width: sideWidth + outer,
-        child: side(context, outside(first: sideFirst)),
+        // Two panes on the page's one primary controller would scroll
+        // together.
+        child: PrimaryScrollController.none(
+          child: Builder(
+            builder: (context) => side(context, outside(first: sideFirst)),
+          ),
+        ),
       );
       final mainPane = Expanded(
         child: main(context, outside(first: !sideFirst)),

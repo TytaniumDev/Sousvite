@@ -28,18 +28,16 @@ class const ImportScreen({
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.import_title),
-        // Opened from the share sheet, there is nothing to go back to.
-        leading: context.canPop()
-            ? null
-            : IconButton(
-                tooltip: l10n.import_close,
-                icon: const Icon(Symbols.close_rounded),
-                onPressed: () => context.go(LibraryRoutes.path),
-              ),
-      ),
+    return PageScaffold(
+      title: Text(l10n.import_title),
+      // Opened from the share sheet, there is nothing to go back to.
+      leading: context.canPop()
+          ? null
+          : IconButton(
+              tooltip: l10n.import_close,
+              icon: const Icon(Symbols.close_rounded),
+              onPressed: () => context.go(LibraryRoutes.path),
+            ),
       body: ReadingColumn(
         builder: (context, insets) => FadingEdges(
           child: ListView(
