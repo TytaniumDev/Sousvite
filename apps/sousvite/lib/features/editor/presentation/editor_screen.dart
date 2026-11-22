@@ -35,14 +35,12 @@ class const EditorScreen({
     final l10n = context.l10n;
     return _DiscardGuard(
       recipeId: recipeId,
-      child: Scaffold(
-        appBar: AppBar(
-          title: _EditorTitle(recipeId: recipeId),
-          actions: [
-            _SaveButton(recipeId: recipeId, folderId: folderId),
-            EditorMenu(recipeId: recipeId),
-          ],
-        ),
+      child: PageScaffold(
+        title: _EditorTitle(recipeId: recipeId),
+        actions: [
+          _SaveButton(recipeId: recipeId, folderId: folderId),
+          EditorMenu(recipeId: recipeId),
+        ],
         body: AsyncValueView(
           value: loaded,
           data: (_) => ReadingColumn(

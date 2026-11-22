@@ -29,6 +29,7 @@ export 'src/widgets/measuring_guide.dart';
 export 'src/widgets/nutrient_row.dart';
 export 'src/widgets/nutrition_format.dart';
 export 'src/widgets/padded_ink_well.dart';
+export 'src/widgets/page_scaffold.dart';
 export 'src/widgets/pane_layout.dart';
 export 'src/widgets/pro_badge.dart';
 export 'src/widgets/reading_column.dart';

@@ -65,7 +65,11 @@ void main() {
 
   testWidgets('places amounts inline in the recipe steps', (tester) async {
     await pumpRecipe(tester);
-    await tester.scrollUntilVisible(find.textContaining('Let it rest.'), 100);
+    await tester.scrollUntilVisible(
+      find.textContaining('Let it rest.'),
+      100,
+      scrollable: pageScrollable,
+    );
 
     expect(find.textContaining('Whisk in 1 ½ cups flour.'), findsOneWidget);
     expect(find.textContaining('Let it rest.'), findsOneWidget);
@@ -84,7 +88,11 @@ void main() {
 
     await tester.tap(find.byTooltip('More servings'));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.textContaining('Let it rest.'), 100);
+    await tester.scrollUntilVisible(
+      find.textContaining('Let it rest.'),
+      100,
+      scrollable: pageScrollable,
+    );
 
     expect(find.textContaining('Whisk in 1 ⅞ cups flour.'), findsOneWidget);
     // The flour and thyme steps; "Let it rest." has no amount to scale.

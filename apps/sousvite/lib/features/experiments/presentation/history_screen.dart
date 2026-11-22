@@ -20,8 +20,8 @@ class const HistoryScreen({
   super.key,
 }) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.l10n.experiments_title)),
+  Widget build(BuildContext context) => PageScaffold(
+    title: Text(context.l10n.experiments_title),
     body: _Timeline(recipeId: recipeId),
     floatingActionButton: _StartButton(recipeId: recipeId),
   );

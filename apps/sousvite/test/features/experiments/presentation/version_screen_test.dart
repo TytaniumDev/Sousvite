@@ -6,6 +6,7 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/experiments/experiments.dart';
 
 import '../../../helpers/fakes/recipe_fixtures.dart';
+import '../../../helpers/helpers.dart';
 import '../fakes.dart';
 import 'pump_history.dart';
 
@@ -60,7 +61,11 @@ void main() {
       expect(find.text('Simmer the tomatoes.'), findsOneWidget);
       expect(find.textContaining('May 1'), findsOneWidget);
 
-      await tester.scrollUntilVisible(find.text('Restore this version'), 100);
+      await tester.scrollUntilVisible(
+        find.text('Restore this version'),
+        100,
+        scrollable: pageScrollable,
+      );
       await tester.tap(find.text('Restore this version'));
       await tester.pumpAndSettle();
 

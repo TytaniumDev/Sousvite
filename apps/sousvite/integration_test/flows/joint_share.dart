@@ -24,7 +24,7 @@ Future<void> jointShareEdits(WidgetTester tester) async {
   // folder yet, so it waits under Unsorted.
   await tapOn(tester, find.text('Unsorted'));
   await tapOn(tester, find.text('Shared soup'));
-  await tapOn(tester, find.byTooltip('More options'));
+  await tapInAppBar(tester, find.byTooltip('More options'));
   await tapOn(tester, find.text('Share'));
   await tapOn(tester, find.text('Create invite link'));
   final inviteId = cloud.lastInviteId!;
@@ -42,7 +42,7 @@ Future<void> jointShareEdits(WidgetTester tester) async {
   // Bob's edit reaches Alice's screen.
   await renameRecipe(tablet, recipeId, 'Shared tomato soup');
   await _syncBoth(tester, tablet, phone);
-  await tapOn(tester, find.byTooltip('Back'));
+  await tapInAppBar(tester, find.byTooltip('Back'));
   expect(find.text('Shared tomato soup'), findsWidgets);
 
   // And Alice's reaches Bob.

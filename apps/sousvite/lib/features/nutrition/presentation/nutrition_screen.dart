@@ -19,8 +19,8 @@ class const NutritionScreen({required final RecipeId recipeId, super.key})
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     const padding = EdgeInsets.symmetric(horizontal: AppSpacing.space4);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.nutrition_title)),
+    return PageScaffold(
+      title: Text(l10n.nutrition_title),
       body: ReadingColumn(
         builder: (context, insets) => FadingEdges(
           child: CustomScrollView(

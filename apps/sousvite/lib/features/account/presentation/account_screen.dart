@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/account/application/account_controller.dart';
@@ -18,8 +19,8 @@ class const AccountScreen({super.key}) extends ConsumerWidget {
             .showSnackBar(SnackBar(content: Text(context.l10n.account_error)));
       }
     });
-    return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.account_title)),
+    return PageScaffold(
+      title: Text(context.l10n.account_title),
       body: AsyncValueView(
         value: ref.watch(
           authUserProvider.select((user) => user.whenData((u) => u != null)),

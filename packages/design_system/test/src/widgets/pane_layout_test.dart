@@ -108,5 +108,39 @@ void main() {
       expect(tester.getRect(find.byKey(_main)).left, 0);
       expect(tester.getRect(find.byKey(_side)).right, 2000);
     });
+
+    testWidgets('gives only the main pane the primary scroll controller', (
+      tester,
+    ) async {
+      final controller = ScrollController();
+      addTearDown(controller.dispose);
+      tester.view
+        ..physicalSize = const Size(1200, 800)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: .ltr,
+          child: MediaQuery(
+            data: const MediaQueryData(),
+            child: PrimaryScrollController(
+              controller: controller,
+              automaticallyInheritForPlatforms: TargetPlatform.values.toSet(),
+              child: PaneLayout(
+                main: (context, insets) => _pane(_main, insets),
+                side: (context, insets) => _pane(_side, insets),
+                onePane: (context, insets) => _pane(_one, insets),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      Scrollable scrollableIn(Key key) => tester.widget(
+        find.descendant(of: find.byKey(key), matching: find.byType(Scrollable)),
+      );
+      expect(scrollableIn(_main).controller, same(controller));
+      expect(scrollableIn(_side).controller, isNot(same(controller)));
+    });
   });
 }

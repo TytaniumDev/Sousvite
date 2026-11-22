@@ -19,14 +19,12 @@ class const FolderScreen({
   @override
   Widget build(BuildContext context) {
     final scope = this.scope;
-    return Scaffold(
-      appBar: AppBar(
-        title: _Title(scope: scope),
-        actions: [
-          if (scope case FolderRecipes(:final folderId))
-            FolderMenu(folderId: folderId),
-        ],
-      ),
+    return PageScaffold(
+      title: _Title(scope: scope),
+      actions: [
+        if (scope case FolderRecipes(:final folderId))
+          FolderMenu(folderId: folderId),
+      ],
       body: FadingEdges(
         child: CustomScrollView(
           slivers: [

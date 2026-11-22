@@ -28,11 +28,9 @@ class _ScanFoodDialogState() extends State<_ScanFoodDialog> {
 
   @override
   Widget build(BuildContext context) => Dialog.fullscreen(
-    child: Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        title: Text(context.l10n.nutrition_scanTitle),
-      ),
+    child: PageScaffold(
+      leading: const CloseButton(),
+      title: Text(context.l10n.nutrition_scanTitle),
       body: switch (_barcode) {
         null => _Camera(
           onBarcode: (barcode) => setState(() => _barcode = barcode),

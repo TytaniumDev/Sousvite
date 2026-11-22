@@ -16,8 +16,8 @@ class const InviteScreen({
   super.key,
 }) extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: Text(context.l10n.sharing_inviteTitle)),
+  Widget build(BuildContext context, WidgetRef ref) => PageScaffold(
+    title: Text(context.l10n.sharing_inviteTitle),
     body: AsyncValueView(
       value: ref.watch(
         authUserProvider.select((user) => user.whenData((u) => u != null)),

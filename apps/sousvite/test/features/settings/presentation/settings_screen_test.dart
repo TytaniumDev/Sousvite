@@ -126,6 +126,7 @@ void main() {
         await tester.scrollUntilVisible(
           find.text('Sign in or manage your account'),
           100,
+          scrollable: pageScrollable,
         );
         await tester.tap(find.text('Sign in or manage your account'));
         await tester.pumpAndSettle();
@@ -142,7 +143,11 @@ void main() {
       testWidgets('opens the feedback form', (tester) async {
         await openSettings(tester);
 
-        await tester.scrollUntilVisible(find.text('Send feedback'), 100);
+        await tester.scrollUntilVisible(
+          find.text('Send feedback'),
+          100,
+          scrollable: pageScrollable,
+        );
         await tester.tap(find.text('Send feedback'));
         await tester.pumpAndSettle();
 

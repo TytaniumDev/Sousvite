@@ -27,11 +27,11 @@ class const CookingScreen({
     child: MediaQuery.withClampedTextScaling(
       maxScaleFactor: maxTextScale,
       child: KeepScreenOn(
-        child: Scaffold(
-          appBar: AppBar(
-            leading: CloseCookingButton(recipeId: recipeId),
-            title: CookingHeader(recipeId: recipeId),
-          ),
+        child: PageScaffold(
+          leading: CloseCookingButton(recipeId: recipeId),
+          title: CookingHeader(recipeId: recipeId),
+          // The step count and Close stay in view while cooking.
+          hideOnScroll: false,
           body: _CookingSteps(recipeId: recipeId),
         ),
       ),

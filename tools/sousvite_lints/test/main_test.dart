@@ -3,6 +3,7 @@ import 'package:analyzer/analysis_rule/analysis_rule.dart';
 import 'package:sousvite_lints/main.dart';
 import 'package:sousvite_lints/src/fade_scroll_views.dart';
 import 'package:sousvite_lints/src/padded_ink_wells.dart';
+import 'package:sousvite_lints/src/page_scaffolds.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
       expect(registry.warningRules, [
         isA<FadeScrollViews>(),
         isA<PaddedInkWells>(),
+        isA<PageScaffolds>(),
       ]);
     });
   });

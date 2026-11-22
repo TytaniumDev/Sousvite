@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,11 +12,9 @@ import 'package:sousvite/l10n/l10n.dart';
 /// bottom, and items added by hand (PRD 7.7, DESIGN_SYSTEM.md §10.6).
 class const GroceryScreen({super.key}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(context.l10n.grocery_title),
-      actions: const [_MoreMenu()],
-    ),
+  Widget build(BuildContext context) => PageScaffold(
+    title: Text(context.l10n.grocery_title),
+    actions: const [_MoreMenu()],
     body: const GroceryListView(),
     floatingActionButton: const _AddItemButton(),
   );

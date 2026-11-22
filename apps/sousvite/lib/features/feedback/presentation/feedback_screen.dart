@@ -11,8 +11,10 @@ class const FeedbackScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.feedback_title)),
+    return PageScaffold(
+      // The feedback form needs no button that opens itself.
+      showPageActions: false,
+      title: Text(l10n.feedback_title),
       body: ReadingColumn(
         maxWidth: ReadingColumn.formWidth,
         builder: (context, insets) => FadingEdges(

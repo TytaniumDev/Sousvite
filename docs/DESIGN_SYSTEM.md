@@ -392,6 +392,8 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `EmptyState` | Icon, title, one sentence, optional action | `icon`, `title`, `message`, `action` |
 | `ErrorState` | What went wrong and how to fix it, with a retry action | `title`, `message`, `retryLabel`, `onRetry` |
 | `CompactDensity` | Applies compact density and the 40 dp row height to its subtree (§6.2) | `child` |
+| `PageScaffold` | A page whose app bar slides away on scroll down and snaps back on scroll up, ending its actions with the app's `PageActions` (§10.12) | `body`, `title`, `leading`, `actions`, `showPageActions`, `floatingActionButton`, `hideOnScroll` |
+| `PageActions` | The actions the app adds to every `PageScaffold`'s app bar, such as Send feedback | `actions`, `child` |
 | `FadingEdges` | Fades a scroll view's content out at an edge while more of it is scrolled past that edge, over `space8` (32 dp); a list that fits has sharp edges (§10) | `child` (the scroll view), `extent`, `fadeStart` (off under a pinned header) |
 | `ReadingColumn` | Centers a page's content in a column at most `maxWidth` wide by handing its builder side insets for a scroll view's padding (§6.3) | `builder(context, insets)`, `maxWidth` (`readingWidth` 720, `formWidth` 400) |
 | `PaneLayout` | A flexible main pane beside a fixed 360 dp side pane once it has 840 dp, otherwise one centered column; each builder gets insets for its scroll view's padding (§6.3) | `main`, `side`, `onePane` (each `(context, insets)`), `sideAt` (`start` or `end`), `mainMaxWidth` |
@@ -493,6 +495,13 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 - **Removing:** the folders sheet won't untick a recipe's only folder ("A recipe needs at least one folder"). Deleting a folder deletes the recipes in no other folder too, after a dialog saying how many, and Undo brings back the folder and those recipes.
 - The search field on the main page searches every recipe; while it has words, matching recipe cards replace the tiles.
 - `FolderTile` lives in the library feature until a second feature shows folders.
+
+### 10.12 App bars and feedback *(Decided by Tyler, 2026-11-22)*
+
+- **Every page is a `PageScaffold`.** Its app bar slides away as the page scrolls down and snaps back the moment you scroll up a little, so its actions are always close. A page that doesn't scroll keeps its app bar. The `page_scaffolds` lint flags any other `AppBar` or `SliverAppBar` in `lib/`.
+- **Send feedback is on every page.** The app puts a feedback button at the end of every app bar through `PageActions`. Tapping it screenshots the page and opens the feedback form with the screenshot and the page's location attached. The form itself leaves the button out. Settings also has a Send feedback row.
+- With two panes (§6.3), only the main pane slides the app bar; the side pane scrolls on its own.
+- Cooking mode keeps its app bar pinned (`hideOnScroll: false`): the step count and Close stay in view while you cook.
 
 ## 11. Content and voice
 
