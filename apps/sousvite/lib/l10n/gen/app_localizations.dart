@@ -1593,6 +1593,18 @@ abstract class AppLocalizations {
   /// **'Adds to {amount} on your list'**
   String grocery_addsTo(String amount);
 
+  /// Like grocery_addsTo, when the amount on the list was worked out from weights, such as cups and grams of sugar as cups.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds to about {amount} on your list'**
+  String grocery_addsToAbout(String amount);
+
+  /// A grocery item's total in its breakdown, when it was worked out from weights, such as cups and grams of sugar as cups ("About 1 ⅜ cups").
+  ///
+  /// In en, this message translates to:
+  /// **'About {amount}'**
+  String grocery_aboutAmount(String amount);
+
   /// Under a line in the add-to-list sheet when the same item, with no amount, is already on the list.
   ///
   /// In en, this message translates to:

@@ -22,8 +22,22 @@ void main() {
       final sources = grocerySources(entry);
       expect(sources.map((source) => source.recipeId), [stew, soup, null]);
       expect(sources.map((source) => source.amounts), [
-        [(quantity: Quantity(2), unit: null, countWord: null)],
-        [(quantity: Quantity(2), unit: null, countWord: null)],
+        [
+          (
+            quantity: Quantity(2),
+            unit: null,
+            countWord: null,
+            approximate: false,
+          ),
+        ],
+        [
+          (
+            quantity: Quantity(2),
+            unit: null,
+            countWord: null,
+            approximate: false,
+          ),
+        ],
         isEmpty,
       ]);
     });

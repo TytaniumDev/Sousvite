@@ -967,6 +967,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String grocery_addsToAbout(String amount) {
+    return 'Adds to about $amount on your list';
+  }
+
+  @override
+  String grocery_aboutAmount(String amount) {
+    return 'About $amount';
+  }
+
+  @override
   String get grocery_alreadyOnList => 'Already on your list';
 
   @override

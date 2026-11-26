@@ -6,6 +6,7 @@ import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/grocery/grocery.dart';
 
 import '../../../helpers/helpers.dart';
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 import '../fakes.dart';
 
 typedef _F = GroceryFixtures;
@@ -14,12 +15,14 @@ void main() {
   const chili = RecipeId('chili');
   late FakeGroceryRepository groceries;
   late FakeRecipeRepository recipes;
+  late FakeFoodRepository foods;
 
   // Fakes are made inside each test, not in setUp, so their streams run
   // in the test's fake-async zone and pumps deliver their events.
   Future<void> arrange() async {
     groceries = FakeGroceryRepository();
     recipes = FakeRecipeRepository();
+    foods = FakeFoodRepository();
     await recipes.saveIngredientLine(
       _F.line('a', recipeId: 'chili', name: 'onions', quantity: Quantity(2)),
     );
@@ -47,6 +50,7 @@ void main() {
       overrides: [
         groceryRepositoryProvider.overrideWithValue(groceries),
         recipeRepositoryProvider.overrideWithValue(recipes),
+        foodRepositoryProvider.overrideWithValue(foods),
       ],
     );
     await tester.tap(find.text('open'));
@@ -143,6 +147,33 @@ void main() {
         // The hints stay, so the user can see why they left a line out.
         expect(find.text('Adds to 1 on your list'), findsOneWidget);
       });
+    });
+
+    testWidgets('says when what it adds to was worked out by weight', (
+      tester,
+    ) async {
+      await arrange();
+      await recipes.saveIngredientLine(
+        _F.line(
+          'c',
+          recipeId: 'chili',
+          name: 'sugar',
+          quantity: Quantity(1),
+          unit: Unit.tablespoon,
+        ),
+      );
+      await groceries.saveList(
+        GroceryList(id: _F.listId, name: '', createdAt: DateTime.utc(2026)),
+      );
+      await groceries.saveItem(
+        _F.item('x', name: 'sugar', quantity: Quantity(1), unit: Unit.cup),
+      );
+      await groceries.saveItem(
+        _F.item('y', name: 'sugar', quantity: Quantity(200), unit: Unit.gram),
+      );
+      await openSheet(tester, chili);
+
+      expect(find.textContaining('Adds to about'), findsOneWidget);
     });
 
     testWidgets('shows no hints for a new list', (tester) async {

@@ -10,10 +10,30 @@ void main() {
     test('joins amounts with plus signs and their unit words', () {
       expect(
         groceryAmountsLabel(l10n, [
-          (quantity: Quantity(3, 8), unit: Unit.cup, countWord: null),
-          (quantity: Quantity(200), unit: Unit.gram, countWord: null),
-          (quantity: Quantity(2), unit: null, countWord: 'clove'),
-          (quantity: Quantity(3), unit: null, countWord: null),
+          (
+            quantity: Quantity(3, 8),
+            unit: Unit.cup,
+            countWord: null,
+            approximate: false,
+          ),
+          (
+            quantity: Quantity(200),
+            unit: Unit.gram,
+            countWord: null,
+            approximate: false,
+          ),
+          (
+            quantity: Quantity(2),
+            unit: null,
+            countWord: 'clove',
+            approximate: false,
+          ),
+          (
+            quantity: Quantity(3),
+            unit: null,
+            countWord: null,
+            approximate: false,
+          ),
         ]),
         '⅜ cup + 200 g + 2 cloves + 3',
       );

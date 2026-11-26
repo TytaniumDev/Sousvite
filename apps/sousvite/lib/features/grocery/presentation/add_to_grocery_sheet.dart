@@ -8,6 +8,7 @@ import 'package:sousvite/features/grocery/application/grocery_actions.dart';
 import 'package:sousvite/features/grocery/application/grocery_line_name.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
 import 'package:sousvite/features/grocery/presentation/grocery_amounts_label.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/units/unit_words.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
@@ -123,7 +124,11 @@ class const _LineRow({
       preparation: line.preparation,
       checked: included,
       checkStyle: .select,
-      guide: _CombineHint(name: groceryNameOf(line)),
+      guide: _CombineHint(
+        recipeId: recipeId,
+        lineId: lineId,
+        name: groceryNameOf(line),
+      ),
       onChanged: (_) => ref
           .read(excludedIngredientsProvider(recipeId).notifier)
           .toggle(lineId),
@@ -133,20 +138,31 @@ class const _LineRow({
 
 /// Under a line whose item is already on the list: what it will add to
 /// (DESIGN_SYSTEM.md §10.6). Nothing for a line that starts a new item.
-class const _CombineHint({required final String name}) extends ConsumerWidget {
+class const _CombineHint({
+  required final RecipeId recipeId,
+  required final IngredientLineId lineId,
+  required final String name,
+}) extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final foodId = ref.watch(
+      nutritionMatchesProvider(recipeId)
+          .select((matches) => matches.value?[lineId]?.foodId),
+    );
     final amounts = ref.watch(
       groceryViewProvider.select(
-        (view) => view.value?.entries[groceryKey(name)]?.amounts,
+        (view) => view.value?.entryFor(name, foodId: foodId)?.amounts,
       ),
     );
     if (amounts == null) return const SizedBox.shrink();
     final l10n = context.l10n;
+    final label = groceryAmountsLabel(l10n, amounts);
     return _CombineNote(
       text: amounts.isEmpty
           ? l10n.grocery_alreadyOnList
-          : l10n.grocery_addsTo(groceryAmountsLabel(l10n, amounts)),
+          : amounts.any((amount) => amount.approximate)
+          ? l10n.grocery_addsToAbout(label)
+          : l10n.grocery_addsTo(label),
       style: context.textStyles.bodySmall,
       iconSize: _CombineNote.smallIconSize,
     );

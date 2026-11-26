@@ -7,6 +7,7 @@ import 'package:sousvite/features/grocery/presentation/grocery_entry_row.dart';
 import 'package:sousvite/features/grocery/presentation/grocery_screen.dart';
 
 import '../../../helpers/helpers.dart';
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 import '../fakes.dart';
 
 typedef _F = GroceryFixtures;
@@ -14,12 +15,14 @@ typedef _F = GroceryFixtures;
 void main() {
   late FakeGroceryRepository groceries;
   late FakeRecipeRepository recipes;
+  late FakeFoodRepository foods;
 
   // Fakes are made inside each test, not in setUp, so their streams run
   // in the test's fake-async zone and pumps deliver their events.
   Future<void> arrange() async {
     groceries = FakeGroceryRepository();
     recipes = FakeRecipeRepository();
+    foods = FakeFoodRepository();
     await recipes.saveRecipe(_F.recipe('chili', title: 'Chili'));
   }
 
@@ -29,6 +32,7 @@ void main() {
       overrides: [
         groceryRepositoryProvider.overrideWithValue(groceries),
         recipeRepositoryProvider.overrideWithValue(recipes),
+        foodRepositoryProvider.overrideWithValue(foods),
       ],
     );
     await tester.pumpAndSettle();
@@ -54,6 +58,7 @@ void main() {
         overrides: [
           groceryRepositoryProvider.overrideWithValue(_FailingRepository()),
           recipeRepositoryProvider.overrideWithValue(recipes),
+          foodRepositoryProvider.overrideWithValue(foods),
         ],
       );
       await tester.pumpAndSettle();
@@ -85,7 +90,8 @@ void main() {
         _F.item('c', name: 'milk', quantity: Quantity(1), unit: Unit.cup),
       );
       await groceries.saveItem(
-        _F.item('d', name: 'milk', quantity: Quantity(200), unit: Unit.gram),
+        // Pieces have no weight, so they can't join the cup.
+        _F.item('d', name: 'milk', quantity: Quantity(2), unit: Unit.piece),
       );
       await groceries.saveItem(_F.item('eggs', checked: true));
       for (final (id, count) in [('g1', 3), ('g2', 2)]) {
@@ -106,7 +112,7 @@ void main() {
       expect(find.text('Checked'), findsOneWidget);
       expect(find.text('Onion'), findsOneWidget);
       expect(find.text('Chili'), findsOneWidget);
-      expect(find.textContaining('+ 200'), findsOneWidget);
+      expect(find.textContaining('+ 2'), findsOneWidget);
       expect(
         tester.getTopLeft(find.text('eggs')).dy,
         greaterThan(tester.getTopLeft(find.text('milk')).dy),

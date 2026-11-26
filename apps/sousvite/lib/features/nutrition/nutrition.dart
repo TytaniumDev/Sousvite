@@ -5,6 +5,7 @@ library;
 export 'application/auto_match.dart' show autoMatchProvider;
 export 'application/nutrition_actions.dart'
     show NutritionActions, nutritionActionsProvider;
+export 'application/nutrition_providers.dart' show nutritionMatchesProvider;
 export 'application/scanned_food.dart' show scannedLineText;
 export 'nutrition_routes.dart';
 export 'presentation/match_library_tile.dart' show MatchLibraryTile;

@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/grocery/application/excluded_ingredients.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
+import 'package:sousvite/features/nutrition/nutrition.dart';
 
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 import '../fakes.dart';
 
 typedef _F = GroceryFixtures;
@@ -12,15 +14,18 @@ typedef _F = GroceryFixtures;
 void main() {
   late FakeGroceryRepository groceries;
   late FakeRecipeRepository recipes;
+  late FakeFoodRepository foods;
   late ProviderContainer container;
 
   setUp(() {
     groceries = FakeGroceryRepository();
     recipes = FakeRecipeRepository();
+    foods = FakeFoodRepository();
     container = ProviderContainer.test(
       overrides: [
         groceryRepositoryProvider.overrideWithValue(groceries),
         recipeRepositoryProvider.overrideWithValue(recipes),
+        foodRepositoryProvider.overrideWithValue(foods),
       ],
     );
   });
@@ -144,6 +149,37 @@ void main() {
           .read(excludedIngredientsProvider(soup).notifier)
           .toggle(const IngredientLineId('a'));
       expect(container.read(provider), 0);
+    });
+
+    test('counts a line matched to a food already on the list', () async {
+      const soup = RecipeId('soup');
+      const stew = RecipeId('stew');
+      await saveList('list', DateTime.utc(2026));
+      await groceries.saveItem(
+        _F.item('x', name: 'white sugar', recipeId: stew),
+      );
+      await recipes.saveIngredientLine(
+        _F.line('a', recipeId: 'soup', name: 'granulated sugar'),
+      );
+      for (final lineId in ['stew-x', 'a']) {
+        await foods.saveMatch(
+          NutritionMatch(
+            id: NutritionMatchId(lineId),
+            ingredientLineId: IngredientLineId(lineId),
+            foodId: const FoodId('sugar'),
+            source: NutritionSource.usda,
+            gramWeight: 100,
+          ),
+        );
+      }
+
+      final provider = groceryCombiningLineCountProvider(soup);
+      container.listen(provider, (_, _) {});
+      await container.read(groceryRecipeLinesProvider(soup).future);
+      await container.read(groceryItemsProvider.future);
+      await container.read(nutritionMatchesProvider(soup).future);
+      await container.read(nutritionMatchesProvider(stew).future);
+      expect(container.read(provider), 1);
     });
 
     test('is zero while the lines load', () {

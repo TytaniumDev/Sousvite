@@ -172,6 +172,7 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
 - Before adding, the user goes through the ingredients line by line and includes or excludes each one. All are included by default.
 - Several recipes can be added to the same list.
 - Duplicate items are combined across recipes ("2 onions + 1 onion = 3 onions").
+- Lines combine when they have the same name or match the same USDA food ("sugar" and "granulated sugar"). Amounts add up in the largest unit present, so 2 Tbsp + ¼ cup = ⅜ cup. When amounts measure different things, such as cups and grams, they add up by weight into the largest unit and are rounded to something you can measure, marked "about" (¼ cup + 2 Tbsp + 200 g sugar = about 1 ⅓ cups). Without a weight for every line, they stay separate ("¼ cup + 200 g").
 - Each combined item shows which recipes it came from, and tapping its amount shows how much each recipe needs. When adding a recipe, lines that will combine with something already on the list say so.
 - Items are grouped by store section and can be checked off while shopping. Manual items can be added.
 

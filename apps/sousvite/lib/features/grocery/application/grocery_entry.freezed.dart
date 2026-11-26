@@ -901,7 +901,10 @@ mixin _$GroceryView {
 /// Sections of unchecked entries, in display order.
  List<GrocerySection> get sections;/// Keys of checked entries, in list order.
  List<String> get checkedKeys;/// Every entry by its key.
- Map<String, GroceryEntry> get entries;
+ Map<String, GroceryEntry> get entries;/// The key of the entry each item name went into, by the name's
+/// `groceryKey`.
+ Map<String, String> get entryKeys;/// The key of the entry each matched food went into.
+ Map<FoodId, String> get entryKeysByFood;
 /// Create a copy of GroceryView
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -913,20 +916,20 @@ $GroceryViewCopyWith<GroceryView> get copyWith => _$GroceryViewCopyWithImpl<Groc
 @override
 bool operator ==(Object other) {
   final _this = this as GroceryView;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GroceryView&&const DeepCollectionEquality().equals(other.sections, _this.sections)&&const DeepCollectionEquality().equals(other.checkedKeys, _this.checkedKeys)&&const DeepCollectionEquality().equals(other.entries, _this.entries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GroceryView&&const DeepCollectionEquality().equals(other.sections, _this.sections)&&const DeepCollectionEquality().equals(other.checkedKeys, _this.checkedKeys)&&const DeepCollectionEquality().equals(other.entries, _this.entries)&&const DeepCollectionEquality().equals(other.entryKeys, _this.entryKeys)&&const DeepCollectionEquality().equals(other.entryKeysByFood, _this.entryKeysByFood));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GroceryView;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.sections),const DeepCollectionEquality().hash(_this.checkedKeys),const DeepCollectionEquality().hash(_this.entries));
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.sections),const DeepCollectionEquality().hash(_this.checkedKeys),const DeepCollectionEquality().hash(_this.entries),const DeepCollectionEquality().hash(_this.entryKeys),const DeepCollectionEquality().hash(_this.entryKeysByFood));
 }
 
 @override
 String toString() {
   final _this = this as GroceryView;
-  return 'GroceryView(sections: ${_this.sections}, checkedKeys: ${_this.checkedKeys}, entries: ${_this.entries})';
+  return 'GroceryView(sections: ${_this.sections}, checkedKeys: ${_this.checkedKeys}, entries: ${_this.entries}, entryKeys: ${_this.entryKeys}, entryKeysByFood: ${_this.entryKeysByFood})';
 }
 
 
@@ -937,7 +940,7 @@ abstract mixin class $GroceryViewCopyWith<$Res>  {
   factory $GroceryViewCopyWith(GroceryView value, $Res Function(GroceryView) _then) = _$GroceryViewCopyWithImpl;
 @useResult
 $Res call({
- List<GrocerySection> sections, List<String> checkedKeys, Map<String, GroceryEntry> entries
+ List<GrocerySection> sections, List<String> checkedKeys, Map<String, GroceryEntry> entries, Map<String, String> entryKeys, Map<FoodId, String> entryKeysByFood
 });
 
 
@@ -954,12 +957,14 @@ class _$GroceryViewCopyWithImpl<$Res>
 
 /// Create a copy of GroceryView
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? sections = null,Object? checkedKeys = null,Object? entries = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? sections = null,Object? checkedKeys = null,Object? entries = null,Object? entryKeys = null,Object? entryKeysByFood = null,}) {
   return _then(GroceryView(
 sections: null == sections ? _self.sections : sections // ignore: cast_nullable_to_non_nullable
 as List<GrocerySection>,checkedKeys: null == checkedKeys ? _self.checkedKeys : checkedKeys // ignore: cast_nullable_to_non_nullable
 as List<String>,entries: null == entries ? _self.entries : entries // ignore: cast_nullable_to_non_nullable
-as Map<String, GroceryEntry>,
+as Map<String, GroceryEntry>,entryKeys: null == entryKeys ? _self.entryKeys : entryKeys // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,entryKeysByFood: null == entryKeysByFood ? _self.entryKeysByFood : entryKeysByFood // ignore: cast_nullable_to_non_nullable
+as Map<FoodId, String>,
   ));
 }
 
@@ -1044,10 +1049,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<GrocerySection> sections,  List<String> checkedKeys,  Map<String, GroceryEntry> entries)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<GrocerySection> sections,  List<String> checkedKeys,  Map<String, GroceryEntry> entries,  Map<String, String> entryKeys,  Map<FoodId, String> entryKeysByFood)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GroceryView() when $default != null:
-return $default(_that.sections,_that.checkedKeys,_that.entries);case _:
+return $default(_that.sections,_that.checkedKeys,_that.entries,_that.entryKeys,_that.entryKeysByFood);case _:
   return orElse();
 
 }
@@ -1065,10 +1070,10 @@ return $default(_that.sections,_that.checkedKeys,_that.entries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<GrocerySection> sections,  List<String> checkedKeys,  Map<String, GroceryEntry> entries)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<GrocerySection> sections,  List<String> checkedKeys,  Map<String, GroceryEntry> entries,  Map<String, String> entryKeys,  Map<FoodId, String> entryKeysByFood)  $default,) {final _that = this;
 switch (_that) {
 case _GroceryView():
-return $default(_that.sections,_that.checkedKeys,_that.entries);case _:
+return $default(_that.sections,_that.checkedKeys,_that.entries,_that.entryKeys,_that.entryKeysByFood);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1085,10 +1090,10 @@ return $default(_that.sections,_that.checkedKeys,_that.entries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<GrocerySection> sections,  List<String> checkedKeys,  Map<String, GroceryEntry> entries)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<GrocerySection> sections,  List<String> checkedKeys,  Map<String, GroceryEntry> entries,  Map<String, String> entryKeys,  Map<FoodId, String> entryKeysByFood)?  $default,) {final _that = this;
 switch (_that) {
 case _GroceryView() when $default != null:
-return $default(_that.sections,_that.checkedKeys,_that.entries);case _:
+return $default(_that.sections,_that.checkedKeys,_that.entries,_that.entryKeys,_that.entryKeysByFood);case _:
   return null;
 
 }
@@ -1100,7 +1105,7 @@ return $default(_that.sections,_that.checkedKeys,_that.entries);case _:
 
 
 class _GroceryView extends GroceryView {
-  const _GroceryView({required  List<GrocerySection> sections, required  List<String> checkedKeys, required  Map<String, GroceryEntry> entries}): _sections = sections,_checkedKeys = checkedKeys,_entries = entries,super._();
+  const _GroceryView({required  List<GrocerySection> sections, required  List<String> checkedKeys, required  Map<String, GroceryEntry> entries,  Map<String, String> entryKeys = const {},  Map<FoodId, String> entryKeysByFood = const {}}): _sections = sections,_checkedKeys = checkedKeys,_entries = entries,_entryKeys = entryKeys,_entryKeysByFood = entryKeysByFood,super._();
   
 
 /// Sections of unchecked entries, in display order.
@@ -1130,6 +1135,26 @@ class _GroceryView extends GroceryView {
   return EqualUnmodifiableMapView(_entries);
 }
 
+/// The key of the entry each item name went into, by the name's
+/// `groceryKey`.
+ final  Map<String, String> _entryKeys;
+/// The key of the entry each item name went into, by the name's
+/// `groceryKey`.
+@override@JsonKey() Map<String, String> get entryKeys {
+  if (_entryKeys is EqualUnmodifiableMapView) return _entryKeys;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_entryKeys);
+}
+
+/// The key of the entry each matched food went into.
+ final  Map<FoodId, String> _entryKeysByFood;
+/// The key of the entry each matched food went into.
+@override@JsonKey() Map<FoodId, String> get entryKeysByFood {
+  if (_entryKeysByFood is EqualUnmodifiableMapView) return _entryKeysByFood;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_entryKeysByFood);
+}
+
 
 /// Create a copy of GroceryView
 /// with the given fields replaced by the non-null parameter values.
@@ -1141,18 +1166,18 @@ _$GroceryViewCopyWith<_GroceryView> get copyWith => __$GroceryViewCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GroceryView&&const DeepCollectionEquality().equals(other.sections, _sections)&&const DeepCollectionEquality().equals(other.checkedKeys, _checkedKeys)&&const DeepCollectionEquality().equals(other.entries, _entries));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GroceryView&&const DeepCollectionEquality().equals(other.sections, _sections)&&const DeepCollectionEquality().equals(other.checkedKeys, _checkedKeys)&&const DeepCollectionEquality().equals(other.entries, _entries)&&const DeepCollectionEquality().equals(other.entryKeys, _entryKeys)&&const DeepCollectionEquality().equals(other.entryKeysByFood, _entryKeysByFood));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_sections),const DeepCollectionEquality().hash(_checkedKeys),const DeepCollectionEquality().hash(_entries));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_sections),const DeepCollectionEquality().hash(_checkedKeys),const DeepCollectionEquality().hash(_entries),const DeepCollectionEquality().hash(_entryKeys),const DeepCollectionEquality().hash(_entryKeysByFood));
 }
 
 @override
 String toString() {
-    return 'GroceryView(sections: $sections, checkedKeys: $checkedKeys, entries: $entries)';
+    return 'GroceryView(sections: $sections, checkedKeys: $checkedKeys, entries: $entries, entryKeys: $entryKeys, entryKeysByFood: $entryKeysByFood)';
 }
 
 
@@ -1163,7 +1188,7 @@ abstract mixin class _$GroceryViewCopyWith<$Res> implements $GroceryViewCopyWith
   factory _$GroceryViewCopyWith(_GroceryView value, $Res Function(_GroceryView) _then) = __$GroceryViewCopyWithImpl;
 @override @useResult
 $Res call({
- List<GrocerySection> sections, List<String> checkedKeys, Map<String, GroceryEntry> entries
+ List<GrocerySection> sections, List<String> checkedKeys, Map<String, GroceryEntry> entries, Map<String, String> entryKeys, Map<FoodId, String> entryKeysByFood
 });
 
 
@@ -1180,12 +1205,14 @@ class __$GroceryViewCopyWithImpl<$Res>
 
 /// Create a copy of GroceryView
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? sections = null,Object? checkedKeys = null,Object? entries = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? sections = null,Object? checkedKeys = null,Object? entries = null,Object? entryKeys = null,Object? entryKeysByFood = null,}) {
   return _then(_GroceryView(
 sections: null == sections ? _self._sections : sections // ignore: cast_nullable_to_non_nullable
 as List<GrocerySection>,checkedKeys: null == checkedKeys ? _self._checkedKeys : checkedKeys // ignore: cast_nullable_to_non_nullable
 as List<String>,entries: null == entries ? _self._entries : entries // ignore: cast_nullable_to_non_nullable
-as Map<String, GroceryEntry>,
+as Map<String, GroceryEntry>,entryKeys: null == entryKeys ? _self._entryKeys : entryKeys // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,entryKeysByFood: null == entryKeysByFood ? _self._entryKeysByFood : entryKeysByFood // ignore: cast_nullable_to_non_nullable
+as Map<FoodId, String>,
   ));
 }
 
