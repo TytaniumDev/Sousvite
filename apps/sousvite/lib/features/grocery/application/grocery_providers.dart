@@ -2,7 +2,9 @@ import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/grocery/application/combine_grocery_items.dart';
+import 'package:sousvite/features/grocery/application/excluded_ingredients.dart';
 import 'package:sousvite/features/grocery/application/grocery_entry.dart';
+import 'package:sousvite/features/grocery/application/grocery_line_name.dart';
 
 part 'grocery_providers.g.dart';
 
@@ -54,3 +56,20 @@ Stream<String?> groceryRecipeTitle(Ref ref, RecipeId recipeId) => ref
 @riverpod
 Stream<List<IngredientLine>> groceryRecipeLines(Ref ref, RecipeId recipeId) =>
     ref.watch(recipeRepositoryProvider).watchIngredientLines(recipeId);
+
+/// How many of [recipeId]'s included lines would combine with an entry
+/// already on the list, for the add-to-list sheet's summary.
+@riverpod
+int groceryCombiningLineCount(Ref ref, RecipeId recipeId) {
+  final lines = ref.watch(groceryRecipeLinesProvider(recipeId)).value;
+  if (lines == null) return 0;
+  final excluded = ref.watch(excludedIngredientsProvider(recipeId));
+  final entries = ref.watch(groceryViewProvider).value?.entries ?? const {};
+  return lines
+      .where(
+        (line) =>
+            !excluded.contains(line.id) &&
+            entries.containsKey(groceryKey(groceryNameOf(line))),
+      )
+      .length;
+}

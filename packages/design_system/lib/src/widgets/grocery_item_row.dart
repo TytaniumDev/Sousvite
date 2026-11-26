@@ -3,6 +3,7 @@ import 'package:design_system/src/tokens/motion.dart';
 import 'package:design_system/src/tokens/spacing.dart';
 import 'package:design_system/src/widgets/amount_text.dart';
 import 'package:design_system/src/widgets/padded_ink_well.dart';
+import 'package:design_system/src/widgets/tappable_amount.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
 
@@ -12,6 +13,12 @@ import 'package:units/units.dart';
 /// The whole row toggles [checked]. It uses comfortable density, at least
 /// 56 dp tall. A checked item fades to `on-surface-variant` and is struck
 /// through; the feature moves it into the Checked group.
+///
+/// With [onAmountTap] the amount is its own button with a 48 dp hit area,
+/// apart from the row's tap, such as to show how much each recipe needs.
+/// Its ink sits [amountPadding] around the amount, and every trailing
+/// amount keeps that space at its sides, so tappable and plain amounts line
+/// up. Screen readers offer it as a custom action named [amountTapLabel].
 class const GroceryItemRow({
   /// The item: "flour".
   required final String name,
@@ -35,6 +42,14 @@ class const GroceryItemRow({
   /// Which recipes the item came from, already joined and localized:
   /// "Chili, Cornbread". Null for an item added by hand.
   final String? sourcesLabel,
+
+  /// Called when the amount is tapped. Null leaves the amount as plain
+  /// text. Needs [amountTapLabel].
+  final VoidCallback? onAmountTap,
+
+  /// What tapping the amount does, as a screen reader action: "Show
+  /// amounts by recipe". Set with [onAmountTap].
+  final String? amountTapLabel,
   super.key,
 }) extends StatelessWidget {
   /// The smallest height of a row (§6.2).
@@ -48,10 +63,18 @@ class const GroceryItemRow({
   /// trailing amount would squeeze both into broken words.
   static const double stackedTextScale = 1.5;
 
+  /// The space between a tappable amount and the edge of its ink, on every
+  /// side.
+  static const double amountPadding = TappableAmount.padding;
+
   static final _fade = SpringCurve(AppMotion.effectsDefault);
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      (onAmountTap == null) == (amountTapLabel == null),
+      'A tappable amount needs its screen reader label.',
+    );
     final colors = context.colors;
     final body = context.textStyles.bodyLarge!;
     final duration = MediaQuery.disableAnimationsOf(context)
@@ -100,7 +123,15 @@ class const GroceryItemRow({
                       ),
                       child: _Details(
                         name: name,
-                        amount: stacked ? amount : null,
+                        amount: !stacked || amount == null
+                            ? null
+                            : onAmountTap == null
+                            ? amount
+                            : _StackedTappableAmount(
+                                onTap: onAmountTap,
+                                tapLabel: amountTapLabel,
+                                child: amount,
+                              ),
                         sourcesLabel: sourcesLabel,
                       ),
                     ),
@@ -111,8 +142,15 @@ class const GroceryItemRow({
                         maxWidth: constraints.maxWidth * maxAmountShare,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: AppSpacing.space3),
-                        child: amount,
+                        // With the amount's own padding, 12 dp from the
+                        // name.
+                        padding: const EdgeInsets.only(left: AppSpacing.space1),
+                        child: TappableAmount(
+                          onTap: onAmountTap,
+                          tapLabel: amountTapLabel,
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: amount,
+                        ),
                       ),
                     ),
                 ],
@@ -121,6 +159,23 @@ class const GroceryItemRow({
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A tappable amount under the name, moved back by its ink's padding so
+/// the text lines up with the name above it.
+class const _StackedTappableAmount({
+  required final VoidCallback? onTap,
+  required final String? tapLabel,
+  required final Widget child,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final start = Directionality.of(context) == TextDirection.ltr ? -1 : 1;
+    return Transform.translate(
+      offset: Offset(start * TappableAmount.padding, 0),
+      child: TappableAmount(onTap: onTap, tapLabel: tapLabel, child: child),
     );
   }
 }

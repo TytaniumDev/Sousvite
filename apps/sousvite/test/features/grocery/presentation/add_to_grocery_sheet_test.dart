@@ -102,6 +102,56 @@ void main() {
       expect(groceries.items.values.single.name, 'beans');
     });
 
+    group('with items already on the list', () {
+      Future<void> arrangeList() async {
+        await arrange();
+        await groceries.saveList(
+          GroceryList(id: _F.listId, name: '', createdAt: DateTime.utc(2026)),
+        );
+        await groceries.saveItem(
+          _F.item('x', name: 'Onion', quantity: Quantity(1)),
+        );
+        await groceries.saveItem(_F.item('y', name: 'beans'));
+      }
+
+      testWidgets('says what each line adds to', (tester) async {
+        await arrangeList();
+        await openSheet(tester, chili);
+
+        expect(find.text('Adds to 1 on your list'), findsOneWidget);
+        expect(find.text('Already on your list'), findsOneWidget);
+        expect(
+          find.text('2 combine with items already on your list'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('counts only the lines that are included', (tester) async {
+        await arrangeList();
+        await openSheet(tester, chili);
+
+        await tester.tap(find.text('onions'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('1 combines with an item already on your list'),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.text('beans'));
+        await tester.pumpAndSettle();
+        expect(find.textContaining('combine'), findsNothing);
+        // The hints stay, so the user can see why they left a line out.
+        expect(find.text('Adds to 1 on your list'), findsOneWidget);
+      });
+    });
+
+    testWidgets('shows no hints for a new list', (tester) async {
+      await arrange();
+      await openSheet(tester, chili);
+
+      expect(find.textContaining('on your list'), findsNothing);
+    });
+
     testWidgets('says so when the recipe has no ingredients', (tester) async {
       await arrange();
       await openSheet(tester, const RecipeId('empty'));

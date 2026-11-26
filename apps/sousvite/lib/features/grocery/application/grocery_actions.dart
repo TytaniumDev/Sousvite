@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sousvite/app/providers/repositories.dart';
 import 'package:sousvite/features/grocery/application/grocery_ids.dart';
+import 'package:sousvite/features/grocery/application/grocery_line_name.dart';
 
 part 'grocery_actions.g.dart';
 
@@ -21,13 +22,14 @@ class GroceryActions({
     if (lines.isEmpty) return;
     final listId = await _listId();
     for (final line in lines) {
+      final name = groceryNameOf(line);
       await repository.saveItem(
         GroceryItem(
           id: ids.itemId(),
           listId: listId,
-          name: line.name ?? line.rawText,
+          name: name,
           sortKey: ids.sortKey(),
-          storeSection: StoreSection.of(line.name ?? line.rawText).name,
+          storeSection: StoreSection.of(name).name,
           quantity: line.quantity,
           unit: line.unit,
           countWord: line.countWord,

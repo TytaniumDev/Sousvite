@@ -10,31 +10,39 @@ final groceryItemRowComponent = WidgetbookComponent(
   useCases: [
     WidgetbookUseCase(
       name: 'Default',
-      builder: (context) => Preview(
-        child: Interactive(
-          initialValue: context.knobs.boolean(label: 'Checked'),
-          builder: (context, checked, onChanged) => GroceryItemRow(
-            name: context.knobs.string(
-              label: 'Name',
-              initialValue: 'Black beans',
+      builder: (context) {
+        final tappable = context.knobs.boolean(
+          label: 'Tappable amount',
+          initialValue: true,
+        );
+        return Preview(
+          child: Interactive(
+            initialValue: context.knobs.boolean(label: 'Checked'),
+            builder: (context, checked, onChanged) => GroceryItemRow(
+              name: context.knobs.string(
+                label: 'Name',
+                initialValue: 'Black beans',
+              ),
+              quantity: context.knobs.quantity(
+                label: 'Quantity',
+                initialValue: Quantity(3, 2),
+              ),
+              unit: context.knobs.stringOrNull(
+                label: 'Unit',
+                initialValue: 'cups',
+              ),
+              sourcesLabel: context.knobs.stringOrNull(
+                label: 'Sources',
+                initialValue: 'Chili, Burrito bowls',
+              ),
+              checked: checked,
+              onChanged: onChanged,
+              onAmountTap: tappable ? () {} : null,
+              amountTapLabel: tappable ? 'Show amounts by recipe' : null,
             ),
-            quantity: context.knobs.quantity(
-              label: 'Quantity',
-              initialValue: Quantity(3, 2),
-            ),
-            unit: context.knobs.stringOrNull(
-              label: 'Unit',
-              initialValue: 'cups',
-            ),
-            sourcesLabel: context.knobs.stringOrNull(
-              label: 'Sources',
-              initialValue: 'Chili, Burrito bowls',
-            ),
-            checked: checked,
-            onChanged: onChanged,
           ),
-        ),
-      ),
+        );
+      },
     ),
   ],
 );

@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
@@ -15,6 +16,7 @@ void main() {
     String? unit = 'cups',
     String? sourcesLabel = 'Chili, Cornbread',
     String name = 'flour',
+    VoidCallback? onAmountTap,
   }) => GroceryItemRow(
     name: name,
     checked: checked,
@@ -22,6 +24,8 @@ void main() {
     quantity: quantity,
     unit: unit,
     sourcesLabel: sourcesLabel,
+    onAmountTap: onAmountTap,
+    amountTapLabel: onAmountTap == null ? null : 'Show amounts by recipe',
   );
 
   TextStyle styleOf(WidgetTester tester, String text) => tester
@@ -118,6 +122,91 @@ void main() {
       expect(amount.left, greaterThan(name.right));
     });
 
+    group('with a tappable amount', () {
+      testWidgets('calls onAmountTap and leaves the row unchecked', (
+        tester,
+      ) async {
+        var taps = 0;
+        final changes = <bool>[];
+        await tester.pumpDesignSystem(
+          row(
+            quantity: twoAndAQuarter,
+            onChanged: changes.add,
+            onAmountTap: () => taps++,
+          ),
+        );
+
+        await tester.tap(find.byType(AmountText));
+        expect(taps, 1);
+        expect(changes, isEmpty);
+
+        await tester.tap(find.text('flour'));
+        expect(taps, 1);
+        expect(changes, [true]);
+      });
+
+      testWidgets('lines up with a plain amount', (tester) async {
+        await tester.pumpDesignSystem(
+          Column(
+            children: [
+              row(quantity: twoAndAQuarter, onAmountTap: () {}),
+              row(quantity: twoAndAQuarter),
+            ],
+          ),
+        );
+
+        final amounts = find.byType(AmountText);
+        expect(
+          tester.getTopRight(amounts.first).dx,
+          tester.getTopRight(amounts.last).dx,
+        );
+      });
+
+      testWidgets('stays tappable under the name for large text', (
+        tester,
+      ) async {
+        var taps = 0;
+        await tester.pumpDesignSystem(
+          Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: const TextScaler.linear(2)),
+              child: row(quantity: twoAndAQuarter, onAmountTap: () => taps++),
+            ),
+          ),
+        );
+
+        final name = tester.getRect(find.text('flour'));
+        final amount = tester.getRect(find.byType(AmountText));
+        expect(amount.top, greaterThanOrEqualTo(name.bottom));
+        expect(amount.left, name.left);
+        await tester.tap(find.byType(AmountText));
+        expect(taps, 1);
+      });
+
+      testWidgets('offers the tap as a screen reader action', (tester) async {
+        final handle = tester.ensureSemantics();
+        var taps = 0;
+        await tester.pumpDesignSystem(
+          row(quantity: twoAndAQuarter, onAmountTap: () => taps++),
+        );
+
+        final node = tester.getSemantics(find.byType(GroceryItemRow));
+        final action = node.getSemanticsData().customSemanticsActionIds!.single;
+        expect(
+          CustomSemanticsAction.getAction(action)?.label,
+          'Show amounts by recipe',
+        );
+        node.owner!.performAction(
+          node.id,
+          SemanticsAction.customAction,
+          action,
+        );
+        expect(taps, 1);
+        handle.dispose();
+      });
+    });
+
     testWidgets('is at least 56 dp tall', (tester) async {
       await tester.pumpDesignSystem(row(sourcesLabel: null));
 
@@ -132,6 +221,9 @@ void main() {
       await tester.expectMeetsGuidelines(
         row(checked: true, quantity: twoAndAQuarter),
       );
+      await tester.expectMeetsGuidelines(
+        row(quantity: twoAndAQuarter, onAmountTap: () {}),
+      );
     });
 
     designSystemGoldenTest(
@@ -141,6 +233,7 @@ void main() {
       scenarios: {
         'with amount and sources': row(quantity: twoAndAQuarter),
         'checked': row(checked: true, quantity: twoAndAQuarter),
+        'tappable amount': row(quantity: twoAndAQuarter, onAmountTap: () {}),
         'by hand, no amount': row(sourcesLabel: null, name: 'salt'),
         'long name': row(
           quantity: Quantity(3),

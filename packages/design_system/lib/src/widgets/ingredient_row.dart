@@ -2,11 +2,10 @@ import 'dart:math' as math;
 
 import 'package:design_system/src/theme/context_ext.dart';
 import 'package:design_system/src/tokens/motion.dart';
-import 'package:design_system/src/tokens/radii.dart';
 import 'package:design_system/src/tokens/spacing.dart';
 import 'package:design_system/src/widgets/amount_text.dart';
 import 'package:design_system/src/widgets/padded_ink_well.dart';
-import 'package:flutter/semantics.dart';
+import 'package:design_system/src/widgets/tappable_amount.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:units/units.dart';
 
@@ -89,7 +88,7 @@ class const IngredientRow({
   /// The space between a tappable amount and the edge of its ink, on every
   /// side. Plain amounts keep it on the left and right too, so they line
   /// up with tappable ones.
-  static const double amountPadding = AppSpacing.space2;
+  static const double amountPadding = TappableAmount.padding;
 
   /// The space between the amount's ink and the name.
   static const double amountGap = AppSpacing.space1;
@@ -214,7 +213,7 @@ class const _AmountColumn({
           padding: const EdgeInsetsDirectional.only(
             end: IngredientRow.amountGap,
           ),
-          child: _TappableAmount(
+          child: TappableAmount(
             onTap: onTap,
             tapLabel: tapLabel,
             child: _Amount(
@@ -227,50 +226,6 @@ class const _AmountColumn({
       );
     },
   );
-}
-
-/// The amount with [IngredientRow.amountPadding] on each side: plain, or
-/// as a button inside its ink when [onTap] is set.
-///
-/// The ink is left out of the semantics tree, because a row with a
-/// checkbox merges its semantics and has its own tap. Screen readers get
-/// a custom action named [tapLabel] instead.
-class const _TappableAmount({
-  required final VoidCallback? onTap,
-  required final String? tapLabel,
-  required final Widget child,
-}) extends StatelessWidget {
-  static const double _padding = IngredientRow.amountPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    final onTap = this.onTap;
-    final tapLabel = this.tapLabel;
-    if (onTap == null || tapLabel == null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: _padding),
-        child: child,
-      );
-    }
-    return Semantics(
-      customSemanticsActions: {CustomSemanticsAction(label: tapLabel): onTap},
-      // Loose, so the ink hugs the amount instead of filling the column.
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        widthFactor: 1,
-        heightFactor: 1,
-        child: PaddedInkWell(
-          onTap: onTap,
-          horizontal: _padding,
-          vertical: _padding,
-          borderRadius: AppRadii.borderSm,
-          tapTargetAlignment: AlignmentDirectional.centerStart,
-          excludeFromSemantics: true,
-          child: child,
-        ),
-      ),
-    );
-  }
 }
 
 class const _Amount({

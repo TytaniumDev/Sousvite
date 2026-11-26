@@ -1563,6 +1563,48 @@ abstract class AppLocalizations {
   /// **'This recipe has no ingredients yet.'**
   String get grocery_noIngredients;
 
+  /// Screen reader action on a grocery item's amount that opens how much each recipe needs.
+  ///
+  /// In en, this message translates to:
+  /// **'Show amounts by recipe'**
+  String get grocery_showAmountsByRecipe;
+
+  /// Heading over the per-recipe amounts in a grocery item's breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{In 1 recipe} other{In {count} recipes}}'**
+  String grocery_inRecipes(int count);
+
+  /// In a grocery item's breakdown, the part that was typed in instead of coming from a recipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by hand'**
+  String get grocery_addedByHand;
+
+  /// Closes a grocery item's breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get grocery_done;
+
+  /// Under a line in the add-to-list sheet when the same item is already on the list, with that item's amount ("⅜ cup").
+  ///
+  /// In en, this message translates to:
+  /// **'Adds to {amount} on your list'**
+  String grocery_addsTo(String amount);
+
+  /// Under a line in the add-to-list sheet when the same item, with no amount, is already on the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Already on your list'**
+  String get grocery_alreadyOnList;
+
+  /// Above the add-to-list button: how many chosen lines will add to items already on the list.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 combines with an item already on your list} other{{count} combine with items already on your list}}'**
+  String grocery_combiningCount(int count);
+
   /// Title of a recipe's history of versions and experiments.
   ///
   /// In en, this message translates to:
