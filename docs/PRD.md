@@ -172,6 +172,7 @@ The app launches as one complete release. Every feature in 7.1 to 7.11 is part o
 - Before adding, the user goes through the ingredients line by line and includes or excludes each one. All are included by default.
 - Several recipes can be added to the same list.
 - Duplicate items are combined across recipes ("2 onions + 1 onion = 3 onions").
+- Each combined item shows which recipes it came from, and tapping its amount shows how much each recipe needs. When adding a recipe, lines that will combine with something already on the list say so.
 - Items are grouped by store section and can be checked off while shopping. Manual items can be added.
 
 ### 7.8 Offline and cross-device sync

@@ -339,3 +339,96 @@ final class GroceryRecipeLinesFamily extends $Family
   @override
   String toString() => r'groceryRecipeLinesProvider';
 }
+
+/// How many of [recipeId]'s included lines would combine with an entry
+/// already on the list, for the add-to-list sheet's summary.
+
+@ProviderFor(groceryCombiningLineCount)
+final groceryCombiningLineCountProvider = GroceryCombiningLineCountFamily._();
+
+/// How many of [recipeId]'s included lines would combine with an entry
+/// already on the list, for the add-to-list sheet's summary.
+
+final class GroceryCombiningLineCountProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  /// How many of [recipeId]'s included lines would combine with an entry
+  /// already on the list, for the add-to-list sheet's summary.
+  GroceryCombiningLineCountProvider._({
+    required GroceryCombiningLineCountFamily super.from,
+    required RecipeId super.argument,
+  }) : super(
+         retry: null,
+         name: r'groceryCombiningLineCountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$groceryCombiningLineCountHash();
+
+  @override
+  String toString() {
+    return r'groceryCombiningLineCountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    final argument = this.argument as RecipeId;
+    return groceryCombiningLineCount(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GroceryCombiningLineCountProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$groceryCombiningLineCountHash() =>
+    r'e55236bc4445d6812a15423b930780757a8c6d14';
+
+/// How many of [recipeId]'s included lines would combine with an entry
+/// already on the list, for the add-to-list sheet's summary.
+
+final class GroceryCombiningLineCountFamily extends $Family
+    with $FunctionalFamilyOverride<int, RecipeId> {
+  GroceryCombiningLineCountFamily._()
+    : super(
+        retry: null,
+        name: r'groceryCombiningLineCountProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// How many of [recipeId]'s included lines would combine with an entry
+  /// already on the list, for the add-to-list sheet's summary.
+
+  GroceryCombiningLineCountProvider call(RecipeId recipeId) =>
+      GroceryCombiningLineCountProvider._(argument: recipeId, from: this);
+
+  @override
+  String toString() => r'groceryCombiningLineCountProvider';
+}

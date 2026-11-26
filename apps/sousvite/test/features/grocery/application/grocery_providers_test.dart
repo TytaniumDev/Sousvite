@@ -2,6 +2,7 @@ import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sousvite/app/providers/repositories.dart';
+import 'package:sousvite/features/grocery/application/excluded_ingredients.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
 
 import '../fakes.dart';
@@ -118,6 +119,40 @@ void main() {
       final lines = await container.read(provider.future);
 
       expect(lines.map((line) => line.id.value), ['a', 'b']);
+    });
+  });
+
+  group('groceryCombiningLineCount', () {
+    test('counts included lines whose item is already on the list', () async {
+      const soup = RecipeId('soup');
+      await saveList('list', DateTime.utc(2026));
+      await groceries.saveItem(_F.item('x', name: 'Onions'));
+      await recipes.saveIngredientLine(
+        _F.line('a', recipeId: 'soup', name: 'onion'),
+      );
+      await recipes.saveIngredientLine(
+        _F.line('b', recipeId: 'soup', name: 'carrot'),
+      );
+
+      final provider = groceryCombiningLineCountProvider(soup);
+      container.listen(provider, (_, _) {});
+      await container.read(groceryRecipeLinesProvider(soup).future);
+      await container.read(groceryItemsProvider.future);
+      expect(container.read(provider), 1);
+
+      container
+          .read(excludedIngredientsProvider(soup).notifier)
+          .toggle(const IngredientLineId('a'));
+      expect(container.read(provider), 0);
+    });
+
+    test('is zero while the lines load', () {
+      expect(
+        container.read(
+          groceryCombiningLineCountProvider(const RecipeId('soup')),
+        ),
+        0,
+      );
     });
   });
 }

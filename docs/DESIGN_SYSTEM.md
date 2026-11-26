@@ -384,7 +384,7 @@ Button hierarchy: one `FilledButton` for the main action, `FilledButton.tonal` f
 | `BasisToggle` | Per serving / Per batch | `basis`, `onChanged`, `perServingLabel`, `batchLabel` |
 | `SectionHeader` | A step section name ("Prep") with step count; drag handle in the editor | `title`, `countLabel` ("3 steps"), `reorderIndex` and `reorderLabel` (show the drag handle) |
 | `TimerChip` | A time found in a step; tap to start; shows the countdown while running | `label`, `duration`, `startedAt` (null while idle), `doneLabel`, `onStart`, `onStop` |
-| `GroceryItemRow` | Checkbox, combined quantity, item name, and which recipes it came from | `name`, `quantity`, `unit`, `sourcesLabel` ("Chili, Cornbread"), `checked`, `onChanged` |
+| `GroceryItemRow` | Checkbox, combined quantity, item name, and which recipes it came from | `name`, `quantity`, `unit`, `sourcesLabel` ("Chili, Cornbread"), `checked`, `onChanged`, `onAmountTap` + `amountTapLabel` |
 | `ShareBadge` | "Shared" (joint share) or "Copy" so people know which they're editing | `kind` (`ShareBadgeKind`), `label` |
 | `ExperimentBadge` | Marks an experiment, in terracotta | `label` |
 | `ProBadge` | Marks a Pro feature | `label` |
@@ -409,7 +409,7 @@ Details that matter:
 - **Nutrition numbers** are whole for calories and milligrams, and keep one decimal below 10 g (`2.5 g`, `31 g`), dropping a trailing `.0`. `NutrientPrecision` holds this rule so every nutrition widget rounds the same way.
 - **ServingStepper** steps by whole servings: from 2½, minus goes to 2 and plus goes to 3. A fractional serving size typed elsewhere is kept until the next step.
 - **Badges and status chips share one shape:** a small icon and a word on a fill with `radiusSm`. `ShareBadge` is sage for a joint share and neutral for a copy, `ExperimentBadge` is terracotta, and `ProBadge` uses `primary-container`.
-- **GroceryItemRow** puts the amount at the end of the row, taking at most half of it. From 150% text, the amount moves under the name, so neither breaks mid-word.
+- **GroceryItemRow** puts the amount at the end of the row, taking at most half of it. From 150% text, the amount moves under the name, so neither breaks mid-word. With `onAmountTap`, the amount is its own button the same way as `IngredientRow`'s (a 48 dp hit area, 8 dp of ink around it, a custom screen reader action), and every trailing amount keeps that 8 dp at its sides so tappable and plain amounts line up. Under the name, a tappable amount shifts back by its padding so its text lines up with the name.
 - **SyncStatusIcon** is quiet (`on-surface-variant`) for synced, syncing, and offline; only an error uses `error`. While syncing, the icon turns, and holds still under reduced motion. Its tooltip area is a full 48 dp target. With `onTap` (sign in again), the 48 dp circle is its ink, with the icon centered.
 - **RecipeCard** pads its photo 4 dp inside the card's ink, with 8 dp corners (concentric with the card's 12 dp), like the library's folder tiles (§6.5).
 - **EmptyState and ErrorState** share one centered layout, at most 360 dp wide, with the title marked as a heading. ErrorState's icon is in `error` and its retry is a tonal button.
@@ -461,7 +461,8 @@ Cooking text has fixed large sizes (§5.3), larger on medium and expanded screen
 
 - Grouped by store section, with section names as sticky headers.
 - `GroceryItemRow` in comfortable density. Checked items move to a "Checked" group at the bottom with `spatialDefault` motion.
-- The add-from-recipe sheet lists the recipe's ingredients with checkboxes, all checked by default, and a single **Add to list** button.
+- Tapping an item's amount opens its breakdown in a dialog (not a sheet, so a tap outside closes it): the item name as the title, the combined amount in `numberLarge`, "In 2 recipes", then one row per recipe with its own amount and a chevron that opens the recipe, and "Added by hand" last. Items only added by hand have a plain amount.
+- The add-from-recipe sheet lists the recipe's ingredients with checkboxes, all checked by default, and a single **Add to list** button. A line whose item is already on the list says what it adds to under its name ("Adds to ⅜ cup on your list", or "Already on your list" for an item with no amount), after the `merge` symbol in `primary`. Above the button, a summary counts the included lines that combine ("2 combine with items already on your list").
 
 ### 10.7 Sharing and experiments
 

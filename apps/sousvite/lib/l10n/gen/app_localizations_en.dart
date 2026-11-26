@@ -942,6 +942,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get grocery_noIngredients => 'This recipe has no ingredients yet.';
 
   @override
+  String get grocery_showAmountsByRecipe => 'Show amounts by recipe';
+
+  @override
+  String grocery_inRecipes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'In $count recipes',
+      one: 'In 1 recipe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get grocery_addedByHand => 'Added by hand';
+
+  @override
+  String get grocery_done => 'Done';
+
+  @override
+  String grocery_addsTo(String amount) {
+    return 'Adds to $amount on your list';
+  }
+
+  @override
+  String get grocery_alreadyOnList => 'Already on your list';
+
+  @override
+  String grocery_combiningCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count combine with items already on your list',
+      one: '1 combines with an item already on your list',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get experiments_title => 'History';
 
   @override

@@ -1,10 +1,13 @@
 import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/grocery/application/excluded_ingredients.dart';
 import 'package:sousvite/features/grocery/application/grocery_actions.dart';
+import 'package:sousvite/features/grocery/application/grocery_line_name.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
+import 'package:sousvite/features/grocery/presentation/grocery_amounts_label.dart';
 import 'package:sousvite/l10n/l10n.dart';
 import 'package:sousvite/shared/units/unit_words.dart';
 import 'package:sousvite/shared/widgets/async_value_view.dart';
@@ -43,7 +46,15 @@ class const AddToGrocerySheet({
       Flexible(child: _Lines(recipeId: recipeId)),
       Padding(
         padding: const EdgeInsets.all(AppSpacing.space4),
-        child: _AddButton(recipeId: recipeId),
+        child: Column(
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
+          spacing: AppSpacing.space3,
+          children: [
+            _CombiningSummary(recipeId: recipeId),
+            _AddButton(recipeId: recipeId),
+          ],
+        ),
       ),
     ],
   );
@@ -100,7 +111,7 @@ class const _LineRow({
     );
     final quantity = line.quantity;
     return IngredientRow(
-      name: line.name ?? line.rawText,
+      name: groceryNameOf(line),
       quantity: quantity,
       unit: quantity == null
           ? null
@@ -112,11 +123,81 @@ class const _LineRow({
       preparation: line.preparation,
       checked: included,
       checkStyle: .select,
+      guide: _CombineHint(name: groceryNameOf(line)),
       onChanged: (_) => ref
           .read(excludedIngredientsProvider(recipeId).notifier)
           .toggle(lineId),
     );
   }
+}
+
+/// Under a line whose item is already on the list: what it will add to
+/// (DESIGN_SYSTEM.md §10.6). Nothing for a line that starts a new item.
+class const _CombineHint({required final String name}) extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final amounts = ref.watch(
+      groceryViewProvider.select(
+        (view) => view.value?.entries[groceryKey(name)]?.amounts,
+      ),
+    );
+    if (amounts == null) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    return _CombineNote(
+      text: amounts.isEmpty
+          ? l10n.grocery_alreadyOnList
+          : l10n.grocery_addsTo(groceryAmountsLabel(l10n, amounts)),
+      style: context.textStyles.bodySmall,
+      iconSize: _CombineNote.smallIconSize,
+    );
+  }
+}
+
+/// How many chosen lines add to items already on the list. Nothing when
+/// none do.
+class const _CombiningSummary({required final RecipeId recipeId})
+    extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(groceryCombiningLineCountProvider(recipeId));
+    if (count == 0) return const SizedBox.shrink();
+    return _CombineNote(
+      text: context.l10n.grocery_combiningCount(count),
+      style: context.textStyles.bodyMedium,
+      iconSize: _CombineNote.bodyIconSize,
+    );
+  }
+}
+
+/// The merge symbol, then [text] in `on-surface-variant`.
+class const _CombineNote({
+  required final String text,
+  required final TextStyle? style,
+  required final double iconSize,
+}) extends StatelessWidget {
+  /// The icon beside body text (§7).
+  static const double bodyIconSize = 20;
+
+  /// The icon beside a small hint line, as on a status chip.
+  static const double smallIconSize = 16;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    spacing: AppSpacing.space1,
+    children: [
+      Icon(
+        Symbols.merge_rounded,
+        size: iconSize,
+        color: context.colors.primary,
+      ),
+      Flexible(
+        child: Text(
+          text,
+          style: style?.copyWith(color: context.colors.onSurfaceVariant),
+        ),
+      ),
+    ],
+  );
 }
 
 class const _AddButton({required final RecipeId recipeId})
