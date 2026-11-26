@@ -9,6 +9,7 @@ import 'package:sousvite/features/grocery/presentation/grocery_screen.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 
 import '../../../helpers/helpers.dart';
+import '../../nutrition/fakes.dart' show FakeFoodRepository;
 import '../fakes.dart';
 
 typedef _F = GroceryFixtures;
@@ -18,12 +19,14 @@ void main() {
   const cornbread = RecipeId('cornbread');
   late FakeGroceryRepository groceries;
   late FakeRecipeRepository recipes;
+  late FakeFoodRepository foods;
 
   // Fakes are made inside each test, not in setUp, so their streams run
   // in the test's fake-async zone and pumps deliver their events.
   Future<void> arrange() async {
     groceries = FakeGroceryRepository();
     recipes = FakeRecipeRepository();
+    foods = FakeFoodRepository();
     await recipes.saveRecipe(_F.recipe('chili', title: 'Chili'));
     await recipes.saveRecipe(_F.recipe('cornbread', title: 'Cornbread'));
     await groceries.saveList(
@@ -72,6 +75,7 @@ void main() {
       overrides: [
         groceryRepositoryProvider.overrideWithValue(groceries),
         recipeRepositoryProvider.overrideWithValue(recipes),
+        foodRepositoryProvider.overrideWithValue(foods),
       ],
     );
     await tester.pumpAndSettle();
@@ -98,7 +102,11 @@ void main() {
       Finder inDialog(String text) =>
           find.descendant(of: dialog, matching: find.text(text));
       expect(inDialog('sugar'), findsOneWidget);
-      expect(inDialog('⅜\u00a0cup + 200\u00a0g'), findsOneWidget);
+      // Sugar's density puts the cups and grams together.
+      expect(
+        find.descendant(of: dialog, matching: find.textContaining('About ')),
+        findsOneWidget,
+      );
       expect(inDialog('In 2 recipes'), findsOneWidget);
       expect(inDialog('Cornbread'), findsOneWidget);
       expect(inDialog('¼\u00a0cup'), findsOneWidget);
@@ -110,6 +118,37 @@ void main() {
         tester.getTopLeft(inDialog('Cornbread')).dy,
         lessThan(tester.getTopLeft(inDialog('Chili')).dy),
       );
+    });
+
+    testWidgets('says what a recipe calls an item matched to the same food', (
+      tester,
+    ) async {
+      await arrange();
+      await groceries.saveItem(
+        _F.item(
+          'd',
+          name: 'white sugar',
+          quantity: Quantity(1),
+          unit: Unit.teaspoon,
+          recipeId: chili,
+        ),
+      );
+      for (final lineId in ['chili-b', 'chili-d']) {
+        await foods.saveMatch(
+          NutritionMatch(
+            id: NutritionMatchId(lineId),
+            ingredientLineId: IngredientLineId(lineId),
+            foodId: const FoodId('sugar'),
+            source: NutritionSource.usda,
+            gramWeight: 25,
+          ),
+        );
+      }
+      await pumpScreen(tester);
+      await openSugar(tester);
+
+      expect(find.text('white sugar'), findsOneWidget);
+      expect(find.text('In 2 recipes'), findsOneWidget);
     });
 
     testWidgets('closes with Done or a tap outside it', (tester) async {

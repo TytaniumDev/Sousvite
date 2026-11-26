@@ -84,7 +84,11 @@ class const _Total({required final String entryKey}) extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: _inset),
       child: Text(
-        groceryAmountsLabel(context.l10n, amounts),
+        amounts.any((amount) => amount.approximate)
+            ? context.l10n.grocery_aboutAmount(
+                groceryAmountsLabel(context.l10n, amounts),
+              )
+            : groceryAmountsLabel(context.l10n, amounts),
         style: context.appText.numberLarge,
       ),
     );
@@ -122,6 +126,7 @@ class const _Sources({required final String entryKey}) extends ConsumerWidget {
             key: ValueKey(source.recipeId),
             recipeId: source.recipeId,
             amounts: source.amounts,
+            names: source.otherNames,
           ),
       ],
     );
@@ -129,10 +134,12 @@ class const _Sources({required final String entryKey}) extends ConsumerWidget {
 }
 
 /// One recipe's name and how much it needs, or the part added by hand
-/// when [recipeId] is null.
+/// when [recipeId] is null. Under it, what the recipe calls the item when
+/// that isn't the entry's name ("granulated sugar").
 class const _SourceRow({
   required final RecipeId? recipeId,
   required final List<GroceryAmount> amounts,
+  required final List<String> names,
   super.key,
 }) extends StatelessWidget {
   @override
@@ -147,12 +154,25 @@ class const _SourceRow({
         spacing: AppSpacing.space3,
         children: [
           Expanded(
-            child: recipeId == null
-                ? Text(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                if (recipeId == null)
+                  Text(
                     l10n.grocery_addedByHand,
                     style: context.textStyles.titleMedium,
                   )
-                : _RecipeTitle(recipeId: recipeId),
+                else
+                  _RecipeTitle(recipeId: recipeId),
+                if (names.isNotEmpty)
+                  Text(
+                    names.join(', '),
+                    style: context.textStyles.bodySmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
           ),
           Text(
             groceryAmountsLabel(l10n, amounts),

@@ -4,8 +4,15 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'grocery_entry.freezed.dart';
 
 /// One amount of a grocery entry, in one unit or count word. An entry
-/// made of items in different units shows each, such as "1 cup + 2 Tbsp".
-typedef GroceryAmount = ({Quantity quantity, Unit? unit, String? countWord});
+/// made of items that don't add up shows each, such as "1 cup + 2 cloves".
+/// `approximate` is true for a total worked out from the items' weights,
+/// such as cups and grams of sugar as cups.
+typedef GroceryAmount = ({
+  Quantity quantity,
+  Unit? unit,
+  String? countWord,
+  bool approximate,
+});
 
 /// One row on the grocery list: every item with the same name, combined
 /// across recipes and manual additions (PRD 7.7).
@@ -77,7 +84,23 @@ abstract class const GroceryView._() with _$GroceryView {
 
     /// Every entry by its key.
     required Map<String, GroceryEntry> entries,
+
+    /// The key of the entry each item name went into, by the name's
+    /// `groceryKey`.
+    @Default({}) Map<String, String> entryKeys,
+
+    /// The key of the entry each matched food went into.
+    @Default({}) Map<FoodId, String> entryKeysByFood,
   }) = _GroceryView;
+
+  /// The entry a new line named [name], matched to [foodId], would combine
+  /// with, or null when it would start a new one.
+  GroceryEntry? entryFor(String name, {FoodId? foodId}) {
+    final key =
+        (foodId == null ? null : entryKeysByFood[foodId]) ??
+        entryKeys[groceryKey(name)];
+    return key == null ? null : entries[key];
+  }
 
   /// Whether the list has nothing on it.
   bool get isEmpty => entries.isEmpty;

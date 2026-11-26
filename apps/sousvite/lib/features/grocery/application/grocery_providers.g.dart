@@ -167,7 +167,66 @@ final class GroceryViewProvider
   }
 }
 
-String _$groceryViewHash() => r'7fecf728c2bf5a88a49f6519b9460d676a742a5d';
+String _$groceryViewHash() => r'bc4c8c8221765ff8704aeb6c8a04d398fffc35a8';
+
+/// The nutrition match of every recipe line on the list, by line id, so
+/// items can combine by the food they matched and be weighed. Empty for a
+/// recipe whose matches are still loading.
+
+@ProviderFor(groceryMatches)
+final groceryMatchesProvider = GroceryMatchesProvider._();
+
+/// The nutrition match of every recipe line on the list, by line id, so
+/// items can combine by the food they matched and be weighed. Empty for a
+/// recipe whose matches are still loading.
+
+final class GroceryMatchesProvider
+    extends
+        $FunctionalProvider<
+          Map<IngredientLineId, NutritionMatch>,
+          Map<IngredientLineId, NutritionMatch>,
+          Map<IngredientLineId, NutritionMatch>
+        >
+    with $Provider<Map<IngredientLineId, NutritionMatch>> {
+  /// The nutrition match of every recipe line on the list, by line id, so
+  /// items can combine by the food they matched and be weighed. Empty for a
+  /// recipe whose matches are still loading.
+  GroceryMatchesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'groceryMatchesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$groceryMatchesHash();
+
+  @$internal
+  @override
+  $ProviderElement<Map<IngredientLineId, NutritionMatch>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Map<IngredientLineId, NutritionMatch> create(Ref ref) {
+    return groceryMatches(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<IngredientLineId, NutritionMatch> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<Map<IngredientLineId, NutritionMatch>>(value),
+    );
+  }
+}
+
+String _$groceryMatchesHash() => r'd010520e779ec828e9eff28fd3a1c4dd9a369ad4';
 
 /// A recipe's title, for showing where a grocery entry came from. Null while
 /// loading and once the recipe is deleted.
@@ -407,7 +466,7 @@ final class GroceryCombiningLineCountProvider
 }
 
 String _$groceryCombiningLineCountHash() =>
-    r'99f3e8063a244660642a57a066a33a803b28a70c';
+    r'eb64ecbd59480ad1b43d8687d533f4840ee66dfb';
 
 /// How many of [recipeId]'s included lines would combine with an entry
 /// already on the list, for the add-to-list sheet's summary.
