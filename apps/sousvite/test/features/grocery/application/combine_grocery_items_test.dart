@@ -206,6 +206,40 @@ void main() {
           expect(view.entryFor('salt', foodId: const FoodId('salt')), isNull);
         },
       );
+
+      test('keeps separated items apart from the same food, but together '
+          'by name', () {
+        final view = combineGroceryItems(
+          [
+            _F.item('a', name: 'sugar', quantity: Quantity(1), recipeId: cake),
+            _F
+                .item(
+                  'b',
+                  name: 'granulated sugar',
+                  quantity: Quantity(2),
+                  recipeId: soup,
+                )
+                .copyWith(combinesByFood: false),
+            _F
+                .item('c', name: 'granulated sugar', quantity: Quantity(3))
+                .copyWith(combinesByFood: false),
+          ],
+          matches: {
+            const IngredientLineId('cake-a'): match('cake-a', 'sugar', 200),
+            const IngredientLineId('soup-b'): match('soup-b', 'sugar', 100),
+          },
+        );
+
+        expect(view.entries.keys, ['sugar', 'granulated sugar']);
+        expect(
+          view.entries['granulated sugar']!.items.map((item) => item.id.value),
+          ['b', 'c'],
+        );
+        expect(
+          view.entryFor('white sugar', foodId: const FoodId('sugar'))?.name,
+          'sugar',
+        );
+      });
     });
 
     test('adds count words only with the same word', () {

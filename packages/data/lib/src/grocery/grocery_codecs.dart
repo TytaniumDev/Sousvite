@@ -45,6 +45,7 @@ final class GroceryItemCodec() implements EntityCodec<GroceryItem> {
     'checked': value.checked,
     'sourceIngredientLineId': value.sourceIngredientLineId?.value,
     'sourceRecipeId': value.sourceRecipeId?.value,
+    'combinesByFood': value.combinesByFood,
   };
 
   @override
@@ -70,6 +71,7 @@ final class GroceryItemCodec() implements EntityCodec<GroceryItem> {
             ? null
             : IngredientLineId(lineId),
         sourceRecipeId: recipeId == null ? null : RecipeId(recipeId),
+        combinesByFood: fields['combinesByFood'] as bool? ?? true,
       );
     }
     return null;

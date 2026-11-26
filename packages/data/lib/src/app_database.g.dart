@@ -6323,6 +6323,21 @@ class $GroceryItemsTable extends GroceryItems
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _combinesByFoodMeta = const VerificationMeta(
+    'combinesByFood',
+  );
+  @override
+  late final GeneratedColumn<bool> combinesByFood = GeneratedColumn<bool>(
+    'combines_by_food',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("combines_by_food" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6337,6 +6352,7 @@ class $GroceryItemsTable extends GroceryItems
     checked,
     sourceIngredientLineId,
     sourceRecipeId,
+    combinesByFood,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6436,6 +6452,15 @@ class $GroceryItemsTable extends GroceryItems
         ),
       );
     }
+    if (data.containsKey('combines_by_food')) {
+      context.handle(
+        _combinesByFoodMeta,
+        combinesByFood.isAcceptableOrUnknown(
+          data['combines_by_food']!,
+          _combinesByFoodMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -6495,6 +6520,10 @@ class $GroceryItemsTable extends GroceryItems
         DriftSqlType.string,
         data['${effectivePrefix}source_recipe_id'],
       ),
+      combinesByFood: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}combines_by_food'],
+      )!,
     );
   }
 
@@ -6522,6 +6551,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
   final bool checked;
   final String? sourceIngredientLineId;
   final String? sourceRecipeId;
+  final bool combinesByFood;
   const GroceryItemRow({
     required this.id,
     required this.listId,
@@ -6535,6 +6565,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     required this.checked,
     this.sourceIngredientLineId,
     this.sourceRecipeId,
+    required this.combinesByFood,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6569,6 +6600,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     if (!nullToAbsent || sourceRecipeId != null) {
       map['source_recipe_id'] = Variable<String>(sourceRecipeId);
     }
+    map['combines_by_food'] = Variable<bool>(combinesByFood);
     return map;
   }
 
@@ -6598,6 +6630,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
       sourceRecipeId: sourceRecipeId == null && nullToAbsent
           ? const Value.absent()
           : Value(sourceRecipeId),
+      combinesByFood: Value(combinesByFood),
     );
   }
 
@@ -6625,6 +6658,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
         json['sourceIngredientLineId'],
       ),
       sourceRecipeId: serializer.fromJson<String?>(json['sourceRecipeId']),
+      combinesByFood: serializer.fromJson<bool>(json['combinesByFood']),
     );
   }
   @override
@@ -6647,6 +6681,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
         sourceIngredientLineId,
       ),
       'sourceRecipeId': serializer.toJson<String?>(sourceRecipeId),
+      'combinesByFood': serializer.toJson<bool>(combinesByFood),
     };
   }
 
@@ -6663,6 +6698,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     bool? checked,
     Value<String?> sourceIngredientLineId = const Value.absent(),
     Value<String?> sourceRecipeId = const Value.absent(),
+    bool? combinesByFood,
   }) => GroceryItemRow(
     id: id ?? this.id,
     listId: listId ?? this.listId,
@@ -6684,6 +6720,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     sourceRecipeId: sourceRecipeId.present
         ? sourceRecipeId.value
         : this.sourceRecipeId,
+    combinesByFood: combinesByFood ?? this.combinesByFood,
   );
   GroceryItemRow copyWithCompanion(GroceryItemsCompanion data) {
     return GroceryItemRow(
@@ -6709,6 +6746,9 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
       sourceRecipeId: data.sourceRecipeId.present
           ? data.sourceRecipeId.value
           : this.sourceRecipeId,
+      combinesByFood: data.combinesByFood.present
+          ? data.combinesByFood.value
+          : this.combinesByFood,
     );
   }
 
@@ -6726,7 +6766,8 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
           ..write('storeSection: $storeSection, ')
           ..write('checked: $checked, ')
           ..write('sourceIngredientLineId: $sourceIngredientLineId, ')
-          ..write('sourceRecipeId: $sourceRecipeId')
+          ..write('sourceRecipeId: $sourceRecipeId, ')
+          ..write('combinesByFood: $combinesByFood')
           ..write(')'))
         .toString();
   }
@@ -6745,6 +6786,7 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
     checked,
     sourceIngredientLineId,
     sourceRecipeId,
+    combinesByFood,
   );
   @override
   bool operator ==(Object other) =>
@@ -6761,7 +6803,8 @@ class GroceryItemRow extends DataClass implements Insertable<GroceryItemRow> {
           other.storeSection == this.storeSection &&
           other.checked == this.checked &&
           other.sourceIngredientLineId == this.sourceIngredientLineId &&
-          other.sourceRecipeId == this.sourceRecipeId);
+          other.sourceRecipeId == this.sourceRecipeId &&
+          other.combinesByFood == this.combinesByFood);
 }
 
 class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
@@ -6777,6 +6820,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
   final Value<bool> checked;
   final Value<String?> sourceIngredientLineId;
   final Value<String?> sourceRecipeId;
+  final Value<bool> combinesByFood;
   final Value<int> rowid;
   const GroceryItemsCompanion({
     this.id = const Value.absent(),
@@ -6791,6 +6835,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     this.checked = const Value.absent(),
     this.sourceIngredientLineId = const Value.absent(),
     this.sourceRecipeId = const Value.absent(),
+    this.combinesByFood = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GroceryItemsCompanion.insert({
@@ -6806,6 +6851,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     this.checked = const Value.absent(),
     this.sourceIngredientLineId = const Value.absent(),
     this.sourceRecipeId = const Value.absent(),
+    this.combinesByFood = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        listId = Value(listId),
@@ -6824,6 +6870,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     Expression<bool>? checked,
     Expression<String>? sourceIngredientLineId,
     Expression<String>? sourceRecipeId,
+    Expression<bool>? combinesByFood,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6841,6 +6888,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
       if (sourceIngredientLineId != null)
         'source_ingredient_line_id': sourceIngredientLineId,
       if (sourceRecipeId != null) 'source_recipe_id': sourceRecipeId,
+      if (combinesByFood != null) 'combines_by_food': combinesByFood,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6858,6 +6906,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     Value<bool>? checked,
     Value<String?>? sourceIngredientLineId,
     Value<String?>? sourceRecipeId,
+    Value<bool>? combinesByFood,
     Value<int>? rowid,
   }) {
     return GroceryItemsCompanion(
@@ -6874,6 +6923,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
       sourceIngredientLineId:
           sourceIngredientLineId ?? this.sourceIngredientLineId,
       sourceRecipeId: sourceRecipeId ?? this.sourceRecipeId,
+      combinesByFood: combinesByFood ?? this.combinesByFood,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6921,6 +6971,9 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
     if (sourceRecipeId.present) {
       map['source_recipe_id'] = Variable<String>(sourceRecipeId.value);
     }
+    if (combinesByFood.present) {
+      map['combines_by_food'] = Variable<bool>(combinesByFood.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6942,6 +6995,7 @@ class GroceryItemsCompanion extends UpdateCompanion<GroceryItemRow> {
           ..write('checked: $checked, ')
           ..write('sourceIngredientLineId: $sourceIngredientLineId, ')
           ..write('sourceRecipeId: $sourceRecipeId, ')
+          ..write('combinesByFood: $combinesByFood, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -12421,6 +12475,7 @@ typedef $$GroceryItemsTableCreateCompanionBuilder =
       Value<bool> checked,
       Value<String?> sourceIngredientLineId,
       Value<String?> sourceRecipeId,
+      Value<bool> combinesByFood,
       Value<int> rowid,
     });
 typedef $$GroceryItemsTableUpdateCompanionBuilder =
@@ -12437,6 +12492,7 @@ typedef $$GroceryItemsTableUpdateCompanionBuilder =
       Value<bool> checked,
       Value<String?> sourceIngredientLineId,
       Value<String?> sourceRecipeId,
+      Value<bool> combinesByFood,
       Value<int> rowid,
     });
 
@@ -12509,6 +12565,11 @@ class $$GroceryItemsTableFilterComposer
     column: $table.sourceRecipeId,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<bool> get combinesByFood => $composableBuilder(
+    column: $table.combinesByFood,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$GroceryItemsTableOrderingComposer
@@ -12579,6 +12640,11 @@ class $$GroceryItemsTableOrderingComposer
     column: $table.sourceRecipeId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get combinesByFood => $composableBuilder(
+    column: $table.combinesByFood,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$GroceryItemsTableAnnotationComposer
@@ -12635,6 +12701,11 @@ class $$GroceryItemsTableAnnotationComposer
     column: $table.sourceRecipeId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get combinesByFood => $composableBuilder(
+    column: $table.combinesByFood,
+    builder: (column) => column,
+  );
 }
 
 class $$GroceryItemsTableTableManager
@@ -12680,6 +12751,7 @@ class $$GroceryItemsTableTableManager
                 Value<bool> checked = const Value.absent(),
                 Value<String?> sourceIngredientLineId = const Value.absent(),
                 Value<String?> sourceRecipeId = const Value.absent(),
+                Value<bool> combinesByFood = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GroceryItemsCompanion(
                 id: id,
@@ -12694,6 +12766,7 @@ class $$GroceryItemsTableTableManager
                 checked: checked,
                 sourceIngredientLineId: sourceIngredientLineId,
                 sourceRecipeId: sourceRecipeId,
+                combinesByFood: combinesByFood,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -12710,6 +12783,7 @@ class $$GroceryItemsTableTableManager
                 Value<bool> checked = const Value.absent(),
                 Value<String?> sourceIngredientLineId = const Value.absent(),
                 Value<String?> sourceRecipeId = const Value.absent(),
+                Value<bool> combinesByFood = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GroceryItemsCompanion.insert(
                 id: id,
@@ -12724,6 +12798,7 @@ class $$GroceryItemsTableTableManager
                 checked: checked,
                 sourceIngredientLineId: sourceIngredientLineId,
                 sourceRecipeId: sourceRecipeId,
+                combinesByFood: combinesByFood,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

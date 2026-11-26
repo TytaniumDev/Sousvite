@@ -66,7 +66,7 @@ class AppDatabase(super.e) extends _$AppDatabase {
   /// Bump this with every schema change, add the step to [migration], and
   /// run `dart run drift_dev make-migrations` to snapshot the new schema.
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -90,6 +90,9 @@ class AppDatabase(super.e) extends _$AppDatabase {
         }
         await rebuildRecipeSearch();
       },
+      // v5: grocery items the user separated stop combining by food.
+      from4To5: (m, schema) =>
+          m.addColumn(schema.groceryItems, schema.groceryItems.combinesByFood),
     ),
   );
 }

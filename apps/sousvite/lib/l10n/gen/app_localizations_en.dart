@@ -977,6 +977,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String grocery_combinedWith(String name, String entryName) {
+    return 'Combined $name with $entryName';
+  }
+
+  @override
+  String get grocery_separate => 'Separate';
+
+  @override
+  String grocery_separated(String name) {
+    return '$name separated';
+  }
+
+  @override
   String get grocery_alreadyOnList => 'Already on your list';
 
   @override

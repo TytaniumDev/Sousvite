@@ -6,9 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:sousvite/features/grocery/application/grocery_actions.dart';
 import 'package:sousvite/features/grocery/application/grocery_entry.dart';
+import 'package:sousvite/features/grocery/application/grocery_food_merges.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
 import 'package:sousvite/features/grocery/application/grocery_sources.dart';
+import 'package:sousvite/features/grocery/presentation/combine_note.dart';
 import 'package:sousvite/features/grocery/presentation/grocery_amounts_label.dart';
 import 'package:sousvite/features/recipe/recipe.dart';
 import 'package:sousvite/l10n/l10n.dart';
@@ -25,7 +28,8 @@ Future<void> showGroceryBreakdownDialog(
 
 /// One grocery entry's total, then each recipe's share of it, with the
 /// part added by hand last (DESIGN_SYSTEM.md §10.6). Tapping a recipe
-/// opens it.
+/// opens it. Under them, each name that joined only by matching the same
+/// food, with a button that separates it.
 class const GroceryBreakdownDialog({
   /// The entry's key in `GroceryView.entries`.
   required final String entryKey,
@@ -43,6 +47,7 @@ class const GroceryBreakdownDialog({
           children: [
             _Total(entryKey: entryKey),
             _Sources(entryKey: entryKey),
+            _FoodMerges(entryKey: entryKey),
           ],
         ),
       ),
@@ -202,4 +207,78 @@ class const _RecipeTitle({required final RecipeId recipeId})
     ref.watch(groceryRecipeTitleProvider(recipeId)).value ?? '',
     style: context.textStyles.titleMedium,
   );
+}
+
+/// One note per name that joined the entry by food. Nothing when none did.
+class const _FoodMerges({required final String entryKey})
+    extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entry = ref.watch(
+      groceryViewProvider.select((view) => view.value?.entries[entryKey]),
+    );
+    if (entry == null) return const SizedBox.shrink();
+    return Column(
+      mainAxisSize: .min,
+      crossAxisAlignment: .stretch,
+      children: [
+        for (final merge in groceryFoodMerges(entry))
+          _FoodMergeNote(
+            key: ValueKey(merge.name),
+            merge: merge,
+            entryName: entry.name,
+          ),
+      ],
+    );
+  }
+}
+
+/// "Combined granulated sugar with sugar", then Separate. Separating
+/// closes the dialog, because the entry it shows changes, and offers Undo.
+class const _FoodMergeNote({
+  required final GroceryFoodMerge merge,
+  required final String entryName,
+  super.key,
+}) extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Padding(
+    padding: const EdgeInsetsDirectional.only(
+      start: _inset,
+      end: AppSpacing.space3,
+    ),
+    child: Row(
+      spacing: AppSpacing.space2,
+      children: [
+        Expanded(
+          child: CombineNote(
+            text: context.l10n.grocery_combinedWith(merge.name, entryName),
+            style: context.textStyles.bodyMedium,
+            iconSize: CombineNote.bodyIconSize,
+          ),
+        ),
+        TextButton(
+          onPressed: () => unawaited(_separate(context, ref)),
+          child: Text(context.l10n.grocery_separate),
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _separate(BuildContext context, WidgetRef ref) async {
+    final actions = ref.read(groceryActionsProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    final items = merge.items;
+    Navigator.of(context).pop();
+    await actions.separate(items);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.grocery_separated(merge.name)),
+        action: SnackBarAction(
+          label: l10n.common_undo,
+          onPressed: () => actions.restore(items),
+        ),
+      ),
+    );
+  }
 }

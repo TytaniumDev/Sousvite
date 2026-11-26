@@ -29,5 +29,10 @@ abstract class GroceryItem with _$GroceryItem {
     /// The ingredient line this came from, for combining. Null when manual.
     IngredientLineId? sourceIngredientLineId,
     RecipeId? sourceRecipeId,
+
+    /// Whether the item combines with items whose lines matched the same
+    /// food ("sugar" and "granulated sugar"). False once the user
+    /// separates it; it then combines only with items of the same name.
+    @Default(true) bool combinesByFood,
   }) = _GroceryItem;
 }

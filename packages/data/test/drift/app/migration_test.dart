@@ -7,6 +7,8 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v5.dart' as v5;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -138,5 +140,39 @@ void main() {
     expect(await database.recipeDao.watchSearch('"basil"*').first, ['r1']);
     expect(await database.recipeDao.watchSearch('"tomato"*').first, ['r1']);
     await database.close();
+  });
+
+  test('v4 to v5 keeps grocery items, combining by food', () async {
+    const oldItem = v4.GroceryItemsData(
+      id: 'g1',
+      listId: 'list1',
+      name: 'sugar',
+      sortKey: 'a0',
+      checked: 0,
+    );
+    const newItem = v5.GroceryItemsData(
+      id: 'g1',
+      listId: 'list1',
+      name: 'sugar',
+      sortKey: 'a0',
+      checked: 0,
+      combinesByFood: 1,
+    );
+
+    await verifier.testWithDataIntegrity(
+      oldVersion: 4,
+      newVersion: 5,
+      createOld: v4.DatabaseAtV4.new,
+      createNew: v5.DatabaseAtV5.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDatabase) {
+        batch.insert(oldDatabase.groceryItems, oldItem);
+      },
+      validateItems: (newDatabase) async {
+        expect(await newDatabase.select(newDatabase.groceryItems).get(), [
+          newItem,
+        ]);
+      },
+    );
   });
 }

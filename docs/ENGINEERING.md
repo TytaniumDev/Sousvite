@@ -170,7 +170,7 @@ The goal is that a change to one field rebuilds only the widgets that show that 
 | `Food`, `FoodNutrient`, `FoodPortion` | Bundled USDA data (read-only) plus cached branded and Open Food Facts foods |
 | `RecipeVersion` | Snapshot of a recipe at a point in history |
 | `Experiment` | Copy of a recipe version with change description, notes, share flag, outcome |
-| `GroceryList`, `GroceryItem` | Items link back to source ingredient lines for combining, and keep the line's unit or count word, so "3 cloves garlic" and "2 cloves garlic" add up to "5 cloves garlic". The grocery view groups items by name or by the USDA food their line matches (looked up live, so no schema field), adds amounts exactly in the largest unit of each family, and adds across families by weight (the match's gram weight, else the density table) |
+| `GroceryList`, `GroceryItem` | Items link back to source ingredient lines for combining, and keep the line's unit or count word, so "3 cloves garlic" and "2 cloves garlic" add up to "5 cloves garlic". The grocery view groups items by name or by the USDA food their line matches (looked up live, so no schema field), adds amounts exactly in the largest unit of each family, and adds across families by weight (the match's gram weight, else the density table). `GroceryItem.combinesByFood` turns food matching off for items the user separated, so they combine only by name |
 | `MeasuringTool` | Tools the user owns (PRD 7.5) |
 | `UserRecipePrefs` | Per-user serving size and units, kept separate from the recipe so joint shares don't overwrite them |
 | `ChangeLog`, `SyncState` | See §8 |
