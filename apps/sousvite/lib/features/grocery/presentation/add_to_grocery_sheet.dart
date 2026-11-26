@@ -1,12 +1,12 @@
 import 'package:design_system/design_system.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:sousvite/features/grocery/application/excluded_ingredients.dart';
 import 'package:sousvite/features/grocery/application/grocery_actions.dart';
 import 'package:sousvite/features/grocery/application/grocery_line_name.dart';
 import 'package:sousvite/features/grocery/application/grocery_providers.dart';
+import 'package:sousvite/features/grocery/presentation/combine_note.dart';
 import 'package:sousvite/features/grocery/presentation/grocery_amounts_label.dart';
 import 'package:sousvite/features/nutrition/nutrition.dart';
 import 'package:sousvite/l10n/l10n.dart';
@@ -157,14 +157,14 @@ class const _CombineHint({
     if (amounts == null) return const SizedBox.shrink();
     final l10n = context.l10n;
     final label = groceryAmountsLabel(l10n, amounts);
-    return _CombineNote(
+    return CombineNote(
       text: amounts.isEmpty
           ? l10n.grocery_alreadyOnList
           : amounts.any((amount) => amount.approximate)
           ? l10n.grocery_addsToAbout(label)
           : l10n.grocery_addsTo(label),
       style: context.textStyles.bodySmall,
-      iconSize: _CombineNote.smallIconSize,
+      iconSize: CombineNote.smallIconSize,
     );
   }
 }
@@ -177,43 +177,12 @@ class const _CombiningSummary({required final RecipeId recipeId})
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(groceryCombiningLineCountProvider(recipeId));
     if (count == 0) return const SizedBox.shrink();
-    return _CombineNote(
+    return CombineNote(
       text: context.l10n.grocery_combiningCount(count),
       style: context.textStyles.bodyMedium,
-      iconSize: _CombineNote.bodyIconSize,
+      iconSize: CombineNote.bodyIconSize,
     );
   }
-}
-
-/// The merge symbol, then [text] in `on-surface-variant`.
-class const _CombineNote({
-  required final String text,
-  required final TextStyle? style,
-  required final double iconSize,
-}) extends StatelessWidget {
-  /// The icon beside body text (§7).
-  static const double bodyIconSize = 20;
-
-  /// The icon beside a small hint line, as on a status chip.
-  static const double smallIconSize = 16;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    spacing: AppSpacing.space1,
-    children: [
-      Icon(
-        Symbols.merge_rounded,
-        size: iconSize,
-        color: context.colors.primary,
-      ),
-      Flexible(
-        child: Text(
-          text,
-          style: style?.copyWith(color: context.colors.onSurfaceVariant),
-        ),
-      ),
-    ],
-  );
 }
 
 class const _AddButton({required final RecipeId recipeId})

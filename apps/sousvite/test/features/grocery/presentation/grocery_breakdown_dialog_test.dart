@@ -151,6 +151,51 @@ void main() {
       expect(find.text('In 2 recipes'), findsOneWidget);
     });
 
+    testWidgets('separates a name merged by food, with Undo', (tester) async {
+      await arrange();
+      await groceries.saveItem(
+        _F.item(
+          'd',
+          name: 'white sugar',
+          quantity: Quantity(1),
+          unit: Unit.teaspoon,
+          recipeId: chili,
+        ),
+      );
+      for (final lineId in ['chili-b', 'chili-d']) {
+        await foods.saveMatch(
+          NutritionMatch(
+            id: NutritionMatchId(lineId),
+            ingredientLineId: IngredientLineId(lineId),
+            foodId: const FoodId('sugar'),
+            source: NutritionSource.usda,
+            gramWeight: 25,
+          ),
+        );
+      }
+      await pumpScreen(tester);
+      await openSugar(tester);
+
+      expect(find.text('Combined white sugar with sugar'), findsOneWidget);
+
+      await tester.tap(find.text('Separate'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GroceryBreakdownDialog), findsNothing);
+      expect(
+        find.widgetWithText(GroceryItemRow, 'white sugar'),
+        findsOneWidget,
+      );
+      expect(find.text('white sugar separated'), findsOneWidget);
+      expect(groceries.items[const GroceryItemId('d')]!.combinesByFood, false);
+
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(GroceryItemRow, 'white sugar'), findsNothing);
+      expect(groceries.items[const GroceryItemId('d')]!.combinesByFood, true);
+    });
+
     testWidgets('closes with Done or a tap outside it', (tester) async {
       await arrange();
       await pumpScreen(tester);

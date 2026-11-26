@@ -62,6 +62,13 @@ class GroceryActions({
           if (item.checked != checked) item.copyWith(checked: checked),
       ]);
 
+  /// Stops [items] combining with items of the same food but another
+  /// name, after a wrong merge. Pass them to [restore] to undo.
+  Future<void> separate(List<GroceryItem> items) => _saveAll([
+    for (final item in items)
+      if (item.combinesByFood) item.copyWith(combinesByFood: false),
+  ]);
+
   /// Removes [items]. Pass them to [restore] to undo.
   Future<void> remove(List<GroceryItem> items) async {
     for (final item in items) {
@@ -69,7 +76,7 @@ class GroceryActions({
     }
   }
 
-  /// Puts back items that [remove] took off the list.
+  /// Puts back items as they were before [remove] or [separate].
   Future<void> restore(List<GroceryItem> items) => _saveAll(items);
 
   Future<void> _saveAll(List<GroceryItem> items) async {

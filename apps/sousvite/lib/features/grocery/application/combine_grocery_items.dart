@@ -7,7 +7,8 @@ import 'package:sousvite/features/grocery/application/grocery_entry.dart';
 ///
 /// Items become one entry when their names share a [groceryKey] ("2
 /// onions" and "1 onion"), or when the recipe lines they came from matched
-/// the same food in [matches] ("sugar" and "granulated sugar"). Amounts are
+/// the same food in [matches] ("sugar" and "granulated sugar") and the
+/// user hasn't separated them (`GroceryItem.combinesByFood`). Amounts are
 /// added by [groceryAmounts], which weighs them with the matches, or with
 /// [densityOf] the entry's name, to put cups and grams together. An item's
 /// section is the one stored on it, else the one [StoreSection.of] finds
@@ -21,7 +22,7 @@ GroceryView combineGroceryItems(
   Map<IngredientLineId, NutritionMatch> matches = const {},
 }) {
   FoodId? foodOf(GroceryItem item) =>
-      matches[item.sourceIngredientLineId]?.foodId;
+      item.combinesByFood ? matches[item.sourceIngredientLineId]?.foodId : null;
 
   final groups = _group(items, foodOf);
   final entries = <String, GroceryEntry>{};

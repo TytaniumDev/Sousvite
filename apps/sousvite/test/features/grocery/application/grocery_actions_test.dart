@@ -112,5 +112,21 @@ void main() {
       await actions.restore([a]);
       expect(repository.items.values, [a]);
     });
+
+    test('separates items from the same food, and restores them', () async {
+      final sugar = _F.item('a', name: 'granulated sugar');
+      final apart = _F.item('b').copyWith(combinesByFood: false);
+      await repository.saveItem(sugar);
+      await repository.saveItem(apart);
+
+      await actions.separate([sugar, apart]);
+
+      expect(repository.items[sugar.id]!.combinesByFood, isFalse);
+      expect(repository.items[apart.id], apart);
+
+      await actions.restore([sugar]);
+
+      expect(repository.items[sugar.id], sugar);
+    });
   });
 }

@@ -1605,6 +1605,24 @@ abstract class AppLocalizations {
   /// **'About {amount}'**
   String grocery_aboutAmount(String amount);
 
+  /// In a grocery item's breakdown, when a recipe's line joined the item because it matched the same food under another name ("Combined granulated sugar with sugar").
+  ///
+  /// In en, this message translates to:
+  /// **'Combined {name} with {entryName}'**
+  String grocery_combinedWith(String name, String entryName);
+
+  /// Button beside grocery_combinedWith that splits that name back into its own item.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate'**
+  String get grocery_separate;
+
+  /// Snackbar after the user separates a name from a combined grocery item, with Undo.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} separated'**
+  String grocery_separated(String name);
+
   /// Under a line in the add-to-list sheet when the same item, with no amount, is already on the list.
   ///
   /// In en, this message translates to:
