@@ -28,6 +28,8 @@ class GroceryItems() extends Table {
   BoolColumn get checked => boolean().withDefault(const Constant(false))();
   TextColumn get sourceIngredientLineId => text().nullable()();
   TextColumn get sourceRecipeId => text().nullable()();
+  BoolColumn get combinesByFood =>
+      boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

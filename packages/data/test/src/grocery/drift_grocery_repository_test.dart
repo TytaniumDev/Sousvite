@@ -75,6 +75,7 @@ void main() {
         checked: true,
         sourceIngredientLineId: const IngredientLineId('l1'),
         sourceRecipeId: const RecipeId('r1'),
+        combinesByFood: false,
       );
       final milk = _item(
         'i2',
@@ -173,6 +174,18 @@ void main() {
     test('wait for every required field', () {
       expect(GroceryListCodec().decode('g1', {'name': 'Weekly'}), isNull);
       expect(GroceryItemCodec().decode('i1', {'name': 'milk'}), isNull);
+    });
+
+    test('round-trip an item, and combine by food when a change predates '
+        'separating', () {
+      final codec = GroceryItemCodec();
+      final sugar = _item('i1', 'sugar').copyWith(combinesByFood: false);
+
+      expect(codec.decode('i1', codec.encode(sugar)), sugar);
+      expect(
+        codec.decode('i1', {...codec.encode(sugar)}..remove('combinesByFood')),
+        sugar.copyWith(combinesByFood: true),
+      );
     });
   });
 }

@@ -38,6 +38,7 @@ extension GroceryItemRowMapping on GroceryItemRow {
         ? null
         : IngredientLineId(sourceIngredientLineId!),
     sourceRecipeId: sourceRecipeId == null ? null : RecipeId(sourceRecipeId!),
+    combinesByFood: combinesByFood,
   );
 }
 
@@ -57,5 +58,6 @@ extension GroceryItemCompanionMapping on GroceryItem {
     checked: Value(checked),
     sourceIngredientLineId: Value(sourceIngredientLineId?.value),
     sourceRecipeId: Value(sourceRecipeId?.value),
+    combinesByFood: Value(combinesByFood),
   );
 }
